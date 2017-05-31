@@ -14,11 +14,9 @@ import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.WebApplicationInitializer;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
-import org.springframework.web.servlet.DispatcherServlet;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
@@ -72,7 +70,7 @@ public class Application extends SpringBootServletInitializer implements WebAppl
     */
 
 
-
+	/*
     @Bean
     public ServletRegistrationBean hapiUI() {
         DispatcherServlet dispatcherServlet = new DispatcherServlet();
@@ -83,7 +81,7 @@ public class Application extends SpringBootServletInitializer implements WebAppl
         servletRegistrationBean.setName("spring");
         return servletRegistrationBean;
     }
-
+	*/
 
 	@Bean
 	public ServletRegistrationBean FHIRServletRegistrationBean(JpaServerDemo jpaServer) {

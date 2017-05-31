@@ -39,19 +39,31 @@
 
   <dependencies>
     <!-- Spring Boot -->
-    <dependency>
-      	<groupId>org.springframework.boot</groupId>
-      	<artifactId>spring-boot-starter-web</artifactId>
-    </dependency>
-   <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-actuator</artifactId>
+        <dependency>
+      	    <groupId>org.springframework.boot</groupId>
+      	    <artifactId>spring-boot-starter-web</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.hibernate</groupId>
+                    <artifactId>hibernate-validator</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
 
-    </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>${hibernate_validator_version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-actuator</artifactId>
+        </dependency>
 
 
    <!-- HL7 HAPI FHIR -->
-	      <dependency>
+      <dependency>
 			<groupId>ca.uhn.hapi.fhir</groupId>
 			<artifactId>hapi-fhir-base</artifactId>
 			<version>${hapi-fhir-version}</version>
@@ -155,11 +167,16 @@
           <version>${thymeleaf-version}</version>
       </dependency>
 
+      <dependency>
+          <groupId>org.apache.lucene</groupId>
+          <artifactId>lucene-backward-codecs</artifactId>
+          <version>5.5.4</version>
+      </dependency>
+
       <!-- Spring Web is used to deploy the server to a web container. -->
       <dependency>
           <groupId>org.springframework</groupId>
           <artifactId>spring-web</artifactId>
-
       </dependency>
 
       <!-- Used for CORS support -->
