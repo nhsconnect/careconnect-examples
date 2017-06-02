@@ -33,7 +33,7 @@ public class ExampleMedicationStatement {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
         List<IdDt> profiles = new ArrayList<IdDt>();
-        profiles.add(new IdDt("https://fhir.nhs.uk/StructureDefinition/CareConnect-MedicationStatement-1"));
+        profiles.add(new IdDt("https://fhir.hl7.org.uk/StructureDefinition/CareConnect-MedicationStatement-1"));
         ResourceMetadataKeyEnum.PROFILES.put(statement, profiles);
 
 
@@ -122,6 +122,7 @@ public class ExampleMedicationStatement {
         TimingDt timing = new TimingDt();
         timing.setCode(TimingAbbreviationEnum.TID);
         dosage.setTiming(timing);
+        dosage.setText("Three times a day");
 
         //MedicationOrder.DispenseRequest dispenseRequest = new MedicationOrder.DispenseRequest();
         //dispenseRequest.setNumberOfRepeatsAllowed(5);

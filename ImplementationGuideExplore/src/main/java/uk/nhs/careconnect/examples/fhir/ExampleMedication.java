@@ -23,7 +23,7 @@ public class ExampleMedication {
         Medication medication = new Medication();
 
         List<IdDt> profiles = new ArrayList<IdDt>();
-        profiles.add(new IdDt("https://fhir.nhs.uk/StructureDefinition/CareConnect-Medication-1"));
+        profiles.add(new IdDt("https://fhir.hl7.org.uk/StructureDefinition/CareConnect-Medication-1"));
         ResourceMetadataKeyEnum.PROFILES.put(medication, profiles);
 
         CodeableConceptDt drugCode = new CodeableConceptDt();

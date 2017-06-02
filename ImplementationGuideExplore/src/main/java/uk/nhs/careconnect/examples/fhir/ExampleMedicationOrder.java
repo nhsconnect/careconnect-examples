@@ -1,5 +1,6 @@
 package uk.nhs.careconnect.examples.fhir;
 
+import ca.uhn.fhir.model.api.ExtensionDt;
 import ca.uhn.fhir.model.api.ResourceMetadataKeyEnum;
 import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
 import ca.uhn.fhir.model.dstu2.composite.ResourceReferenceDt;
@@ -31,8 +32,18 @@ public class ExampleMedicationOrder {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
         List<IdDt> profiles = new ArrayList<IdDt>();
-        profiles.add(new IdDt("https://fhir.nhs.uk/StructureDefinition/CareConnect-MedicationOrder-1"));
+        profiles.add(new IdDt("https://fhir.hl7.org.uk/StructureDefinition/CareConnect-MedicationOrder-1"));
         ResourceMetadataKeyEnum.PROFILES.put(prescription, profiles);
+
+        ExtensionDt supplyType = new ExtensionDt();
+        supplyType.setUrl("https://fhir.hl7.org.uk/StructureDefinition/Extension-CareConnect-MedicationSupplyType-1");
+        CodeableConceptDt supplyCode = new CodeableConceptDt();
+        supplyCode.addCoding()
+                .setCode("394823007")
+                .setSystem(CareConnectSystem.SNOMEDCT)
+                .setDisplay("NHS Prescription");
+        supplyType.setValue(supplyCode);
+        prescription.addUndeclaredExtension(supplyType);
 
         prescription.setPatient(new ResourceReferenceDt("https://pds.proxy.nhs.uk/Patient/9876543210"));
         prescription.getPatient().setDisplay("Bernie Kanfeld");
@@ -62,13 +73,14 @@ public class ExampleMedicationOrder {
 
 
         MedicationOrder.DosageInstruction dosage = prescription.addDosageInstruction();
-
+        dosage.setText("Three times a day");
         CodeableConceptDt additionalIns = new CodeableConceptDt();
         additionalIns.addCoding()
                 .setCode("1521000175104")
                 .setSystem(CareConnectSystem.SNOMEDCT)
                 .setDisplay("After dinner");
         dosage.setAdditionalInstructions(additionalIns);
+
 
         TimingDt timing = new TimingDt();
         timing.setCode(TimingAbbreviationEnum.TID);

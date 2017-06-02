@@ -32,7 +32,7 @@ public class ExamplePatient {
         Patient patient = new Patient();
 
         List<IdDt> profiles = new ArrayList<IdDt>();
-        profiles.add(new IdDt("https://fhir.nhs.uk/StructureDefinition/CareConnect-Patient-1"));
+        profiles.add(new IdDt("https://fhir.hl7.org.uk/StructureDefinition/CareConnect-Patient-1"));
         ResourceMetadataKeyEnum.PROFILES.put(patient, profiles);
 
         CodeableConceptDt ethnicCode = new CodeableConceptDt();
@@ -42,7 +42,7 @@ public class ExamplePatient {
                 .setDisplay("British, Mixed British")
                 .setCode("01");
         ExtensionDt ethnicExtension = new ExtensionDt()
-                .setUrl("https://fhir.nhs.uk/StructureDefinition/Extension-CareConnect-EthnicCategory-1")
+                .setUrl("https://fhir.hl7.org.uk/StructureDefinition/Extension-CareConnect-EthnicCategory-1")
                 .setValue(ethnicCode);
         patient.addUndeclaredExtension(ethnicExtension);
 
@@ -58,7 +58,7 @@ public class ExamplePatient {
                 .setCode("01");
 
         ExtensionDt verificationStatus = new ExtensionDt()
-                .setUrl("https://fhir.nhs.uk/StructureDefinition/Extension-CareConnect-NHSNumberVerificationStatus-1")
+                .setUrl("https://fhir.hl7.org.uk/StructureDefinition/Extension-CareConnect-NHSNumberVerificationStatus-1")
                 .setValue(verificationStatusCode);
         nhsNumber.addUndeclaredExtension(verificationStatus);
 
@@ -81,6 +81,8 @@ public class ExamplePatient {
         patient.setGender(AdministrativeGenderEnum.FEMALE);
 
         patient.setMaritalStatus(MaritalStatusCodesEnum.S);
+        // HAPI doesn't add in the display text. It is mandatory in the profile
+        patient.getMaritalStatus().getCoding().get(0).setDisplay("Never Married");
 
         Date birth;
         try {
