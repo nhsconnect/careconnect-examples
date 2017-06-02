@@ -32,33 +32,33 @@ public class ExamplePatient {
         Patient patient = new Patient();
 
         List<IdDt> profiles = new ArrayList<IdDt>();
-        profiles.add(new IdDt("https://fhir.hl7.org.uk/StructureDefinition/CareConnect-Patient-1"));
+        profiles.add(new IdDt(CareConnectSystem.ProfilePatient));
         ResourceMetadataKeyEnum.PROFILES.put(patient, profiles);
 
         CodeableConceptDt ethnicCode = new CodeableConceptDt();
         ethnicCode
                 .addCoding()
-                .setSystem(CareConnectSystem.CareConnectEthnicCategory)
+                .setSystem(CareConnectSystem.SystemEthnicCategory)
                 .setDisplay("British, Mixed British")
                 .setCode("01");
         ExtensionDt ethnicExtension = new ExtensionDt()
-                .setUrl("https://fhir.hl7.org.uk/StructureDefinition/Extension-CareConnect-EthnicCategory-1")
+                .setUrl(CareConnectSystem.ExtUrlEthnicCategory)
                 .setValue(ethnicCode);
         patient.addUndeclaredExtension(ethnicExtension);
 
         IdentifierDt nhsNumber = patient.addIdentifier()
-                .setSystem(CareConnectSystem.NHSNumberSystem)
+                .setSystem(CareConnectSystem.SystemNHSNumber)
                 .setValue("9876543210");
 
         CodeableConceptDt verificationStatusCode = new CodeableConceptDt();
         verificationStatusCode
                 .addCoding()
-                .setSystem(CareConnectSystem.NHSNumberVerificationStatus)
+                .setSystem(CareConnectSystem.SystemNHSNumberVerificationStatus)
                 .setDisplay("Number present and verified")
                 .setCode("01");
 
         ExtensionDt verificationStatus = new ExtensionDt()
-                .setUrl("https://fhir.hl7.org.uk/StructureDefinition/Extension-CareConnect-NHSNumberVerificationStatus-1")
+                .setUrl(CareConnectSystem.ExtUrlNHSNumberVerificationStatus)
                 .setValue(verificationStatusCode);
         nhsNumber.addUndeclaredExtension(verificationStatus);
 

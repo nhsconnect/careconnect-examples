@@ -32,11 +32,11 @@ public class ExampleMedicationOrder {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
         List<IdDt> profiles = new ArrayList<IdDt>();
-        profiles.add(new IdDt("https://fhir.hl7.org.uk/StructureDefinition/CareConnect-MedicationOrder-1"));
+        profiles.add(new IdDt(CareConnectSystem.ProfileMedicationOrder));
         ResourceMetadataKeyEnum.PROFILES.put(prescription, profiles);
 
         ExtensionDt supplyType = new ExtensionDt();
-        supplyType.setUrl("https://fhir.hl7.org.uk/StructureDefinition/Extension-CareConnect-MedicationSupplyType-1");
+        supplyType.setUrl(CareConnectSystem.ExtUrlMedicationSupplyType);
         CodeableConceptDt supplyCode = new CodeableConceptDt();
         supplyCode.addCoding()
                 .setCode("394823007")

@@ -33,7 +33,7 @@ public class ExampleMedicationStatement {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
         List<IdDt> profiles = new ArrayList<IdDt>();
-        profiles.add(new IdDt("https://fhir.hl7.org.uk/StructureDefinition/CareConnect-MedicationStatement-1"));
+        profiles.add(new IdDt(CareConnectSystem.ProfileMedicationStatement));
         ResourceMetadataKeyEnum.PROFILES.put(statement, profiles);
 
 
@@ -42,7 +42,7 @@ public class ExampleMedicationStatement {
         try {
             lastIssueDate = dateFormat.parse("2017-03-27");
                 lastIssueExtension
-                    .setUrl("https://fhir.hl7.org.uk/StructureDefinition/Extension-CareConnect-MedicationStatementLastIssueDate-1")
+                    .setUrl(CareConnectSystem.ExtUrlMedicationStatementLastIssueDate)
                     .setValue(new DateTimeDt(lastIssueDate));
 
         } catch (ParseException e) {
@@ -54,7 +54,7 @@ public class ExampleMedicationStatement {
         ExtensionDt repeatInfReviewDate = new ExtensionDt();
         ExtensionDt repeatNumberIssues = new ExtensionDt();
         repeatInformation
-                .setUrl("https://fhir.hl7.org.uk/StructureDefinition/Extension-CareConnect-MedicationRepeatInformation-1")
+                .setUrl(CareConnectSystem.ExtUrlMedicationRepeatInformation)
                 .addUndeclaredExtension(repeatInfReviewDate);
 
         Date reviewDate;

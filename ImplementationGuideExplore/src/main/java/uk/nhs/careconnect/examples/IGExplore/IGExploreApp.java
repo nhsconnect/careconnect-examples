@@ -2,18 +2,12 @@ package uk.nhs.careconnect.examples.IGExplore;
 
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.model.dstu2.resource.Medication;
-import ca.uhn.fhir.model.dstu2.resource.MedicationOrder;
-import ca.uhn.fhir.model.dstu2.resource.MedicationStatement;
-import ca.uhn.fhir.model.dstu2.resource.Patient;
+import ca.uhn.fhir.model.dstu2.resource.*;
 import ca.uhn.fhir.parser.IParser;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import uk.nhs.careconnect.examples.fhir.ExampleMedication;
-import uk.nhs.careconnect.examples.fhir.ExampleMedicationOrder;
-import uk.nhs.careconnect.examples.fhir.ExampleMedicationStatement;
-import uk.nhs.careconnect.examples.fhir.ExamplePatient;
+import uk.nhs.careconnect.examples.fhir.*;
 
 @SpringBootApplication
 public class IGExploreApp implements CommandLineRunner {
@@ -44,9 +38,12 @@ public class IGExploreApp implements CommandLineRunner {
         System.out.println(parser.setPrettyPrint(true).encodeResourceToString(prescription));
 
         MedicationStatement
-                statement = ExampleMedicationStatement.buildCareConnectFHIRMedicationStatement();
-        System.out.println(parser.setPrettyPrint(true).encodeResourceToString(statement));
+				statement = ExampleMedicationStatement.buildCareConnectFHIRMedicationStatement();
+		System.out.println(parser.setPrettyPrint(true).encodeResourceToString(statement));
 
+		Immunization
+				immunisation = ExampleImmunization.buildCareConnectFHIRImmunization();
+		System.out.println(parser.setPrettyPrint(true).encodeResourceToString(immunisation));
     }
 
 
