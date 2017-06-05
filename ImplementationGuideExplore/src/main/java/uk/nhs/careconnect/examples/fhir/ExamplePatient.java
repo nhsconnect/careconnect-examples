@@ -98,6 +98,9 @@ public class ExamplePatient {
         patient.setManagingOrganization(new ResourceReferenceDt("https://sds.proxy.nhs.uk/Organization/C81010"));
         patient.getManagingOrganization().setDisplay("Moir Medical Centre");
 
+        patient.addCareProvider()
+                .setDisplay("Dr AA Bhatia")
+                .setReference("https://sds.proxy.nhs.uk/Practitioner/G8133438");
 
         return patient;
     }

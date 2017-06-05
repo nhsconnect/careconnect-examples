@@ -84,3 +84,6 @@ careconnect-hapi-jpa-dstu2-springboot/jpaserver_derby_files/seg0/README_DO_NOT_T
 *.patch
 careconnect-hapi-jpa-dstu2-springboot/server-boot.iml
 careconnect-hapi-jpa-dstu2-springboot/jpaserver_derby_files/service.properties
+careconnect-client/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/inputFiles.lst
+*.lst
+*.class
