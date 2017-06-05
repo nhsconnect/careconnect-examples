@@ -56,12 +56,14 @@ public class ExamplePatient {
                 .setSystem(CareConnectSystem.SystemNHSNumberVerificationStatus)
                 .setDisplay("Number present and verified")
                 .setCode("01");
-
         ExtensionDt verificationStatus = new ExtensionDt()
                 .setUrl(CareConnectSystem.ExtUrlNHSNumberVerificationStatus)
                 .setValue(verificationStatusCode);
         nhsNumber.addUndeclaredExtension(verificationStatus);
 
+        patient.addIdentifier()
+                .setSystem("https://fhir.jorvik.nhs.uk/PAS/Patient")
+                .setValue("123345");
 
         patient.addName()
                 .setUse(NameUseEnum.USUAL)
