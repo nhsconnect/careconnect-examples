@@ -87,3 +87,5 @@ careconnect-hapi-jpa-dstu2-springboot/jpaserver_derby_files/service.properties
 careconnect-client/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/inputFiles.lst
 *.lst
 *.class
+*.jar
+ImplementationGuideExplore/target/maven-archiver/pom.properties

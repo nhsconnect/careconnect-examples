@@ -44,6 +44,10 @@ public class IGExploreApp implements CommandLineRunner {
 		Immunization
 				immunisation = ExampleImmunization.buildCareConnectFHIRImmunization();
 		System.out.println(parser.setPrettyPrint(true).encodeResourceToString(immunisation));
+
+		OrderResponse
+				orderResponse = ExampleOrderResponse.buildFHIROrderResponse();
+		System.out.println(parser.setPrettyPrint(true).encodeResourceToString(orderResponse));
     }
 
 
