@@ -2,6 +2,7 @@ package uk.nhs.careconnect.examples.fhir;
 
 import ca.uhn.fhir.model.api.ResourceMetadataKeyEnum;
 import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
+import ca.uhn.fhir.model.dstu2.composite.HumanNameDt;
 import ca.uhn.fhir.model.dstu2.composite.ResourceReferenceDt;
 import ca.uhn.fhir.model.dstu2.resource.*;
 import ca.uhn.fhir.model.dstu2.valueset.AdministrativeGenderEnum;
@@ -36,12 +37,12 @@ public class ExampleOrderResponse {
         patient.setId("#pat");
 
 
-        patient.addIdentifier().setSystem("https://fhir.nhs.uk/Id/nhs-number").setValue("9876543210");
+       // patient.addIdentifier().setSystem("https://fhir.nhs.uk/Id/nhs-number").setValue("9876543210");
 
 
-        patient.addIdentifier().setSystem("https://fhir.uhs.nhs.uk/CRIS/Patient/").setValue("ABC123");
+       // patient.addIdentifier().setSystem("https://fhir.uhs.nhs.uk/CRIS/Patient/").setValue("ABC123");
         patient.addIdentifier().setSystem("https://fhir.uhs.nhs.uk/PAS/Patient/").setValue("1234DEF");
-        patient.addName().addFamily("Kanfeld").addGiven("Bernie");
+        patient.addName().addFamily("Kanfeld");
         patient.setGender(AdministrativeGenderEnum.FEMALE);
         Date birth;
         try {
@@ -71,6 +72,7 @@ public class ExampleOrderResponse {
 
         Practitioner gp = new Practitioner();
         gp.setId("#prac");
+        gp.setName(new HumanNameDt().addFamily("Example"));
 
         List<IdDt> gpprofiles = new ArrayList<IdDt>();
         gpprofiles.add(new IdDt("https://fhir-test.hl7.org.uk/StructureDefinition/CareConnect-Practitioner-1"));
