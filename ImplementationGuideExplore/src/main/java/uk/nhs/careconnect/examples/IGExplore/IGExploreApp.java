@@ -27,8 +27,12 @@ public class IGExploreApp implements CommandLineRunner {
 		FhirContext ctxFHIR = FhirContext.forDstu2();
         IParser parser = ctxFHIR.newXmlParser();
 
-        Patient patient = ExamplePatient.buildCareConnectFHIRPatient();
+        Patient patient = ExamplePatientCSV.buildCareConnectFHIRPatient();
+		System.out.println(parser.setPrettyPrint(true).encodeResourceToString(patient));
 
+		/*
+
+		Patient patient = ExamplePatient.buildCareConnectFHIRPatient();
 		System.out.println(parser.setPrettyPrint(true).encodeResourceToString(patient));
 
 		Medication medication = ExampleMedication.buildCareConnectFHIRMedication();
@@ -48,6 +52,7 @@ public class IGExploreApp implements CommandLineRunner {
 		OrderResponse
 				orderResponse = ExampleOrderResponse.buildFHIROrderResponse();
 		System.out.println(parser.setPrettyPrint(true).encodeResourceToString(orderResponse));
+		*/
     }
 
 
