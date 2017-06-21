@@ -2,12 +2,12 @@ package uk.nhs.careconnect.examples.IGExplore;
 
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.model.dstu2.resource.*;
+import ca.uhn.fhir.model.dstu2.resource.MedicationOrder;
 import ca.uhn.fhir.parser.IParser;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import uk.nhs.careconnect.examples.fhir.*;
+import uk.nhs.careconnect.examples.fhir.ExampleMedicationOrderDb;
 
 @SpringBootApplication
 public class IGExploreApp implements CommandLineRunner {
@@ -26,11 +26,9 @@ public class IGExploreApp implements CommandLineRunner {
 
 		FhirContext ctxFHIR = FhirContext.forDstu2();
         IParser parser = ctxFHIR.newXmlParser();
-
+		/*
         Patient patient = ExamplePatientCSV.buildCareConnectFHIRPatient();
 		System.out.println(parser.setPrettyPrint(true).encodeResourceToString(patient));
-
-		/*
 
 		Patient patient = ExamplePatient.buildCareConnectFHIRPatient();
 		System.out.println(parser.setPrettyPrint(true).encodeResourceToString(patient));
@@ -53,6 +51,8 @@ public class IGExploreApp implements CommandLineRunner {
 				orderResponse = ExampleOrderResponse.buildFHIROrderResponse();
 		System.out.println(parser.setPrettyPrint(true).encodeResourceToString(orderResponse));
 		*/
+
+		MedicationOrder prescription = ExampleMedicationOrderDb.buildCareConnectFHIRMedicationOrderBristol();
     }
 
 

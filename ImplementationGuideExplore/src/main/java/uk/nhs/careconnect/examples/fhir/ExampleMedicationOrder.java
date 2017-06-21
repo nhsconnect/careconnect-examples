@@ -23,6 +23,7 @@ import java.util.List;
  */
 public class ExampleMedicationOrder {
 
+
     public static MedicationOrder buildCareConnectFHIRMedicationOrder() {
 
         //http://dmd.medicines.org.uk/DesktopDefault.aspx?VMP=10097211000001102&toc=nofloat
