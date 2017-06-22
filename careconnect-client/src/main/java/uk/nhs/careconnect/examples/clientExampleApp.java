@@ -29,9 +29,6 @@ public class clientExampleApp implements CommandLineRunner {
             throw new Exception();
         }
 
-
-
-
         // Create a FHIR Context
         FhirContext ctx = FhirContext.forDstu2();
         IParser parser = ctx.newXmlParser();
@@ -39,19 +36,8 @@ public class clientExampleApp implements CommandLineRunner {
         // Create a client and post the transaction to the server
         IGenericClient client = ctx.newRestfulGenericClient("http://127.0.0.1:8181/Dstu2/");
 
-        System.out.println("GET http://127.0.0.1:8181/Dstu2/Patient?birthdate=1998-03-19&given=bernie&family=kanfeld");
-        Bundle results = client
-                .search()
-                .forResource(Patient.class)
-                .where(Patient.FAMILY.matches().value("kanfeld"))
-                .and(Patient.GIVEN.matches().value("bernie"))
-                .and(Patient.BIRTHDATE.exactly().day("1998-03-19"))
-                .returnBundle(Bundle.class)
-                .execute();
-        System.out.println(parser.setPrettyPrint(true).encodeResourceToString(results));
-
         System.out.println("GET http://127.0.0.1:8181/Dstu2/Patient?identifier=https://fhir.nhs.uk/Id/nhs-number|9876543210");
-        results = client
+        Bundle results = client
                 .search()
                 .forResource(Patient.class)
                 .where(Patient.IDENTIFIER.exactly().systemAndCode("https://fhir.nhs.uk/Id/nhs-number", "9876543210"))
@@ -59,36 +45,28 @@ public class clientExampleApp implements CommandLineRunner {
                 .execute();
         System.out.println(parser.setPrettyPrint(true).encodeResourceToString(results));
 
-
         if (results.getEntry().size() > 0) {
             // Process first patient only.
             Patient patient = (Patient) results.getEntry().get(0).getResource();
-            System.out.println("GET http://[baseUrl]/Organization?identifier=https://fhir.nhs.uk/Id/ods-organization-code|C81010");
+            System.out.println("GET http://[baseUrl]/Organization24967");
 
-            // Assume Organisation Id is SDS/ODS Code
             System.out.println();
-            Bundle organisationResults = client
-                    .search()
-                    .forResource(Organization.class)
-                    .where(Organization.IDENTIFIER.exactly().systemAndCode("https://fhir.nhs.uk/Id/ods-organization-code",patient.getManagingOrganization().getReference().getIdPart()))
-                    .returnBundle(Bundle.class)
-                    .execute();
-            System.out.println(parser.setPrettyPrint(true).encodeResourceToString(organisationResults));
-
-            if (patient.getCareProvider().size() > 0) {
-                System.out.println("GET http://[baseUrl]/Practitoner?identifier=https://fhir.nhs.uk/Id/sds-user-id|G8133438");
-                Bundle gpResults = client
-                        .search()
-                        .forResource(Practitioner.class)
-                        .where(Practitioner.IDENTIFIER.exactly().systemAndCode("https://fhir.nhs.uk/Id/sds-user-id", patient.getCareProvider().get(0).getReference().getIdPart()))
-                        .returnBundle(Bundle.class)
+            if (patient.getManagingOrganization() != null) {
+                Organization surgery = client
+                        .read()
+                        .resource(Organization.class)
+                        .withId(patient.getManagingOrganization().getReference().getValue())
                         .execute();
-                System.out.println(parser.setPrettyPrint(true).encodeResourceToString(gpResults));
-
-
-
-                Organization gpPractice = (Organization) client.read().resource(Organization.class).withId("24965").execute();
-                System.out.println(parser.setPrettyPrint(true).encodeResourceToString(gpPractice));
+                System.out.println(parser.setPrettyPrint(true).encodeResourceToString(surgery));
+            }
+            if (patient.getCareProvider().size() > 0) {
+                System.out.println("GET http://[baseUrl]/Practitoner/24965");
+                Practitioner gp= client
+                        .read()
+                        .resource(Practitioner.class)
+                        .withId(patient.getCareProvider().get(0).getReference().getValue())
+                        .execute();
+                System.out.println(parser.setPrettyPrint(true).encodeResourceToString(gp));
             }
 
         }
