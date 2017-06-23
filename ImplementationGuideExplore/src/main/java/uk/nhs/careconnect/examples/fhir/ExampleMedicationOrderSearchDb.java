@@ -10,6 +10,7 @@ import ca.uhn.fhir.model.dstu2.resource.Bundle;
 import ca.uhn.fhir.model.dstu2.resource.MedicationOrder;
 import ca.uhn.fhir.model.dstu2.resource.MedicationStatement;
 import ca.uhn.fhir.model.dstu2.resource.Patient;
+import ca.uhn.fhir.model.dstu2.valueset.BundleTypeEnum;
 import ca.uhn.fhir.model.dstu2.valueset.MedicationOrderStatusEnum;
 import ca.uhn.fhir.model.primitive.DateTimeDt;
 import ca.uhn.fhir.model.primitive.IdDt;
@@ -26,7 +27,7 @@ import java.util.List;
 /**
  * Created by kevinmayfield on 26/05/2017.
  */
-public class ExampleMedicationOrderDb {
+public class ExampleMedicationOrderSearchDb {
 
 
     public static void medicationOrderQueryExample()
@@ -131,8 +132,12 @@ public class ExampleMedicationOrderDb {
 
         dosage.setDose(quantity);
 
-        System.out.println(parser.setPrettyPrint(true).encodeResourceToString(prescription));
+        Bundle bundle = new Bundle();
+        bundle.setTotal(1);
+        bundle.setType(BundleTypeEnum.SEARCH_RESULTS);
+        bundle.addEntry().setFullUrl("[baseUrl]/MedicationOrder/24966").setResource(prescription);
 
+        System.out.println(parser.setPrettyPrint(true).encodeResourceToString(bundle));
         return prescription;
     }
 }
