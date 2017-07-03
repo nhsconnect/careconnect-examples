@@ -30,6 +30,7 @@ import java.util.List;
 public class ExampleMedicationOrderSearchDb {
 
 
+
     public static void medicationOrderQueryExample()
     {
         FhirContext ctx = FhirContext.forDstu2();
@@ -37,6 +38,7 @@ public class ExampleMedicationOrderSearchDb {
 
         // Create a client and post the transaction to the server
         IGenericClient client = ctx.newRestfulGenericClient("http://127.0.0.1:8181/Dstu2/");
+
 
         // GET [baseUrl]\Patient?identifier=https://fhir.nhs.uk/Id/nhs-number|9439676165
         Bundle results = client
