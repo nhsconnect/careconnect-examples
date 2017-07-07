@@ -1,11 +1,8 @@
-package uk.nhs.careconnect.examples.IGExplore;
+package uk.nhs.careconnect.examples.App;
 
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.model.dstu2.resource.MedicationOrder;
-import ca.uhn.fhir.model.dstu2.resource.Organization;
-import ca.uhn.fhir.model.dstu2.resource.Patient;
-import ca.uhn.fhir.model.dstu2.resource.Practitioner;
+import ca.uhn.fhir.model.dstu2.resource.*;
 import ca.uhn.fhir.model.dstu2.valueset.AdministrativeGenderEnum;
 import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.rest.api.MethodOutcome;
@@ -13,16 +10,13 @@ import ca.uhn.fhir.rest.client.IGenericClient;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import uk.nhs.careconnect.examples.fhir.CareConnectMedicationOrder;
-import uk.nhs.careconnect.examples.fhir.CareConnectOrganisation;
-import uk.nhs.careconnect.examples.fhir.CareConnectPatient;
-import uk.nhs.careconnect.examples.fhir.CareConnectPractitioner;
+import uk.nhs.careconnect.examples.fhir.*;
 
 @SpringBootApplication
-public class IGExploreApp implements CommandLineRunner {
+public class IGExplore implements CommandLineRunner {
 
 	public static void main(String[] args) {
-		SpringApplication.run(IGExploreApp.class, args);
+		SpringApplication.run(IGExplore.class, args);
 	}
 
 
@@ -81,7 +75,7 @@ public class IGExploreApp implements CommandLineRunner {
         Practitioner gp2 = CareConnectPractitioner.buildCareConnectPractitioner(
                 "G8650149",
                 "Swamp",
-                "Kevin",
+                "Karren",
                 "Dr.",
                 AdministrativeGenderEnum.MALE,
                 "0115 9737320",
@@ -121,6 +115,23 @@ public class IGExploreApp implements CommandLineRunner {
         prescription.setId(outcome.getId());
         System.out.println(outcome.getId().getValue());
 
+        MedicationStatement medicationSummary = CareConnectMedicationStatement.buildCareConnectMedicationStatement(patient,gp2);
+        System.out.println(parser.setPrettyPrint(true).encodeResourceToString(medicationSummary));
+        outcome = client.update().resource(medicationSummary)
+                .conditionalByUrl("MedicationStatement?identifier="+medicationSummary.getIdentifier().get(0).getSystem()+"%7C"+medicationSummary.getIdentifier().get(0).getValue())
+                .execute();
+        medicationSummary.setId(outcome.getId());
+        System.out.println(outcome.getId().getValue());
+
+
+        Immunization
+                immunisation = CareConnectImmunization.buildCareConnectImmunization(patient, gp);
+        System.out.println(parser.setPrettyPrint(true).encodeResourceToString(immunisation));
+        outcome = client.update().resource(immunisation)
+                .conditionalByUrl("Immunization?identifier="+immunisation.getIdentifier().get(0).getSystem()+"%7C"+immunisation.getIdentifier().get(0).getValue())
+                .execute();
+        immunisation.setId(outcome.getId());
+        System.out.println(outcome.getId().getValue());
 
         /*
 
@@ -128,26 +139,10 @@ public class IGExploreApp implements CommandLineRunner {
 		Medication medication = ExampleMedication.buildCareConnectFHIRMedication();
 		System.out.println(parser.setPrettyPrint(true).encodeResourceToString(medication));
 
-
-
-        MedicationStatement
-				statement = CareConnectMedicationStatement.buildCareConnectFHIRMedicationStatement();
-		System.out.println(parser.setPrettyPrint(true).encodeResourceToString(statement));
-
-		Immunization
-				immunisation = ExampleImmunization.buildCareConnectFHIRImmunization();
-		System.out.println(parser.setPrettyPrint(true).encodeResourceToString(immunisation));
-
 		OrderResponse
 				orderResponse = ExampleOrderResponse.buildFHIROrderResponse();
 		System.out.println(parser.setPrettyPrint(true).encodeResourceToString(orderResponse));
 
-
-
-		MedicationStatement
-				statement = ExampleMedicationStatementSearchDb.buildCareConnectFHIRMedicationStatement();
-
-		MedicationOrder prescription = ExampleMedicationOrderSearchDb.buildCareConnectFHIRMedicationOrderBristol();
 		*/
 
     }

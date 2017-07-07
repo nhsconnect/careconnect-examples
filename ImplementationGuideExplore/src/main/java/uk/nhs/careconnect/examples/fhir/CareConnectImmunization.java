@@ -5,6 +5,8 @@ import ca.uhn.fhir.model.api.ResourceMetadataKeyEnum;
 import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
 import ca.uhn.fhir.model.dstu2.composite.ResourceReferenceDt;
 import ca.uhn.fhir.model.dstu2.resource.Immunization;
+import ca.uhn.fhir.model.dstu2.resource.Patient;
+import ca.uhn.fhir.model.dstu2.resource.Practitioner;
 import ca.uhn.fhir.model.primitive.DateDt;
 import ca.uhn.fhir.model.primitive.DateTimeDt;
 import ca.uhn.fhir.model.primitive.IdDt;
@@ -19,9 +21,9 @@ import java.util.List;
 /**
  * Created by kevinmayfield on 26/05/2017.
  */
-public class ExampleImmunization {
+public class CareConnectImmunization {
 
-    public static Immunization buildCareConnectFHIRImmunization()
+    public static Immunization buildCareConnectImmunization(Patient patient, Practitioner gp)
     {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -44,6 +46,10 @@ public class ExampleImmunization {
         }
         immunisation.addUndeclaredExtension(dateRecorded);
 
+        immunisation.addIdentifier()
+                .setSystem("https://fhir.bristolccg.nhs.uk/DW/Immunization")
+                .setValue("6bf79485-cdd5-4a20-8e4a-4bf13aba33e6");
+
         immunisation.setStatus("in-progress");
         Date immDate;
         try {
@@ -61,14 +67,14 @@ public class ExampleImmunization {
 
         immunisation.setVaccineCode(drugCode);
 
-        immunisation.setPatient(new ResourceReferenceDt("https://pds.proxy.nhs.uk/Patient/9876543210"));
-        immunisation.getPatient().setDisplay("Bernie Kanfeld");
+        immunisation.setPatient(new ResourceReferenceDt(patient.getId().getValue()));
+        immunisation.getPatient().setDisplay(patient.getName().get(0).getNameAsSingleString());
 
         immunisation.setWasNotGiven(false);
         immunisation.setReported(false);
 
-        immunisation.setPerformer(new ResourceReferenceDt("https://sds.proxy.nhs.uk/Practitioner/G8133438"));
-        immunisation.getPerformer().setDisplay("Dr AA Bhatia");
+        immunisation.setPerformer(new ResourceReferenceDt(gp.getId().getValue()));
+        immunisation.getPerformer().setDisplay(gp.getName().getNameAsSingleString());
 
         immunisation.setLotNumber("63259874");
         Date expirationDate;

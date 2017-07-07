@@ -3,11 +3,13 @@ package uk.nhs.careconnect.examples.fhir;
 import ca.uhn.fhir.model.api.ExtensionDt;
 import ca.uhn.fhir.model.api.ResourceMetadataKeyEnum;
 import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
+import ca.uhn.fhir.model.dstu2.composite.PeriodDt;
 import ca.uhn.fhir.model.dstu2.composite.ResourceReferenceDt;
-import ca.uhn.fhir.model.dstu2.composite.TimingDt;
+import ca.uhn.fhir.model.dstu2.composite.SimpleQuantityDt;
 import ca.uhn.fhir.model.dstu2.resource.MedicationStatement;
+import ca.uhn.fhir.model.dstu2.resource.Patient;
+import ca.uhn.fhir.model.dstu2.resource.Practitioner;
 import ca.uhn.fhir.model.dstu2.valueset.MedicationStatementStatusEnum;
-import ca.uhn.fhir.model.dstu2.valueset.TimingAbbreviationEnum;
 import ca.uhn.fhir.model.primitive.DateTimeDt;
 import ca.uhn.fhir.model.primitive.IdDt;
 import ca.uhn.fhir.model.primitive.IntegerDt;
@@ -24,7 +26,7 @@ import java.util.List;
  */
 public class CareConnectMedicationStatement {
 
-    public static MedicationStatement buildCareConnectFHIRMedicationStatement() {
+    public static MedicationStatement buildCareConnectMedicationStatement(Patient patient, Practitioner gp) {
 
         //http://dmd.medicines.org.uk/DesktopDefault.aspx?VMP=10097211000001102&toc=nofloat
 
@@ -72,18 +74,20 @@ public class CareConnectMedicationStatement {
                 .setValue(new IntegerDt("3"));
         repeatInformation.addUndeclaredExtension(repeatNumberIssues);
 
-
+        statement.addIdentifier()
+                .setSystem("https://fhir.bristolccg.nhs.uk/DW/MedicationStatement")
+                .setValue("6b9c746e-4cce-4f5c-a2a7-0fd156dd57ac");
         statement.addUndeclaredExtension(repeatInformation);
 
 
-        statement.setPatient(new ResourceReferenceDt("https://pds.proxy.nhs.uk/Patient/9876543210"));
-        statement.getPatient().setDisplay("Bernie Kanfeld");
+        statement.setPatient(new ResourceReferenceDt(patient.getId().getValue()));
+        statement.getPatient().setDisplay(patient.getName().get(0).getNameAsSingleString());
 
         CodeableConceptDt drugCode = new CodeableConceptDt();
         drugCode.addCoding()
-                .setCode("10097211000001102")
+                .setCode("321153009")
                 .setSystem(CareConnectSystem.SNOMEDCT)
-                .setDisplay("Insulin glulisine 100units/ml solution for injection 3ml pre-filled disposable devices");
+                .setDisplay("Temazepam Tablets 20 mg");
 
         statement.setMedication(drugCode);
 
@@ -95,37 +99,42 @@ public class CareConnectMedicationStatement {
             e.printStackTrace();
         }
         statement.getInformationSource()
-                .setReference("https://sds.proxy.nhs.uk/Practitioner/G8040738")
-                .setDisplay("Dr AD Jordan");
+                .setReference(gp.getId().getValue())
+                .setDisplay(gp.getName().getNameAsSingleString());
 
         statement.setStatus(MedicationStatementStatusEnum.ACTIVE);
 
-        // This may not be workable, this list may be huge. Better option may be to query MedicationOrder for each Statement
 
-        statement.addSupportingInformation().setReference("MedicationOrder/1710523");
-       // statement.addSupportingInformation().setReference("MedicationOrder/123123");
-        statement.addSupportingInformation().setReference("MedicationOrder/1232131123");
+        statement.setMedication(drugCode);
+
+        PeriodDt period = new PeriodDt();
+        Date startDate;
+        Date endDate;
+        try {
+            startDate = dateFormat.parse("1995-09-02");
+            endDate = dateFormat.parse("2001-08-20");
+            period.setStart(new DateTimeDt(startDate));
+            period.setEnd(new DateTimeDt(endDate));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        statement.setEffective(period);
+
+
 
         MedicationStatement.Dosage
                 dosage = statement.addDosage();
+        dosage.setText("1on"); // Field: Dosage
+
+        SimpleQuantityDt quantity = new SimpleQuantityDt();
+        quantity.setValue(60); // Field: Quantity
+        quantity.setSystem(CareConnectSystem.SNOMEDCT);
+        quantity.setCode("428673006");
+        quantity.setUnit("tablets"); // Field: Quantity Units
+
+        dosage.setQuantity(quantity);
 
         CodeableConceptDt additionalIns = new CodeableConceptDt();
-
-        /*
-        additionalIns.addCoding()
-                .setCode("1521000175104")
-                .setSystem(CareConnectSystem.SNOMEDCT)
-                .setDisplay("After dinner");
-        dosage.set
-                //setAdditionalInstructions(additionalIns);
-        */
-        TimingDt timing = new TimingDt();
-        timing.setCode(TimingAbbreviationEnum.TID);
-        dosage.setTiming(timing);
-        dosage.setText("Three times a day");
-
-        //MedicationOrder.DispenseRequest dispenseRequest = new MedicationOrder.DispenseRequest();
-        //dispenseRequest.setNumberOfRepeatsAllowed(5);
 
 
         return statement;
