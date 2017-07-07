@@ -6,6 +6,8 @@ import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
 import ca.uhn.fhir.model.dstu2.composite.ResourceReferenceDt;
 import ca.uhn.fhir.model.dstu2.composite.TimingDt;
 import ca.uhn.fhir.model.dstu2.resource.MedicationOrder;
+import ca.uhn.fhir.model.dstu2.resource.Patient;
+import ca.uhn.fhir.model.dstu2.resource.Practitioner;
 import ca.uhn.fhir.model.dstu2.valueset.MedicationOrderStatusEnum;
 import ca.uhn.fhir.model.dstu2.valueset.TimingAbbreviationEnum;
 import ca.uhn.fhir.model.primitive.DateTimeDt;
@@ -21,10 +23,10 @@ import java.util.List;
 /**
  * Created by kevinmayfield on 26/05/2017.
  */
-public class ExampleMedicationOrder {
+public class CareConnectMedicationOrder {
 
 
-    public static MedicationOrder buildCareConnectFHIRMedicationOrder() {
+    public static MedicationOrder buildCareConnectMedicationOrder(Patient patient, Practitioner prescriber) {
 
         //http://dmd.medicines.org.uk/DesktopDefault.aspx?VMP=10097211000001102&toc=nofloat
 
@@ -46,8 +48,12 @@ public class ExampleMedicationOrder {
         supplyType.setValue(supplyCode);
         prescription.addUndeclaredExtension(supplyType);
 
-        prescription.setPatient(new ResourceReferenceDt("https://pds.proxy.nhs.uk/Patient/9876543210"));
-        prescription.getPatient().setDisplay("Bernie Kanfeld");
+
+        prescription.addIdentifier()
+                .setSystem("https://fhir.bristolccg.nhs.uk/DW/MedicationOrder")
+                .setValue("6bf79485-cee5-4a20-8e4a-4bf13aba33e6");
+        prescription.setPatient(new ResourceReferenceDt(patient.getId().getValue()));
+        prescription.getPatient().setDisplay(patient.getName().get(0).getNameAsSingleString());
 
         Date issueDate;
         try {
@@ -59,8 +65,8 @@ public class ExampleMedicationOrder {
 
         prescription.setStatus(MedicationOrderStatusEnum.ACTIVE);
 
-        prescription.setPrescriber(new ResourceReferenceDt("https://sds.proxy.nhs.uk/Practitioner/G8133438"));
-        prescription.getPrescriber().setDisplay("Dr AA Bhatia");
+        prescription.setPrescriber(new ResourceReferenceDt(prescriber.getId().getValue()));
+        prescription.getPrescriber().setDisplay(prescriber.getName().getNameAsSingleString());
 
         prescription.setNote("Please explain to Bernie how to use injector.");
 

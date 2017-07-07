@@ -4,9 +4,13 @@ import ca.uhn.fhir.model.api.ExtensionDt;
 import ca.uhn.fhir.model.api.ResourceMetadataKeyEnum;
 import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
 import ca.uhn.fhir.model.dstu2.composite.IdentifierDt;
+import ca.uhn.fhir.model.dstu2.composite.ResourceReferenceDt;
+import ca.uhn.fhir.model.dstu2.resource.Organization;
 import ca.uhn.fhir.model.dstu2.resource.Patient;
+import ca.uhn.fhir.model.dstu2.resource.Practitioner;
 import ca.uhn.fhir.model.dstu2.valueset.AddressUseEnum;
 import ca.uhn.fhir.model.dstu2.valueset.AdministrativeGenderEnum;
+import ca.uhn.fhir.model.dstu2.valueset.MaritalStatusCodesEnum;
 import ca.uhn.fhir.model.dstu2.valueset.NameUseEnum;
 import ca.uhn.fhir.model.primitive.DateDt;
 import ca.uhn.fhir.model.primitive.IdDt;
@@ -21,12 +25,11 @@ import java.util.List;
 /**
  * Created by kevinmayfield on 26/05/2017.
  */
-public class ExamplePatientCSV {
+public class CareConnectPatient {
 
-    public static Patient buildCareConnectFHIRPatient()
+    public static Patient buildCareConnectPatientCSV(String csvLine, Organization practice, Practitioner gp)
     {
 
-        String csvLine ="British - Mixed British,01,9876543210,Number present and verified,01,Kanfeld,Bernie,Miss,10 Field Jardin,Long Eaton,Nottingham,NG10 1ZZ,1,1998-03-19";
 
         String[] csvArray = csvLine.split(",");
 
@@ -90,6 +93,9 @@ public class ExamplePatientCSV {
                 patient.setGender(AdministrativeGenderEnum.UNKNOWN);
         }
 
+        patient.setMaritalStatus(MaritalStatusCodesEnum.S);
+        // HAPI doesn't add in the display text. It is mandatory in the profile
+        patient.getMaritalStatus().getCoding().get(0).setDisplay("Never Married");
 
         Date birth;
         try {
@@ -98,6 +104,13 @@ public class ExamplePatientCSV {
         } catch (ParseException e) {
             e.printStackTrace();
         }
+
+        patient.setManagingOrganization(new ResourceReferenceDt(practice.getId().getValue()));
+        patient.getManagingOrganization().setDisplay(practice.getName());
+
+        patient.addCareProvider()
+                .setDisplay(gp.getName().getNameAsSingleString())
+                .setReference(gp.getId().getValue());
 
         return patient;
     }

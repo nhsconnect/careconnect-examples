@@ -103,9 +103,9 @@ public class ExamplePatient {
                 .setValue(verificationStatusCode);
         nhsNumber.addUndeclaredExtension(verificationStatus);
 
-        patient.addIdentifier()
-                .setSystem("https://fhir.jorvik.nhs.uk/PAS/Patient")
-                .setValue("123345");
+       // patient.addIdentifier()
+       //         .setSystem("https://fhir.jorvik.nhs.uk/PAS/Patient")
+       //         .setValue("123345");
 
         patient.addName()
                 .setUse(NameUseEnum.USUAL)
