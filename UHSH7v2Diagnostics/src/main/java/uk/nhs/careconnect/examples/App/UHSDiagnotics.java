@@ -2,10 +2,16 @@ package uk.nhs.careconnect.examples.App;
 
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.model.dstu2.resource.DiagnosticReport;
+import ca.uhn.fhir.model.api.ResourceMetadataKeyEnum;
+import ca.uhn.fhir.model.dstu2.composite.QuantityDt;
+import ca.uhn.fhir.model.dstu2.composite.ResourceReferenceDt;
+import ca.uhn.fhir.model.dstu2.composite.SimpleQuantityDt;
+import ca.uhn.fhir.model.dstu2.resource.*;
 import ca.uhn.fhir.model.dstu2.valueset.DiagnosticReportStatusEnum;
+import ca.uhn.fhir.model.primitive.IdDt;
 import ca.uhn.fhir.model.primitive.InstantDt;
 import ca.uhn.fhir.parser.IParser;
+import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.IGenericClient;
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.Message;
@@ -16,8 +22,11 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @SpringBootApplication
 public class UHSDiagnotics implements CommandLineRunner {
@@ -54,6 +63,12 @@ public class UHSDiagnotics implements CommandLineRunner {
 		// HAPI Terser example https://sourceforge.net/p/hl7api/code/764/tree/releases/2.0/hapi-examples/src/main/java/ca/uhn/hl7v2/examples/ExampleUseTerser.java#l72
 
 		// Ringholm hl7v2 to fhir mapping http://www.ringholm.com/docs/04350_mapping_HL7v2_FHIR.htm
+
+        String LabCodeSystem = "https://fhir.uhs.nhs.uk/HICSS/CodeSystem";
+        String SystemNHSNumber = "https://fhir.nhs.uk/Id/nhs-number";
+
+        // This is to base HAPI server not the CareConnectAPI
+        String serverBase = "http://127.0.0.1:8080/FHIRServer/DSTU2/";
 
 		String msg = "MSH|^~\\&|HICSS|eQuest|ROUTE|ROUTE|20170425042348||ORU^R01|22392142__20170425042348|D|2.4|||AL|AL\r"
 				+ "PID|1||0772951\r"
@@ -95,54 +110,186 @@ public class UHSDiagnotics implements CommandLineRunner {
 		SimpleDateFormat  fmt = new SimpleDateFormat("yyyyMMddHHmmss");
 
 
-
-		// This is to base HAPI server not the CareConnectAPI
-		String serverBase = "http://127.0.0.1:8080/FHIRServer/DSTU2/";
-
 		IGenericClient client = ctxFHIR.newRestfulGenericClient(serverBase);
 
-		DiagnosticReport report = new DiagnosticReport();
-		report.addIdentifier()
-				.setSystem("https://fhir.uhs.nhs.uk/HICSS/DiagnosticReport")
-				.setValue(terser.get("/.OBR-3-1"));
-		report.setStatus(DiagnosticReportStatusEnum.FINAL);
+        Bundle results = client
+                .search()
+                .forResource(Patient.class)
+                .where(Patient.IDENTIFIER.exactly().systemAndCode(SystemNHSNumber,"9876543210"))
+                .returnBundle(ca.uhn.fhir.model.dstu2.resource.Bundle.class)
+                .execute();
+        // Unsafe !!
+        // We need to find the Id of the Patient to add a reference to the new FHIR resources.
+        Patient patient= (Patient) results.getEntry().get(0).getResource();
 
-		System.out.println("Time: "+terser.get("/.OBR-7-1"));
-		try {
-			Date date;
-			date = fmt.parse(terser.get("/.OBR-7-1"));
-			InstantDt instance = new InstantDt(date);
-			report.setIssued(instance);
 
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-		}
-
-		Integer orderNum=0;
 		String result =null;
+        MethodOutcome outcome = null;
+
+        DiagnosticOrder order = new DiagnosticOrder();
+
+        List<IdDt> orderprofiles = new ArrayList<IdDt>();
+        orderprofiles.add(new IdDt("https://fhir.nhs.uk/StructureDefinition/dds-request-1-0"));
+        ResourceMetadataKeyEnum.PROFILES.put(order, orderprofiles);
+
+        order.setSubject(new ResourceReferenceDt(patient.getId()));
+        // First pass of HL7v2 message
+        Integer orderNum=0;
+        do
+        {
+
+            if (order.getIdentifier().size() == 0)
+            {
+                order.addIdentifier()
+                        .setSystem("https://fhir.uhs.nhs.uk/HICSS/DiagnosticOrder")
+                        .setValue(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION("+orderNum+")/OBR-3-1"));
+            }
+
+
+            DiagnosticOrder.Item orderItem = new DiagnosticOrder.Item();
+            orderItem.getCode().addCoding()
+                    .setSystem(LabCodeSystem)
+                    .setCode(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION("+orderNum+")/OBR-4-1"))
+                    .setDisplay(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION("+orderNum+")/OBR-4-2"));
+            order.getItem().add(orderItem);
+
+            orderNum++;
+            result = terserGet("/PATIENT_RESULT/ORDER_OBSERVATION("+orderNum+")/OBSERVATION(0)/OBX-3-1");
+        } while (result != null );
+
+        System.out.println(FHIRparser.setPrettyPrint(true).encodeResourceToString(order));
+        // Now post the referenced order
+        outcome = client.update().resource(order)
+                .conditionalByUrl("DiagnosticOrder?identifier="+order.getIdentifier().get(0).getSystem()+"%7C"+order.getIdentifier().get(0).getValue())
+                .execute();
+        order.setId(outcome.getId());
+        System.out.println(outcome.getId().getValue());
+
+
+
+        // Second pass of HL7v2 message
+        orderNum=0;
 		do
 		{
+            DiagnosticReport report = new DiagnosticReport();
+
+
+            List<IdDt> profiles = new ArrayList<IdDt>();
+            profiles.add(new IdDt("https://fhir.nhs.uk/StructureDefinition/dds-report-1-0"));
+            ResourceMetadataKeyEnum.PROFILES.put(report, profiles);
+
+            report.addIdentifier()
+                    .setSystem("https://fhir.uhs.nhs.uk/HICSS/DiagnosticReport")
+                    .setValue(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION("+orderNum+")/OBR-3-1")+"-"+terser.get("/PATIENT_RESULT/ORDER_OBSERVATION("+orderNum+")/OBR-4-1"));
+
+
+            report.setStatus(DiagnosticReportStatusEnum.FINAL);
+
+            report.setSubject(new ResourceReferenceDt(patient.getId().getValue()));
+
+            report.getRequest().add(new ResourceReferenceDt(order.getId().getValue()));
+
+            report.getCode().addCoding()
+                    .setSystem(LabCodeSystem)
+                    .setCode(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION("+orderNum+")/OBR-4-1"))
+                    .setDisplay(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION("+orderNum+")/OBR-4-2"));
+
+
+            try {
+                Date date;
+                date = fmt.parse(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION("+orderNum+")/OBR-7-1"));
+                InstantDt instance = new InstantDt(date);
+                report.setIssued(instance);
+
+            } catch (Exception e1) {
+                // TODO Auto-generated catch block
+            }
+
+
+
+
 			Integer observationNo=0;
 			do {
 				result = terserGet("/PATIENT_RESULT/ORDER_OBSERVATION("+orderNum+")/OBSERVATION("+observationNo+")/OBX-3-1");
 				if (result !=null) {
-					System.out.println("/PATIENT_RESULT/ORDER_OBSERVATION("+orderNum+")/OBSERVATION("+observationNo+")/OBX-3-1 = " +result);
+                    Observation observation = new Observation();
+
+                    observation.addIdentifier()
+                            .setSystem("https://fhir.uhs.nhs.uk/HICSS/Observation")
+                            .setValue(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION("+orderNum+")/OBR-3-1")+"-"+terser.get("/PATIENT_RESULT/ORDER_OBSERVATION("+orderNum+")/OBSERVATION("+observationNo+")/OBX-3-1"));
+
+                    observation.setSubject(new ResourceReferenceDt(patient.getId().getValue()));
+                    observation.getCode().addCoding()
+                            .setDisplay(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION("+orderNum+")/OBSERVATION("+observationNo+")/OBX-3-2"))
+                            .setSystem(LabCodeSystem)
+                            .setCode(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION("+orderNum+")/OBSERVATION("+observationNo+")/OBX-3-1"));
+
+                    // Not converted unit and code correctly.
+
+                    observation.setValue(
+                            new QuantityDt()
+                                    .setValue(new BigDecimal(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION("+orderNum+")/OBSERVATION("+observationNo+")/OBX-5-1")))
+                                    .setUnit(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION("+orderNum+")/OBSERVATION("+observationNo+")/OBX-6-1"))
+                                    .setSystem("http://unitsofmeasure.org")
+                                    .setCode(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION("+orderNum+")/OBSERVATION("+observationNo+")/OBX-6-1")));
+
+                    if (terser.get("/PATIENT_RESULT/ORDER_OBSERVATION("+orderNum+")/OBSERVATION("+observationNo+")/OBX-7-1") != null) {
+                        String[] highlow = terser.get("/PATIENT_RESULT/ORDER_OBSERVATION("+orderNum+")/OBSERVATION("+observationNo+")/OBX-7-1").split("-");
+                        BigDecimal low = new BigDecimal(highlow[0]);
+                        BigDecimal high = new BigDecimal(highlow[1]);
+                        observation.addReferenceRange()
+                                .setLow(new SimpleQuantityDt(low.floatValue(),"http://unitsofmeasure.org",terser.get("/PATIENT_RESULT/ORDER_OBSERVATION("+orderNum+")/OBSERVATION("+observationNo+")/OBX-6-1")))
+                                .setHigh(new SimpleQuantityDt(high.floatValue(),"http://unitsofmeasure.org",terser.get("/PATIENT_RESULT/ORDER_OBSERVATION("+orderNum+")/OBSERVATION("+observationNo+")/OBX-6-1")));
+                    }
+                    if (terser.get("/PATIENT_RESULT/ORDER_OBSERVATION("+orderNum+")/OBSERVATION("+observationNo+")/OBX-8-1") != null) {
+                        switch (terser.get("/PATIENT_RESULT/ORDER_OBSERVATION("+orderNum+")/OBSERVATION("+observationNo+")/OBX-8-1")) {
+                            case "H":
+                                observation.getInterpretation().addCoding().setCode("H").setSystem("http://hl7.org/fhir/v2/0078").setDisplay("High");
+                                break;
+                            case "N":
+                                observation.getInterpretation().addCoding().setCode("N").setSystem("http://hl7.org/fhir/v2/0078").setDisplay("Normal");
+                                break;
+                            case "L":
+                                observation.getInterpretation().addCoding().setCode("L").setSystem("http://hl7.org/fhir/v2/0078").setDisplay("Low");
+                                break;
+                            case "A":
+                                observation.getInterpretation().addCoding().setCode("A").setSystem("http://hl7.org/fhir/v2/0078").setDisplay("Abnormal");
+                                break;
+
+                        }
+
+                    }
+
+                    System.out.println(FHIRparser.setPrettyPrint(true).encodeResourceToString(observation));
+                    outcome = client.update().resource(observation)
+                            .conditionalByUrl("Observation?identifier="+observation.getIdentifier().get(0).getSystem()+"%7C"+observation.getIdentifier().get(0).getValue())
+                            .execute();
+                    observation.setId(outcome.getId());
+                    System.out.println(outcome.getId().getValue());
+
+
+
+                    report.getResult().add(new ResourceReferenceDt(observation.getId().getValue()));
+					//System.out.println("/PATIENT_RESULT/ORDER_OBSERVATION("+orderNum+")/OBSERVATION("+observationNo+")/OBX-3-1 = " +result);
 				}
 
 				observationNo++;
 			} while (result != null );
+
+            System.out.println(FHIRparser.setPrettyPrint(true).encodeResourceToString(report));
+
+            outcome = client.update().resource(report)
+                    .conditionalByUrl("DiagnosticReport?identifier="+report.getIdentifier().get(0).getSystem()+"%7C"+report.getIdentifier().get(0).getValue())
+                    .execute();
+            report.setId(outcome.getId());
+            System.out.println(outcome.getId().getValue());
+
 			orderNum++;
 			result = terserGet("/PATIENT_RESULT/ORDER_OBSERVATION("+orderNum+")/OBSERVATION(0)/OBX-3-1");
 		} while (result != null );
 
 
-		//System.out.println("ORD OBSERVATION(0): "+terserGet("/PATIENT_RESULT/ORDER_OBSERVATION(0)/OBSERVATION(0)/OBX-3-1"));
-		//System.out.println("ORD OBSERVATION(1): "+terserGet("/PATIENT_RESULT/ORDER_OBSERVATION(1)/OBSERVATION(0)/OBX-3-1"));
-		//System.out.println("ORD OBSERVATION(2): "+terserGet("/PATIENT_RESULT/ORDER_OBSERVATION(2)/OBSERVATION(0)/OBX-3-1"));
 
-
-		//System.out.println("OBSERVATION(2): "+terserGet("/.OBSERVATION(2)/OBX-3-1"));
-		System.out.println(FHIRparser.setPrettyPrint(true).encodeResourceToString(report));
 
     }
 

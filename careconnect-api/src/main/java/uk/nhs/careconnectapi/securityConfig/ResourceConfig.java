@@ -1,6 +1,7 @@
 package uk.nhs.careconnectapi.securityConfig;
 
 
+import io.fabric8.insight.log.log4j.Log4jLogQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,12 +48,10 @@ public class ResourceConfig  {
 			return ds;
 		}
 		*/
-	  /*
-	   * 
-	   * Causing problems with Swagger
+
 	   
 	  @Autowired
-		Log4jLogQuery log4jLogQuery;
-		*/
+	  Log4jLogQuery log4jLogQuery;
+
 
 }
