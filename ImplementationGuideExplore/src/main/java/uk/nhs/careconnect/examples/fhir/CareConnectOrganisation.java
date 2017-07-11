@@ -14,7 +14,7 @@ import java.util.List;
  * Created by kevinmayfield on 07/07/2017.
  */
 public class CareConnectOrganisation {
-    public static Organization buildCareConnectOrganisation(String ODSCode, String organisationName, String phone, String addressLine1, String addressLine2, String city, String postCode)
+    public static Organization buildCareConnectOrganisation(String ODSCode, String organisationName, String phone, String addressLine1, String addressLine2, String city, String postCode, String type)
     {
         Organization organization = new Organization();
 
@@ -26,11 +26,14 @@ public class CareConnectOrganisation {
                 .setSystem(CareConnectSystem.SystemODSOrganisationCode)
                 .setValue(ODSCode);
 
-        organization.getType().addCoding()
-                .setCode(CareConnectSystem.SystemOrganisationType)
-                .setCode("prov")
-                .setDisplay("Healthcare Provider");
-
+        switch (type) {
+            case "prov":
+                organization.getType().addCoding()
+                    .setCode(CareConnectSystem.SystemOrganisationType)
+                    .setCode("prov")
+                    .setDisplay("Healthcare Provider");
+                break;
+        }
         organization.setName(organisationName);
 
         organization.addTelecom()
@@ -44,7 +47,16 @@ public class CareConnectOrganisation {
                 .addLine(addressLine2)
                 .setCity(city)
                 .setPostalCode(postCode);
-
+        /*
+        switch (type) {
+            case "CSC":
+                organization.getType().addCoding()
+                        .setSystem("http://hl7.org/fhir/ValueSet/v3-ServiceDeliveryLocationRoleType")
+                        .setCode(type)
+                        .setDisplay("Community Service Centre");
+                break;
+        }
+        */
         return organization;
     }
 }

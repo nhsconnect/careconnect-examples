@@ -34,21 +34,41 @@ public class IGExplore implements CommandLineRunner {
 
 		IGenericClient client = ctxFHIR.newRestfulGenericClient(serverBase);
 
+        Organization organisation = CareConnectOrganisation.buildCareConnectOrganisation(
+                "RTG",
+                "Derby Teaching Hospitals NHS Foundation Trust",
+                "01332 340131",
+                "Uttoxeter Road",
+                "",
+                    "Derby",
+                    "DE22 3NE"
+                    , "prov"
+                );
+        System.out.println(parser.setPrettyPrint(true).encodeResourceToString(organisation));
+        MethodOutcome outcome = client.update().resource(organisation)
+                .conditionalByUrl("Organization?identifier="+organisation.getIdentifier().get(0).getSystem()+"%7C"+organisation.getIdentifier().get(0).getValue())
+                .execute();
+        organisation.setId(outcome.getId());
+        System.out.println(outcome.getId().getValue());
+
+        // GP Practice
         Organization practice = CareConnectOrganisation.buildCareConnectOrganisation(
                 "C81010",
                 "The Moir Medical Centre",
                 "0115 9737320",
                 "Regent Street",
                 "Long Eaton",
-                    "Nottingham",
-                    "NG10 1QQ"
-                );
+                "Nottingham",
+                "NG10 1QQ"
+                , "prov"
+        );
         System.out.println(parser.setPrettyPrint(true).encodeResourceToString(practice));
-        MethodOutcome outcome = client.update().resource(practice)
-                .conditionalByUrl("Organization?identifier=https://fhir.nhs.uk/Id/ods-organization-code%7CC81010")
+        outcome = client.update().resource(practice)
+                .conditionalByUrl("Organization?identifier="+practice.getIdentifier().get(0).getSystem()+"%7C"+practice.getIdentifier().get(0).getValue())
                 .execute();
         practice.setId(outcome.getId());
         System.out.println(outcome.getId().getValue());
+
 
         Practitioner gp = CareConnectPractitioner.buildCareConnectPractitioner(
                 "G8133438",
