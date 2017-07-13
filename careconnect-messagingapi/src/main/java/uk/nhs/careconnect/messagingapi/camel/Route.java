@@ -47,17 +47,26 @@ public class Route extends RouteBuilder {
 	
 		from("vm:tomq")
                 .routeId("FHIR MQ Send")
-              //  .to("log:uk.nhs.careconnect.messagingapi?level=INFO&showHeaders=true&showHeaders=true")
-                .to("activemq:HAPIBundle");
+    //            .to("activemq:HAPIBundle");
 
 
-		from("activemq:HAPIBundle")
-			.routeId("FHIR MQ Recv")
+	//	from("activemq:HAPIBundle")
+	//		.routeId("FHIR MQ Recv")
 			.to("file:/FHIRServer?fileName=${id}-$simple{date:now:yyyyMMdd}.xml")
             .process(mqProcessor)
-            .to("log:uk.nhs.careconnect.messagingapi?level=INFO&showHeaders=true&showHeaders=true");
-			//.to("http://localhost:8080/FHIRServer/DSTU2?throwExceptionOnFailure=false&bridgeEndpoint=true");
-			
+            .to("log:uk.nhs.careconnect.messagingapi?showAll=true&multiline=true&level=INFO")
+            .choice()
+                .when(simple("${in.header.FHIRConditionUrl}"))
+                //Only post when conditional resource defined
+               .to("vm:HAPISend")
+            .end();
+
+        from("vm:HAPISend")
+                .routeId("FHIR Server Send")
+                .to("log:uk.nhs.careconnect.hapisendsend?showAll=true&multiline=true&level=INFO")
+                .to("http://localhost:8080/FHIRServer/DSTU2?throwExceptionOnFailure=false&bridgeEndpoint=true")
+                .to("log:uk.nhs.careconnect.hapisendrecv?showAll=true&multiline=true&level=INFO")
+                .to("file:/FHIRServer/Response?fileName=${id}-$simple{date:now:yyyyMMdd}.xml");
 
     }
 }

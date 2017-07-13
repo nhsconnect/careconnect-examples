@@ -73,11 +73,13 @@ public class messasgeSplitter {
             log.info("Entry numnber "+f);
             IResource resource = bundle.getEntry().get(f).getResource();
             log.info(resource.getResourceName());
+            log.info(resource.getId().getValue());
             if (!resource.getResourceName().equals("MessageHeader")) {
 
                 String response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(resource);
                 DefaultMessage message = new DefaultMessage();
                 message.setHeader("FHIRResource",resource.getResourceName());
+                message.setHeader("FHIRResourceId",resource.getId().getValue());
                 message.setBody(response);
                 answer.add(message);
             }
