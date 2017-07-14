@@ -55,12 +55,14 @@ public class MQProcessor implements Processor {
             Patient patient = parser.parseResource(Patient.class,reader);
             exchange.getIn().setHeader("FHIRConditionUrl","identifier="+patient.getIdentifier().get(0).getSystem()+"%7C"+patient.getIdentifier().get(0).getValue());
         }
-        /*
+
+        /* The conditional url isn't supported in HAPI
         if (exchange.getIn().getHeader("FHIRResource").equals("QuestionnaireResponse")) {
             QuestionnaireResponse questionnaireResponse = parser.parseResource(QuestionnaireResponse.class,reader);
             exchange.getIn().setHeader("FHIRConditionUrl","identifier="+questionnaireResponse.getIdentifier().getSystem()+"%7C"+questionnaireResponse.getIdentifier().getValue());
         }
         */
+
         // Encounter
         if (exchange.getIn().getHeader("FHIRResource").equals("Encounter")) {
             Encounter encounter = parser.parseResource(Encounter.class,reader);
@@ -99,27 +101,52 @@ public class MQProcessor implements Processor {
             exchange.getIn().setHeader("FHIRConditionUrl","identifier="+condition.getIdentifier().get(0).getSystem()+"%7C"+condition.getIdentifier().get(0).getValue());
         }
 
-
+        // Procedure
         if (exchange.getIn().getHeader("FHIRResource").equals("Procedure")) {
             Procedure procedure = parser.parseResource(Procedure.class,reader);
             if (procedure.getIdentifier().size()==0) {
                 procedure.addIdentifier()
                         .setSystem("https://tools.ietf.org/html/rfc4122")
                         .setValue(exchange.getIn().getHeader("FHIRResourceId").toString());
-                exchange.getIn().setBody( ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(procedure));
             }
+            if (procedure.getPerformer().size()>0) {
+                procedure.getPerformer().get(0).setActor(new ResourceReferenceDt("http://workaround.com/Practitioner/"+procedure.getPerformer().get(0).getActor().getReference().getValue()));
+            }
+            if (procedure.getSubject() != null) {
+                procedure.setSubject(new ResourceReferenceDt("http://workaround.com/Patient/"+procedure.getSubject().getReference().getValue()));
+            }
+            if (procedure.getLocation() != null) {
+                procedure.setLocation(new ResourceReferenceDt("http://workaround.com/Location/"+procedure.getLocation().getReference().getValue()));
+            }
+            if (procedure.getEncounter() != null) {
+                procedure.setEncounter(new ResourceReferenceDt("http://workaround.com/Encounter/"+procedure.getEncounter().getReference().getValue()));
+            }
+            exchange.getIn().setBody( ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(procedure));
             exchange.getIn().setHeader("FHIRConditionUrl", "identifier=" + procedure.getIdentifier().get(0).getSystem() + "%7C" + procedure.getIdentifier().get(0).getValue());
         }
 
+        //ProcedureRequest
         if (exchange.getIn().getHeader("FHIRResource").equals("ProcedureRequest")) {
             ProcedureRequest procedureRequest = parser.parseResource(ProcedureRequest.class,reader);
             if (procedureRequest.getSubject()!=null) {
                 procedureRequest.getSubject().setReference("http://workaround.com/Patient/"+procedureRequest.getSubject().getReference().getValue());
             }
+            if (procedureRequest.getPerformer() !=null && procedureRequest.getPerformer().getReference() !=null) {
+                procedureRequest.getPerformer().setReference("http://workaround.com/Practitioner/"+procedureRequest.getPerformer().getReference().getValue());
+            }
+
+            exchange.getIn().setBody( ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(procedureRequest));
             exchange.getIn().setHeader("FHIRConditionUrl","identifier="+procedureRequest.getIdentifier().get(0).getSystem()+"%7C"+procedureRequest.getIdentifier().get(0).getValue());
         }
         if (exchange.getIn().getHeader("FHIRResource").equals("Appointment")) {
             Appointment appointment = parser.parseResource(Appointment.class,reader);
+            if (appointment.getParticipant().size()>0) {
+                appointment.getParticipant().get(0).getActor().setReference("http://workaround.com/Patient/"+appointment.getParticipant().get(0).getActor().getReference().getValue());
+            }
+            if (appointment.getParticipant().size()>1) {
+                appointment.getParticipant().get(1).getActor().setReference("http://workaround.com/Practitioner/"+appointment.getParticipant().get(1).getActor().getReference().getValue());
+            }
+            exchange.getIn().setBody( ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(appointment));
             exchange.getIn().setHeader("FHIRConditionUrl","identifier="+appointment.getIdentifier().get(0).getSystem()+"%7C"+appointment.getIdentifier().get(0).getValue());
         }
         if (exchange.getIn().getHeader("FHIRResource").equals("Location")) {
