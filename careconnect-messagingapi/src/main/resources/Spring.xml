@@ -14,7 +14,7 @@
 
 	 <context:annotation-config />
 	 <context:property-placeholder location="classpath:careconnectmessagingapi.properties"/>
-	 <context:component-scan base-package="uk.nhs.careconnect.messagingapi.securityConfig"></context:component-scan>
+	 <context:component-scan base-package="uk.nhs.careconnect.messagingapi.spring"></context:component-scan>
 	
 	
 

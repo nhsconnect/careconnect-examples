@@ -1,11 +1,20 @@
 package uk.nhs.careconnect.messagingapi.camel;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.model.dstu2.composite.ResourceReferenceDt;
+import ca.uhn.fhir.model.api.IResource;
 import ca.uhn.fhir.model.dstu2.resource.*;
 import ca.uhn.fhir.parser.IParser;
+import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.client.IGenericClient;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.ArrayList;
 
 /**
  * Created by kevinmayfield on 12/07/2017.
@@ -14,18 +23,150 @@ public class MQProcessor implements Processor {
 
     FhirContext ctx;
 
-    public MQProcessor(FhirContext ctx)
+    private static final Logger log = LoggerFactory.getLogger(uk.nhs.careconnect.messagingapi.camel.Route.class);
+
+    IGenericClient client;
+
+    public MQProcessor(FhirContext ctx, IGenericClient client)
     {
         this.ctx = ctx;
+        this.client = client;
     }
+    class ResourceProcessing {
+        IResource resource;
+        Boolean processed;
+        String bundleId;
+        String actualId;
+    }
+
     @Override
     public void process(Exchange exchange) throws Exception {
+        Bundle bundle = null;
 
-     //   InputStream is = (InputStream) exchange.getIn().getBody();
-     //   is.reset();
-        String reader = exchange.getIn().getBody(String.class);
+        Reader reader = new InputStreamReader(new ByteArrayInputStream((byte[]) exchange.getIn().getBody(byte[].class)));
+
+
+
+        if (exchange.getIn().getHeader(Exchange.CONTENT_TYPE).toString().contains("json")) {
+            //JsonParser parser = new JsonParser();
+            IParser parser = ctx.newJsonParser();
+            try {
+                bundle = parser.parseResource(Bundle.class, reader);
+            } catch (Exception ex) {
+                // log.error("#9 JSON Parse failed "+ex.getMessage());
+            }
+        } else {
+            // XmlParser parser = new XmlParser();
+            IParser parser = ctx.newXmlParser();
+            try {
+                bundle = parser.parseResource(Bundle.class, reader);
+            } catch (Exception ex) {
+                // log.error("#10 XML Parse failed "+ex.getMessage());
+            }
+        }
+        ArrayList<ResourceProcessing> resourceList = new ArrayList<ResourceProcessing>();
+
+
+        for (int f = 0; f < bundle.getEntry().size(); f++) {
+            IResource resource = bundle.getEntry().get(f).getResource();
+            ResourceProcessing resourceP = new ResourceProcessing();
+            resourceP.bundleId = resource.getId().getValue();
+            resourceP.processed = false;
+            // Miss off MessageHeader, so start at 1
+            if (f == 0) resourceP.processed = true;
+            resourceList.add(resourceP);
+        }
+        // Loop 3 times now to, need to have time out but ensure all resources posted
         IParser parser = ctx.newXmlParser();
+        Boolean allProcessed;
+        for (int g= 0;g < 3;g++) {
+            allProcessed = true;
+            for (int f = 0; f < bundle.getEntry().size(); f++) {
+                log.info("Entry number " + f);
+                IResource resource = bundle.getEntry().get(f).getResource();
+                log.info(resource.getResourceName());
+                log.info(resource.getId().getValue());
+                if (!resourceList.get(f).processed) {
 
+                    if (bundle.getEntry().get(f).getResource().getResourceName().equals("Organization")) {
+                        Organization organisation = (Organization) resource;
+                        MethodOutcome outcome = client.update().resource(organisation)
+                                .conditionalByUrl("Organization?identifier=" + organisation.getIdentifier().get(0).getSystem() + "%7C" + organisation.getIdentifier().get(0).getValue())
+                                .execute();
+                        organisation.setId(outcome.getId());
+                        resourceList.get(f).processed = true;
+                        resourceList.get(f).actualId = outcome.getId().getValue();
+                        resourceList.get(f).resource = organisation;
+                        System.out.println(outcome.getId().getValue());
+                    }
+
+                    if (bundle.getEntry().get(f).getResource().getResourceName().equals("Practitioner")) {
+                        Practitioner practitioner = (Practitioner) resource;
+                        MethodOutcome outcome = client.update().resource(practitioner)
+                                .conditionalByUrl("Practitioner?identifier=" + practitioner.getIdentifier().get(0).getSystem() + "%7C" + practitioner.getIdentifier().get(0).getValue())
+                                .execute();
+                        practitioner.setId(outcome.getId());
+                        resourceList.get(f).processed = true;
+                        resourceList.get(f).actualId = outcome.getId().getValue();
+                        resourceList.get(f).resource = practitioner;
+                        System.out.println(outcome.getId().getValue());
+                    }
+                    if (bundle.getEntry().get(f).getResource().getResourceName().equals("Patient")) {
+                        Patient patient = (Patient) resource;
+                        MethodOutcome outcome = client.update().resource(patient)
+                                .conditionalByUrl("Patient?identifier=" + patient.getIdentifier().get(0).getSystem() + "%7C" + patient.getIdentifier().get(0).getValue())
+                                .execute();
+                        patient.setId(outcome.getId());
+                        resourceList.get(f).processed = true;
+                        resourceList.get(f).actualId = outcome.getId().getValue();
+                        resourceList.get(f).resource = patient;
+                        System.out.println(outcome.getId().getValue());
+                    }
+                    if (bundle.getEntry().get(f).getResource().getResourceName().equals("ProcedureRequest")) {
+                        ProcedureRequest procedureRequest = (ProcedureRequest) resource;
+                        Boolean allReferenced = true;
+                        if (procedureRequest.getSubject()!=null) {
+                            IResource referencedResource = null;
+                            log.info(procedureRequest.getSubject().getReference().getValue());
+                            int i =0;
+                            for (int h = 0; h < resourceList.size(); h++) {
+                                if (resourceList.get(h).processed && resourceList.get(h).bundleId != null && procedureRequest.getSubject().getReference().getValue().equals(resourceList.get(h).bundleId)) {
+                                    referencedResource = resourceList.get(h).resource;
+                                    log.debug("BundleId ="+resourceList.get(h).bundleId);
+                                    log.debug("ActualId ="+resourceList.get(h).actualId);
+                                    i = h;
+                                }
+                            }
+                            if (referencedResource != null) {
+                                log.debug("New ReferenceId = "+resourceList.get(i).actualId);
+                                procedureRequest.getSubject().setReference(resourceList.get(i).actualId);
+
+                            } else {
+                                allReferenced = false;
+                            }
+                        }
+
+                        if (allReferenced)
+                        {
+                            log.info("ProcedureRequest = "+parser.setPrettyPrint(true).encodeResourceToString(procedureRequest));
+                            MethodOutcome outcome = client.update().resource(procedureRequest)
+                                    .conditionalByUrl("ProcedureRequest?identifier=" + procedureRequest.getIdentifier().get(0).getSystem() + "%7C" + procedureRequest.getIdentifier().get(0).getValue())
+                                    .execute();
+                            if (outcome.getResource()!=null) {
+                                log.info("Outcome = " + parser.setPrettyPrint(true).encodeResourceToString(outcome.getResource()));
+                            }
+                            procedureRequest.setId(outcome.getId());
+                            resourceList.get(f).processed = true;
+                            resourceList.get(f).resource = procedureRequest;
+                            System.out.println(outcome.getId().getValue());
+                        }
+
+                    }
+                }
+            }
+
+        }
+            /*
         if (exchange.getIn().getHeader("FHIRResource").equals("Observation")) {
             Observation observation = parser.parseResource(Observation.class,reader);
             if (observation.getIdentifier().size()==0) {
@@ -55,6 +196,7 @@ public class MQProcessor implements Processor {
             Patient patient = parser.parseResource(Patient.class,reader);
             exchange.getIn().setHeader("FHIRConditionUrl","identifier="+patient.getIdentifier().get(0).getSystem()+"%7C"+patient.getIdentifier().get(0).getValue());
         }
+        */
 
         /* The conditional url isn't supported in HAPI
         if (exchange.getIn().getHeader("FHIRResource").equals("QuestionnaireResponse")) {
@@ -62,7 +204,7 @@ public class MQProcessor implements Processor {
             exchange.getIn().setHeader("FHIRConditionUrl","identifier="+questionnaireResponse.getIdentifier().getSystem()+"%7C"+questionnaireResponse.getIdentifier().getValue());
         }
         */
-
+    /*
         // Encounter
         if (exchange.getIn().getHeader("FHIRResource").equals("Encounter")) {
             Encounter encounter = parser.parseResource(Encounter.class,reader);
@@ -160,6 +302,9 @@ public class MQProcessor implements Processor {
             exchange.getIn().setHeader(Exchange.HTTP_METHOD,"PUT");
             exchange.getIn().setHeader(Exchange.HTTP_PATH,exchange.getIn().getHeader("FHIRResource"));
         }
+
+    }
+     */
 
     }
 }

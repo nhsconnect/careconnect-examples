@@ -2,13 +2,13 @@ package uk.nhs.careconnect.messagingapi.camel;
 
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.client.IGenericClient;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.rest.RestBindingMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
-import uk.nhs.careconnect.messagingapi.securityConfig.messasgeSplitter;
 
 @Component
 @PropertySource("classpath:careconnectmessagingapi.properties")
@@ -19,11 +19,14 @@ public class Route extends RouteBuilder {
 
 	@Autowired
     protected FhirContext ctx;
+
+	@Autowired
+    protected IGenericClient fhirClient;
 	
     @Override
     public void configure() 
     {
-     	MQProcessor mqProcessor = new MQProcessor(ctx);
+     	MQProcessor mqProcessor = new MQProcessor(ctx, fhirClient);
 
 	    restConfiguration()
 	    	.component("servlet")
@@ -40,33 +43,27 @@ public class Route extends RouteBuilder {
                 .description("Receive FHIR Message Bundle")
                 .route()
                 .routeId("Bundle POST")
-                .split().method( messasgeSplitter.class,"extractResources")
-                    .to("vm:tomq")
-                .end()
+                //.split().method( messasgeSplitter.class,"extractResources")
+                //
+                //.end()
+                // Send message to queue, should now post an ok after checking the message is valid
+                .to("vm:tomq")
                 .endRest();
 	
 		from("vm:tomq")
                 .routeId("FHIR MQ Send")
-    //            .to("activemq:HAPIBundle");
+                // This sends out the bundle ASync
+              .wireTap("activemq:HAPIBundle")
+        .end();
 
 
-	//	from("activemq:HAPIBundle")
-	//		.routeId("FHIR MQ Recv")
-			.to("file:/FHIRServer?fileName=${id}-$simple{date:now:yyyyMMdd}.xml")
+		from("activemq:HAPIBundle")
+			.routeId("FHIR MQ Process")
+			.to("file:/FHIRServer/Before?fileName=${id}-$simple{date:now:yyyyMMdd}.xml")
             .process(mqProcessor)
             .to("log:uk.nhs.careconnect.messagingapi?showAll=true&multiline=true&level=INFO")
-            .choice()
-                .when(simple("${in.header.FHIRConditionUrl}"))
-                //Only post when conditional resource defined
-               .to("vm:HAPISend")
-            .end();
+            .to("file:/FHIRServer/After?fileName=${id}-$simple{date:now:yyyyMMdd}.xml");
 
-        from("vm:HAPISend")
-                .routeId("FHIR Server Send")
-                .to("log:uk.nhs.careconnect.hapisendsend?showAll=true&multiline=true&level=INFO")
-                .to("http://localhost:8080/FHIRServer/DSTU2?throwExceptionOnFailure=false&bridgeEndpoint=true")
-                .to("log:uk.nhs.careconnect.hapisendrecv?showAll=true&multiline=true&level=INFO")
-                .to("file:/FHIRServer/Response?fileName=${id}-$simple{date:now:yyyyMMdd}.xml");
 
     }
 }

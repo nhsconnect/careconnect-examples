@@ -1,7 +1,8 @@
-package uk.nhs.careconnect.messagingapi.securityConfig;
+package uk.nhs.careconnect.messagingapi.spring;
 
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.client.IGenericClient;
 import io.fabric8.insight.log.log4j.Log4jLogQuery;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.camel.component.ActiveMQComponent;
@@ -28,7 +29,14 @@ public class ResourceConfig  {
 	{
 		return FhirContext.forDstu2();
 	}
-	
+
+	@Bean
+    public static IGenericClient GenericClient(FhirContext ctxFHIR) {
+        String serverBase = "http://127.0.0.1:8080/FHIRServer/DSTU2/";
+
+        return ctxFHIR.newRestfulGenericClient(serverBase);
+    }
+
 	@Bean
 	public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
 		return new PropertySourcesPlaceholderConfigurer();

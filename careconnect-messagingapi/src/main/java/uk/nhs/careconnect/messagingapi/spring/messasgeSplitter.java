@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.messagingapi.securityConfig;
+package uk.nhs.careconnect.messagingapi.spring;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.api.IResource;
