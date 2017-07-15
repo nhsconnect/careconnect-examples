@@ -718,7 +718,7 @@ public class MQProcessor implements Processor {
 
                         if (allReferenced)
                         {
-                            log.info("Encounter = "+parser.setPrettyPrint(true).encodeResourceToString(condition));
+                            log.info("Condition= "+parser.setPrettyPrint(true).encodeResourceToString(condition));
                             MethodOutcome outcome = client.update().resource(condition)
                                     .conditionalByUrl("Condition?identifier=" + condition.getIdentifier().get(0).getSystem() + "%7C" + condition.getIdentifier().get(0).getValue())
                                     .execute();
@@ -728,6 +728,130 @@ public class MQProcessor implements Processor {
                             condition.setId(outcome.getId());
                             resourceList.get(f).processed = true;
                             resourceList.get(f).resource = condition;
+                            resourceList.get(f).actualId = outcome.getId().getValue();
+                            System.out.println(outcome.getId().getValue());
+                        }
+
+                    }
+
+                    // Bundle.Procedure
+                    if (bundle.getEntry().get(f).getResource().getResourceName().equals("Procedure")) {
+
+                        Procedure procedure = (Procedure) resource;
+                        // Having an identifier makes this a lot easier.
+                        if (procedure.getIdentifier().size() == 0) {
+                            procedure.addIdentifier()
+                                    .setSystem("https://tools.ietf.org/html/rfc4122")
+                                    .setValue(procedure.getId().getValue());
+                        }
+
+                        Boolean allReferenced = true;
+                        // Bundle.COndition Patient
+                        if (procedure.getSubject() != null) {
+                            IResource referencedResource = null;
+                            log.info(procedure.getSubject().getReference().getValue());
+                            int i = 0;
+                            for (int h = 0; h < resourceList.size(); h++) {
+                                if (resourceList.get(h).processed && resourceList.get(h).bundleId != null && procedure.getSubject().getReference().getValue().equals(resourceList.get(h).bundleId)) {
+                                    referencedResource = resourceList.get(h).resource;
+                                    log.debug("BundleId =" + resourceList.get(h).bundleId);
+                                    log.debug("ActualId =" + resourceList.get(h).actualId);
+                                    i = h;
+                                }
+                            }
+                            if (referencedResource != null) {
+                                log.debug("New ReferenceId = " + resourceList.get(i).actualId);
+                                procedure.getSubject().setReference(resourceList.get(i).actualId);
+                                newReferences.add(resourceList.get(i).actualId);
+
+                            } else {
+                                if (!processed(procedure.getSubject().getReference().getValue())) allReferenced = false;
+                            }
+                        }
+                        // bundle condition encounter
+                        if (procedure.getEncounter() != null) {
+                            IResource referencedResource = null;
+                            log.info(procedure.getEncounter().getReference().getValue());
+                            int i = 0;
+                            for (int h = 0; h < resourceList.size(); h++) {
+                                if (resourceList.get(h).processed && resourceList.get(h).bundleId != null && procedure.getEncounter().getReference().getValue().equals(resourceList.get(h).bundleId)) {
+                                    referencedResource = resourceList.get(h).resource;
+                                    log.debug("BundleId =" + resourceList.get(h).bundleId);
+                                    log.debug("ActualId =" + resourceList.get(h).actualId);
+                                    i = h;
+                                }
+                            }
+                            if (referencedResource != null) {
+                                log.debug("New ReferenceId = " + resourceList.get(i).actualId);
+                                procedure.getEncounter().setReference(resourceList.get(i).actualId);
+                                newReferences.add(resourceList.get(i).actualId);
+
+                            } else {
+                                if (!processed(procedure.getEncounter().getReference().getValue())) allReferenced = false;
+                            }
+                        }
+
+                        // bundle condition location
+                        if (procedure.getLocation() != null) {
+                            IResource referencedResource = null;
+                            log.info(procedure.getLocation().getReference().getValue());
+                            int i = 0;
+                            for (int h = 0; h < resourceList.size(); h++) {
+                                if (resourceList.get(h).processed && resourceList.get(h).bundleId != null && procedure.getLocation().getReference().getValue().equals(resourceList.get(h).bundleId)) {
+                                    referencedResource = resourceList.get(h).resource;
+                                    log.debug("BundleId =" + resourceList.get(h).bundleId);
+                                    log.debug("ActualId =" + resourceList.get(h).actualId);
+                                    i = h;
+                                }
+                            }
+                            if (referencedResource != null) {
+                                log.debug("New ReferenceId = " + resourceList.get(i).actualId);
+                                procedure.getLocation().setReference(resourceList.get(i).actualId);
+                                newReferences.add(resourceList.get(i).actualId);
+
+                            } else {
+                                if (!processed(procedure.getLocation().getReference().getValue())) allReferenced = false;
+                            }
+                        }
+
+
+                        // Bundle.Procedure Performer
+                        for (int j = 0; j < procedure.getPerformer().size(); j++) {
+                            IResource referencedResource = null;
+                            log.info(procedure.getPerformer().get(j).getActor().getReference().getValue());
+                            if (procedure.getPerformer().get(j).getActor() !=null) {
+                                int i = 0;
+                                for (int h = 0; h < resourceList.size(); h++) {
+                                    if (resourceList.get(h).processed && resourceList.get(h).bundleId != null && procedure.getPerformer().get(j).getActor().getReference().getValue().equals(resourceList.get(h).bundleId)) {
+                                        referencedResource = resourceList.get(h).resource;
+                                        log.debug("BundleId =" + resourceList.get(h).bundleId);
+                                        log.debug("ActualId =" + resourceList.get(h).actualId);
+                                        i = h;
+                                    }
+                                }
+                                if (referencedResource != null) {
+                                    log.debug("New ReferenceId = " + resourceList.get(i).actualId);
+                                    procedure.getPerformer().get(j).getActor().setReference(resourceList.get(i).actualId);
+                                    newReferences.add(resourceList.get(i).actualId);
+                                } else {
+                                    if (!processed(procedure.getPerformer().get(j).getActor().getReference().getValue()))  allReferenced = false;
+                                }
+                            }
+                        }
+
+
+                        if (allReferenced)
+                        {
+                            log.info("Procedure = "+parser.setPrettyPrint(true).encodeResourceToString(procedure));
+                            MethodOutcome outcome = client.update().resource(procedure)
+                                    .conditionalByUrl("Procedure?identifier=" + procedure.getIdentifier().get(0).getSystem() + "%7C" + procedure.getIdentifier().get(0).getValue())
+                                    .execute();
+                            if (outcome.getResource()!=null) {
+                                log.info("Outcome = " + parser.setPrettyPrint(true).encodeResourceToString(outcome.getResource()));
+                            }
+                            procedure.setId(outcome.getId());
+                            resourceList.get(f).processed = true;
+                            resourceList.get(f).resource = procedure;
                             resourceList.get(f).actualId = outcome.getId().getValue();
                             System.out.println(outcome.getId().getValue());
                         }
