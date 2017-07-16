@@ -103,43 +103,147 @@ public class MQProcessor implements Processor {
                     // Bundle.location
                     if (bundle.getEntry().get(f).getResource().getResourceName().equals("Location")) {
                         Location location = (Location) resource;
-                        MethodOutcome outcome = client.update().resource(location)
-                                .conditionalByUrl("Location?identifier=" + location.getIdentifier().get(0).getSystem() + "%7C" + location.getIdentifier().get(0).getValue())
-                                .execute();
-                        location.setId(outcome.getId());
-                        resourceList.get(f).processed = true;
-                        resourceList.get(f).actualId = outcome.getId().getValue();
-                        resourceList.get(f).resource = location;
-                        System.out.println(outcome.getId().getValue());
+                        Boolean allReferenced = true;
+
+                        if (location.getIdentifier().size() == 0) {
+                            location.addIdentifier()
+                                    .setSystem("https://tools.ietf.org/html/rfc4122")
+                                    .setValue(location.getId().getValue());
+                        }
+
+                        if (location.getManagingOrganization() !=null) {
+                            IResource referencedResource = null;
+                            log.info(location.getManagingOrganization().getReference().getValue());
+                            int i =0;
+                            for (int h = 0; h < resourceList.size(); h++) {
+                                if (resourceList.get(h).processed && resourceList.get(h).bundleId != null && location.getManagingOrganization().getReference().getValue().equals(resourceList.get(h).bundleId)) {
+                                    referencedResource = resourceList.get(h).resource;
+                                    log.debug("BundleId ="+resourceList.get(h).bundleId);
+                                    log.debug("ActualId ="+resourceList.get(h).actualId);
+                                    i = h;
+                                }
+                            }
+                            if (referencedResource != null) {
+                                log.debug("New ReferenceId = "+resourceList.get(i).actualId);
+                                location.getManagingOrganization().setReference(resourceList.get(i).actualId);
+                                newReferences.add(resourceList.get(i).actualId);
+
+                            } else {
+                                allReferenced = false;
+                            }
+                        }
+
+                        if (allReferenced) {
+                            MethodOutcome outcome = client.update().resource(location)
+                                    .conditionalByUrl("Location?identifier=" + location.getIdentifier().get(0).getSystem() + "%7C" + location.getIdentifier().get(0).getValue())
+                                    .execute();
+                            location.setId(outcome.getId());
+                            resourceList.get(f).processed = true;
+                            resourceList.get(f).actualId = outcome.getId().getValue();
+                            resourceList.get(f).resource = location;
+                            System.out.println(outcome.getId().getValue());
+                        }
                     }
                     // Bundle.Organization
                     if (bundle.getEntry().get(f).getResource().getResourceName().equals("Organization")) {
                         Organization organisation = (Organization) resource;
-                        MethodOutcome outcome = client.update().resource(organisation)
-                                .conditionalByUrl("Organization?identifier=" + organisation.getIdentifier().get(0).getSystem() + "%7C" + organisation.getIdentifier().get(0).getValue())
-                                .execute();
-                        organisation.setId(outcome.getId());
-                        resourceList.get(f).processed = true;
-                        resourceList.get(f).actualId = outcome.getId().getValue();
-                        resourceList.get(f).resource = organisation;
-                        System.out.println(outcome.getId().getValue());
+                        Boolean allReferenced = true;
+
+                        if (organisation.getIdentifier().size() == 0) {
+                            organisation.addIdentifier()
+                                    .setSystem("https://tools.ietf.org/html/rfc4122")
+                                    .setValue(organisation.getId().getValue());
+                        }
+
+                        if (organisation.getPartOf().getReference().getValue() !=null && !organisation.getPartOf().getReference().getValue().isEmpty()) {
+                            IResource referencedResource = null;
+                            log.info("organisation.getPartOf()="+organisation.getPartOf().getReference().getValue());
+                            int i =0;
+                            for (int h = 0; h < resourceList.size(); h++) {
+                                if (resourceList.get(h).processed && resourceList.get(h).bundleId != null && organisation.getPartOf().getReference().getValue().equals(resourceList.get(h).bundleId)) {
+                                    referencedResource = resourceList.get(h).resource;
+                                    log.debug("BundleId ="+resourceList.get(h).bundleId);
+                                    log.debug("ActualId ="+resourceList.get(h).actualId);
+                                    i = h;
+                                }
+                            }
+                            if (referencedResource != null) {
+                                log.debug("New ReferenceId = "+resourceList.get(i).actualId);
+                                organisation.getPartOf().setReference(resourceList.get(i).actualId);
+                                newReferences.add(resourceList.get(i).actualId);
+
+                            } else {
+                                allReferenced = false;
+                            }
+                        }
+                        if (allReferenced) {
+                            MethodOutcome outcome = client.update().resource(organisation)
+                                    .conditionalByUrl("Organization?identifier=" + organisation.getIdentifier().get(0).getSystem() + "%7C" + organisation.getIdentifier().get(0).getValue())
+                                    .execute();
+                            organisation.setId(outcome.getId());
+                            resourceList.get(f).processed = true;
+                            resourceList.get(f).actualId = outcome.getId().getValue();
+                            resourceList.get(f).resource = organisation;
+                            System.out.println(outcome.getId().getValue());
+                        }
                     }
                     //Bundle.Practitioner
                     if (bundle.getEntry().get(f).getResource().getResourceName().equals("Practitioner")) {
                         Practitioner practitioner = (Practitioner) resource;
-                        MethodOutcome outcome = client.update().resource(practitioner)
-                                .conditionalByUrl("Practitioner?identifier=" + practitioner.getIdentifier().get(0).getSystem() + "%7C" + practitioner.getIdentifier().get(0).getValue())
-                                .execute();
-                        practitioner.setId(outcome.getId());
-                        resourceList.get(f).processed = true;
-                        resourceList.get(f).actualId = outcome.getId().getValue();
-                        resourceList.get(f).resource = practitioner;
-                        System.out.println(outcome.getId().getValue());
+                        Boolean allReferenced = true;
+
+                        if (practitioner.getIdentifier().size() == 0) {
+                            practitioner.addIdentifier()
+                                    .setSystem("https://tools.ietf.org/html/rfc4122")
+                                    .setValue(practitioner.getId().getValue());
+                        }
+
+                        // Practioner role organisation
+                        for (int j = 0; j < practitioner.getPractitionerRole().size(); j++) {
+                            IResource referencedResource = null;
+                            log.info(practitioner.getPractitionerRole().get(j).getManagingOrganization().getReference().getValue());
+                            if (practitioner.getPractitionerRole().get(j).getManagingOrganization() !=null) {
+                                int i = 0;
+                                for (int h = 0; h < resourceList.size(); h++) {
+                                    if (resourceList.get(h).processed && resourceList.get(h).bundleId != null && practitioner.getPractitionerRole().get(j).getManagingOrganization().getReference().getValue().equals(resourceList.get(h).bundleId)) {
+                                        referencedResource = resourceList.get(h).resource;
+                                        log.info("Appointment.Participants BundleId =" + resourceList.get(h).bundleId);
+                                        log.info("Appointment.Participants ActualId =" + resourceList.get(h).actualId);
+                                        i = h;
+                                    }
+                                }
+                                if (referencedResource != null) {
+                                    log.info("Appointment.Participants New ReferenceId = " + resourceList.get(i).actualId);
+                                    practitioner.getPractitionerRole().get(j).getManagingOrganization().setReference(resourceList.get(i).actualId);
+                                    newReferences.add(resourceList.get(i).actualId);
+                                } else {
+                                    if (!processed(practitioner.getPractitionerRole().get(j).getManagingOrganization().getReference().getValue())) allReferenced = false;
+                                }
+                            }
+                        }
+
+                        if (allReferenced) {
+                            MethodOutcome outcome = client.update().resource(practitioner)
+                                    .conditionalByUrl("Practitioner?identifier=" + practitioner.getIdentifier().get(0).getSystem() + "%7C" + practitioner.getIdentifier().get(0).getValue())
+                                    .execute();
+                            practitioner.setId(outcome.getId());
+                            resourceList.get(f).processed = true;
+                            resourceList.get(f).actualId = outcome.getId().getValue();
+                            resourceList.get(f).resource = practitioner;
+                            System.out.println(outcome.getId().getValue());
+                        }
                     }
 
                     // Bundle. Patient
                     if (bundle.getEntry().get(f).getResource().getResourceName().equals("Patient")) {
                         Patient patient = (Patient) resource;
+
+                        if (patient.getIdentifier().size() == 0) {
+                            patient.addIdentifier()
+                                    .setSystem("https://tools.ietf.org/html/rfc4122")
+                                    .setValue(patient.getId().getValue());
+                        }
+
                         MethodOutcome outcome = client.update().resource(patient)
                                 .conditionalByUrl("Patient?identifier=" + patient.getIdentifier().get(0).getSystem() + "%7C" + patient.getIdentifier().get(0).getValue())
                                 .execute();
@@ -153,6 +257,13 @@ public class MQProcessor implements Processor {
                     // Bundle.Procedure Request
                     if (bundle.getEntry().get(f).getResource().getResourceName().equals("ProcedureRequest")) {
                         ProcedureRequest procedureRequest = (ProcedureRequest) resource;
+
+                        if (procedureRequest.getIdentifier().size() == 0) {
+                            procedureRequest.addIdentifier()
+                                    .setSystem("https://tools.ietf.org/html/rfc4122")
+                                    .setValue(procedureRequest.getId().getValue());
+                        }
+
                         Boolean allReferenced = true;
                         if (procedureRequest.getSubject()!=null) {
                             IResource referencedResource = null;
@@ -198,6 +309,13 @@ public class MQProcessor implements Processor {
                     if (bundle.getEntry().get(f).getResource().getResourceName().equals("Appointment")) {
 
                         Appointment appointment = (Appointment) resource;
+
+                        if (appointment.getIdentifier().size() == 0) {
+                            appointment.addIdentifier()
+                                    .setSystem("https://tools.ietf.org/html/rfc4122")
+                                    .setValue(appointment.getId().getValue());
+                        }
+
                         Boolean allReferenced = true;
 
                         // Appointment.Participants
@@ -346,6 +464,13 @@ public class MQProcessor implements Processor {
                     if (bundle.getEntry().get(f).getResource().getResourceName().equals("Encounter")) {
 
                         Encounter encounter = (Encounter) resource;
+
+                        if (encounter.getIdentifier().size() == 0) {
+                            encounter.addIdentifier()
+                                    .setSystem("https://tools.ietf.org/html/rfc4122")
+                                    .setValue(encounter.getId().getValue());
+                        }
+
                         Boolean allReferenced = true;
                         // Bundle.Encounter Patient
                         if (encounter.getPatient() != null) {
@@ -446,7 +571,7 @@ public class MQProcessor implements Processor {
                         for (int j = 0; j < encounter.getLocation().size(); j++) {
                             IResource referencedResource = null;
                             log.info(encounter.getLocation().get(j).getLocation().getReference().getValue());
-                            if (encounter.getParticipant().get(j).getIndividual() !=null) {
+                            if (encounter.getLocation().get(j).getLocation() !=null) {
                                 int i = 0;
                                 for (int h = 0; h < resourceList.size(); h++) {
                                     if (resourceList.get(h).processed && resourceList.get(h).bundleId != null && encounter.getLocation().get(j).getLocation().getReference().getValue().equals(resourceList.get(h).bundleId)) {
@@ -523,7 +648,7 @@ public class MQProcessor implements Processor {
                             }
                         }
                         // bundle condition encounter
-                        if (condition.getEncounter() != null) {
+                        if (condition.getEncounter() != null && condition.getEncounter().getReference().getValue() != null && !condition.getEncounter().getReference().getValue().isEmpty()) {
                             IResource referencedResource = null;
                             log.info(condition.getEncounter().getReference().getValue());
                             int i = 0;
@@ -547,7 +672,7 @@ public class MQProcessor implements Processor {
 
 
                         // Bundle.Condition asserter
-                        if (condition.getAsserter() != null) {
+                        if (condition.getAsserter() != null && condition.getAsserter().getReference().getValue() != null && !condition.getAsserter().getReference().getValue().isEmpty()) {
                             IResource referencedResource = null;
                             log.info(condition.getAsserter().getReference().getValue());
                             int i = 0;
