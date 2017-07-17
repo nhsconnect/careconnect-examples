@@ -32,7 +32,7 @@ public class MQProcessor implements Processor {
 
     ArrayList<String> newReferences;
 
-    ArrayList<ResourceProcessing> resourceList;
+    ArrayList<EntryProcessing> resourceList;
 
     IParser parser;
 
@@ -41,11 +41,11 @@ public class MQProcessor implements Processor {
         this.ctx = ctx;
         this.client = client;
     }
-    class ResourceProcessing {
+    class EntryProcessing {
         IResource resource;
         Boolean processed;
-        String bundleId;
-        String actualId;
+        String originalId;
+        String newId;
     }
 
     private boolean isNullReference(ResourceReferenceDt reference) {
@@ -58,37 +58,64 @@ public class MQProcessor implements Processor {
 
      }
 
+     
+    private EntryProcessing findEntryProcess(String originalId)
+    {
+        EntryProcessing entry = null;
+        log.info("Search entry processing for = "+originalId);
+        for (EntryProcessing ent : resourceList) {
+            if (ent.originalId.equals(originalId)) entry = ent;
+        }
+        if (entry !=null && entry.newId != null) log.info("Found actual Id of "+entry.newId);
+        return entry;
+    }
+
     private boolean processed(String reference) {
 
         for(String s : newReferences)
-            if(s.trim().contains(reference)) return true;
+            if(s != null && s.trim().contains(reference)) return true;
         return false;
+    }
+    
+    private void addNewReferences(String reference)
+    {
+        if (reference == null) log.error("Blank reference added");
+        newReferences.add(reference);
     }
 
     private String findAcutalId (String referenceId) {
 
         // If guid deteched just search on the guid itself
         int i = 0;
-        String actualId = null;
-        String noUuid = null;
+        String newId = null;
+        log.info("Finding "+referenceId);
         if (referenceId.contains("urn:uuid:")) {
             referenceId = referenceId.replace("urn:uuid:","");
         }
-
-        for (int h = 0; h < resourceList.size(); h++) {
-            String compare = resourceList.get(h).bundleId;
+        log.info("Finding (modified) "+referenceId);
+        for (EntryProcessing entry:  resourceList) {
+            String compare = entry.originalId;
             if (compare.contains("urn:uuid:")) {
-                compare = compare.replace("urn:uuid:","");
+                compare = compare.replace("urn:uuid:", "");
             }
-            if (resourceList.get(h).processed && resourceList.get(h).bundleId != null) {
-                if (referenceId.equals(compare)) {
-                    actualId = resourceList.get(h).actualId;
-                    newReferences.add(actualId);
+            // Need to investigate more but need raw Id.
+            compare = compare.replace(entry.resource.getResourceName()+"/","");
+            log.info("Comparing to (modified) " + compare);
+            if (referenceId.equals(compare) && newId == null) {
+
+                if (entry.processed && entry.originalId != null) {
+                    newId = entry.newId;
+                    addNewReferences(newId);
+                    log.info("### Found "+ entry.resource.getResourceName());
+                }
+                else
+                {
+                    log.info("*** Not mapped yet "+ entry.resource.getResourceName());
                 }
             }
         }
-        if (actualId == null) log.debug("Not found referenceId="+referenceId);
-        return actualId;
+        if (newId == null) log.info("Not found referenceId = "+referenceId);
+        return newId;
     }
 
     /*
@@ -97,8 +124,10 @@ public class MQProcessor implements Processor {
 
      */
 
-    private boolean processAllergyIntolerance(int f, AllergyIntolerance allergyIntolerance) {
+    private boolean processAllergyIntolerance(AllergyIntolerance allergyIntolerance) {
         Boolean allReferenced = true;
+        EntryProcessing entry = findEntryProcess(allergyIntolerance.getId().getValue());
+        
         if (allergyIntolerance.getIdentifier().size() == 0 ) {
             allergyIntolerance.addIdentifier()
                     .setSystem("https://tools.ietf.org/html/rfc4122")
@@ -122,10 +151,10 @@ public class MQProcessor implements Processor {
                     .conditionalByUrl("AllergyIntolerance?identifier=" + allergyIntolerance.getIdentifier().get(0).getSystem() + "%7C" + allergyIntolerance.getIdentifier().get(0).getValue())
                     .execute();
             allergyIntolerance.setId(outcome.getId());
-            resourceList.get(f).processed = true;
-            resourceList.get(f).actualId = outcome.getId().getValue();
-            resourceList.get(f).resource = allergyIntolerance;
-            log.info("Composition: Id="+resourceList.get(f).bundleId+" Server Id = "+outcome.getId().getValue());
+            entry.processed = true;
+            entry.newId = outcome.getId().getValue();
+            entry.resource = allergyIntolerance;
+            log.info("Composition: Id="+entry.originalId+" Server Id = "+outcome.getId().getValue());
         }
         return allReferenced;
     }
@@ -135,8 +164,9 @@ public class MQProcessor implements Processor {
      APPOINTMENT
 
      */
-    private boolean processAppointment(int f, Appointment appointment) {
+    private boolean processAppointment(Appointment appointment) {
         Boolean allReferenced = true;
+        EntryProcessing entry = findEntryProcess(appointment.getId().getValue());
 
         if (appointment.getIdentifier().size() == 0) {
             appointment.addIdentifier()
@@ -159,25 +189,27 @@ public class MQProcessor implements Processor {
 
         if (allReferenced)
         {
-            log.info("Appointment = "+parser.setPrettyPrint(true).encodeResourceToString(appointment));
+           // log.info("Appointment = "+parser.setPrettyPrint(true).encodeResourceToString(appointment));
             MethodOutcome outcome = client.update().resource(appointment)
                     .conditionalByUrl("Appointment?identifier=" + appointment.getIdentifier().get(0).getSystem() + "%7C" + appointment.getIdentifier().get(0).getValue())
                     .execute();
-            if (outcome.getResource()!=null) {
-                log.info("Outcome = " + parser.setPrettyPrint(true).encodeResourceToString(outcome.getResource()));
-            }
+          //  if (outcome.getResource()!=null) {
+         //       log.info("Outcome = " + parser.setPrettyPrint(true).encodeResourceToString(outcome.getResource()));
+        //    }
             appointment.setId(outcome.getId());
-            resourceList.get(f).processed = true;
-            resourceList.get(f).resource = appointment;
-            resourceList.get(f).actualId = outcome.getId().getValue();
-            log.info("Appointment: Id="+resourceList.get(f).bundleId+" Server Id = "+outcome.getId().getValue());
+            entry.processed = true;
+            entry.resource = appointment;
+            entry.newId = outcome.getId().getValue();
+            log.info("Appointment: Id="+entry.originalId+" Server Id = "+outcome.getId().getValue());
         }
 
         return allReferenced;
     }
 
-    private boolean processComposition(int f, Composition composition) {
+    private boolean processComposition(Composition composition) {
         Boolean allReferenced = true;
+        EntryProcessing entry = findEntryProcess(composition.getId().getValue());
+        
         if (composition.getIdentifier() !=null) {
             composition.getIdentifier()
                     .setSystem("https://tools.ietf.org/html/rfc4122")
@@ -260,16 +292,17 @@ public class MQProcessor implements Processor {
                     .conditionalByUrl("Composition?identifier=" + composition.getIdentifier().getSystem() + "%7C" + composition.getIdentifier().getValue())
                     .execute();
             composition.setId(outcome.getId());
-            resourceList.get(f).processed = true;
-            resourceList.get(f).actualId = outcome.getId().getValue();
-            resourceList.get(f).resource = composition;
-            log.info("Composition: Id="+resourceList.get(f).bundleId+" Server Id = "+outcome.getId().getValue());
+            entry.processed = true;
+            entry.newId = outcome.getId().getValue();
+            entry.resource = composition;
+            log.info("Composition: Id="+entry.originalId+" Server Id = "+outcome.getId().getValue());
         }
         return allReferenced;
     }
 
-    private boolean processCondition(int f, Condition condition) {
+    private boolean processCondition(Condition condition) {
         Boolean allReferenced = true;
+        EntryProcessing entry = findEntryProcess(condition.getId().getValue());
 
         // Having an identifier makes this a lot easier.
         if (condition.getIdentifier().size() == 0) {
@@ -315,23 +348,24 @@ public class MQProcessor implements Processor {
 
         if (allReferenced)
         {
-            log.info("Condition= "+parser.setPrettyPrint(true).encodeResourceToString(condition));
+           // log.info("Condition= "+parser.setPrettyPrint(true).encodeResourceToString(condition));
             MethodOutcome outcome = client.update().resource(condition)
                     .conditionalByUrl("Condition?identifier=" + condition.getIdentifier().get(0).getSystem() + "%7C" + condition.getIdentifier().get(0).getValue())
                     .execute();
             condition.setId(outcome.getId());
-            resourceList.get(f).processed = true;
-            resourceList.get(f).resource = condition;
-            resourceList.get(f).actualId = outcome.getId().getValue();
-            log.info("Condition: Id="+resourceList.get(f).bundleId+" Server Id = "+outcome.getId().getValue());
+            entry.processed = true;
+            entry.resource = condition;
+            entry.newId = outcome.getId().getValue();
+            log.info("Condition: Id="+entry.originalId+" Server Id = "+outcome.getId().getValue());
         }
 
         return allReferenced;
     }
 
 
-    private boolean processEncounter(int f, Encounter encounter) {
+    private boolean processEncounter( Encounter encounter) {
         Boolean allReferenced = true;
+        EntryProcessing entry = findEntryProcess(encounter.getId().getValue());
 
         if (encounter.getIdentifier().size() == 0) {
             encounter.addIdentifier()
@@ -414,18 +448,19 @@ public class MQProcessor implements Processor {
                 log.info("Outcome = " + parser.setPrettyPrint(true).encodeResourceToString(outcome.getResource()));
             }
             encounter.setId(outcome.getId());
-            resourceList.get(f).processed = true;
-            resourceList.get(f).resource = encounter;
-            resourceList.get(f).actualId = outcome.getId().getValue();
-            log.info("Encounter: Id="+resourceList.get(f).bundleId+" Server Id = "+outcome.getId().getValue());
+            entry.processed = true;
+            entry.resource = encounter;
+            entry.newId = outcome.getId().getValue();
+            log.info("Encounter: Id="+entry.originalId+" Server Id = "+outcome.getId().getValue());
         }
 
 
         return allReferenced;
     }
 
-    private boolean processFlag(int f, Flag flag) {
+    private boolean processFlag(Flag flag) {
         Boolean allReferenced = true;
+        EntryProcessing entry = findEntryProcess(flag.getId().getValue());
 
         if (flag.getIdentifier().size() == 0) {
             flag.addIdentifier()
@@ -457,10 +492,10 @@ public class MQProcessor implements Processor {
             if (searchBundle.getEntries().size()==0) {
                 IIdType id = client.create().resource(flag).execute().getId();
                 flag.setId(id);
-                resourceList.get(f).processed = true;
-                resourceList.get(f).actualId = id.getValue();
-                resourceList.get(f).resource = flag;
-                log.info("Flag: Id="+resourceList.get(f).bundleId+" Server Id = "+id.getValue());
+                entry.processed = true;
+                entry.newId = id.getValue();
+                entry.resource = flag;
+                log.info("Flag: Id="+entry.originalId+" Server Id = "+id.getValue());
             }
 
         }
@@ -468,8 +503,10 @@ public class MQProcessor implements Processor {
     }
 
 
-    private boolean processList(int f, ListResource list) {
+    private boolean processList(ListResource list) {
         Boolean allReferenced = true;
+        EntryProcessing entry = findEntryProcess(list.getId().getValue());
+        
         if (list.getIdentifier().size() == 0) {
             list.addIdentifier()
                     .setSystem("https://tools.ietf.org/html/rfc4122")
@@ -491,8 +528,8 @@ public class MQProcessor implements Processor {
         }
 
         // List Entries
-        for(ListResource.Entry entry: list.getEntry()) {
-            ResourceReferenceDt reference = entry.getItem();
+        for(ListResource.Entry listentry: list.getEntry()) {
+            ResourceReferenceDt reference = listentry.getItem();
             if (!isNullReference(reference)) {
                 String referencedResource = findAcutalId(reference.getReference().getValue());
 
@@ -504,9 +541,6 @@ public class MQProcessor implements Processor {
             }
         }
 
-
-
-
         if (allReferenced) {
             // Perform a search to look for the identifier - work around
             ca.uhn.fhir.model.api.Bundle searchBundle = client.search().forResource(ListResource.class)
@@ -517,10 +551,10 @@ public class MQProcessor implements Processor {
             if (searchBundle.getEntries().size()==0) {
                 IIdType id = client.create().resource(list).execute().getId();
                 list.setId(id);
-                resourceList.get(f).processed = true;
-                resourceList.get(f).actualId = id.getValue();
-                resourceList.get(f).resource = list;
-                log.info("List: Id="+resourceList.get(f).bundleId+" Server Id = "+id.getValue());
+                entry.processed = true;
+                entry.newId = id.getValue();
+                entry.resource = list;
+                log.info("List: Id="+entry.originalId+" Server Id = "+id.getValue());
             }
 
         }
@@ -529,9 +563,10 @@ public class MQProcessor implements Processor {
 
 
 
-    private boolean processLocation(int f, Location location) {
+    private boolean processLocation(Location location) {
 
         Boolean allReferenced = true;
+        EntryProcessing entry = findEntryProcess(location.getId().getValue());
 
         if (location.getIdentifier().size() == 0) {
             location.addIdentifier()
@@ -540,24 +575,15 @@ public class MQProcessor implements Processor {
         }
 
         if (!isNullReference(location.getManagingOrganization()))  {
-            IResource referencedResource = null;
-            log.info(location.getManagingOrganization().getReference().getValue());
-            int i =0;
-            for (int h = 0; h < resourceList.size(); h++) {
-                if (resourceList.get(h).processed && resourceList.get(h).bundleId != null && location.getManagingOrganization().getReference().getValue().equals(resourceList.get(h).bundleId)) {
-                    referencedResource = resourceList.get(h).resource;
-                    log.debug("BundleId ="+resourceList.get(h).bundleId);
-                    log.debug("ActualId ="+resourceList.get(h).actualId);
-                    i = h;
-                }
-            }
-            if (referencedResource != null) {
-                log.debug("New ReferenceId = "+resourceList.get(i).actualId);
-                location.getManagingOrganization().setReference(resourceList.get(i).actualId);
-                newReferences.add(resourceList.get(i).actualId);
+            ResourceReferenceDt reference = location.getManagingOrganization();
+            if (!isNullReference(reference)) {
+                String referencedResource = findAcutalId(reference.getReference().getValue());
 
-            } else {
-                allReferenced = false;
+                if (referencedResource != null) {
+                    reference.setReference(referencedResource);
+                } else {
+                    if (!processed(reference.getReference().getValue())) allReferenced = false;
+                }
             }
         }
 
@@ -566,16 +592,19 @@ public class MQProcessor implements Processor {
                     .conditionalByUrl("Location?identifier=" + location.getIdentifier().get(0).getSystem() + "%7C" + location.getIdentifier().get(0).getValue())
                     .execute();
             location.setId(outcome.getId());
-            resourceList.get(f).processed = true;
-            resourceList.get(f).actualId = outcome.getId().getValue();
-            resourceList.get(f).resource = location;
-            log.info("Location: Id="+resourceList.get(f).bundleId+" Server Id = "+outcome.getId().getValue());
+            
+            entry.processed = true;
+            entry.newId = outcome.getId().getValue();
+            entry.resource = location;
+            log.info("Location: Id="+entry.originalId+" Server Id = "+outcome.getId().getValue());
         }
         return allReferenced;
     }
 
-    private boolean processMedication(int f, Medication medication) {
+    private boolean processMedication(Medication medication) {
         Boolean allReferenced = true;
+        EntryProcessing entry = findEntryProcess(medication.getId().getValue());
+        
         if (medication.getCode().getCoding().size() == 0) {
             medication.getCode().addCoding()
                     .setSystem("https://tools.ietf.org/html/rfc4122")
@@ -587,16 +616,18 @@ public class MQProcessor implements Processor {
                     .conditionalByUrl("Medication?code=" + medication.getCode().getCoding().get(0).getSystem() + "%7C" + medication.getCode().getCoding().get(0).getCode())
                     .execute();
             medication.setId(outcome.getId());
-            resourceList.get(f).processed = true;
-            resourceList.get(f).actualId = outcome.getId().getValue();
-            resourceList.get(f).resource = medication;
-            log.info("Medication: Id="+resourceList.get(f).bundleId+" Server Id = "+outcome.getId().getValue());
+            entry.processed = true;
+            entry.newId = outcome.getId().getValue();
+            entry.resource = medication;
+            log.info("Medication: Id="+entry.originalId+" Server Id = "+outcome.getId().getValue());
         }
         return allReferenced;
     }
 
-    private boolean processMedicationStatement(int f, MedicationStatement medicationStatement) {
+    private boolean processMedicationStatement( MedicationStatement medicationStatement) {
         Boolean allReferenced = true;
+        EntryProcessing entry = findEntryProcess(medicationStatement.getId().getValue());
+        
         if (medicationStatement.getIdentifier().size() == 0) {
             medicationStatement.addIdentifier()
                     .setSystem("https://tools.ietf.org/html/rfc4122")
@@ -609,17 +640,17 @@ public class MQProcessor implements Processor {
             log.debug(medicationStatement.getPatient().getReference().getValue());
             int i = 0;
             for (int h = 0; h < resourceList.size(); h++) {
-                if (resourceList.get(h).processed && resourceList.get(h).bundleId != null && medicationStatement.getPatient().getReference().getValue().equals(resourceList.get(h).bundleId)) {
+                if (resourceList.get(h).processed && resourceList.get(h).originalId != null && medicationStatement.getPatient().getReference().getValue().equals(resourceList.get(h).originalId)) {
                     referencedResource = resourceList.get(h).resource;
-                    log.debug("BundleId =" + resourceList.get(h).bundleId);
-                    log.debug("ActualId =" + resourceList.get(h).actualId);
+                    log.debug("originalId =" + resourceList.get(h).originalId);
+                    log.debug("newId =" + resourceList.get(h).newId);
                     i = h;
                 }
             }
             if (referencedResource != null) {
-                log.debug("New ReferenceId = " + resourceList.get(i).actualId);
-                medicationStatement.getPatient().setReference(resourceList.get(i).actualId);
-                newReferences.add(resourceList.get(i).actualId);
+                log.info("New ReferenceId = " + resourceList.get(i).newId);
+                medicationStatement.getPatient().setReference(resourceList.get(i).newId);
+                addNewReferences(resourceList.get(i).newId);
 
             } else {
                 if (!processed(medicationStatement.getPatient().getReference().getValue())) allReferenced = false;
@@ -632,17 +663,17 @@ public class MQProcessor implements Processor {
                 log.debug(((ResourceReferenceDt) medicationStatement.getMedication()).getReference().getValue());
                 int i = 0;
                 for (int h = 0; h < resourceList.size(); h++) {
-                    if (resourceList.get(h).processed && resourceList.get(h).bundleId != null && ((ResourceReferenceDt) medicationStatement.getMedication()).getReference().getValue().equals(resourceList.get(h).bundleId)) {
+                    if (resourceList.get(h).processed && resourceList.get(h).originalId != null && ((ResourceReferenceDt) medicationStatement.getMedication()).getReference().getValue().equals(resourceList.get(h).originalId)) {
                         referencedResource = resourceList.get(h).resource;
-                        log.debug("BundleId =" + resourceList.get(h).bundleId);
-                        log.debug("ActualId =" + resourceList.get(h).actualId);
+                        log.debug("originalId =" + resourceList.get(h).originalId);
+                        log.debug("newId =" + resourceList.get(h).newId);
                         i = h;
                     }
                 }
                 if (referencedResource != null) {
-                    log.debug("New ReferenceId = " + resourceList.get(i).actualId);
-                    ((ResourceReferenceDt) medicationStatement.getMedication()).setReference(resourceList.get(i).actualId);
-                    newReferences.add(resourceList.get(i).actualId);
+                    log.info("New ReferenceId = " + resourceList.get(i).newId);
+                    ((ResourceReferenceDt) medicationStatement.getMedication()).setReference(resourceList.get(i).newId);
+                    addNewReferences(resourceList.get(i).newId);
 
                 } else {
                     if (!processed(medicationStatement.getPatient().getReference().getValue())) allReferenced = false;
@@ -655,17 +686,18 @@ public class MQProcessor implements Processor {
                     .conditionalByUrl("MedicationStatement?identifier=" + medicationStatement.getIdentifier().get(0).getSystem() + "%7C" + medicationStatement.getIdentifier().get(0).getValue())
                     .execute();
             medicationStatement.setId(outcome.getId());
-            resourceList.get(f).processed = true;
-            resourceList.get(f).actualId = outcome.getId().getValue();
-            resourceList.get(f).resource = medicationStatement;
-            log.info("MedicationStatement: Id="+resourceList.get(f).bundleId+" Server Id = "+outcome.getId().getValue());
+            entry.processed = true;
+            entry.newId = outcome.getId().getValue();
+            entry.resource = medicationStatement;
+            log.info("MedicationStatement: Id="+entry.originalId+" Server Id = "+outcome.getId().getValue());
         }
         return allReferenced;
     }
 
 
-    private boolean processOrganisation(int f, Organization organisation) {
+    private boolean processOrganisation(Organization organisation) {
         Boolean allReferenced = true;
+        EntryProcessing entry = findEntryProcess(organisation.getId().getValue());
 
         if (organisation.getIdentifier().size() == 0) {
             organisation.addIdentifier()
@@ -678,20 +710,20 @@ public class MQProcessor implements Processor {
             log.debug("organisation.getPartOf()="+organisation.getPartOf().getReference().getValue());
             int i =0;
             for (int h = 0; h < resourceList.size(); h++) {
-                if (resourceList.get(h).processed && resourceList.get(h).bundleId != null && organisation.getPartOf().getReference().getValue().equals(resourceList.get(h).bundleId)) {
+                if (resourceList.get(h).processed && resourceList.get(h).originalId != null && organisation.getPartOf().getReference().getValue().equals(resourceList.get(h).originalId)) {
                     referencedResource = resourceList.get(h).resource;
-                    log.debug("BundleId ="+resourceList.get(h).bundleId);
-                    log.debug("ActualId ="+resourceList.get(h).actualId);
+                    log.debug("originalId ="+resourceList.get(h).originalId);
+                    log.debug("newId ="+resourceList.get(h).newId);
                     i = h;
                 }
             }
             if (referencedResource != null) {
-                log.debug("New ReferenceId = "+resourceList.get(i).actualId);
-                organisation.getPartOf().setReference(resourceList.get(i).actualId);
-                newReferences.add(resourceList.get(i).actualId);
+                log.info("New ReferenceId = "+resourceList.get(i).newId);
+                organisation.getPartOf().setReference(resourceList.get(i).newId);
+                addNewReferences(resourceList.get(i).newId);
 
             } else {
-                allReferenced = false;
+                if (!processed(organisation.getPartOf().getReference().getValue())) allReferenced = false;
             }
         }
         if (allReferenced) {
@@ -699,10 +731,10 @@ public class MQProcessor implements Processor {
                     .conditionalByUrl("Organization?identifier=" + organisation.getIdentifier().get(0).getSystem() + "%7C" + organisation.getIdentifier().get(0).getValue())
                     .execute();
             organisation.setId(outcome.getId());
-            resourceList.get(f).processed = true;
-            resourceList.get(f).actualId = outcome.getId().getValue();
-            resourceList.get(f).resource = organisation;
-            log.info("Organization: Id="+resourceList.get(f).bundleId+" Server Id = "+outcome.getId().getValue());
+            entry.processed = true;
+            entry.newId = outcome.getId().getValue();
+            entry.resource = organisation;
+            log.info("Organization: Id="+entry.originalId+" Server Id = "+outcome.getId().getValue());
         }
         return allReferenced;
     }
@@ -710,8 +742,9 @@ public class MQProcessor implements Processor {
 
 
 
-    private boolean processPatient(int f, Patient patient) {
+    private boolean processPatient(Patient patient) {
         Boolean allReferenced = true;
+        EntryProcessing entry = findEntryProcess(patient.getId().getValue());
 
         if (patient.getIdentifier().size() == 0) {
             patient.addIdentifier()
@@ -725,17 +758,17 @@ public class MQProcessor implements Processor {
             if (!isNullReference(patient.getCareProvider().get(j))) {
                 int i = 0;
                 for (int h = 0; h < resourceList.size(); h++) {
-                    if (resourceList.get(h).processed && resourceList.get(h).bundleId != null && patient.getCareProvider().get(j).getReference().getValue().equals(resourceList.get(h).bundleId)) {
+                    if (resourceList.get(h).processed && resourceList.get(h).originalId != null && patient.getCareProvider().get(j).getReference().getValue().equals(resourceList.get(h).originalId)) {
                         referencedResource = resourceList.get(h).resource;
-                        log.debug("patient.getCareProvider() BundleId =" + resourceList.get(h).bundleId);
-                        log.debug("patient.getCareProvider() ActualId =" + resourceList.get(h).actualId);
+                        log.debug("patient.getCareProvider() originalId =" + resourceList.get(h).originalId);
+                        log.debug("patient.getCareProvider() newId =" + resourceList.get(h).newId);
                         i = h;
                     }
                 }
                 if (referencedResource != null) {
-                    log.debug("patient.getCareProvider() New ReferenceId = " + resourceList.get(i).actualId);
-                    patient.getCareProvider().get(j).setReference(resourceList.get(i).actualId);
-                    newReferences.add(resourceList.get(i).actualId);
+                    log.debug("patient.getCareProvider() New ReferenceId = " + resourceList.get(i).newId);
+                    patient.getCareProvider().get(j).setReference(resourceList.get(i).newId);
+                    addNewReferences(resourceList.get(i).newId);
                 } else {
                     if (!processed(patient.getCareProvider().get(j).getReference().getValue())) allReferenced = false;
                 }
@@ -747,16 +780,17 @@ public class MQProcessor implements Processor {
                     .conditionalByUrl("Patient?identifier=" + patient.getIdentifier().get(0).getSystem() + "%7C" + patient.getIdentifier().get(0).getValue())
                     .execute();
             patient.setId(outcome.getId());
-            resourceList.get(f).processed = true;
-            resourceList.get(f).actualId = outcome.getId().getValue();
-            resourceList.get(f).resource = patient;
-            log.info("Patient: Id="+resourceList.get(f).bundleId+" Server Id = "+outcome.getId().getValue());
+            entry.processed = true;
+            entry.newId = outcome.getId().getValue();
+            entry.resource = patient;
+            log.info("Patient: Id="+entry.originalId+" Server Id = "+outcome.getId().getValue());
         }
         return allReferenced;
     }
 
-    private boolean processProcedureRequest(int f, ProcedureRequest procedureRequest) {
+    private boolean processProcedureRequest(ProcedureRequest procedureRequest) {
         Boolean allReferenced = true;
+        EntryProcessing entry = findEntryProcess(procedureRequest.getId().getValue());
 
         if (procedureRequest.getIdentifier().size() == 0) {
             procedureRequest.addIdentifier()
@@ -769,17 +803,17 @@ public class MQProcessor implements Processor {
             log.info(procedureRequest.getSubject().getReference().getValue());
             int i =0;
             for (int h = 0; h < resourceList.size(); h++) {
-                if (resourceList.get(h).processed && resourceList.get(h).bundleId != null && procedureRequest.getSubject().getReference().getValue().equals(resourceList.get(h).bundleId)) {
+                if (resourceList.get(h).processed && resourceList.get(h).originalId != null && procedureRequest.getSubject().getReference().getValue().equals(resourceList.get(h).originalId)) {
                     referencedResource = resourceList.get(h).resource;
-                    log.debug("BundleId ="+resourceList.get(h).bundleId);
-                    log.debug("ActualId ="+resourceList.get(h).actualId);
+                    log.debug("originalId ="+resourceList.get(h).originalId);
+                    log.debug("newId ="+resourceList.get(h).newId);
                     i = h;
                 }
             }
             if (referencedResource != null) {
-                log.debug("New ReferenceId = "+resourceList.get(i).actualId);
-                procedureRequest.getSubject().setReference(resourceList.get(i).actualId);
-                newReferences.add(resourceList.get(i).actualId);
+                log.info("New ReferenceId = "+resourceList.get(i).newId);
+                procedureRequest.getSubject().setReference(resourceList.get(i).newId);
+                addNewReferences(resourceList.get(i).newId);
 
             } else {
                 allReferenced = false;
@@ -788,26 +822,27 @@ public class MQProcessor implements Processor {
 
         if (allReferenced)
         {
-            log.info("ProcedureRequest = "+parser.setPrettyPrint(true).encodeResourceToString(procedureRequest));
+        //    log.info("ProcedureRequest = "+parser.setPrettyPrint(true).encodeResourceToString(procedureRequest));
             MethodOutcome outcome = client.update().resource(procedureRequest)
                     .conditionalByUrl("ProcedureRequest?identifier=" + procedureRequest.getIdentifier().get(0).getSystem() + "%7C" + procedureRequest.getIdentifier().get(0).getValue())
                     .execute();
-            if (outcome.getResource()!=null) {
-                log.info("Outcome = " + parser.setPrettyPrint(true).encodeResourceToString(outcome.getResource()));
-            }
+        //    if (outcome.getResource()!=null) {
+       //         log.info("Outcome = " + parser.setPrettyPrint(true).encodeResourceToString(outcome.getResource()));
+      //      }
             procedureRequest.setId(outcome.getId());
-            resourceList.get(f).processed = true;
-            resourceList.get(f).actualId = outcome.getId().getValue();
-            resourceList.get(f).resource = procedureRequest;
-            log.info("ProcedureRequest: Id="+resourceList.get(f).bundleId+" Server Id = "+outcome.getId().getValue());
+            entry.processed = true;
+            entry.newId = outcome.getId().getValue();
+            entry.resource = procedureRequest;
+            log.info("ProcedureRequest: Id="+entry.originalId+" Server Id = "+outcome.getId().getValue());
         }
 
         return allReferenced;
     }
 
 
-    private boolean processObservation(int f, Observation observation) {
+    private boolean processObservation(Observation observation) {
         Boolean allReferenced = true;
+        EntryProcessing entry = findEntryProcess(observation.getId().getValue());
 
         // Having an identifier makes this a lot easier.
         if (observation.getIdentifier().size() == 0) {
@@ -823,17 +858,17 @@ public class MQProcessor implements Processor {
             log.info(observation.getSubject().getReference().getValue());
             int i = 0;
             for (int h = 0; h < resourceList.size(); h++) {
-                if (resourceList.get(h).processed && resourceList.get(h).bundleId != null && observation.getSubject().getReference().getValue().equals(resourceList.get(h).bundleId)) {
+                if (resourceList.get(h).processed && resourceList.get(h).originalId != null && observation.getSubject().getReference().getValue().equals(resourceList.get(h).originalId)) {
                     referencedResource = resourceList.get(h).resource;
-                    log.debug("BundleId =" + resourceList.get(h).bundleId);
-                    log.debug("ActualId =" + resourceList.get(h).actualId);
+                    log.debug("originalId =" + resourceList.get(h).originalId);
+                    log.debug("newId =" + resourceList.get(h).newId);
                     i = h;
                 }
             }
             if (referencedResource != null) {
-                log.debug("New ReferenceId = " + resourceList.get(i).actualId);
-                observation.getSubject().setReference(resourceList.get(i).actualId);
-                newReferences.add(resourceList.get(i).actualId);
+                log.info("New ReferenceId = " + resourceList.get(i).newId);
+                observation.getSubject().setReference(resourceList.get(i).newId);
+                addNewReferences(resourceList.get(i).newId);
 
             } else {
                 if (!processed(observation.getSubject().getReference().getValue())) allReferenced = false;
@@ -845,17 +880,17 @@ public class MQProcessor implements Processor {
             log.info(observation.getEncounter().getReference().getValue());
             int i = 0;
             for (int h = 0; h < resourceList.size(); h++) {
-                if (resourceList.get(h).processed && resourceList.get(h).bundleId != null && observation.getEncounter().getReference().getValue().equals(resourceList.get(h).bundleId)) {
+                if (resourceList.get(h).processed && resourceList.get(h).originalId != null && observation.getEncounter().getReference().getValue().equals(resourceList.get(h).originalId)) {
                     referencedResource = resourceList.get(h).resource;
-                    log.debug("BundleId =" + resourceList.get(h).bundleId);
-                    log.debug("ActualId =" + resourceList.get(h).actualId);
+                    log.debug("originalId =" + resourceList.get(h).originalId);
+                    log.debug("newId =" + resourceList.get(h).newId);
                     i = h;
                 }
             }
             if (referencedResource != null) {
-                log.debug("New ReferenceId = " + resourceList.get(i).actualId);
-                observation.getEncounter().setReference(resourceList.get(i).actualId);
-                newReferences.add(resourceList.get(i).actualId);
+                log.info("New ReferenceId = " + resourceList.get(i).newId);
+                observation.getEncounter().setReference(resourceList.get(i).newId);
+                addNewReferences(resourceList.get(i).newId);
 
             } else {
                 if (!processed(observation.getEncounter().getReference().getValue())) allReferenced = false;
@@ -870,17 +905,17 @@ public class MQProcessor implements Processor {
             if (!isNullReference(observation.getPerformer().get(j))) {
                 int i = 0;
                 for (int h = 0; h < resourceList.size(); h++) {
-                    if (resourceList.get(h).processed && resourceList.get(h).bundleId != null && observation.getPerformer().get(j).getReference().getValue().equals(resourceList.get(h).bundleId)) {
+                    if (resourceList.get(h).processed && resourceList.get(h).originalId != null && observation.getPerformer().get(j).getReference().getValue().equals(resourceList.get(h).originalId)) {
                         referencedResource = resourceList.get(h).resource;
-                        log.debug("BundleId =" + resourceList.get(h).bundleId);
-                        log.debug("ActualId =" + resourceList.get(h).actualId);
+                        log.debug("originalId =" + resourceList.get(h).originalId);
+                        log.debug("newId =" + resourceList.get(h).newId);
                         i = h;
                     }
                 }
                 if (referencedResource != null) {
-                    log.debug("New ReferenceId = " + resourceList.get(i).actualId);
-                    observation.getPerformer().get(j).setReference(resourceList.get(i).actualId);
-                    newReferences.add(resourceList.get(i).actualId);
+                    log.info("New ReferenceId = " + resourceList.get(i).newId);
+                    observation.getPerformer().get(j).setReference(resourceList.get(i).newId);
+                    addNewReferences(resourceList.get(i).newId);
                 } else {
                     if (!processed(observation.getPerformer().get(j).getReference().getValue()))  allReferenced = false;
                 }
@@ -890,26 +925,28 @@ public class MQProcessor implements Processor {
 
         if (allReferenced)
         {
-            log.info("Encounter = "+parser.setPrettyPrint(true).encodeResourceToString(observation));
+         //   log.info("Encounter = "+parser.setPrettyPrint(true).encodeResourceToString(observation));
             MethodOutcome outcome = client.update().resource(observation)
                     .conditionalByUrl("Observation?identifier=" + observation.getIdentifier().get(0).getSystem() + "%7C" + observation.getIdentifier().get(0).getValue())
                     .execute();
-            if (outcome.getResource()!=null) {
-                log.info("Outcome = " + parser.setPrettyPrint(true).encodeResourceToString(outcome.getResource()));
-            }
+          //  if (outcome.getResource()!=null) {
+          //      log.info("Outcome = " + parser.setPrettyPrint(true).encodeResourceToString(outcome.getResource()));
+          //  }
             observation.setId(outcome.getId());
-            resourceList.get(f).processed = true;
-            resourceList.get(f).resource = observation;
-            resourceList.get(f).actualId = outcome.getId().getValue();
-            log.info("Observation: Id="+resourceList.get(f).bundleId+" Server Id = "+outcome.getId().getValue());
+            entry.processed = true;
+            entry.resource = observation;
+            entry.newId = outcome.getId().getValue();
+            log.info("Observation: Id="+entry.originalId+" Server Id = "+outcome.getId().getValue());
         }
 
         return allReferenced;
     }
 
 
-    private boolean processPractitioner(int f, Practitioner practitioner) {
+    private boolean processPractitioner(Practitioner practitioner) {
         Boolean allReferenced = true;
+        EntryProcessing entry = findEntryProcess(practitioner.getId().getValue());
+        
         if (practitioner.getIdentifier().size() == 0) {
             practitioner.addIdentifier()
                     .setSystem("https://tools.ietf.org/html/rfc4122")
@@ -935,16 +972,17 @@ public class MQProcessor implements Processor {
                     .conditionalByUrl("Practitioner?identifier=" + practitioner.getIdentifier().get(0).getSystem() + "%7C" + practitioner.getIdentifier().get(0).getValue())
                     .execute();
             practitioner.setId(outcome.getId());
-            resourceList.get(f).processed = true;
-            resourceList.get(f).actualId = outcome.getId().getValue();
-            resourceList.get(f).resource = practitioner;
-            log.info("Practitioner: Id="+resourceList.get(f).bundleId+" Server Id = "+outcome.getId().getValue());
+            entry.processed = true;
+            entry.newId = outcome.getId().getValue();
+            entry.resource = practitioner;
+            log.info("Practitioner: Id="+entry.originalId+" Server Id = "+outcome.getId().getValue());
         }
         return allReferenced;
     }
 
-    private boolean processProcedure(int f, Procedure procedure) {
+    private boolean processProcedure(Procedure procedure) {
         Boolean allReferenced = true;
+        EntryProcessing entry = findEntryProcess(procedure.getId().getValue());
 
         // Having an identifier makes this a lot easier.
         if (procedure.getIdentifier().size() == 0) {
@@ -959,17 +997,17 @@ public class MQProcessor implements Processor {
             log.info(procedure.getSubject().getReference().getValue());
             int i = 0;
             for (int h = 0; h < resourceList.size(); h++) {
-                if (resourceList.get(h).processed && resourceList.get(h).bundleId != null && procedure.getSubject().getReference().getValue().equals(resourceList.get(h).bundleId)) {
+                if (resourceList.get(h).processed && resourceList.get(h).originalId != null && procedure.getSubject().getReference().getValue().equals(resourceList.get(h).originalId)) {
                     referencedResource = resourceList.get(h).resource;
-                    log.debug("BundleId =" + resourceList.get(h).bundleId);
-                    log.debug("ActualId =" + resourceList.get(h).actualId);
+                    log.debug("originalId =" + resourceList.get(h).originalId);
+                    log.debug("newId =" + resourceList.get(h).newId);
                     i = h;
                 }
             }
             if (referencedResource != null) {
-                log.debug("New ReferenceId = " + resourceList.get(i).actualId);
-                procedure.getSubject().setReference(resourceList.get(i).actualId);
-                newReferences.add(resourceList.get(i).actualId);
+                log.info("New ReferenceId = " + resourceList.get(i).newId);
+                procedure.getSubject().setReference(resourceList.get(i).newId);
+                addNewReferences(resourceList.get(i).newId);
 
             } else {
                 if (!processed(procedure.getSubject().getReference().getValue())) allReferenced = false;
@@ -981,17 +1019,17 @@ public class MQProcessor implements Processor {
             log.info(procedure.getEncounter().getReference().getValue());
             int i = 0;
             for (int h = 0; h < resourceList.size(); h++) {
-                if (resourceList.get(h).processed && resourceList.get(h).bundleId != null && procedure.getEncounter().getReference().getValue().equals(resourceList.get(h).bundleId)) {
+                if (resourceList.get(h).processed && resourceList.get(h).originalId != null && procedure.getEncounter().getReference().getValue().equals(resourceList.get(h).originalId)) {
                     referencedResource = resourceList.get(h).resource;
-                    log.debug("BundleId =" + resourceList.get(h).bundleId);
-                    log.debug("ActualId =" + resourceList.get(h).actualId);
+                    log.debug("originalId =" + resourceList.get(h).originalId);
+                    log.debug("newId =" + resourceList.get(h).newId);
                     i = h;
                 }
             }
             if (referencedResource != null) {
-                log.debug("New ReferenceId = " + resourceList.get(i).actualId);
-                procedure.getEncounter().setReference(resourceList.get(i).actualId);
-                newReferences.add(resourceList.get(i).actualId);
+                log.info("New ReferenceId = " + resourceList.get(i).newId);
+                procedure.getEncounter().setReference(resourceList.get(i).newId);
+                addNewReferences(resourceList.get(i).newId);
 
             } else {
                 if (!processed(procedure.getEncounter().getReference().getValue())) allReferenced = false;
@@ -1001,20 +1039,20 @@ public class MQProcessor implements Processor {
         // bundle condition location
         if (!isNullReference(procedure.getLocation())) {
             IResource referencedResource = null;
-            log.info(procedure.getLocation().getReference().getValue());
+      //      log.info(procedure.getLocation().getReference().getValue());
             int i = 0;
             for (int h = 0; h < resourceList.size(); h++) {
-                if (resourceList.get(h).processed && resourceList.get(h).bundleId != null && procedure.getLocation().getReference().getValue().equals(resourceList.get(h).bundleId)) {
+                if (resourceList.get(h).processed && resourceList.get(h).originalId != null && procedure.getLocation().getReference().getValue().equals(resourceList.get(h).originalId)) {
                     referencedResource = resourceList.get(h).resource;
-                    log.debug("BundleId =" + resourceList.get(h).bundleId);
-                    log.debug("ActualId =" + resourceList.get(h).actualId);
+                    log.debug("originalId =" + resourceList.get(h).originalId);
+                    log.debug("newId =" + resourceList.get(h).newId);
                     i = h;
                 }
             }
             if (referencedResource != null) {
-                log.debug("New ReferenceId = " + resourceList.get(i).actualId);
-                procedure.getLocation().setReference(resourceList.get(i).actualId);
-                newReferences.add(resourceList.get(i).actualId);
+                log.info("New ReferenceId = " + resourceList.get(i).newId);
+                procedure.getLocation().setReference(resourceList.get(i).newId);
+                addNewReferences(resourceList.get(i).newId);
 
             } else {
                 if (!processed(procedure.getLocation().getReference().getValue())) allReferenced = false;
@@ -1029,17 +1067,17 @@ public class MQProcessor implements Processor {
             if (!isNullReference(procedure.getPerformer().get(j).getActor() )) {
                 int i = 0;
                 for (int h = 0; h < resourceList.size(); h++) {
-                    if (resourceList.get(h).processed && resourceList.get(h).bundleId != null && procedure.getPerformer().get(j).getActor().getReference().getValue().equals(resourceList.get(h).bundleId)) {
+                    if (resourceList.get(h).processed && resourceList.get(h).originalId != null && procedure.getPerformer().get(j).getActor().getReference().getValue().equals(resourceList.get(h).originalId)) {
                         referencedResource = resourceList.get(h).resource;
-                        log.debug("BundleId =" + resourceList.get(h).bundleId);
-                        log.debug("ActualId =" + resourceList.get(h).actualId);
+                        log.debug("originalId =" + resourceList.get(h).originalId);
+                        log.debug("newId =" + resourceList.get(h).newId);
                         i = h;
                     }
                 }
                 if (referencedResource != null) {
-                    log.debug("New ReferenceId = " + resourceList.get(i).actualId);
-                    procedure.getPerformer().get(j).getActor().setReference(resourceList.get(i).actualId);
-                    newReferences.add(resourceList.get(i).actualId);
+                    log.info("New ReferenceId = " + resourceList.get(i).newId);
+                    procedure.getPerformer().get(j).getActor().setReference(resourceList.get(i).newId);
+                    addNewReferences(resourceList.get(i).newId);
                 } else {
                     if (!processed(procedure.getPerformer().get(j).getActor().getReference().getValue()))  allReferenced = false;
                 }
@@ -1049,7 +1087,7 @@ public class MQProcessor implements Processor {
 
         if (allReferenced)
         {
-            log.info("Procedure = "+parser.setPrettyPrint(true).encodeResourceToString(procedure));
+      //      log.info("Procedure = "+parser.setPrettyPrint(true).encodeResourceToString(procedure));
             MethodOutcome outcome = client.update().resource(procedure)
                     .conditionalByUrl("Procedure?identifier=" + procedure.getIdentifier().get(0).getSystem() + "%7C" + procedure.getIdentifier().get(0).getValue())
                     .execute();
@@ -1057,16 +1095,312 @@ public class MQProcessor implements Processor {
             //    log.info("Outcome = " + parser.setPrettyPrint(true).encodeResourceToString(outcome.getResource()));
            // }
             procedure.setId(outcome.getId());
-            resourceList.get(f).processed = true;
-            resourceList.get(f).resource = procedure;
-            resourceList.get(f).actualId = outcome.getId().getValue();
-            log.info("Procedure: Id="+resourceList.get(f).bundleId+" Server Id = "+outcome.getId().getValue());
+            entry.processed = true;
+            entry.resource = procedure;
+            entry.newId = outcome.getId().getValue();
+            log.info("Procedure: Id="+entry.originalId+" Server Id = "+outcome.getId().getValue());
         }
 
 
         return allReferenced;
     }
 
+
+    private boolean processQuestionnaireResponse(QuestionnaireResponse questionnaireResponse) {
+        Boolean allReferenced = true;
+        EntryProcessing entry = findEntryProcess(questionnaireResponse.getId().getValue());
+        
+        if (questionnaireResponse.getIdentifier()  == null) {
+            questionnaireResponse.getIdentifier()
+                    .setSystem("https://tools.ietf.org/html/rfc4122")
+                    .setValue(questionnaireResponse.getId().getValue());
+        }
+
+        // Patient
+        if (!isNullReference(questionnaireResponse.getSubject())) {
+            ResourceReferenceDt resource = questionnaireResponse.getSubject();
+
+            log.debug(resource.getReference().getValue());
+            String referencedResource = findAcutalId(resource.getReference().getValue());
+            if (referencedResource != null) {
+                resource.setReference(referencedResource);
+            } else {
+                if (!processed(resource.getReference().getValue())) allReferenced = false;
+            }
+        }
+
+        // Author
+        if (!isNullReference(questionnaireResponse.getAuthor())) {
+            ResourceReferenceDt resource = questionnaireResponse.getAuthor();
+
+            log.debug(resource.getReference().getValue());
+            String referencedResource = findAcutalId(resource.getReference().getValue());
+            if (referencedResource != null) {
+                resource.setReference(referencedResource);
+            } else {
+                if (!processed(resource.getReference().getValue())) allReferenced = false;
+            }
+        }
+
+        // Encounter
+        if (!isNullReference(questionnaireResponse.getEncounter())) {
+            ResourceReferenceDt resource = questionnaireResponse.getEncounter();
+
+            log.debug(resource.getReference().getValue());
+            String referencedResource = findAcutalId(resource.getReference().getValue());
+            if (referencedResource != null) {
+                resource.setReference(referencedResource);
+            } else {
+                if (!processed(resource.getReference().getValue())) allReferenced = false;
+            }
+        }
+
+        if (allReferenced) {
+            // Perform a search to look for the identifier - work around
+            ca.uhn.fhir.model.api.Bundle searchBundle = client.search().forResource(QuestionnaireResponse.class)
+                    .where(new StringClientParam("_content").matches().value(questionnaireResponse.getIdentifier().getValue()))
+                    .prettyPrint()
+                    .encodedJson().execute();
+            // Not found so add the resource
+            if (searchBundle.getEntries().size()==0) {
+                IIdType id = client.create().resource(questionnaireResponse).execute().getId();
+                questionnaireResponse.setId(id);
+                entry.processed = true;
+                entry.newId = id.getValue();
+                entry.resource = questionnaireResponse;
+                log.info("QuestionaireResponse: Id="+entry.originalId+" Server Id = "+id.getValue());
+            }
+
+        }
+        return allReferenced;
+    }
+
+    private boolean processReferralRequest(ReferralRequest referralRequest) {
+        Boolean allReferenced = true;
+        EntryProcessing entry = findEntryProcess(referralRequest.getId().getValue());
+        
+        if (referralRequest.getIdentifier().size()  == 0) {
+            referralRequest.addIdentifier()
+                    .setSystem("https://tools.ietf.org/html/rfc4122")
+                    .setValue(referralRequest.getId().getValue());
+        }
+
+        // Patient
+        if (!isNullReference(referralRequest.getPatient())) {
+            ResourceReferenceDt resource = referralRequest.getPatient();
+
+            log.debug(resource.getReference().getValue());
+            String referencedResource = findAcutalId(resource.getReference().getValue());
+            if (referencedResource != null) {
+                resource.setReference(referencedResource);
+            } else {
+                if (!processed(resource.getReference().getValue())) allReferenced = false;
+            }
+        }
+
+        // Requester
+        if (!isNullReference(referralRequest.getRequester())) {
+            ResourceReferenceDt resource = referralRequest.getRequester();
+
+            log.debug(resource.getReference().getValue());
+            String referencedResource = findAcutalId(resource.getReference().getValue());
+            if (referencedResource != null) {
+                resource.setReference(referencedResource);
+            } else {
+                if (!processed(resource.getReference().getValue())) allReferenced = false;
+            }
+        }
+        // Recipient
+        for (ResourceReferenceDt resource : referralRequest.getRecipient()) {
+
+            log.debug(resource.getReference().getValue());
+            String referencedResource = findAcutalId(resource.getReference().getValue());
+            if (referencedResource != null) {
+                resource.setReference(referencedResource);
+            } else {
+                if (!processed(resource.getReference().getValue())) allReferenced = false;
+            }
+        }
+
+        // Encounter
+        if (!isNullReference(referralRequest.getEncounter())) {
+            ResourceReferenceDt resource = referralRequest.getEncounter();
+
+            log.debug(resource.getReference().getValue());
+            String referencedResource = findAcutalId(resource.getReference().getValue());
+            if (referencedResource != null) {
+                resource.setReference(referencedResource);
+            } else {
+                if (!processed(resource.getReference().getValue())) allReferenced = false;
+            }
+        }
+
+        // Supporting information
+        for (ResourceReferenceDt resource : referralRequest.getSupportingInformation()) {
+
+            log.debug(resource.getReference().getValue());
+            String referencedResource = findAcutalId(resource.getReference().getValue());
+            if (referencedResource != null) {
+                resource.setReference(referencedResource);
+            } else {
+                if (!processed(resource.getReference().getValue())) allReferenced = false;
+            }
+        }
+
+        if (allReferenced) {
+            // Perform a search to look for the identifier - work around
+            MethodOutcome outcome = client.update().resource(referralRequest)
+                    .conditionalByUrl("ReferralRequest?identifier=" + referralRequest.getIdentifier().get(0).getSystem() + "%7C" + referralRequest.getIdentifier().get(0).getValue())
+                    .execute();
+            //if (outcome.getResource()!=null) {
+            //    log.info("Outcome = " + parser.setPrettyPrint(true).encodeResourceToString(outcome.getResource()));
+            // }
+            referralRequest.setId(outcome.getId());
+            entry.processed = true;
+            entry.resource = referralRequest;
+            entry.newId = outcome.getId().getValue();
+            log.info("Procedure: Id="+entry.originalId+" Server Id = "+outcome.getId().getValue());
+
+        }
+        return allReferenced;
+    }
+
+    private void processBundle(Bundle bundle)
+    {
+        for (Bundle.Entry entry : bundle.getEntry()) {
+            IResource resource = entry.getResource();
+            EntryProcessing resourceP = new EntryProcessing();
+            resourceP.originalId = resource.getId().getValue();
+            resourceP.processed = false;
+            resourceP.resource = resource;
+            // Miss off MessageHeader, so start at 1 but also processing Composition now
+            // if (f == 0) resourceP.processed = true;
+            resourceList.add(resourceP);
+        }
+        // Loop 3 times now to, need to have time out but ensure all resources posted
+        parser = ctx.newXmlParser();
+        Boolean allProcessed;
+
+        // Process subbundles first - this should be documents.
+
+        for (Bundle.Entry entry : bundle.getEntry()) {
+            IResource resource = entry.getResource();
+
+            if (entry.getResource().getResourceName().equals("Bundle")) {
+                log.info("Another Bundle Found at entry "+entry.getResource().getId().getValue());
+                processBundle((Bundle) resource);
+                log.info("Returned from sub Bundle call at entry "+entry.getResource().getId().getValue());
+            }
+        }
+
+        for (int g= 0;g < 5;g++) {
+            allProcessed = true;
+            for (Bundle.Entry entry : bundle.getEntry()) {
+
+                IResource resource = entry.getResource();
+                log.info("---- Looking for "+resource.getResourceName()+" resource with id of = "+resource.getId().getValue());
+                EntryProcessing entryProcess = findEntryProcess(resource.getId().getValue());
+
+                if (entryProcess != null && !entryProcess.processed) {
+
+                    //log.info("Entry "+entryProcess.resource.getResourceName() + " Id "+ entryProcess.originalId + "Processed="+entryProcess.processed  );
+                    //if (entryProcess.newId != null) log.info(" New Id "+entryProcess.newId);
+
+                    // Bundle.location
+                    if (resource.getResourceName().equals("Location")) {
+                        processLocation((Location) resource);
+                    }
+
+                    // Bundle.Organization
+                    if (resource.getResourceName().equals("Organization")) {
+                        processOrganisation( (Organization) resource);
+                    }
+
+                    //Bundle.Practitioner
+                    if (resource.getResourceName().equals("Practitioner")) {
+                        processPractitioner( (Practitioner) resource);
+                    }
+
+                    // Bundle. Patient
+                    if (resource.getResourceName().equals("Patient")) {
+                        processPatient((Patient) resource);
+                    }
+
+                    // Bundle.Procedure Request
+                    if (resource.getResourceName().equals("ProcedureRequest")) {
+                        processProcedureRequest((ProcedureRequest) resource);
+                    }
+
+                    // bundle.Appointment
+                    if (resource.getResourceName().equals("Appointment")) {
+                        processAppointment((Appointment) resource);
+                    }
+
+                    // Bundle.Observation
+                    if (resource.getResourceName().equals("Observation")) {
+                        processObservation((Observation) resource);
+                    }
+
+                    // Bundle.Encounter
+                    if (resource.getResourceName().equals("Encounter")) {
+                        processEncounter( (Encounter) resource);
+                    }
+
+                    // Bundle.Condition
+                    if (resource.getResourceName().equals("Condition")) {
+                        processCondition( (Condition) resource);
+                    }
+
+                    // Bundle.Procedure
+                    if (resource.getResourceName().equals("Procedure")) {
+                        processProcedure( (Procedure) resource);
+                    }
+
+                    // Bundle.MedicationStatement
+                    if (resource.getResourceName().equals("MedicationStatement")) {
+                        processMedicationStatement( (MedicationStatement) resource);
+                    }
+
+                    // Bundle.Medication
+                    if (resource.getResourceName().equals("Medication")) {
+                        processMedication( (Medication) resource);
+                    }
+
+
+                    // Bundle.Flag
+                    if (resource.getResourceName().equals("Flag")) {
+                        processFlag( (Flag) resource);
+                    }
+
+                    // Bundle.Composition
+                    if (resource.getResourceName().equals("Composition")) {
+                        processComposition( (Composition) resource);
+                    }
+
+                    // Bundle.List
+                    if (resource.getResourceName().equals("List")) {
+                        processList( (ListResource) resource);
+                    }
+
+                    // Bundle.AllergyIntolernace
+                    if (resource.getResourceName().equals("AllergyIntolerance")) {
+                        processAllergyIntolerance( (AllergyIntolerance) resource);
+                    }
+                    // Bundle.QuestionaireResponse
+                    if (resource.getResourceName().equals("QuestionnaireResponse")) {
+                        processQuestionnaireResponse( (QuestionnaireResponse) resource);
+                    }
+
+                    // Bundle.QuestionaireResponse
+                    if (resource.getResourceName().equals("ReferralRequest")) {
+                        processReferralRequest( (ReferralRequest) resource);
+                    }
+
+                }
+
+            }
+        }
+    }
 
 
     @Override
@@ -1094,117 +1428,11 @@ public class MQProcessor implements Processor {
                 // log.error("#10 XML Parse failed "+ex.getMessage());
             }
         }
-        resourceList = new ArrayList<ResourceProcessing>();
+        resourceList = new ArrayList<EntryProcessing>();
 
         newReferences = new ArrayList<String>();
 
+        processBundle(bundle);
 
-        for (int f = 0; f < bundle.getEntry().size(); f++) {
-            IResource resource = bundle.getEntry().get(f).getResource();
-            ResourceProcessing resourceP = new ResourceProcessing();
-            resourceP.bundleId = resource.getId().getValue();
-            resourceP.processed = false;
-            // Miss off MessageHeader, so start at 1 but also processing Composition now
-           // if (f == 0) resourceP.processed = true;
-            resourceList.add(resourceP);
-        }
-        // Loop 3 times now to, need to have time out but ensure all resources posted
-        parser = ctx.newXmlParser();
-        Boolean allProcessed;
-        for (int g= 0;g < 5;g++) {
-            allProcessed = true;
-            for (int f = 0; f < bundle.getEntry().size(); f++) {
-
-                IResource resource = bundle.getEntry().get(f).getResource();
-
-
-                if (!resourceList.get(f).processed) {
-
-                    log.info("Entry number " + f + " Resource = " +resource.getResourceName() + " Id " + resource.getId().getValue());
-
-                    // Bundle.location
-                    if (bundle.getEntry().get(f).getResource().getResourceName().equals("Location")) {
-                       processLocation(f,(Location) resource);
-                    }
-
-                    // Bundle.Organization
-                    if (bundle.getEntry().get(f).getResource().getResourceName().equals("Organization")) {
-                         processOrganisation(f,(Organization) resource);
-                    }
-
-                    //Bundle.Practitioner
-                    if (bundle.getEntry().get(f).getResource().getResourceName().equals("Practitioner")) {
-                        processPractitioner(f, (Practitioner) resource);
-                    }
-
-                    // Bundle. Patient
-                    if (bundle.getEntry().get(f).getResource().getResourceName().equals("Patient")) {
-                        processPatient( f, (Patient) resource);
-                    }
-
-                    // Bundle.Procedure Request
-                    if (bundle.getEntry().get(f).getResource().getResourceName().equals("ProcedureRequest")) {
-                        processProcedureRequest(f, (ProcedureRequest) resource);
-                    }
-
-                    // bundle.Appointment
-                    if (bundle.getEntry().get(f).getResource().getResourceName().equals("Appointment")) {
-                        processAppointment(f, (Appointment) resource);
-                    }
-
-                    // Bundle.Observation
-                    if (bundle.getEntry().get(f).getResource().getResourceName().equals("Observation")) {
-                        processObservation(f, (Observation) resource);
-                    }
-
-                    // Bundle.Encounter
-                    if (bundle.getEntry().get(f).getResource().getResourceName().equals("Encounter")) {
-                        processEncounter(f, (Encounter) resource);
-                    }
-
-                    // Bundle.Condition
-                    if (bundle.getEntry().get(f).getResource().getResourceName().equals("Condition")) {
-                        processCondition(f, (Condition) resource);
-                    }
-
-                    // Bundle.Procedure
-                    if (bundle.getEntry().get(f).getResource().getResourceName().equals("Procedure")) {
-                        processProcedure(f, (Procedure) resource);
-                    }
-
-                    // Bundle.MedicationStatement
-                    if (bundle.getEntry().get(f).getResource().getResourceName().equals("MedicationStatement")) {
-                        processMedicationStatement(f, (MedicationStatement) resource);
-                    }
-
-                    // Bundle.Medication
-                    if (bundle.getEntry().get(f).getResource().getResourceName().equals("Medication")) {
-                        processMedication(f, (Medication) resource);
-                    }
-
-
-                    // Bundle.Flag
-                    if (bundle.getEntry().get(f).getResource().getResourceName().equals("Flag")) {
-                        processFlag(f, (Flag) resource);
-                    }
-
-                    // Bundle.Composition
-                    if (bundle.getEntry().get(f).getResource().getResourceName().equals("Composition")) {
-                        processComposition(f, (Composition) resource);
-                    }
-
-                    // Bundle.List
-                    if (bundle.getEntry().get(f).getResource().getResourceName().equals("List")) {
-                        processList(f, (ListResource) resource);
-                    }
-
-                    // Bundle.AllergyIntolernace
-                    if (bundle.getEntry().get(f).getResource().getResourceName().equals("AllergyIntolerance")) {
-                        processAllergyIntolerance(f, (AllergyIntolerance) resource);
-                    }
-
-                }
-            }
-        }
     }
 }
