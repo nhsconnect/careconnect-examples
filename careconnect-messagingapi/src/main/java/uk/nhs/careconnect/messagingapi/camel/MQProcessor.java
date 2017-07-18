@@ -2,6 +2,7 @@ package uk.nhs.careconnect.messagingapi.camel;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.api.IResource;
+import ca.uhn.fhir.model.base.resource.ResourceMetadataMap;
 import ca.uhn.fhir.model.dstu2.composite.ResourceReferenceDt;
 import ca.uhn.fhir.model.dstu2.resource.*;
 import ca.uhn.fhir.parser.IParser;
@@ -147,6 +148,9 @@ public class MQProcessor implements Processor {
         }
 
         if (allReferenced) {
+            // Work around to cope with slicing not validated error in hapi server
+            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) allergyIntolerance.setResourceMetadata(new ResourceMetadataMap());
+
             MethodOutcome outcome = client.update().resource(allergyIntolerance)
                     .conditionalByUrl("AllergyIntolerance?identifier=" + allergyIntolerance.getIdentifier().get(0).getSystem() + "%7C" + allergyIntolerance.getIdentifier().get(0).getValue())
                     .execute();
@@ -189,7 +193,10 @@ public class MQProcessor implements Processor {
 
         if (allReferenced)
         {
-           // log.info("Appointment = "+parser.setPrettyPrint(true).encodeResourceToString(appointment));
+            // Work around to cope with slicing not validated error in hapi server
+            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) appointment.setResourceMetadata(new ResourceMetadataMap());
+
+            // log.info("Appointment = "+parser.setPrettyPrint(true).encodeResourceToString(appointment));
             MethodOutcome outcome = client.update().resource(appointment)
                     .conditionalByUrl("Appointment?identifier=" + appointment.getIdentifier().get(0).getSystem() + "%7C" + appointment.getIdentifier().get(0).getValue())
                     .execute();
@@ -288,6 +295,9 @@ public class MQProcessor implements Processor {
 
 
         if (allReferenced) {
+            // Work around to cope with slicing not validated error in hapi server
+            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) composition.setResourceMetadata(new ResourceMetadataMap());
+
             MethodOutcome outcome = client.update().resource(composition)
                     .conditionalByUrl("Composition?identifier=" + composition.getIdentifier().getSystem() + "%7C" + composition.getIdentifier().getValue())
                     .execute();
@@ -348,7 +358,10 @@ public class MQProcessor implements Processor {
 
         if (allReferenced)
         {
-           // log.info("Condition= "+parser.setPrettyPrint(true).encodeResourceToString(condition));
+            // Work around to cope with slicing not validated error in hapi server
+            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) condition.setResourceMetadata(new ResourceMetadataMap());
+
+            // log.info("Condition= "+parser.setPrettyPrint(true).encodeResourceToString(condition));
             MethodOutcome outcome = client.update().resource(condition)
                     .conditionalByUrl("Condition?identifier=" + condition.getIdentifier().get(0).getSystem() + "%7C" + condition.getIdentifier().get(0).getValue())
                     .execute();
@@ -440,13 +453,16 @@ public class MQProcessor implements Processor {
 
         if (allReferenced)
         {
-            log.info("Encounter = "+parser.setPrettyPrint(true).encodeResourceToString(encounter));
+            // Work around to cope with slicing not validated error in hapi server
+            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) encounter.setResourceMetadata(new ResourceMetadataMap());
+
+            //log.info("Encounter = "+parser.setPrettyPrint(true).encodeResourceToString(encounter));
             MethodOutcome outcome = client.update().resource(encounter)
                     .conditionalByUrl("Encounter?identifier=" + encounter.getIdentifier().get(0).getSystem() + "%7C" + encounter.getIdentifier().get(0).getValue())
                     .execute();
-            if (outcome.getResource()!=null) {
-                log.info("Outcome = " + parser.setPrettyPrint(true).encodeResourceToString(outcome.getResource()));
-            }
+          //  if (outcome.getResource()!=null) {
+          //     log.info("Outcome = " + parser.setPrettyPrint(true).encodeResourceToString(outcome.getResource()));
+         //   }
             encounter.setId(outcome.getId());
             entry.processed = true;
             entry.resource = encounter;
@@ -482,6 +498,9 @@ public class MQProcessor implements Processor {
         }
 
         if (allReferenced) {
+            // Work around to cope with slicing not validated error in hapi server
+            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) flag.setResourceMetadata(new ResourceMetadataMap());
+
 
             // Perform a search to look for the identifier - work around
             ca.uhn.fhir.model.api.Bundle searchBundle = client.search().forResource(Flag.class)
@@ -542,6 +561,9 @@ public class MQProcessor implements Processor {
         }
 
         if (allReferenced) {
+            // Work around to cope with slicing not validated error in hapi server
+            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) list.setResourceMetadata(new ResourceMetadataMap());
+
             // Perform a search to look for the identifier - work around
             ca.uhn.fhir.model.api.Bundle searchBundle = client.search().forResource(ListResource.class)
                     .where(new StringClientParam("_content").matches().value(list.getIdentifier().get(0).getValue()))
@@ -588,6 +610,10 @@ public class MQProcessor implements Processor {
         }
 
         if (allReferenced) {
+
+            // Work around to cope with slicing not validated error in hapi server
+            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) location.setResourceMetadata(new ResourceMetadataMap());
+
             MethodOutcome outcome = client.update().resource(location)
                     .conditionalByUrl("Location?identifier=" + location.getIdentifier().get(0).getSystem() + "%7C" + location.getIdentifier().get(0).getValue())
                     .execute();
@@ -612,6 +638,10 @@ public class MQProcessor implements Processor {
         }
 
         if (allReferenced) {
+
+            // Work around to cope with slicing not validated error in hapi server
+            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) medication.setResourceMetadata(new ResourceMetadataMap());
+
             MethodOutcome outcome = client.update().resource(medication)
                     .conditionalByUrl("Medication?code=" + medication.getCode().getCoding().get(0).getSystem() + "%7C" + medication.getCode().getCoding().get(0).getCode())
                     .execute();
@@ -682,6 +712,9 @@ public class MQProcessor implements Processor {
         }
 
         if (allReferenced) {
+            // Work around to cope with slicing not validated error in hapi server
+            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) medicationStatement.setResourceMetadata(new ResourceMetadataMap());
+
             MethodOutcome outcome = client.update().resource(medicationStatement)
                     .conditionalByUrl("MedicationStatement?identifier=" + medicationStatement.getIdentifier().get(0).getSystem() + "%7C" + medicationStatement.getIdentifier().get(0).getValue())
                     .execute();
@@ -727,6 +760,8 @@ public class MQProcessor implements Processor {
             }
         }
         if (allReferenced) {
+            // Work around to cope with slicing not validated error in hapi server
+            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) organisation.setResourceMetadata(new ResourceMetadataMap());
             MethodOutcome outcome = client.update().resource(organisation)
                     .conditionalByUrl("Organization?identifier=" + organisation.getIdentifier().get(0).getSystem() + "%7C" + organisation.getIdentifier().get(0).getValue())
                     .execute();
@@ -776,6 +811,9 @@ public class MQProcessor implements Processor {
         }
 
         if (allReferenced) {
+            // Work around to cope with slicing not validated error in hapi server
+            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) patient.setResourceMetadata(new ResourceMetadataMap());
+
             MethodOutcome outcome = client.update().resource(patient)
                     .conditionalByUrl("Patient?identifier=" + patient.getIdentifier().get(0).getSystem() + "%7C" + patient.getIdentifier().get(0).getValue())
                     .execute();
@@ -822,7 +860,10 @@ public class MQProcessor implements Processor {
 
         if (allReferenced)
         {
-        //    log.info("ProcedureRequest = "+parser.setPrettyPrint(true).encodeResourceToString(procedureRequest));
+
+            // Work around to cope with slicing not validated error in hapi server
+            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) procedureRequest.setResourceMetadata(new ResourceMetadataMap());
+
             MethodOutcome outcome = client.update().resource(procedureRequest)
                     .conditionalByUrl("ProcedureRequest?identifier=" + procedureRequest.getIdentifier().get(0).getSystem() + "%7C" + procedureRequest.getIdentifier().get(0).getValue())
                     .execute();
@@ -926,6 +967,10 @@ public class MQProcessor implements Processor {
         if (allReferenced)
         {
          //   log.info("Encounter = "+parser.setPrettyPrint(true).encodeResourceToString(observation));
+
+            // Work around to cope with slicing not validated error in hapi server
+            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) observation.setResourceMetadata(new ResourceMetadataMap());
+
             MethodOutcome outcome = client.update().resource(observation)
                     .conditionalByUrl("Observation?identifier=" + observation.getIdentifier().get(0).getSystem() + "%7C" + observation.getIdentifier().get(0).getValue())
                     .execute();
@@ -968,6 +1013,11 @@ public class MQProcessor implements Processor {
         }
 
         if (allReferenced) {
+
+            // Work around to cope with slicing not validated error in hapi server
+            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) practitioner.setResourceMetadata(new ResourceMetadataMap());
+
+
             MethodOutcome outcome = client.update().resource(practitioner)
                     .conditionalByUrl("Practitioner?identifier=" + practitioner.getIdentifier().get(0).getSystem() + "%7C" + practitioner.getIdentifier().get(0).getValue())
                     .execute();
@@ -1088,6 +1138,10 @@ public class MQProcessor implements Processor {
         if (allReferenced)
         {
       //      log.info("Procedure = "+parser.setPrettyPrint(true).encodeResourceToString(procedure));
+
+            // Work around to cope with slicing not validated error in hapi server
+            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) procedure.setResourceMetadata(new ResourceMetadataMap());
+
             MethodOutcome outcome = client.update().resource(procedure)
                     .conditionalByUrl("Procedure?identifier=" + procedure.getIdentifier().get(0).getSystem() + "%7C" + procedure.getIdentifier().get(0).getValue())
                     .execute();
@@ -1156,6 +1210,10 @@ public class MQProcessor implements Processor {
         }
 
         if (allReferenced) {
+
+            // Work around to cope with slicing not validated error in hapi server
+            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) questionnaireResponse.setResourceMetadata(new ResourceMetadataMap());
+
             // Perform a search to look for the identifier - work around
             ca.uhn.fhir.model.api.Bundle searchBundle = client.search().forResource(QuestionnaireResponse.class)
                     .where(new StringClientParam("_content").matches().value(questionnaireResponse.getIdentifier().getValue()))
@@ -1248,13 +1306,14 @@ public class MQProcessor implements Processor {
         }
 
         if (allReferenced) {
-            // Perform a search to look for the identifier - work around
+            // Work around to cope with slicing not validated error in hapi server
+            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) referralRequest.setResourceMetadata(new ResourceMetadataMap());
+
+
             MethodOutcome outcome = client.update().resource(referralRequest)
                     .conditionalByUrl("ReferralRequest?identifier=" + referralRequest.getIdentifier().get(0).getSystem() + "%7C" + referralRequest.getIdentifier().get(0).getValue())
                     .execute();
-            //if (outcome.getResource()!=null) {
-            //    log.info("Outcome = " + parser.setPrettyPrint(true).encodeResourceToString(outcome.getResource()));
-            // }
+
             referralRequest.setId(outcome.getId());
             entry.processed = true;
             entry.resource = referralRequest;
