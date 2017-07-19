@@ -31,6 +31,7 @@ public class IGExplore implements CommandLineRunner {
         IParser parser = ctxFHIR.newXmlParser();
 		// This is to base HAPI server not the CareConnectAPI
 		String serverBase = "http://127.0.0.1:8080/FHIRServer/DSTU2/";
+        // String serverBase = "http://fhirtest.uhn.ca/baseDstu2/";
 
 		IGenericClient client = ctxFHIR.newRestfulGenericClient(serverBase);
 

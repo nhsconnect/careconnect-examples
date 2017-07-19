@@ -32,8 +32,8 @@ public class ResourceConfig  {
 
 	@Bean
     public static IGenericClient GenericClient(FhirContext ctxFHIR) {
-       // String serverBase = "http://127.0.0.1:8080/FHIRServer/DSTU2/";
-        String serverBase = "http://fhirtest.uhn.ca/baseDstu2/";
+       String serverBase = "http://127.0.0.1:8080/FHIRServer/DSTU2/";
+       // String serverBase = "http://fhirtest.uhn.ca/baseDstu2/";
         return ctxFHIR.newRestfulGenericClient(serverBase);
     }
 

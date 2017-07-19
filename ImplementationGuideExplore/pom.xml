@@ -15,6 +15,9 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
+    <properties>
+        <hapi-fhir-version>2.5</hapi-fhir-version>
+    </properties>
 
     <dependencies>
         <dependency>

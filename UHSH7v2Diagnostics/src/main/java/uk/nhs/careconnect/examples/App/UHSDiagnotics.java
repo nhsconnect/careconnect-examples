@@ -8,6 +8,7 @@ import ca.uhn.fhir.model.dstu2.composite.ResourceReferenceDt;
 import ca.uhn.fhir.model.dstu2.composite.SimpleQuantityDt;
 import ca.uhn.fhir.model.dstu2.resource.*;
 import ca.uhn.fhir.model.dstu2.valueset.DiagnosticReportStatusEnum;
+import ca.uhn.fhir.model.primitive.DateTimeDt;
 import ca.uhn.fhir.model.primitive.IdDt;
 import ca.uhn.fhir.model.primitive.InstantDt;
 import ca.uhn.fhir.parser.IParser;
@@ -115,6 +116,8 @@ public class UHSDiagnotics implements CommandLineRunner {
 
             // Ringholm hl7v2 to fhir mapping http://www.ringholm.com/docs/04350_mapping_HL7v2_FHIR.htm
 
+            // Note this code is differing from rene's blog as it's using Procedure to record tests in OBR segments
+
             String LabCodeSystem = "https://fhir.uhs.nhs.uk/"+sysName +"/CodeSystem";
 
             Parser parser = new GenericParser();
@@ -146,6 +149,9 @@ public class UHSDiagnotics implements CommandLineRunner {
             String result = null;
             MethodOutcome outcome = null;
 
+            //
+            // DIAGNOSTIC ORDER
+            //
             DiagnosticOrder order = new DiagnosticOrder();
 
             List<IdDt> orderprofiles = new ArrayList<IdDt>();
@@ -183,44 +189,58 @@ public class UHSDiagnotics implements CommandLineRunner {
             order.setId(outcome.getId());
             System.out.println(outcome.getId().getValue());
 
+            //
+            // DIAGNOSTIC REPORT
+            //
+
+            DiagnosticReport report = new DiagnosticReport();
+            String text = "";
+
+            List<IdDt> profiles = new ArrayList<IdDt>();
+            profiles.add(new IdDt("https://fhir.nhs.uk/StructureDefinition/dds-report-1-0"));
+            ResourceMetadataKeyEnum.PROFILES.put(report, profiles);
+            orderNum = 0;
+            do {
+                if (report.getIdentifier().size() == 0) {
+                    report.addIdentifier()
+                            .setSystem("https://fhir.uhs.nhs.uk/" + sysName + "/DiagnosticReport")
+                            .setValue(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBR-3-1") + "-" + terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBR-4-1"));
+                }
+                if (report.getIssued() == null) {
+                    try {
+                        Date date;
+                        date = fmt.parse(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBR-7-1"));
+                        InstantDt instance = new InstantDt(date);
+                        report.setIssued(instance);
+
+                    } catch (Exception e1) {
+                        // TODO Auto-generated catch block
+                    }
+                }
+
+                orderNum++;
+                result = terserGet("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBSERVATION(0)/OBX-3-1");
+            } while (result != null);
+
+            report.setStatus(DiagnosticReportStatusEnum.FINAL);
+
+            report.setSubject(new ResourceReferenceDt(patient.getId().getValue()));
+
+            report.getRequest().add(new ResourceReferenceDt(order.getId().getValue()));
+
+            /* Don't have an code for the report itself. Revisit!!!!
+            report.getCode().addCoding()
+                    .setSystem(LabCodeSystem)
+                    .setCode(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(0)/OBR-4-1"))
+                    .setDisplay(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBR-4-2"));
+
+            */
 
             // Second pass of HL7v2 message
             orderNum = 0;
             do {
-                DiagnosticReport report = new DiagnosticReport();
-                String text = "";
 
-                List<IdDt> profiles = new ArrayList<IdDt>();
-                profiles.add(new IdDt("https://fhir.nhs.uk/StructureDefinition/dds-report-1-0"));
-                ResourceMetadataKeyEnum.PROFILES.put(report, profiles);
-
-                report.addIdentifier()
-                        .setSystem("https://fhir.uhs.nhs.uk/"+sysName +"/DiagnosticReport")
-                        .setValue(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBR-3-1") + "-" + terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBR-4-1"));
-
-
-                report.setStatus(DiagnosticReportStatusEnum.FINAL);
-
-                report.setSubject(new ResourceReferenceDt(patient.getId().getValue()));
-
-                report.getRequest().add(new ResourceReferenceDt(order.getId().getValue()));
-
-                report.getCode().addCoding()
-                        .setSystem(LabCodeSystem)
-                        .setCode(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBR-4-1"))
-                        .setDisplay(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBR-4-2"));
-
-
-                try {
-                    Date date;
-                    date = fmt.parse(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBR-7-1"));
-                    InstantDt instance = new InstantDt(date);
-                    report.setIssued(instance);
-
-                } catch (Exception e1) {
-                    // TODO Auto-generated catch block
-                }
-
+                // Add Observations
 
                 Integer observationNo = 0;
                 do {
@@ -283,9 +303,8 @@ public class UHSDiagnotics implements CommandLineRunner {
                             observation.setId(outcome.getId());
                             System.out.println(outcome.getId().getValue());
 
-
                             report.getResult().add(new ResourceReferenceDt(observation.getId().getValue()));
-                            //System.out.println("/PATIENT_RESULT/ORDER_OBSERVATION("+orderNum+")/OBSERVATION("+observationNo+")/OBX-3-1 = " +result);
+
                         } else {
                             // Handle text section here
                             if (terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBSERVATION(" + observationNo + ")/OBX-5-1") != null) {
@@ -311,6 +330,66 @@ public class UHSDiagnotics implements CommandLineRunner {
                 orderNum++;
                 result = terserGet("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBSERVATION(0)/OBX-3-1");
             } while (result != null);
+
+            //
+
+            // PROCEDURE
+
+            //
+
+            // Third pass of HL7v2 message
+            orderNum = 0;
+            do {
+                Procedure procedure = new Procedure();
+                text = "";
+
+                profiles = new ArrayList<IdDt>();
+                profiles.add(new IdDt("https://fhir.hl7.org.uk/StructureDefinition/CareConnect-Procedure-1"));
+                ResourceMetadataKeyEnum.PROFILES.put(report, profiles);
+
+                procedure.addIdentifier()
+                        .setSystem("https://fhir.uhs.nhs.uk/"+sysName +"/Test/Observation")
+                        .setValue(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBR-3-1") + "-" + terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBR-4-1"));
+
+
+                procedure.setSubject(new ResourceReferenceDt(patient.getId().getValue()));
+
+                procedure.getCategory().addCoding()
+                        .setSystem("http://snomed.info/sct")
+                        .setCode("15220000")
+                        .setDisplay("Laboratory Test");
+
+                procedure.getCode().addCoding()
+                        .setSystem(LabCodeSystem)
+                        .setCode(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBR-4-1"))
+                        .setDisplay(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBR-4-2"));
+
+
+                try {
+                    Date date;
+                    date = fmt.parse(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBR-7-1"));
+                    DateTimeDt instance = new DateTimeDt();
+                    procedure.setPerformed(instance);
+
+                } catch (Exception e1) {
+                    // TODO Auto-generated catch block
+                }
+                // Link procedure to the report
+                procedure.addReport().setReference(report.getId());
+
+                // Now store the observation as this is referred to in the child observations below
+
+                System.out.println(FHIRparser.setPrettyPrint(true).encodeResourceToString(procedure));
+                outcome = client.update().resource(procedure)
+                        .conditionalByUrl("Procedure?identifier=" + procedure.getIdentifier().get(0).getSystem() + "%7C" + procedure.getIdentifier().get(0).getValue())
+                        .execute();
+                procedure.setId(outcome.getId());
+                System.out.println(outcome.getId().getValue());
+
+                orderNum++;
+                result = terserGet("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBSERVATION(0)/OBX-3-1");
+            } while (result != null);
+
 
         }
 
