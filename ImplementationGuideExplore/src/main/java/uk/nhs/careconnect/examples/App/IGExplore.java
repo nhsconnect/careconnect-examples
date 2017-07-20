@@ -2,15 +2,15 @@ package uk.nhs.careconnect.examples.App;
 
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.model.dstu2.resource.*;
-import ca.uhn.fhir.model.dstu2.valueset.AdministrativeGenderEnum;
+import ca.uhn.fhir.model.dstu2.resource.AuditEvent;
 import ca.uhn.fhir.parser.IParser;
-import ca.uhn.fhir.rest.api.MethodOutcome;
-import ca.uhn.fhir.rest.client.IGenericClient;
+import org.apache.activemq.ActiveMQConnectionFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import uk.nhs.careconnect.examples.fhir.*;
+import uk.nhs.careconnect.examples.fhir.CareConnectAuditEvent;
+
+import javax.jms.*;
 
 @SpringBootApplication
 public class IGExplore implements CommandLineRunner {
@@ -19,16 +19,27 @@ public class IGExplore implements CommandLineRunner {
 		SpringApplication.run(IGExplore.class, args);
 	}
 
+    IParser XMLparser = null;
 
+    IParser JSONparser = null;
     @Override
 	public void run(String... args) throws Exception {
 
-		if (args.length > 0 && args[0].equals("exitcode")) {
-			throw new Exception();
-		}
+        if (args.length > 0 && args[0].equals("exitcode")) {
+            throw new Exception();
+        }
+        FhirContext ctxFHIR = FhirContext.forDstu2();
+        XMLparser = ctxFHIR.newXmlParser();
 
-		FhirContext ctxFHIR = FhirContext.forDstu2();
-        IParser parser = ctxFHIR.newXmlParser();
+        JSONparser = ctxFHIR.newJsonParser();
+
+
+        AuditEvent audit = CareConnectAuditEvent.buildAuditEvent("rest");
+        System.out.println(XMLparser.setPrettyPrint(true).encodeResourceToString(audit));
+        sendToAudit(audit);
+    }
+		/*
+
 		// This is to base HAPI server not the CareConnectAPI
 		String serverBase = "http://127.0.0.1:8080/FHIRServer/DSTU2/";
         // String serverBase = "http://fhirtest.uhn.ca/baseDstu2/";
@@ -154,20 +165,45 @@ public class IGExplore implements CommandLineRunner {
         immunisation.setId(outcome.getId());
         System.out.println(outcome.getId().getValue());
 
-        /*
+     */
 
+    private void sendToAudit(AuditEvent audit) {
+        try {
+            // Create a ConnectionFactory
+            ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://localhost:61616");
 
-		Medication medication = ExampleMedication.buildCareConnectFHIRMedication();
-		System.out.println(parser.setPrettyPrint(true).encodeResourceToString(medication));
+            // Create a Connection
+            Connection connection = connectionFactory.createConnection();
+            connection.start();
 
-		OrderResponse
-				orderResponse = ExampleOrderResponse.buildFHIROrderResponse();
-		System.out.println(parser.setPrettyPrint(true).encodeResourceToString(orderResponse));
+            // Create a Session
+            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
-		*/
+            // Create the destination (Topic or Queue)
+            Destination destination = session.createQueue("Elastic.Queue");
 
+            // Create a MessageProducer from the Session to the Topic or Queue
+            MessageProducer producer = session.createProducer(destination);
+            producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
+
+            // Create a messages
+
+            String text =JSONparser.setPrettyPrint(true).encodeResourceToString(audit);
+            TextMessage message = session.createTextMessage(text);
+
+            // Tell the producer to send the message
+            System.out.println("Sent message: "+ message.hashCode() + " : " + Thread.currentThread().getName());
+            producer.send(message);
+
+            // Clean up
+            session.close();
+            connection.close();
+        }
+        catch (Exception e) {
+            System.out.println("Caught: " + e);
+            e.printStackTrace();
+        }
     }
-
-
-
 }
+
+

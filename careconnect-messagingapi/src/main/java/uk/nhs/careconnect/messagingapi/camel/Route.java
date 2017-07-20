@@ -27,6 +27,7 @@ public class Route extends RouteBuilder {
     public void configure() 
     {
      	MQProcessor mqProcessor = new MQProcessor(ctx, fhirClient);
+        ConvertToJSON convertToJSON = new ConvertToJSON(ctx);
 
 	    restConfiguration()
 	    	.component("servlet")
@@ -64,6 +65,11 @@ public class Route extends RouteBuilder {
             .to("log:uk.nhs.careconnect.messagingapi?showAll=true&multiline=true&level=INFO")
             .to("file:/FHIRServer/After?fileName=${id}-$simple{date:now:yyyyMMdd}.xml");
 
+        from("activemq:Elastic.Queue")
+                .routeId("Elastic Send from MQ")
+                .process(convertToJSON)
+                .to("http://127.0.0.1:9200?throwExceptionOnFailure=false&bridgeEndpoint=true")
+                .to("file:/FHIRServer/Elastic?fileName=${id}-$simple{date:now:yyyyMMdd}.xml");
 
     }
 }

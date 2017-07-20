@@ -63,7 +63,8 @@ public class UHSDiagnotics implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 
         // This is to base HAPI server not the CareConnectAPI
-        String serverBase = "http://127.0.0.1:8080/FHIRServer/DSTU2/";
+        //String serverBase = "http://127.0.0.1:8080/FHIRServer/DSTU2/";
+        String serverBase = "http://fhirtest.uhn.ca/baseDstu2/";
         FhirContext ctxFHIR = FhirContext.forDstu2();
 
         IGenericClient client = ctxFHIR.newRestfulGenericClient(serverBase);
@@ -261,6 +262,22 @@ public class UHSDiagnotics implements CommandLineRunner {
                                     .setCode(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBSERVATION(" + observationNo + ")/OBX-3-1"));
 
                             // Not converted unit and code correctly.
+
+                            observation.getCategory().addCoding()
+                                    .setSystem("http://hl7.org/fhir/observation-category")
+                                    .setCode("laboratory")
+                                    .setDisplay("Laboratory");
+
+                            try {
+                                Date date;
+                                date = fmt.parse(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBR-7-1"));
+                                DateTimeDt effectiveDate = new DateTimeDt(date);
+                                observation.setEffective(effectiveDate);
+
+                            } catch (Exception e1) {
+                                // TODO Auto-generated catch block
+                            }
+
 
                             observation.setValue(
                                     new QuantityDt()
