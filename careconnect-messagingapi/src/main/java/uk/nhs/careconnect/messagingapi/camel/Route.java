@@ -3,12 +3,15 @@ package uk.nhs.careconnect.messagingapi.camel;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.client.IGenericClient;
+import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.rest.RestBindingMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
+
+import javax.jms.*;
 
 @Component
 @PropertySource("classpath:careconnectmessagingapi.properties")
@@ -22,11 +25,21 @@ public class Route extends RouteBuilder {
 
 	@Autowired
     protected IGenericClient fhirClient;
+
+    @Autowired
+    protected ActiveMQConnectionFactory activeMQConnectionFactory;
+
+    Session session;
+
+    MessageProducer producer;
 	
     @Override
     public void configure() 
     {
-     	MQProcessor mqProcessor = new MQProcessor(ctx, fhirClient);
+
+        setupActiveMQ();
+
+     	MQProcessor mqProcessor = new MQProcessor(ctx, fhirClient,session,producer);
         ConvertToJSON convertToJSON = new ConvertToJSON(ctx);
 
 	    restConfiguration()
@@ -72,4 +85,45 @@ public class Route extends RouteBuilder {
                 .to("file:/FHIRServer/Elastic?fileName=${id}-$simple{date:now:yyyyMMdd}.xml");
 
     }
+
+    private void setupActiveMQ() {
+        try {
+            // Create a ConnectionFactory
+            ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://localhost:61616");
+
+            // Create a Connection
+            Connection connection = connectionFactory.createConnection();
+            connection.start();
+
+            // Create a Session
+            session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+
+            // Create the destination (Topic or Queue)
+            Destination destination = session.createQueue("Elastic.Queue");
+
+            // Create a MessageProducer from the Session to the Topic or Queue
+            producer = session.createProducer(destination);
+            producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
+
+            // Create a messages
+
+           // String text =JSONparser.setPrettyPrint(true).encodeResourceToString(audit);
+           // TextMessage message = session.createTextMessage(text);
+
+            // Tell the producer to send the message
+           // System.out.println("Sent message: "+ message.hashCode() + " : " + Thread.currentThread().getName());
+           // producer.send(message);
+
+            // Clean up
+          //  session.close();
+          //  connection.close();
+        }
+        catch (Exception e) {
+            System.out.println("Caught: " + e);
+            e.printStackTrace();
+        }
+    }
+
+
+
 }

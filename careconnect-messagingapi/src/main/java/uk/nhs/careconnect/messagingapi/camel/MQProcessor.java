@@ -5,6 +5,7 @@ import ca.uhn.fhir.model.api.IResource;
 import ca.uhn.fhir.model.base.resource.ResourceMetadataMap;
 import ca.uhn.fhir.model.dstu2.composite.ResourceReferenceDt;
 import ca.uhn.fhir.model.dstu2.resource.*;
+import ca.uhn.fhir.model.dstu2.valueset.AuditEventActionEnum;
 import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.IGenericClient;
@@ -15,6 +16,9 @@ import org.hl7.fhir.instance.model.api.IIdType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.jms.MessageProducer;
+import javax.jms.Session;
+import javax.jms.TextMessage;
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -37,11 +41,20 @@ public class MQProcessor implements Processor {
 
     IParser parser;
 
-    public MQProcessor(FhirContext ctx, IGenericClient client)
+    IParser JSONparser;
+
+    Session session;
+
+    MessageProducer producer;
+
+    public MQProcessor(FhirContext ctx, IGenericClient client,  Session session, MessageProducer producer)
     {
         this.ctx = ctx;
         this.client = client;
+        this.session = session;
+        this.producer = producer;
     }
+
     class EntryProcessing {
         IResource resource;
         Boolean processed;
@@ -58,6 +71,24 @@ public class MQProcessor implements Processor {
         }
 
      }
+
+    private void sendToAudit(AuditEvent audit) {
+        try {
+            // Create a ConnectionFactory
+
+            String text =JSONparser.setPrettyPrint(true).encodeResourceToString(audit);
+            TextMessage message = session.createTextMessage(text);
+
+            // Tell the producer to send the message
+            System.out.println("Sent message: "+ message.hashCode() + " : " + Thread.currentThread().getName());
+            producer.send(message);
+
+        }
+        catch (Exception e) {
+            System.out.println("Caught: " + e);
+            e.printStackTrace();
+        }
+    }
 
      
     private EntryProcessing findEntryProcess(String originalId)
@@ -158,7 +189,9 @@ public class MQProcessor implements Processor {
             entry.processed = true;
             entry.newId = outcome.getId().getValue();
             entry.resource = allergyIntolerance;
-            log.info("Composition: Id="+entry.originalId+" Server Id = "+outcome.getId().getValue());
+            log.info("AllergyIntolerabce: Id="+entry.originalId+" Server Id = "+outcome.getId().getValue());
+            sendToAudit(CareConnectAuditEvent.buildAuditEvent(allergyIntolerance, outcome, "rest", "create", AuditEventActionEnum.CREATE,"CareConnectMessagingAPI"));
+
         }
         return allReferenced;
     }
@@ -306,6 +339,8 @@ public class MQProcessor implements Processor {
             entry.newId = outcome.getId().getValue();
             entry.resource = composition;
             log.info("Composition: Id="+entry.originalId+" Server Id = "+outcome.getId().getValue());
+            sendToAudit(CareConnectAuditEvent.buildAuditEvent(composition, outcome, "rest", "create", AuditEventActionEnum.CREATE,"CareConnectMessagingAPI"));
+
         }
         return allReferenced;
     }
@@ -370,6 +405,8 @@ public class MQProcessor implements Processor {
             entry.resource = condition;
             entry.newId = outcome.getId().getValue();
             log.info("Condition: Id="+entry.originalId+" Server Id = "+outcome.getId().getValue());
+            sendToAudit(CareConnectAuditEvent.buildAuditEvent(condition, outcome, "rest", "create", AuditEventActionEnum.CREATE,"CareConnectMessagingAPI"));
+
         }
 
         return allReferenced;
@@ -468,6 +505,9 @@ public class MQProcessor implements Processor {
             entry.resource = encounter;
             entry.newId = outcome.getId().getValue();
             log.info("Encounter: Id="+entry.originalId+" Server Id = "+outcome.getId().getValue());
+
+            sendToAudit(CareConnectAuditEvent.buildAuditEvent(encounter, outcome, "rest", "create", AuditEventActionEnum.CREATE,"CareConnectMessagingAPI"));
+
         }
 
 
@@ -515,6 +555,8 @@ public class MQProcessor implements Processor {
                 entry.newId = id.getValue();
                 entry.resource = flag;
                 log.info("Flag: Id="+entry.originalId+" Server Id = "+id.getValue());
+                sendToAudit(CareConnectAuditEvent.buildAuditEvent(flag, null, "rest", "create", AuditEventActionEnum.CREATE,"CareConnectMessagingAPI"));
+
             }
 
         }
@@ -577,6 +619,8 @@ public class MQProcessor implements Processor {
                 entry.newId = id.getValue();
                 entry.resource = list;
                 log.info("List: Id="+entry.originalId+" Server Id = "+id.getValue());
+                sendToAudit(CareConnectAuditEvent.buildAuditEvent(list, null, "rest", "create", AuditEventActionEnum.CREATE,"CareConnectMessagingAPI"));
+
             }
 
         }
@@ -623,6 +667,8 @@ public class MQProcessor implements Processor {
             entry.newId = outcome.getId().getValue();
             entry.resource = location;
             log.info("Location: Id="+entry.originalId+" Server Id = "+outcome.getId().getValue());
+            sendToAudit(CareConnectAuditEvent.buildAuditEvent(location, outcome, "rest", "create", AuditEventActionEnum.CREATE,"CareConnectMessagingAPI"));
+
         }
         return allReferenced;
     }
@@ -650,6 +696,8 @@ public class MQProcessor implements Processor {
             entry.newId = outcome.getId().getValue();
             entry.resource = medication;
             log.info("Medication: Id="+entry.originalId+" Server Id = "+outcome.getId().getValue());
+            sendToAudit(CareConnectAuditEvent.buildAuditEvent(medication, outcome, "rest", "create", AuditEventActionEnum.CREATE,"CareConnectMessagingAPI"));
+
         }
         return allReferenced;
     }
@@ -723,6 +771,8 @@ public class MQProcessor implements Processor {
             entry.newId = outcome.getId().getValue();
             entry.resource = medicationStatement;
             log.info("MedicationStatement: Id="+entry.originalId+" Server Id = "+outcome.getId().getValue());
+            sendToAudit(CareConnectAuditEvent.buildAuditEvent(medicationStatement, outcome, "rest", "create", AuditEventActionEnum.CREATE,"CareConnectMessagingAPI"));
+
         }
         return allReferenced;
     }
@@ -770,6 +820,8 @@ public class MQProcessor implements Processor {
             entry.newId = outcome.getId().getValue();
             entry.resource = organisation;
             log.info("Organization: Id="+entry.originalId+" Server Id = "+outcome.getId().getValue());
+            sendToAudit(CareConnectAuditEvent.buildAuditEvent(organisation, outcome, "rest", "create", AuditEventActionEnum.CREATE,"CareConnectMessagingAPI"));
+
         }
         return allReferenced;
     }
@@ -821,6 +873,9 @@ public class MQProcessor implements Processor {
             entry.processed = true;
             entry.newId = outcome.getId().getValue();
             entry.resource = patient;
+
+            sendToAudit(CareConnectAuditEvent.buildAuditEvent(patient, outcome, "rest", "create", AuditEventActionEnum.CREATE,"CareConnectMessagingAPI"));
+
             log.info("Patient: Id="+entry.originalId+" Server Id = "+outcome.getId().getValue());
         }
         return allReferenced;
@@ -875,6 +930,8 @@ public class MQProcessor implements Processor {
             entry.newId = outcome.getId().getValue();
             entry.resource = procedureRequest;
             log.info("ProcedureRequest: Id="+entry.originalId+" Server Id = "+outcome.getId().getValue());
+            sendToAudit(CareConnectAuditEvent.buildAuditEvent(procedureRequest, outcome, "rest", "create", AuditEventActionEnum.CREATE,"CareConnectMessagingAPI"));
+
         }
 
         return allReferenced;
@@ -982,6 +1039,8 @@ public class MQProcessor implements Processor {
             entry.resource = observation;
             entry.newId = outcome.getId().getValue();
             log.info("Observation: Id="+entry.originalId+" Server Id = "+outcome.getId().getValue());
+            sendToAudit(CareConnectAuditEvent.buildAuditEvent(observation, outcome, "rest", "create", AuditEventActionEnum.CREATE,"CareConnectMessagingAPI"));
+
         }
 
         return allReferenced;
@@ -1026,6 +1085,8 @@ public class MQProcessor implements Processor {
             entry.newId = outcome.getId().getValue();
             entry.resource = practitioner;
             log.info("Practitioner: Id="+entry.originalId+" Server Id = "+outcome.getId().getValue());
+            sendToAudit(CareConnectAuditEvent.buildAuditEvent(practitioner, outcome, "rest", "create", AuditEventActionEnum.CREATE,"CareConnectMessagingAPI"));
+
         }
         return allReferenced;
     }
@@ -1153,6 +1214,8 @@ public class MQProcessor implements Processor {
             entry.resource = procedure;
             entry.newId = outcome.getId().getValue();
             log.info("Procedure: Id="+entry.originalId+" Server Id = "+outcome.getId().getValue());
+            sendToAudit(CareConnectAuditEvent.buildAuditEvent(procedure, outcome, "rest", "create", AuditEventActionEnum.CREATE,"CareConnectMessagingAPI"));
+
         }
 
 
@@ -1227,6 +1290,8 @@ public class MQProcessor implements Processor {
                 entry.newId = id.getValue();
                 entry.resource = questionnaireResponse;
                 log.info("QuestionaireResponse: Id="+entry.originalId+" Server Id = "+id.getValue());
+                sendToAudit(CareConnectAuditEvent.buildAuditEvent(questionnaireResponse, null, "rest", "create", AuditEventActionEnum.CREATE,"CareConnectMessagingAPI"));
+
             }
 
         }
@@ -1318,7 +1383,9 @@ public class MQProcessor implements Processor {
             entry.processed = true;
             entry.resource = referralRequest;
             entry.newId = outcome.getId().getValue();
-            log.info("Procedure: Id="+entry.originalId+" Server Id = "+outcome.getId().getValue());
+            log.info("ReferralRequest: Id="+entry.originalId+" Server Id = "+outcome.getId().getValue());
+            sendToAudit(CareConnectAuditEvent.buildAuditEvent(referralRequest, outcome, "rest", "create", AuditEventActionEnum.CREATE,"CareConnectMessagingAPI"));
+
 
         }
         return allReferenced;
@@ -1326,6 +1393,9 @@ public class MQProcessor implements Processor {
 
     private void processBundle(Bundle bundle)
     {
+
+        sendToAudit(CareConnectAuditEvent.buildAuditEvent(bundle, null, bundle.getType(), "create", AuditEventActionEnum.CREATE,"CareConnectMessagingAPI"));
+
         for (Bundle.Entry entry : bundle.getEntry()) {
             IResource resource = entry.getResource();
             EntryProcessing resourceP = new EntryProcessing();
@@ -1468,11 +1538,11 @@ public class MQProcessor implements Processor {
 
         Reader reader = new InputStreamReader(new ByteArrayInputStream((byte[]) exchange.getIn().getBody(byte[].class)));
 
-
+        JSONparser = ctx.newJsonParser();
 
         if (exchange.getIn().getHeader(Exchange.CONTENT_TYPE).toString().contains("json")) {
             //JsonParser parser = new JsonParser();
-            IParser parser = ctx.newJsonParser();
+            IParser parser = JSONparser; // reuse the JSONParser
             try {
                 bundle = parser.parseResource(Bundle.class, reader);
             } catch (Exception ex) {

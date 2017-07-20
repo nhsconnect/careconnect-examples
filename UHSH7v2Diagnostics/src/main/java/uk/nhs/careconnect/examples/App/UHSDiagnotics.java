@@ -7,6 +7,7 @@ import ca.uhn.fhir.model.dstu2.composite.QuantityDt;
 import ca.uhn.fhir.model.dstu2.composite.ResourceReferenceDt;
 import ca.uhn.fhir.model.dstu2.composite.SimpleQuantityDt;
 import ca.uhn.fhir.model.dstu2.resource.*;
+import ca.uhn.fhir.model.dstu2.valueset.AuditEventActionEnum;
 import ca.uhn.fhir.model.dstu2.valueset.DiagnosticReportStatusEnum;
 import ca.uhn.fhir.model.primitive.DateTimeDt;
 import ca.uhn.fhir.model.primitive.IdDt;
@@ -19,10 +20,12 @@ import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.parser.GenericParser;
 import ca.uhn.hl7v2.parser.Parser;
 import ca.uhn.hl7v2.util.Terser;
+import org.apache.activemq.ActiveMQConnectionFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import javax.jms.*;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -38,6 +41,8 @@ public class UHSDiagnotics implements CommandLineRunner {
 
 	Terser terser = null;
     String SystemNHSNumber = "https://fhir.nhs.uk/Id/nhs-number";
+
+    IParser JSONparser = null;
 
 	private String terserGet(String query)
 	{
@@ -66,6 +71,8 @@ public class UHSDiagnotics implements CommandLineRunner {
         //String serverBase = "http://127.0.0.1:8080/FHIRServer/DSTU2/";
         String serverBase = "http://fhirtest.uhn.ca/baseDstu2/";
         FhirContext ctxFHIR = FhirContext.forDstu2();
+
+        JSONparser = ctxFHIR.newXmlParser();
 
         IGenericClient client = ctxFHIR.newRestfulGenericClient(serverBase);
 
@@ -145,7 +152,7 @@ public class UHSDiagnotics implements CommandLineRunner {
             // Unsafe !!
             // We need to find the Id of the Patient to add a reference to the new FHIR resources.
             Patient patient = (Patient) results.getEntry().get(0).getResource();
-
+            sendToAudit(CareConnectAuditEvent.buildAuditEvent(results, null, "rest", "read", AuditEventActionEnum.READ_VIEW_PRINT,"UHSDiagnostics.java"));
 
             String result = null;
             MethodOutcome outcome = null;
@@ -189,6 +196,8 @@ public class UHSDiagnotics implements CommandLineRunner {
                     .execute();
             order.setId(outcome.getId());
             System.out.println(outcome.getId().getValue());
+            sendToAudit(CareConnectAuditEvent.buildAuditEvent(order, outcome, "rest", "create", AuditEventActionEnum.CREATE,"UHSDiagnostics.java"));
+
 
             //
             // DIAGNOSTIC REPORT
@@ -319,6 +328,8 @@ public class UHSDiagnotics implements CommandLineRunner {
                                     .execute();
                             observation.setId(outcome.getId());
                             System.out.println(outcome.getId().getValue());
+                            sendToAudit(CareConnectAuditEvent.buildAuditEvent(observation, outcome, "rest", "create", AuditEventActionEnum.CREATE,"UHSDiagnostics.java"));
+
 
                             report.getResult().add(new ResourceReferenceDt(observation.getId().getValue()));
 
@@ -343,6 +354,8 @@ public class UHSDiagnotics implements CommandLineRunner {
                         .execute();
                 report.setId(outcome.getId());
                 System.out.println(outcome.getId().getValue());
+                sendToAudit(CareConnectAuditEvent.buildAuditEvent(report, outcome, "rest", "create", AuditEventActionEnum.CREATE,"UHSDiagnostics.java"));
+
 
                 orderNum++;
                 result = terserGet("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBSERVATION(0)/OBX-3-1");
@@ -411,6 +424,44 @@ public class UHSDiagnotics implements CommandLineRunner {
         }
 
 
+
+    private void sendToAudit(AuditEvent audit) {
+        try {
+            // Create a ConnectionFactory
+            ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://localhost:61616");
+
+            // Create a Connection
+            Connection connection = connectionFactory.createConnection();
+            connection.start();
+
+            // Create a Session
+            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+
+            // Create the destination (Topic or Queue)
+            Destination destination = session.createQueue("Elastic.Queue");
+
+            // Create a MessageProducer from the Session to the Topic or Queue
+            MessageProducer producer = session.createProducer(destination);
+            producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
+
+            // Create a messages
+
+            String text =JSONparser.setPrettyPrint(true).encodeResourceToString(audit);
+            TextMessage message = session.createTextMessage(text);
+
+            // Tell the producer to send the message
+            System.out.println("Sent message: "+ message.hashCode() + " : " + Thread.currentThread().getName());
+            producer.send(message);
+
+            // Clean up
+            session.close();
+            connection.close();
+        }
+        catch (Exception e) {
+            System.out.println("Caught: " + e);
+            e.printStackTrace();
+        }
+    }
 
 
 

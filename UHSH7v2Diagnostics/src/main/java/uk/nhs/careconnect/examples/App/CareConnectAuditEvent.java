@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.examples.fhir;
+package uk.nhs.careconnect.examples.App;
 
 import ca.uhn.fhir.model.api.IResource;
 import ca.uhn.fhir.model.dstu2.composite.ResourceReferenceDt;

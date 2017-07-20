@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.examples.fhir;
+package uk.nhs.careconnect.messagingapi.camel;
 
 import ca.uhn.fhir.model.api.IResource;
 import ca.uhn.fhir.model.dstu2.composite.ResourceReferenceDt;
