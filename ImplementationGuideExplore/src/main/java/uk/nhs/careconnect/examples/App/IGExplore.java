@@ -2,17 +2,22 @@ package uk.nhs.careconnect.examples.App;
 
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.model.dstu2.resource.*;
-import ca.uhn.fhir.model.dstu2.valueset.AdministrativeGenderEnum;
-import ca.uhn.fhir.model.dstu2.valueset.AuditEventActionEnum;
 import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.IGenericClient;
+import ca.uhn.fhir.validation.FhirValidator;
+import ca.uhn.fhir.validation.SingleValidationMessage;
+import ca.uhn.fhir.validation.ValidationResult;
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.hl7.fhir.instance.hapi.validation.FhirInstanceValidator;
+import org.hl7.fhir.instance.model.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import uk.nhs.careconnect.examples.fhir.*;
+import uk.nhs.careconnect.examples.fhir.CareConnectAuditEvent;
+import uk.nhs.careconnect.examples.fhir.CareConnectOrganisation;
+import uk.nhs.careconnect.examples.fhir.CareConnectPatient;
+import uk.nhs.careconnect.examples.fhir.CareConnectPractitioner;
 
 import javax.jms.*;
 
@@ -26,16 +31,33 @@ public class IGExplore implements CommandLineRunner {
     IParser XMLparser = null;
 
     IParser JSONparser = null;
+
+    FhirContext ctxValidator;
+
+    FhirValidator validator;
+
+    FhirInstanceValidator instanceValidator;
     @Override
 	public void run(String... args) throws Exception {
 
         if (args.length > 0 && args[0].equals("exitcode")) {
             throw new Exception();
         }
-        FhirContext ctxFHIR = FhirContext.forDstu2();
+        FhirContext ctxFHIR = FhirContext.forDstu2Hl7Org();
+
+        ctxValidator  = FhirContext.forDstu2Hl7Org();
+
+        validator = ctxValidator.newValidator();
+        instanceValidator = new FhirInstanceValidator();
+        validator.registerValidatorModule(instanceValidator);
+
         XMLparser = ctxFHIR.newXmlParser();
 
         JSONparser = ctxFHIR.newJsonParser();
+
+        FhirValidator validator = ctxFHIR.newValidator();
+       // FhirInstanceValidator instanceValidator = new FhirInstanceValidator();
+       // validator.registerValidatorModule(instanceValidator);
 
 
         // This is to base HAPI server not the CareConnectAPI
@@ -61,8 +83,9 @@ public class IGExplore implements CommandLineRunner {
         organisation.setId(outcome.getId());
         System.out.println(outcome.getId().getValue());
 
-        AuditEvent audit = CareConnectAuditEvent.buildAuditEvent(organisation, outcome, "rest", "create", AuditEventActionEnum.CREATE,"IGExplore.java");
+        AuditEvent audit = CareConnectAuditEvent.buildAuditEvent(organisation, outcome, "rest", "create", AuditEvent.AuditEventAction.C,"IGExplore.java");
         sendToAudit(audit);
+        validate(XMLparser.encodeResourceToString(organisation));
 
 
         // GP Practice
@@ -82,14 +105,15 @@ public class IGExplore implements CommandLineRunner {
                 .execute();
         practice.setId(outcome.getId());
         System.out.println(outcome.getId().getValue());
-        sendToAudit(CareConnectAuditEvent.buildAuditEvent(practice, outcome, "rest", "create", AuditEventActionEnum.CREATE,"IGExplore.java"));
+        sendToAudit(CareConnectAuditEvent.buildAuditEvent(practice, outcome, "rest", "create", AuditEvent.AuditEventAction.C,"IGExplore.java"));
+        validate(XMLparser.encodeResourceToString(practice));
 
         Practitioner gp = CareConnectPractitioner.buildCareConnectPractitioner(
                 "G8133438",
                 "Bhatia",
                 "AA",
                 "Dr.",
-                AdministrativeGenderEnum.MALE,
+                Enumerations.AdministrativeGender.MALE,
                 "0115 9737320",
                 "Regent Street",
                 "Long Eaton",
@@ -105,14 +129,16 @@ public class IGExplore implements CommandLineRunner {
                 .execute();
         gp.setId(outcome.getId());
         System.out.println(outcome.getId().getValue());
-        sendToAudit(CareConnectAuditEvent.buildAuditEvent(gp, outcome, "rest", "create", AuditEventActionEnum.CREATE,"IGExplore.java"));
+        sendToAudit(CareConnectAuditEvent.buildAuditEvent(gp, outcome, "rest", "create", AuditEvent.AuditEventAction.C,"IGExplore.java"));
+        validate(XMLparser.encodeResourceToString(gp));
+
 
         Practitioner gp2 = CareConnectPractitioner.buildCareConnectPractitioner(
                 "G8650149",
                 "Swamp",
                 "Karren",
                 "Dr.",
-                AdministrativeGenderEnum.MALE,
+                Enumerations.AdministrativeGender.MALE,
                 "0115 9737320",
                 "Regent Street",
                 "Long Eaton",
@@ -128,7 +154,8 @@ public class IGExplore implements CommandLineRunner {
                 .execute();
         gp2.setId(outcome.getId());
         System.out.println(outcome.getId().getValue());
-        sendToAudit(CareConnectAuditEvent.buildAuditEvent(gp2, outcome, "rest", "create", AuditEventActionEnum.CREATE,"IGExplore.java"));
+        sendToAudit(CareConnectAuditEvent.buildAuditEvent(gp2, outcome, "rest", "create", AuditEvent.AuditEventAction.C,"IGExplore.java"));
+        validate(XMLparser.encodeResourceToString(gp2));
 
         Patient patient = CareConnectPatient.buildCareConnectPatientCSV("British - Mixed British,01,9876543210,Number present and verified,01,Kanfeld,Bernie,Miss,10 Field Jardin,Long Eaton,Nottingham,NG10 1ZZ,1,1998-03-19"
                 ,practice
@@ -140,8 +167,9 @@ public class IGExplore implements CommandLineRunner {
                             .execute();
         patient.setId(outcome.getId());
         System.out.println(outcome.getId().getValue());
-        sendToAudit(CareConnectAuditEvent.buildAuditEvent(patient, outcome, "rest", "create", AuditEventActionEnum.CREATE,"IGExplore.java"));
-
+        sendToAudit(CareConnectAuditEvent.buildAuditEvent(patient, outcome, "rest", "create", AuditEvent.AuditEventAction.C,"IGExplore.java"));
+        validate(XMLparser.encodeResourceToString(patient));
+/*
         MedicationOrder prescription = CareConnectMedicationOrder.buildCareConnectMedicationOrder(patient,gp);
         System.out.println(XMLparser.setPrettyPrint(true).encodeResourceToString(prescription));
         outcome = client.update().resource(prescription)
@@ -150,6 +178,7 @@ public class IGExplore implements CommandLineRunner {
         prescription.setId(outcome.getId());
         System.out.println(outcome.getId().getValue());
         sendToAudit(CareConnectAuditEvent.buildAuditEvent(prescription, outcome, "rest", "create", AuditEventActionEnum.CREATE,"IGExplore.java"));
+        validate(XMLparser.encodeResourceToString(prescription));
 
         MedicationStatement medicationSummary = CareConnectMedicationStatement.buildCareConnectMedicationStatement(patient,gp2);
         System.out.println(XMLparser.setPrettyPrint(true).encodeResourceToString(medicationSummary));
@@ -159,7 +188,7 @@ public class IGExplore implements CommandLineRunner {
         medicationSummary.setId(outcome.getId());
         System.out.println(outcome.getId().getValue());
         sendToAudit(CareConnectAuditEvent.buildAuditEvent(medicationSummary, outcome, "rest", "create", AuditEventActionEnum.CREATE,"IGExplore.java"));
-
+        validate(XMLparser.encodeResourceToString(medicationSummary));
 
 
         Immunization
@@ -171,9 +200,24 @@ public class IGExplore implements CommandLineRunner {
         immunisation.setId(outcome.getId());
         System.out.println(outcome.getId().getValue());
         sendToAudit(CareConnectAuditEvent.buildAuditEvent(immunisation, outcome, "rest", "create", AuditEventActionEnum.CREATE,"IGExplore.java"));
+        validate(XMLparser.encodeResourceToString(immunisation));
 
+        */
 
     }
+
+    private void validate(String resource)
+    {
+        ValidationResult result = validator.validateWithResult(resource);
+
+        System.out.println(result.isSuccessful()); // false
+
+// Show the issues
+        for (SingleValidationMessage next : result.getMessages()) {
+            System.out.println(" Next issue " + next.getSeverity() + " - " + next.getLocationString() + " - " + next.getMessage());
+        }
+    }
+
 
     private void sendToAudit(AuditEvent audit) {
         try {
@@ -206,6 +250,8 @@ public class IGExplore implements CommandLineRunner {
             // Clean up
             session.close();
             connection.close();
+
+
         }
         catch (Exception e) {
             System.out.println("Caught: " + e);

@@ -3,20 +3,14 @@ package uk.nhs.careconnect.fhirserver;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.rest.server.RestfulServer;
-import uk.gov.hscic.appointments.AppointmentResourceProvider;
-import uk.gov.hscic.appointments.ScheduleResourceProvider;
-import uk.gov.hscic.appointments.SlotResourceProvider;
+import org.springframework.web.context.ContextLoaderListener;
+import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hscic.location.LocationResourceProvider;
-import uk.gov.hscic.medications.MedicationAdministrationResourceProvider;
-import uk.gov.hscic.medications.MedicationDispenseResourceProvider;
 import uk.gov.hscic.medications.MedicationOrderResourceProvider;
-import uk.gov.hscic.medications.MedicationResourceProvider;
 import uk.gov.hscic.order.OrderResourceProvider;
 import uk.gov.hscic.organization.OrganizationResourceProvider;
 import uk.gov.hscic.patient.PatientResourceProvider;
 import uk.gov.hscic.practitioner.PractitionerResourceProvider;
-import org.springframework.web.context.ContextLoaderListener;
-import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.ServletException;
 import java.util.Arrays;
@@ -54,14 +48,14 @@ public class HAPIRestfulConfig extends RestfulServer {
 				myAppCtx.getBean(PatientResourceProvider.class),
 				myAppCtx.getBean(OrganizationResourceProvider.class),
 				myAppCtx.getBean(PractitionerResourceProvider.class),
-				myAppCtx.getBean(MedicationResourceProvider.class),
+			//	myAppCtx.getBean(MedicationResourceProvider.class),
 				myAppCtx.getBean(MedicationOrderResourceProvider.class),
-				myAppCtx.getBean(MedicationDispenseResourceProvider.class),
-				myAppCtx.getBean(MedicationAdministrationResourceProvider.class),
+			//	myAppCtx.getBean(MedicationDispenseResourceProvider.class),
+			//	myAppCtx.getBean(MedicationAdministrationResourceProvider.class),
 				myAppCtx.getBean(LocationResourceProvider.class),
-				myAppCtx.getBean(AppointmentResourceProvider.class),
-				myAppCtx.getBean(ScheduleResourceProvider.class),
-				myAppCtx.getBean(SlotResourceProvider.class),
+			//	myAppCtx.getBean(AppointmentResourceProvider.class),
+			//	myAppCtx.getBean(ScheduleResourceProvider.class),
+			//	myAppCtx.getBean(SlotResourceProvider.class),
 				myAppCtx.getBean(OrderResourceProvider.class)
 		));
 

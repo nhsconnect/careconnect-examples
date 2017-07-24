@@ -1,24 +1,11 @@
 package uk.nhs.careconnect.examples.fhir;
 
-import ca.uhn.fhir.model.api.ExtensionDt;
-import ca.uhn.fhir.model.api.ResourceMetadataKeyEnum;
-import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
-import ca.uhn.fhir.model.dstu2.composite.ResourceReferenceDt;
-import ca.uhn.fhir.model.dstu2.composite.TimingDt;
-import ca.uhn.fhir.model.dstu2.resource.MedicationOrder;
-import ca.uhn.fhir.model.dstu2.resource.Patient;
-import ca.uhn.fhir.model.dstu2.resource.Practitioner;
-import ca.uhn.fhir.model.dstu2.valueset.MedicationOrderStatusEnum;
-import ca.uhn.fhir.model.dstu2.valueset.TimingAbbreviationEnum;
-import ca.uhn.fhir.model.primitive.DateTimeDt;
-import ca.uhn.fhir.model.primitive.IdDt;
+import org.hl7.fhir.instance.model.*;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by kevinmayfield on 26/05/2017.
@@ -34,43 +21,42 @@ public class CareConnectMedicationOrder {
 
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-        List<IdDt> profiles = new ArrayList<IdDt>();
-        profiles.add(new IdDt(CareConnectSystem.ProfileMedicationOrder));
-        ResourceMetadataKeyEnum.PROFILES.put(prescription, profiles);
+        prescription.setMeta(new Meta().addProfile(CareConnectSystem.ProfileMedicationOrder));
 
-        ExtensionDt supplyType = new ExtensionDt();
+
+        Extension supplyType = new Extension();
         supplyType.setUrl(CareConnectSystem.ExtUrlMedicationSupplyType);
-        CodeableConceptDt supplyCode = new CodeableConceptDt();
+        CodeableConcept supplyCode = new CodeableConcept();
         supplyCode.addCoding()
                 .setCode("394823007")
                 .setSystem(CareConnectSystem.SNOMEDCT)
                 .setDisplay("NHS Prescription");
         supplyType.setValue(supplyCode);
-        prescription.addUndeclaredExtension(supplyType);
+        prescription.addExtension(supplyType);
 
 
         prescription.addIdentifier()
                 .setSystem("https://fhir.bristolccg.nhs.uk/DW/MedicationOrder")
                 .setValue("6bf79485-cee5-4a20-8e4a-4bf13aba33e6");
-        prescription.setPatient(new ResourceReferenceDt(patient.getId().getValue()));
-        prescription.getPatient().setDisplay(patient.getName().get(0).getNameAsSingleString());
+        prescription.setPatient(new Reference(patient.getId()));
+        prescription.getPatient().setDisplay(patient.getName().get(0).getText());
 
         Date issueDate;
         try {
             issueDate = dateFormat.parse("2017-05-25");
-            prescription.setDateWritten(new DateTimeDt(issueDate));
+            prescription.setDateWritten(issueDate);
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
-        prescription.setStatus(MedicationOrderStatusEnum.ACTIVE);
+        prescription.setStatus(MedicationOrder.MedicationOrderStatus.ACTIVE);
 
-        prescription.setPrescriber(new ResourceReferenceDt(prescriber.getId().getValue()));
-        prescription.getPrescriber().setDisplay(prescriber.getName().getNameAsSingleString());
+        prescription.setPrescriber(new Reference(prescriber.getId()));
+        prescription.getPrescriber().setDisplay(prescriber.getName().getText());
 
         prescription.setNote("Please explain to Bernie how to use injector.");
 
-        CodeableConceptDt drugCode = new CodeableConceptDt();
+        CodeableConcept drugCode = new CodeableConcept();
         drugCode.addCoding()
                 .setCode("10097211000001102")
                 .setSystem(CareConnectSystem.SNOMEDCT)
@@ -79,9 +65,9 @@ public class CareConnectMedicationOrder {
         prescription.setMedication(drugCode);
 
 
-        MedicationOrder.DosageInstruction dosage = prescription.addDosageInstruction();
+        MedicationOrder.MedicationOrderDosageInstructionComponent dosage = prescription.addDosageInstruction();
         dosage.setText("Three times a day");
-        CodeableConceptDt additionalIns = new CodeableConceptDt();
+        CodeableConcept additionalIns = new CodeableConcept();
         additionalIns.addCoding()
                 .setCode("1521000175104")
                 .setSystem(CareConnectSystem.SNOMEDCT)
@@ -89,14 +75,14 @@ public class CareConnectMedicationOrder {
         dosage.setAdditionalInstructions(additionalIns);
 
 
-        TimingDt timing = new TimingDt();
-        timing.setCode(TimingAbbreviationEnum.TID);
+        Timing timing = new Timing();
+        CodeableConcept timeCode = new CodeableConcept();
+        timeCode.addCoding().setCode("TID").setSystem("http://hl7.org/fhir/v3/GTSAbbreviation");
+        timing.setCode(timeCode);
         dosage.setTiming(timing);
 
-        MedicationOrder.DispenseRequest dispenseRequest = new MedicationOrder.DispenseRequest();
+        MedicationOrder.MedicationOrderDispenseRequestComponent dispenseRequest = new MedicationOrder.MedicationOrderDispenseRequestComponent();
         dispenseRequest.setNumberOfRepeatsAllowed(3);
-
-
 
         prescription.setDispenseRequest(dispenseRequest);
 

@@ -1,14 +1,17 @@
 package uk.nhs.careconnect.examples.fhir;
-
+/*
 import ca.uhn.fhir.model.api.ResourceMetadataKeyEnum;
 import ca.uhn.fhir.model.dstu2.resource.Organization;
 import ca.uhn.fhir.model.dstu2.valueset.AddressUseEnum;
 import ca.uhn.fhir.model.dstu2.valueset.ContactPointSystemEnum;
 import ca.uhn.fhir.model.dstu2.valueset.ContactPointUseEnum;
 import ca.uhn.fhir.model.primitive.IdDt;
+*/
 
-import java.util.ArrayList;
-import java.util.List;
+import org.hl7.fhir.instance.model.Address;
+import org.hl7.fhir.instance.model.ContactPoint;
+import org.hl7.fhir.instance.model.Meta;
+import org.hl7.fhir.instance.model.Organization;
 
 /**
  * Created by kevinmayfield on 07/07/2017.
@@ -18,9 +21,12 @@ public class CareConnectOrganisation {
     {
         Organization organization = new Organization();
 
-        List<IdDt> profiles = new ArrayList<IdDt>();
-        profiles.add(new IdDt(CareConnectSystem.ProfileOrganization));
-        ResourceMetadataKeyEnum.PROFILES.put(organization, profiles);
+       // List<IdDt> profiles = new ArrayList<IdDt>();
+       // profiles.add(new IdDt(CareConnectSystem.ProfileOrganization));
+       /// ResourceMetadataKeyEnum.PROFILES.put(organization, profiles);
+
+        organization.setMeta(new Meta().addProfile(CareConnectSystem.ProfileOrganization));
+
 
         organization.addIdentifier()
                 .setSystem(CareConnectSystem.SystemODSOrganisationCode)
@@ -37,12 +43,12 @@ public class CareConnectOrganisation {
         organization.setName(organisationName);
 
         organization.addTelecom()
-                .setUse(ContactPointUseEnum.WORK)
+                .setUse(ContactPoint.ContactPointUse.WORK)
                 .setValue(phone)
-                .setSystem(ContactPointSystemEnum.PHONE);
+                .setSystem(ContactPoint.ContactPointSystem.PHONE);
 
         organization.addAddress()
-                .setUse(AddressUseEnum.WORK)
+                .setUse(Address.AddressUse.WORK)
                 .addLine(addressLine1)
                 .addLine(addressLine2)
                 .setCity(city)

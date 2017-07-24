@@ -1,26 +1,11 @@
 package uk.nhs.careconnect.examples.fhir;
 
-import ca.uhn.fhir.model.api.ExtensionDt;
-import ca.uhn.fhir.model.api.ResourceMetadataKeyEnum;
-import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
-import ca.uhn.fhir.model.dstu2.composite.IdentifierDt;
-import ca.uhn.fhir.model.dstu2.composite.ResourceReferenceDt;
-import ca.uhn.fhir.model.dstu2.resource.Organization;
-import ca.uhn.fhir.model.dstu2.resource.Patient;
-import ca.uhn.fhir.model.dstu2.resource.Practitioner;
-import ca.uhn.fhir.model.dstu2.valueset.AddressUseEnum;
-import ca.uhn.fhir.model.dstu2.valueset.AdministrativeGenderEnum;
-import ca.uhn.fhir.model.dstu2.valueset.MaritalStatusCodesEnum;
-import ca.uhn.fhir.model.dstu2.valueset.NameUseEnum;
-import ca.uhn.fhir.model.primitive.DateDt;
-import ca.uhn.fhir.model.primitive.IdDt;
+import org.hl7.fhir.instance.model.*;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by kevinmayfield on 26/05/2017.
@@ -37,44 +22,42 @@ public class CareConnectPatient {
 
         Patient patient = new Patient();
 
-        List<IdDt> profiles = new ArrayList<IdDt>();
-        profiles.add(new IdDt(CareConnectSystem.ProfilePatient));
-        ResourceMetadataKeyEnum.PROFILES.put(patient, profiles);
+        patient.setMeta(new Meta().addProfile(CareConnectSystem.ProfilePatient));
 
-        CodeableConceptDt ethnicCode = new CodeableConceptDt();
+        CodeableConcept ethnicCode = new CodeableConcept();
         ethnicCode
                 .addCoding()
                 .setSystem(CareConnectSystem.SystemEthnicCategory)
                 .setDisplay(csvArray[0])
                 .setCode(csvArray[1]);
-        ExtensionDt ethnicExtension = new ExtensionDt()
+        Extension ethnicExtension = new Extension()
                 .setUrl(CareConnectSystem.ExtUrlEthnicCategory)
                 .setValue(ethnicCode);
-        patient.addUndeclaredExtension(ethnicExtension);
+        patient.addExtension(ethnicExtension);
 
-        IdentifierDt nhsNumber = patient.addIdentifier()
+        Identifier nhsNumber = patient.addIdentifier()
                 .setSystem(CareConnectSystem.SystemNHSNumber)
                 .setValue(csvArray[2]);
 
-        CodeableConceptDt verificationStatusCode = new CodeableConceptDt();
+        CodeableConcept verificationStatusCode = new CodeableConcept();
         verificationStatusCode
                 .addCoding()
                 .setSystem(CareConnectSystem.SystemNHSNumberVerificationStatus)
                 .setDisplay(csvArray[3])
                 .setCode(csvArray[4]);
-        ExtensionDt verificationStatus = new ExtensionDt()
+        Extension verificationStatus = new Extension()
                 .setUrl(CareConnectSystem.ExtUrlNHSNumberVerificationStatus)
                 .setValue(verificationStatusCode);
-        nhsNumber.addUndeclaredExtension(verificationStatus);
+        nhsNumber.addExtension(verificationStatus);
 
         patient.addName()
-                .setUse(NameUseEnum.USUAL)
+                .setUse(HumanName.NameUse.USUAL)
                 .addFamily(csvArray[5])
                 .addGiven(csvArray[6])
                 .addPrefix(csvArray[7]);
 
         patient.addAddress()
-                .setUse(AddressUseEnum.HOME)
+                .setUse(Address.AddressUse.HOME)
                 .addLine(csvArray[8])
                 .addLine(csvArray[9])
                 .setCity(csvArray[10])
@@ -84,33 +67,32 @@ public class CareConnectPatient {
 
         switch (csvArray[12]) {
             case "1":
-                patient.setGender(AdministrativeGenderEnum.FEMALE);
+                patient.setGender(Enumerations.AdministrativeGender.FEMALE);
                 break;
             case "2":
-                patient.setGender(AdministrativeGenderEnum.MALE);
+                patient.setGender(Enumerations.AdministrativeGender.MALE);
                 break;
             default:
-                patient.setGender(AdministrativeGenderEnum.UNKNOWN);
+                patient.setGender(Enumerations.AdministrativeGender.UNKNOWN);
         }
-
-        patient.setMaritalStatus(MaritalStatusCodesEnum.S);
-        // HAPI doesn't add in the display text. It is mandatory in the profile
-        patient.getMaritalStatus().getCoding().get(0).setDisplay("Never Married");
+        CodeableConcept marital = new CodeableConcept();
+        marital.addCoding().setSystem("http://hl7.org/fhir/v3/MaritalStatus").setCode("S").setDisplay("Never Married");
+        patient.setMaritalStatus(marital);
 
         Date birth;
         try {
             birth = dateFormat.parse(csvArray[13]);
-            patient.setBirthDate(new DateDt(birth));
+            patient.setBirthDate(birth);
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
-        patient.setManagingOrganization(new ResourceReferenceDt(practice.getId().getValue()));
+        patient.setManagingOrganization(new Reference(practice.getId()));
         patient.getManagingOrganization().setDisplay(practice.getName());
 
         patient.addCareProvider()
-                .setDisplay(gp.getName().getNameAsSingleString())
-                .setReference(gp.getId().getValue());
+                .setDisplay(gp.getName().getText())
+                .setReference(gp.getId());
 
         return patient;
     }
