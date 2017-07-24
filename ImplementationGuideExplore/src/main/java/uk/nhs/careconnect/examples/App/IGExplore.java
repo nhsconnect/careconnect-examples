@@ -14,10 +14,7 @@ import org.hl7.fhir.instance.model.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import uk.nhs.careconnect.examples.fhir.CareConnectAuditEvent;
-import uk.nhs.careconnect.examples.fhir.CareConnectOrganisation;
-import uk.nhs.careconnect.examples.fhir.CareConnectPatient;
-import uk.nhs.careconnect.examples.fhir.CareConnectPractitioner;
+import uk.nhs.careconnect.examples.fhir.*;
 
 import javax.jms.*;
 
@@ -169,7 +166,7 @@ public class IGExplore implements CommandLineRunner {
         System.out.println(outcome.getId().getValue());
         sendToAudit(CareConnectAuditEvent.buildAuditEvent(patient, outcome, "rest", "create", AuditEvent.AuditEventAction.C,"IGExplore.java"));
         validate(XMLparser.encodeResourceToString(patient));
-/*
+
         MedicationOrder prescription = CareConnectMedicationOrder.buildCareConnectMedicationOrder(patient,gp);
         System.out.println(XMLparser.setPrettyPrint(true).encodeResourceToString(prescription));
         outcome = client.update().resource(prescription)
@@ -177,7 +174,7 @@ public class IGExplore implements CommandLineRunner {
                 .execute();
         prescription.setId(outcome.getId());
         System.out.println(outcome.getId().getValue());
-        sendToAudit(CareConnectAuditEvent.buildAuditEvent(prescription, outcome, "rest", "create", AuditEventActionEnum.CREATE,"IGExplore.java"));
+        sendToAudit(CareConnectAuditEvent.buildAuditEvent(prescription, outcome, "rest", "create", AuditEvent.AuditEventAction.C,"IGExplore.java"));
         validate(XMLparser.encodeResourceToString(prescription));
 
         MedicationStatement medicationSummary = CareConnectMedicationStatement.buildCareConnectMedicationStatement(patient,gp2);
@@ -187,7 +184,7 @@ public class IGExplore implements CommandLineRunner {
                 .execute();
         medicationSummary.setId(outcome.getId());
         System.out.println(outcome.getId().getValue());
-        sendToAudit(CareConnectAuditEvent.buildAuditEvent(medicationSummary, outcome, "rest", "create", AuditEventActionEnum.CREATE,"IGExplore.java"));
+        sendToAudit(CareConnectAuditEvent.buildAuditEvent(medicationSummary, outcome, "rest", "create", AuditEvent.AuditEventAction.C,"IGExplore.java"));
         validate(XMLparser.encodeResourceToString(medicationSummary));
 
 
@@ -199,10 +196,10 @@ public class IGExplore implements CommandLineRunner {
                 .execute();
         immunisation.setId(outcome.getId());
         System.out.println(outcome.getId().getValue());
-        sendToAudit(CareConnectAuditEvent.buildAuditEvent(immunisation, outcome, "rest", "create", AuditEventActionEnum.CREATE,"IGExplore.java"));
+        sendToAudit(CareConnectAuditEvent.buildAuditEvent(immunisation, outcome, "rest", "create", AuditEvent.AuditEventAction.C,"IGExplore.java"));
         validate(XMLparser.encodeResourceToString(immunisation));
 
-        */
+
 
     }
 
