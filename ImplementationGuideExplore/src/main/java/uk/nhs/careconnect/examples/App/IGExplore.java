@@ -34,6 +34,18 @@ public class IGExplore implements CommandLineRunner {
     FhirValidator validator;
 
     FhirInstanceValidator instanceValidator;
+
+    ActiveMQConnectionFactory connectionFactory;
+
+    Connection connection;
+
+    Session session;
+
+    Destination destination;
+
+    MessageProducer producer;
+
+
     @Override
 	public void run(String... args) throws Exception {
 
@@ -53,8 +65,24 @@ public class IGExplore implements CommandLineRunner {
         JSONparser = ctxFHIR.newJsonParser();
 
         FhirValidator validator = ctxFHIR.newValidator();
-       // FhirInstanceValidator instanceValidator = new FhirInstanceValidator();
-       // validator.registerValidatorModule(instanceValidator);
+
+
+        connectionFactory = new ActiveMQConnectionFactory("tcp://localhost:61616");
+
+        // Create a Connection
+        connection = connectionFactory.createConnection();
+        connection.start();
+
+        // Create a Session
+        session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+
+        // Create the destination (Topic or Queue)
+        destination = session.createQueue("Elastic.Queue");
+
+        // Create a MessageProducer from the Session to the Topic or Queue
+        producer = session.createProducer(destination);
+        producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
+
 
 
         // This is to base HAPI server not the CareConnectAPI
@@ -200,6 +228,10 @@ public class IGExplore implements CommandLineRunner {
         validate(XMLparser.encodeResourceToString(immunisation));
 
 
+        // Clean up ActiveMQ
+        session.close();
+        connection.close();
+
 
     }
 
@@ -219,21 +251,6 @@ public class IGExplore implements CommandLineRunner {
     private void sendToAudit(AuditEvent audit) {
         try {
             // Create a ConnectionFactory
-            ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://localhost:61616");
-
-            // Create a Connection
-            Connection connection = connectionFactory.createConnection();
-            connection.start();
-
-            // Create a Session
-            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-
-            // Create the destination (Topic or Queue)
-            Destination destination = session.createQueue("Elastic.Queue");
-
-            // Create a MessageProducer from the Session to the Topic or Queue
-            MessageProducer producer = session.createProducer(destination);
-            producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
 
             // Create a messages
 
@@ -244,9 +261,6 @@ public class IGExplore implements CommandLineRunner {
             System.out.println("Sent message: "+ message.hashCode() + " : " + Thread.currentThread().getName());
             producer.send(message);
 
-            // Clean up
-            session.close();
-            connection.close();
 
 
         }
