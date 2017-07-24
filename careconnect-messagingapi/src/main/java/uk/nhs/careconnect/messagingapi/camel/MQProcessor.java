@@ -1,17 +1,13 @@
 package uk.nhs.careconnect.messagingapi.camel;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.model.api.IResource;
-import ca.uhn.fhir.model.base.resource.ResourceMetadataMap;
-import ca.uhn.fhir.model.dstu2.composite.ResourceReferenceDt;
-import ca.uhn.fhir.model.dstu2.resource.*;
-import ca.uhn.fhir.model.dstu2.valueset.AuditEventActionEnum;
 import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.IGenericClient;
 import ca.uhn.fhir.rest.gclient.StringClientParam;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
+import org.hl7.fhir.instance.model.*;
 import org.hl7.fhir.instance.model.api.IIdType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +19,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
+
 
 /**
  * Created by kevinmayfield on 12/07/2017.
@@ -56,15 +53,17 @@ public class MQProcessor implements Processor {
     }
 
     class EntryProcessing {
-        IResource resource;
+        Resource resource;
         Boolean processed;
         String originalId;
         String newId;
     }
 
-    private boolean isNullReference(ResourceReferenceDt reference) {
+    private boolean isNullReference(Reference reference) {
+        //log.info("IsNullReference getReference="+reference.getReference());
+        //log.info("IsNullReference getId="+reference.getId());
         if (reference == null ) return true;
-        if (reference.getReference().getValue() == null) {
+        if (reference.getReference() == null) {
             return true;
         } else {
             return false;
@@ -121,6 +120,7 @@ public class MQProcessor implements Processor {
         int i = 0;
         String newId = null;
         log.info("Finding "+referenceId);
+        log.info("Finding "+referenceId);
         if (referenceId.contains("urn:uuid:")) {
             referenceId = referenceId.replace("urn:uuid:","");
         }
@@ -131,18 +131,18 @@ public class MQProcessor implements Processor {
                 compare = compare.replace("urn:uuid:", "");
             }
             // Need to investigate more but need raw Id.
-            compare = compare.replace(entry.resource.getResourceName()+"/","");
+            compare = compare.replace(entry.resource.getResourceType() +"/","");
             log.info("Comparing to (modified) " + compare);
             if (referenceId.equals(compare) && newId == null) {
 
                 if (entry.processed && entry.originalId != null) {
                     newId = entry.newId;
                     addNewReferences(newId);
-                    log.info("### Found "+ entry.resource.getResourceName());
+                    log.info("### Found "+ entry.resource.getResourceType());
                 }
                 else
                 {
-                    log.info("*** Not mapped yet "+ entry.resource.getResourceName());
+                    log.info("*** Not mapped yet "+ entry.resource.getResourceType());
                 }
             }
         }
@@ -158,39 +158,39 @@ public class MQProcessor implements Processor {
 
     private boolean processAllergyIntolerance(AllergyIntolerance allergyIntolerance) {
         Boolean allReferenced = true;
-        EntryProcessing entry = findEntryProcess(allergyIntolerance.getId().getValue());
+        EntryProcessing entry = findEntryProcess(allergyIntolerance.getId());
         
         if (allergyIntolerance.getIdentifier().size() == 0 ) {
             allergyIntolerance.addIdentifier()
                     .setSystem("https://tools.ietf.org/html/rfc4122")
-                    .setValue(allergyIntolerance.getId().getValue());
+                    .setValue(allergyIntolerance.getId());
         }
 
         // Compostion Patient
         if (!isNullReference(allergyIntolerance.getPatient())) {
 
-            log.debug(allergyIntolerance.getPatient().getReference().getValue());
-            String referencedResource = findAcutalId(allergyIntolerance.getPatient().getReference().getValue());
+            log.debug(allergyIntolerance.getPatient().getReference());
+            String referencedResource = findAcutalId(allergyIntolerance.getPatient().getReference());
             if (referencedResource != null) {
                 allergyIntolerance.getPatient().setReference(referencedResource);
             } else {
-                if (!processed(allergyIntolerance.getPatient().getReference().getValue())) allReferenced = false;
+                if (!processed(allergyIntolerance.getPatient().getReference())) allReferenced = false;
             }
         }
 
         if (allReferenced) {
             // Work around to cope with slicing not validated error in hapi server
-            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) allergyIntolerance.setResourceMetadata(new ResourceMetadataMap());
+            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) allergyIntolerance.setMeta(new Meta());
 
             MethodOutcome outcome = client.update().resource(allergyIntolerance)
                     .conditionalByUrl("AllergyIntolerance?identifier=" + allergyIntolerance.getIdentifier().get(0).getSystem() + "%7C" + allergyIntolerance.getIdentifier().get(0).getValue())
                     .execute();
             allergyIntolerance.setId(outcome.getId());
             entry.processed = true;
-            entry.newId = outcome.getId().getValue();
+            entry.newId = outcome.getId().toString();
             entry.resource = allergyIntolerance;
-            log.info("AllergyIntolerabce: Id="+entry.originalId+" Server Id = "+outcome.getId().getValue());
-            sendToAudit(CareConnectAuditEvent.buildAuditEvent(allergyIntolerance, outcome, "rest", "create", AuditEventActionEnum.CREATE,"CareConnectMessagingAPI"));
+            log.info("AllergyIntolerabce: Id="+entry.originalId+" Server Id = "+outcome.getId());
+            sendToAudit(CareConnectAuditEvent.buildAuditEvent(allergyIntolerance, outcome, "rest", "create", AuditEvent.AuditEventAction.C,"CareConnectMessagingAPI"));
 
         }
         return allReferenced;
@@ -203,23 +203,23 @@ public class MQProcessor implements Processor {
      */
     private boolean processAppointment(Appointment appointment) {
         Boolean allReferenced = true;
-        EntryProcessing entry = findEntryProcess(appointment.getId().getValue());
+        EntryProcessing entry = findEntryProcess(appointment.getId());
 
         if (appointment.getIdentifier().size() == 0) {
             appointment.addIdentifier()
                     .setSystem("https://tools.ietf.org/html/rfc4122")
-                    .setValue(appointment.getId().getValue());
+                    .setValue(appointment.getId());
         }
 
         // Appointment.Participants
-        for (Appointment.Participant participant : appointment.getParticipant()) {
-            ResourceReferenceDt reference  = participant.getActor();
+        for (Appointment.AppointmentParticipantComponent participant : appointment.getParticipant()) {
+            Reference reference  = participant.getActor();
             if (!isNullReference(reference)) {
-                String referencedResource = findAcutalId(reference.getReference().getValue());
+                String referencedResource = findAcutalId(reference.getReference());
                 if (referencedResource != null) {
                     reference.setReference(referencedResource);
                 } else {
-                    if (!processed(reference.getReference().getValue())) allReferenced = false;
+                    if (!processed(reference.getReference())) allReferenced = false;
                 }
             }
         }
@@ -227,7 +227,7 @@ public class MQProcessor implements Processor {
         if (allReferenced)
         {
             // Work around to cope with slicing not validated error in hapi server
-            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) appointment.setResourceMetadata(new ResourceMetadataMap());
+            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) appointment.setMeta(new Meta());
 
             // log.info("Appointment = "+parser.setPrettyPrint(true).encodeResourceToString(appointment));
             MethodOutcome outcome = client.update().resource(appointment)
@@ -239,8 +239,8 @@ public class MQProcessor implements Processor {
             appointment.setId(outcome.getId());
             entry.processed = true;
             entry.resource = appointment;
-            entry.newId = outcome.getId().getValue();
-            log.info("Appointment: Id="+entry.originalId+" Server Id = "+outcome.getId().getValue());
+            entry.newId = outcome.getId().toString();
+            log.info("Appointment: Id="+entry.originalId+" Server Id = "+outcome.getId());
         }
 
         return allReferenced;
@@ -248,78 +248,78 @@ public class MQProcessor implements Processor {
 
     private boolean processComposition(Composition composition) {
         Boolean allReferenced = true;
-        EntryProcessing entry = findEntryProcess(composition.getId().getValue());
+        EntryProcessing entry = findEntryProcess(composition.getId());
         
         if (composition.getIdentifier() !=null) {
             composition.getIdentifier()
                     .setSystem("https://tools.ietf.org/html/rfc4122")
-                    .setValue(composition.getId().getValue());
+                    .setValue(composition.getId());
         }
 
         // Compostion Patient
         if (!isNullReference(composition.getSubject())) {
 
-            log.debug(composition.getSubject().getReference().getValue());
-            String referencedResource = findAcutalId(composition.getSubject().getReference().getValue());
+            log.debug(composition.getSubject().getReference());
+            String referencedResource = findAcutalId(composition.getSubject().getReference());
             if (referencedResource != null) {
 
                 composition.getSubject().setReference(referencedResource);
 
             } else {
-                if (!processed(composition.getSubject().getReference().getValue())) allReferenced = false;
+                if (!processed(composition.getSubject().getReference())) allReferenced = false;
             }
         }
 
         // Composition Encounter
         if (!isNullReference(composition.getEncounter())) {
 
-            log.debug(composition.getEncounter().getReference().getValue());
-            String referencedResource = findAcutalId(composition.getEncounter().getReference().getValue());
+            log.debug(composition.getEncounter().getReference());
+            String referencedResource = findAcutalId(composition.getEncounter().getReference());
             if (referencedResource != null) {
                 composition.getEncounter().setReference(referencedResource);
             } else {
-                if (!processed(composition.getEncounter().getReference().getValue())) allReferenced = false;
+                if (!processed(composition.getEncounter().getReference())) allReferenced = false;
             }
         }
 
         // Composition Custodian
         if (!isNullReference(composition.getCustodian())) {
 
-            log.debug(composition.getCustodian().getReference().getValue());
-            String referencedResource = findAcutalId(composition.getCustodian().getReference().getValue());
+            log.debug(composition.getCustodian().getReference());
+            String referencedResource = findAcutalId(composition.getCustodian().getReference());
 
             if (referencedResource != null) {
                 composition.getCustodian().setReference(referencedResource);
             } else {
-                if (!processed(composition.getCustodian().getReference().getValue())) allReferenced = false;
+                if (!processed(composition.getCustodian().getReference())) allReferenced = false;
             }
         }
 
 
         // Composition Author
-        for(ResourceReferenceDt reference: composition.getAuthor()) {
+        for(Reference reference: composition.getAuthor()) {
             if (!isNullReference(reference)) {
-                String referencedResource = findAcutalId(reference.getReference().getValue());
+                String referencedResource = findAcutalId(reference.getReference());
 
                 if (referencedResource != null) {
                     reference.setReference(referencedResource);
                 } else {
-                    if (!processed(reference.getReference().getValue())) allReferenced = false;
+                    if (!processed(reference.getReference())) allReferenced = false;
                 }
             }
         }
 
 
         // Section entries
-        for (Composition.Section section :composition.getSection()) {
-            for(ResourceReferenceDt reference: section.getEntry()) {
+        for (Composition.SectionComponent section :composition.getSection()) {
+            for(Reference reference: section.getEntry()) {
                 if (!isNullReference(reference)) {
-                    String referencedResource = findAcutalId(reference.getReference().getValue());
+                    String referencedResource = findAcutalId(reference.getReference());
 
                     if (referencedResource != null) {
                         reference.setReference(referencedResource);
                     } else {
-                        if (!processed(reference.getReference().getValue())) allReferenced = false;
+                        if (!processed(reference.getReference())) allReferenced = false;
                     }
                 }
             }
@@ -329,17 +329,17 @@ public class MQProcessor implements Processor {
 
         if (allReferenced) {
             // Work around to cope with slicing not validated error in hapi server
-            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) composition.setResourceMetadata(new ResourceMetadataMap());
+            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) composition.setMeta(new Meta());
 
             MethodOutcome outcome = client.update().resource(composition)
                     .conditionalByUrl("Composition?identifier=" + composition.getIdentifier().getSystem() + "%7C" + composition.getIdentifier().getValue())
                     .execute();
             composition.setId(outcome.getId());
             entry.processed = true;
-            entry.newId = outcome.getId().getValue();
+            entry.newId = outcome.getId().toString();
             entry.resource = composition;
-            log.info("Composition: Id="+entry.originalId+" Server Id = "+outcome.getId().getValue());
-            sendToAudit(CareConnectAuditEvent.buildAuditEvent(composition, outcome, "rest", "create", AuditEventActionEnum.CREATE,"CareConnectMessagingAPI"));
+            log.info("Composition: Id="+entry.originalId+" Server Id = "+outcome.getId());
+            sendToAudit(CareConnectAuditEvent.buildAuditEvent(composition, outcome, "rest", "create", AuditEvent.AuditEventAction.C,"CareConnectMessagingAPI"));
 
         }
         return allReferenced;
@@ -347,33 +347,33 @@ public class MQProcessor implements Processor {
 
     private boolean processCondition(Condition condition) {
         Boolean allReferenced = true;
-        EntryProcessing entry = findEntryProcess(condition.getId().getValue());
+        EntryProcessing entry = findEntryProcess(condition.getId());
 
         // Having an identifier makes this a lot easier.
         if (condition.getIdentifier().size() == 0) {
             condition.addIdentifier()
                     .setSystem("https://tools.ietf.org/html/rfc4122")
-                    .setValue(condition.getId().getValue());
+                    .setValue(condition.getId());
         }
 
-        ResourceReferenceDt reference = condition.getPatient();
+        Reference reference = condition.getPatient();
         if (!isNullReference(reference)) {
-            String referencedResource = findAcutalId(reference.getReference().getValue());
+            String referencedResource = findAcutalId(reference.getReference());
             if (referencedResource != null) {
                 reference.setReference(referencedResource);
             } else {
-                if (!processed(reference.getReference().getValue())) allReferenced = false;
+                if (!processed(reference.getReference())) allReferenced = false;
             }
         }
 
         // bundle condition encounter
         reference = condition.getEncounter();
         if (!isNullReference(reference)) {
-            String referencedResource = findAcutalId(reference.getReference().getValue());
+            String referencedResource = findAcutalId(reference.getReference());
             if (referencedResource != null) {
                 reference.setReference(referencedResource);
             } else {
-                if (!processed(reference.getReference().getValue())) allReferenced = false;
+                if (!processed(reference.getReference())) allReferenced = false;
             }
         }
 
@@ -382,11 +382,11 @@ public class MQProcessor implements Processor {
         // Bundle.Condition asserter
         reference = condition.getAsserter();
         if (!isNullReference(reference)) {
-            String referencedResource = findAcutalId(reference.getReference().getValue());
+            String referencedResource = findAcutalId(reference.getReference());
             if (referencedResource != null) {
                 reference.setReference(referencedResource);
             } else {
-                if (!processed(reference.getReference().getValue())) allReferenced = false;
+                if (!processed(reference.getReference())) allReferenced = false;
             }
         }
 
@@ -394,7 +394,7 @@ public class MQProcessor implements Processor {
         if (allReferenced)
         {
             // Work around to cope with slicing not validated error in hapi server
-            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) condition.setResourceMetadata(new ResourceMetadataMap());
+            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) condition.setMeta(new Meta());
 
             // log.info("Condition= "+parser.setPrettyPrint(true).encodeResourceToString(condition));
             MethodOutcome outcome = client.update().resource(condition)
@@ -403,9 +403,9 @@ public class MQProcessor implements Processor {
             condition.setId(outcome.getId());
             entry.processed = true;
             entry.resource = condition;
-            entry.newId = outcome.getId().getValue();
-            log.info("Condition: Id="+entry.originalId+" Server Id = "+outcome.getId().getValue());
-            sendToAudit(CareConnectAuditEvent.buildAuditEvent(condition, outcome, "rest", "create", AuditEventActionEnum.CREATE,"CareConnectMessagingAPI"));
+            entry.newId = outcome.getId().toString();
+            log.info("Condition: Id="+entry.originalId+" Server Id = "+outcome.getId());
+            sendToAudit(CareConnectAuditEvent.buildAuditEvent(condition, outcome, "rest", "create", AuditEvent.AuditEventAction.C,"CareConnectMessagingAPI"));
 
         }
 
@@ -415,33 +415,33 @@ public class MQProcessor implements Processor {
 
     private boolean processEncounter( Encounter encounter) {
         Boolean allReferenced = true;
-        EntryProcessing entry = findEntryProcess(encounter.getId().getValue());
+        EntryProcessing entry = findEntryProcess(encounter.getId());
 
         if (encounter.getIdentifier().size() == 0) {
             encounter.addIdentifier()
                     .setSystem("https://tools.ietf.org/html/rfc4122")
-                    .setValue(encounter.getId().getValue());
+                    .setValue(encounter.getId());
         }
 
         // Bundle.Encounter Patient
-        ResourceReferenceDt reference = encounter.getPatient();
+        Reference reference = encounter.getPatient();
         if (!isNullReference(reference)) {
-            String referencedResource = findAcutalId(reference.getReference().getValue());
+            String referencedResource = findAcutalId(reference.getReference());
             if (referencedResource != null) {
                 reference.setReference(referencedResource);
             } else {
-                if (!processed(reference.getReference().getValue())) allReferenced = false;
+                if (!processed(reference.getReference())) allReferenced = false;
             }
         }
 
         // Bundle.EncounterAppointments
         reference = encounter.getAppointment();
         if (!isNullReference(reference)) {
-            String referencedResource = findAcutalId(reference.getReference().getValue());
+            String referencedResource = findAcutalId(reference.getReference());
             if (referencedResource != null) {
                 reference.setReference(referencedResource);
             } else {
-                if (!processed(reference.getReference().getValue())) allReferenced = false;
+                if (!processed(reference.getReference())) allReferenced = false;
             }
         }
 
@@ -450,37 +450,37 @@ public class MQProcessor implements Processor {
         // Bundle.Encounter Service Provider
         reference = encounter.getServiceProvider();
         if (!isNullReference(reference)) {
-            String referencedResource = findAcutalId(reference.getReference().getValue());
+            String referencedResource = findAcutalId(reference.getReference());
             if (referencedResource != null) {
                 reference.setReference(referencedResource);
             } else {
-                if (!processed(reference.getReference().getValue())) allReferenced = false;
+                if (!processed(reference.getReference())) allReferenced = false;
             }
         }
 
 
         // Bundle.Encounter Participants
-        for (Encounter.Participant participant : encounter.getParticipant()) {
+        for (Encounter.EncounterParticipantComponent participant : encounter.getParticipant()) {
             reference = participant.getIndividual();
             if (!isNullReference(reference)) {
-                String referencedResource = findAcutalId(reference.getReference().getValue());
+                String referencedResource = findAcutalId(reference.getReference());
                 if (referencedResource != null) {
                     reference.setReference(referencedResource);
                 } else {
-                    if (!processed(reference.getReference().getValue())) allReferenced = false;
+                    if (!processed(reference.getReference())) allReferenced = false;
                 }
             }
         }
 
         // Bundle.Encounter Locations
-        for (Encounter.Location location : encounter.getLocation()) {
+        for (Encounter.EncounterLocationComponent location : encounter.getLocation()) {
             reference = location.getLocation();
             if (!isNullReference(reference)) {
-                String referencedResource = findAcutalId(reference.getReference().getValue());
+                String referencedResource = findAcutalId(reference.getReference());
                 if (referencedResource != null) {
                     reference.setReference(referencedResource);
                 } else {
-                    if (!processed(reference.getReference().getValue())) allReferenced = false;
+                    if (!processed(reference.getReference())) allReferenced = false;
                 }
             }
         }
@@ -491,7 +491,7 @@ public class MQProcessor implements Processor {
         if (allReferenced)
         {
             // Work around to cope with slicing not validated error in hapi server
-            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) encounter.setResourceMetadata(new ResourceMetadataMap());
+            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) encounter.setMeta(new Meta());
 
             //log.info("Encounter = "+parser.setPrettyPrint(true).encodeResourceToString(encounter));
             MethodOutcome outcome = client.update().resource(encounter)
@@ -503,10 +503,10 @@ public class MQProcessor implements Processor {
             encounter.setId(outcome.getId());
             entry.processed = true;
             entry.resource = encounter;
-            entry.newId = outcome.getId().getValue();
-            log.info("Encounter: Id="+entry.originalId+" Server Id = "+outcome.getId().getValue());
+            entry.newId = outcome.getId().toString();
+            log.info("Encounter: Id="+entry.originalId+" Server Id = "+outcome.getId());
 
-            sendToAudit(CareConnectAuditEvent.buildAuditEvent(encounter, outcome, "rest", "create", AuditEventActionEnum.CREATE,"CareConnectMessagingAPI"));
+            sendToAudit(CareConnectAuditEvent.buildAuditEvent(encounter, outcome, "rest", "create", AuditEvent.AuditEventAction.C,"CareConnectMessagingAPI"));
 
         }
 
@@ -516,30 +516,30 @@ public class MQProcessor implements Processor {
 
     private boolean processFlag(Flag flag) {
         Boolean allReferenced = true;
-        EntryProcessing entry = findEntryProcess(flag.getId().getValue());
+        EntryProcessing entry = findEntryProcess(flag.getId());
 
         if (flag.getIdentifier().size() == 0) {
             flag.addIdentifier()
                     .setSystem("https://tools.ietf.org/html/rfc4122")
-                    .setValue(flag.getId().getValue());
+                    .setValue(flag.getId());
         }
 
         // Bundle.Observation Patient
         if (!isNullReference(flag.getSubject())) {
 
-            log.debug(flag.getSubject().getReference().getValue());
-            String referencedResource = findAcutalId(flag.getSubject().getReference().getValue());
+            log.debug(flag.getSubject().getReference());
+            String referencedResource = findAcutalId(flag.getSubject().getReference());
 
             if (referencedResource != null) {
                 flag.getSubject().setReference(referencedResource);
             } else {
-                if (!processed(flag.getSubject().getReference().getValue())) allReferenced = false;
+                if (!processed(flag.getSubject().getReference())) allReferenced = false;
             }
         }
 
         if (allReferenced) {
             // Work around to cope with slicing not validated error in hapi server
-            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) flag.setResourceMetadata(new ResourceMetadataMap());
+            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) flag.setMeta(new Meta());
 
 
             // Perform a search to look for the identifier - work around
@@ -555,7 +555,7 @@ public class MQProcessor implements Processor {
                 entry.newId = id.getValue();
                 entry.resource = flag;
                 log.info("Flag: Id="+entry.originalId+" Server Id = "+id.getValue());
-                sendToAudit(CareConnectAuditEvent.buildAuditEvent(flag, null, "rest", "create", AuditEventActionEnum.CREATE,"CareConnectMessagingAPI"));
+                sendToAudit(CareConnectAuditEvent.buildAuditEvent(flag, null, "rest", "create", AuditEvent.AuditEventAction.C,"CareConnectMessagingAPI"));
 
             }
 
@@ -564,50 +564,50 @@ public class MQProcessor implements Processor {
     }
 
 
-    private boolean processList(ListResource list) {
+    private boolean processList(List_ list) {
         Boolean allReferenced = true;
-        EntryProcessing entry = findEntryProcess(list.getId().getValue());
+        EntryProcessing entry = findEntryProcess(list.getId());
         
         if (list.getIdentifier().size() == 0) {
             list.addIdentifier()
                     .setSystem("https://tools.ietf.org/html/rfc4122")
-                    .setValue(list.getId().getValue());
+                    .setValue(list.getId());
         }
 
         // Compostion Patient
         if (!isNullReference(list.getSubject())) {
 
-            log.debug(list.getSubject().getReference().getValue());
-            String referencedResource = findAcutalId(list.getSubject().getReference().getValue());
+            log.debug(list.getSubject().getReference());
+            String referencedResource = findAcutalId(list.getSubject().getReference());
             if (referencedResource != null) {
 
                 list.getSubject().setReference(referencedResource);
 
             } else {
-                if (!processed(list.getSubject().getReference().getValue())) allReferenced = false;
+                if (!processed(list.getSubject().getReference())) allReferenced = false;
             }
         }
 
         // List Entries
-        for(ListResource.Entry listentry: list.getEntry()) {
-            ResourceReferenceDt reference = listentry.getItem();
+        for(List_.ListEntryComponent listentry: list.getEntry()) {
+            Reference reference = listentry.getItem();
             if (!isNullReference(reference)) {
-                String referencedResource = findAcutalId(reference.getReference().getValue());
+                String referencedResource = findAcutalId(reference.getReference());
 
                 if (referencedResource != null) {
                     reference.setReference(referencedResource);
                 } else {
-                    if (!processed(reference.getReference().getValue())) allReferenced = false;
+                    if (!processed(reference.getReference())) allReferenced = false;
                 }
             }
         }
 
         if (allReferenced) {
             // Work around to cope with slicing not validated error in hapi server
-            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) list.setResourceMetadata(new ResourceMetadataMap());
+            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) list.setMeta(new Meta());
 
             // Perform a search to look for the identifier - work around
-            ca.uhn.fhir.model.api.Bundle searchBundle = client.search().forResource(ListResource.class)
+            ca.uhn.fhir.model.api.Bundle searchBundle = client.search().forResource(List_.class)
                     .where(new StringClientParam("_content").matches().value(list.getIdentifier().get(0).getValue()))
                     .prettyPrint()
                     .encodedJson().execute();
@@ -619,7 +619,7 @@ public class MQProcessor implements Processor {
                 entry.newId = id.getValue();
                 entry.resource = list;
                 log.info("List: Id="+entry.originalId+" Server Id = "+id.getValue());
-                sendToAudit(CareConnectAuditEvent.buildAuditEvent(list, null, "rest", "create", AuditEventActionEnum.CREATE,"CareConnectMessagingAPI"));
+                sendToAudit(CareConnectAuditEvent.buildAuditEvent(list, null, "rest", "create", AuditEvent.AuditEventAction.C,"CareConnectMessagingAPI"));
 
             }
 
@@ -632,23 +632,23 @@ public class MQProcessor implements Processor {
     private boolean processLocation(Location location) {
 
         Boolean allReferenced = true;
-        EntryProcessing entry = findEntryProcess(location.getId().getValue());
+        EntryProcessing entry = findEntryProcess(location.getId());
 
         if (location.getIdentifier().size() == 0) {
             location.addIdentifier()
                     .setSystem("https://tools.ietf.org/html/rfc4122")
-                    .setValue(location.getId().getValue());
+                    .setValue(location.getId());
         }
 
         if (!isNullReference(location.getManagingOrganization()))  {
-            ResourceReferenceDt reference = location.getManagingOrganization();
+            Reference reference = location.getManagingOrganization();
             if (!isNullReference(reference)) {
-                String referencedResource = findAcutalId(reference.getReference().getValue());
+                String referencedResource = findAcutalId(reference.getReference());
 
                 if (referencedResource != null) {
                     reference.setReference(referencedResource);
                 } else {
-                    if (!processed(reference.getReference().getValue())) allReferenced = false;
+                    if (!processed(reference.getReference())) allReferenced = false;
                 }
             }
         }
@@ -656,7 +656,7 @@ public class MQProcessor implements Processor {
         if (allReferenced) {
 
             // Work around to cope with slicing not validated error in hapi server
-            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) location.setResourceMetadata(new ResourceMetadataMap());
+            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) location.setMeta(new Meta());
 
             MethodOutcome outcome = client.update().resource(location)
                     .conditionalByUrl("Location?identifier=" + location.getIdentifier().get(0).getSystem() + "%7C" + location.getIdentifier().get(0).getValue())
@@ -664,10 +664,10 @@ public class MQProcessor implements Processor {
             location.setId(outcome.getId());
             
             entry.processed = true;
-            entry.newId = outcome.getId().getValue();
+            entry.newId = outcome.getId().toString();
             entry.resource = location;
-            log.info("Location: Id="+entry.originalId+" Server Id = "+outcome.getId().getValue());
-            sendToAudit(CareConnectAuditEvent.buildAuditEvent(location, outcome, "rest", "create", AuditEventActionEnum.CREATE,"CareConnectMessagingAPI"));
+            log.info("Location: Id="+entry.originalId+" Server Id = "+outcome.getId());
+            sendToAudit(CareConnectAuditEvent.buildAuditEvent(location, outcome, "rest", "create", AuditEvent.AuditEventAction.C,"CareConnectMessagingAPI"));
 
         }
         return allReferenced;
@@ -675,28 +675,28 @@ public class MQProcessor implements Processor {
 
     private boolean processMedication(Medication medication) {
         Boolean allReferenced = true;
-        EntryProcessing entry = findEntryProcess(medication.getId().getValue());
+        EntryProcessing entry = findEntryProcess(medication.getId());
         
         if (medication.getCode().getCoding().size() == 0) {
             medication.getCode().addCoding()
                     .setSystem("https://tools.ietf.org/html/rfc4122")
-                    .setCode(medication.getId().getValue());
+                    .setCode(medication.getId());
         }
 
         if (allReferenced) {
 
             // Work around to cope with slicing not validated error in hapi server
-            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) medication.setResourceMetadata(new ResourceMetadataMap());
+            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) medication.setMeta(new Meta());
 
             MethodOutcome outcome = client.update().resource(medication)
                     .conditionalByUrl("Medication?code=" + medication.getCode().getCoding().get(0).getSystem() + "%7C" + medication.getCode().getCoding().get(0).getCode())
                     .execute();
             medication.setId(outcome.getId());
             entry.processed = true;
-            entry.newId = outcome.getId().getValue();
+            entry.newId = outcome.getId().toString();
             entry.resource = medication;
-            log.info("Medication: Id="+entry.originalId+" Server Id = "+outcome.getId().getValue());
-            sendToAudit(CareConnectAuditEvent.buildAuditEvent(medication, outcome, "rest", "create", AuditEventActionEnum.CREATE,"CareConnectMessagingAPI"));
+            log.info("Medication: Id="+entry.originalId+" Server Id = "+outcome.getId());
+            sendToAudit(CareConnectAuditEvent.buildAuditEvent(medication, outcome, "rest", "create", AuditEvent.AuditEventAction.C,"CareConnectMessagingAPI"));
 
         }
         return allReferenced;
@@ -704,21 +704,21 @@ public class MQProcessor implements Processor {
 
     private boolean processMedicationStatement( MedicationStatement medicationStatement) {
         Boolean allReferenced = true;
-        EntryProcessing entry = findEntryProcess(medicationStatement.getId().getValue());
+        EntryProcessing entry = findEntryProcess(medicationStatement.getId());
         
         if (medicationStatement.getIdentifier().size() == 0) {
             medicationStatement.addIdentifier()
                     .setSystem("https://tools.ietf.org/html/rfc4122")
-                    .setValue(medicationStatement.getId().getValue());
+                    .setValue(medicationStatement.getId());
         }
 
 
         if (!isNullReference(medicationStatement.getPatient())) {
-            IResource referencedResource = null;
-            log.debug(medicationStatement.getPatient().getReference().getValue());
+            Resource referencedResource = null;
+            log.debug(medicationStatement.getPatient().getReference());
             int i = 0;
             for (int h = 0; h < resourceList.size(); h++) {
-                if (resourceList.get(h).processed && resourceList.get(h).originalId != null && medicationStatement.getPatient().getReference().getValue().equals(resourceList.get(h).originalId)) {
+                if (resourceList.get(h).processed && resourceList.get(h).originalId != null && medicationStatement.getPatient().getReference().equals(resourceList.get(h).originalId)) {
                     referencedResource = resourceList.get(h).resource;
                     log.debug("originalId =" + resourceList.get(h).originalId);
                     log.debug("newId =" + resourceList.get(h).newId);
@@ -731,17 +731,17 @@ public class MQProcessor implements Processor {
                 addNewReferences(resourceList.get(i).newId);
 
             } else {
-                if (!processed(medicationStatement.getPatient().getReference().getValue())) allReferenced = false;
+                if (!processed(medicationStatement.getPatient().getReference())) allReferenced = false;
             }
         }
 
-        if (medicationStatement.getMedication() instanceof ResourceReferenceDt) {
-            if (!isNullReference((ResourceReferenceDt) medicationStatement.getMedication())) {
-                IResource referencedResource = null;
-                log.debug(((ResourceReferenceDt) medicationStatement.getMedication()).getReference().getValue());
+        if (medicationStatement.getMedication() instanceof Reference) {
+            if (!isNullReference((Reference) medicationStatement.getMedication())) {
+                Resource referencedResource = null;
+                log.debug(((Reference) medicationStatement.getMedication()).getReference());
                 int i = 0;
                 for (int h = 0; h < resourceList.size(); h++) {
-                    if (resourceList.get(h).processed && resourceList.get(h).originalId != null && ((ResourceReferenceDt) medicationStatement.getMedication()).getReference().getValue().equals(resourceList.get(h).originalId)) {
+                    if (resourceList.get(h).processed && resourceList.get(h).originalId != null && ((Reference) medicationStatement.getMedication()).getReference().equals(resourceList.get(h).originalId)) {
                         referencedResource = resourceList.get(h).resource;
                         log.debug("originalId =" + resourceList.get(h).originalId);
                         log.debug("newId =" + resourceList.get(h).newId);
@@ -750,28 +750,28 @@ public class MQProcessor implements Processor {
                 }
                 if (referencedResource != null) {
                     log.info("New ReferenceId = " + resourceList.get(i).newId);
-                    ((ResourceReferenceDt) medicationStatement.getMedication()).setReference(resourceList.get(i).newId);
+                    ((Reference) medicationStatement.getMedication()).setReference(resourceList.get(i).newId);
                     addNewReferences(resourceList.get(i).newId);
 
                 } else {
-                    if (!processed(medicationStatement.getPatient().getReference().getValue())) allReferenced = false;
+                    if (!processed(medicationStatement.getPatient().getReference())) allReferenced = false;
                 }
             }
         }
 
         if (allReferenced) {
             // Work around to cope with slicing not validated error in hapi server
-            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) medicationStatement.setResourceMetadata(new ResourceMetadataMap());
+            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) medicationStatement.setMeta(new Meta());
 
             MethodOutcome outcome = client.update().resource(medicationStatement)
                     .conditionalByUrl("MedicationStatement?identifier=" + medicationStatement.getIdentifier().get(0).getSystem() + "%7C" + medicationStatement.getIdentifier().get(0).getValue())
                     .execute();
             medicationStatement.setId(outcome.getId());
             entry.processed = true;
-            entry.newId = outcome.getId().getValue();
+            entry.newId = outcome.getId().toString();
             entry.resource = medicationStatement;
-            log.info("MedicationStatement: Id="+entry.originalId+" Server Id = "+outcome.getId().getValue());
-            sendToAudit(CareConnectAuditEvent.buildAuditEvent(medicationStatement, outcome, "rest", "create", AuditEventActionEnum.CREATE,"CareConnectMessagingAPI"));
+            log.info("MedicationStatement: Id="+entry.originalId+" Server Id = "+outcome.getId());
+            sendToAudit(CareConnectAuditEvent.buildAuditEvent(medicationStatement, outcome, "rest", "create", AuditEvent.AuditEventAction.C,"CareConnectMessagingAPI"));
 
         }
         return allReferenced;
@@ -780,20 +780,20 @@ public class MQProcessor implements Processor {
 
     private boolean processOrganisation(Organization organisation) {
         Boolean allReferenced = true;
-        EntryProcessing entry = findEntryProcess(organisation.getId().getValue());
+        EntryProcessing entry = findEntryProcess(organisation.getId());
 
         if (organisation.getIdentifier().size() == 0) {
             organisation.addIdentifier()
                     .setSystem("https://tools.ietf.org/html/rfc4122")
-                    .setValue(organisation.getId().getValue());
+                    .setValue(organisation.getId());
         }
 
-        if (!isNullReference(organisation.getPartOf()) && !organisation.getPartOf().getReference().getValue().isEmpty()) {
-            IResource referencedResource = null;
-            log.debug("organisation.getPartOf()="+organisation.getPartOf().getReference().getValue());
+        if (!isNullReference(organisation.getPartOf()) && !organisation.getPartOf().getReference().isEmpty()) {
+            Resource referencedResource = null;
+            log.debug("organisation.getPartOf()="+organisation.getPartOf().getReference());
             int i =0;
             for (int h = 0; h < resourceList.size(); h++) {
-                if (resourceList.get(h).processed && resourceList.get(h).originalId != null && organisation.getPartOf().getReference().getValue().equals(resourceList.get(h).originalId)) {
+                if (resourceList.get(h).processed && resourceList.get(h).originalId != null && organisation.getPartOf().getReference().equals(resourceList.get(h).originalId)) {
                     referencedResource = resourceList.get(h).resource;
                     log.debug("originalId ="+resourceList.get(h).originalId);
                     log.debug("newId ="+resourceList.get(h).newId);
@@ -806,21 +806,21 @@ public class MQProcessor implements Processor {
                 addNewReferences(resourceList.get(i).newId);
 
             } else {
-                if (!processed(organisation.getPartOf().getReference().getValue())) allReferenced = false;
+                if (!processed(organisation.getPartOf().getReference())) allReferenced = false;
             }
         }
         if (allReferenced) {
             // Work around to cope with slicing not validated error in hapi server
-            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) organisation.setResourceMetadata(new ResourceMetadataMap());
+            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) organisation.setMeta(new Meta());
             MethodOutcome outcome = client.update().resource(organisation)
                     .conditionalByUrl("Organization?identifier=" + organisation.getIdentifier().get(0).getSystem() + "%7C" + organisation.getIdentifier().get(0).getValue())
                     .execute();
             organisation.setId(outcome.getId());
             entry.processed = true;
-            entry.newId = outcome.getId().getValue();
+            entry.newId = outcome.getId().toString();
             entry.resource = organisation;
-            log.info("Organization: Id="+entry.originalId+" Server Id = "+outcome.getId().getValue());
-            sendToAudit(CareConnectAuditEvent.buildAuditEvent(organisation, outcome, "rest", "create", AuditEventActionEnum.CREATE,"CareConnectMessagingAPI"));
+            log.info("Organization: Id="+entry.originalId+" Server Id = "+outcome.getId());
+            sendToAudit(CareConnectAuditEvent.buildAuditEvent(organisation, outcome, "rest", "create", AuditEvent.AuditEventAction.C,"CareConnectMessagingAPI"));
 
         }
         return allReferenced;
@@ -831,21 +831,21 @@ public class MQProcessor implements Processor {
 
     private boolean processPatient(Patient patient) {
         Boolean allReferenced = true;
-        EntryProcessing entry = findEntryProcess(patient.getId().getValue());
+        EntryProcessing entry = findEntryProcess(patient.getId());
 
         if (patient.getIdentifier().size() == 0) {
             patient.addIdentifier()
                     .setSystem("https://tools.ietf.org/html/rfc4122")
-                    .setValue(patient.getId().getValue());
+                    .setValue(patient.getId());
         }
 
         for (int j = 0; j < patient.getCareProvider().size(); j++) {
-            IResource referencedResource = null;
-            log.info(patient.getCareProvider().get(j).getReference().getValue());
+            Resource referencedResource = null;
+            log.info(patient.getCareProvider().get(j).getReference());
             if (!isNullReference(patient.getCareProvider().get(j))) {
                 int i = 0;
                 for (int h = 0; h < resourceList.size(); h++) {
-                    if (resourceList.get(h).processed && resourceList.get(h).originalId != null && patient.getCareProvider().get(j).getReference().getValue().equals(resourceList.get(h).originalId)) {
+                    if (resourceList.get(h).processed && resourceList.get(h).originalId != null && patient.getCareProvider().get(j).getReference().equals(resourceList.get(h).originalId)) {
                         referencedResource = resourceList.get(h).resource;
                         log.debug("patient.getCareProvider() originalId =" + resourceList.get(h).originalId);
                         log.debug("patient.getCareProvider() newId =" + resourceList.get(h).newId);
@@ -857,46 +857,46 @@ public class MQProcessor implements Processor {
                     patient.getCareProvider().get(j).setReference(resourceList.get(i).newId);
                     addNewReferences(resourceList.get(i).newId);
                 } else {
-                    if (!processed(patient.getCareProvider().get(j).getReference().getValue())) allReferenced = false;
+                    if (!processed(patient.getCareProvider().get(j).getReference())) allReferenced = false;
                 }
             }
         }
 
         if (allReferenced) {
             // Work around to cope with slicing not validated error in hapi server
-            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) patient.setResourceMetadata(new ResourceMetadataMap());
+            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) patient.setMeta(new Meta());
 
             MethodOutcome outcome = client.update().resource(patient)
                     .conditionalByUrl("Patient?identifier=" + patient.getIdentifier().get(0).getSystem() + "%7C" + patient.getIdentifier().get(0).getValue())
                     .execute();
             patient.setId(outcome.getId());
             entry.processed = true;
-            entry.newId = outcome.getId().getValue();
+            entry.newId = outcome.getId().toString();
             entry.resource = patient;
 
-            sendToAudit(CareConnectAuditEvent.buildAuditEvent(patient, outcome, "rest", "create", AuditEventActionEnum.CREATE,"CareConnectMessagingAPI"));
+            sendToAudit(CareConnectAuditEvent.buildAuditEvent(patient, outcome, "rest", "create", AuditEvent.AuditEventAction.C,"CareConnectMessagingAPI"));
 
-            log.info("Patient: Id="+entry.originalId+" Server Id = "+outcome.getId().getValue());
+            log.info("Patient: Id="+entry.originalId+" Server Id = "+outcome.getId());
         }
         return allReferenced;
     }
 
     private boolean processProcedureRequest(ProcedureRequest procedureRequest) {
         Boolean allReferenced = true;
-        EntryProcessing entry = findEntryProcess(procedureRequest.getId().getValue());
+        EntryProcessing entry = findEntryProcess(procedureRequest.getId());
 
         if (procedureRequest.getIdentifier().size() == 0) {
             procedureRequest.addIdentifier()
                     .setSystem("https://tools.ietf.org/html/rfc4122")
-                    .setValue(procedureRequest.getId().getValue());
+                    .setValue(procedureRequest.getId());
         }
 
         if (!isNullReference(procedureRequest.getSubject())) {
-            IResource referencedResource = null;
-            log.info(procedureRequest.getSubject().getReference().getValue());
+            Resource referencedResource = null;
+            log.info(procedureRequest.getSubject().getReference());
             int i =0;
             for (int h = 0; h < resourceList.size(); h++) {
-                if (resourceList.get(h).processed && resourceList.get(h).originalId != null && procedureRequest.getSubject().getReference().getValue().equals(resourceList.get(h).originalId)) {
+                if (resourceList.get(h).processed && resourceList.get(h).originalId != null && procedureRequest.getSubject().getReference().equals(resourceList.get(h).originalId)) {
                     referencedResource = resourceList.get(h).resource;
                     log.debug("originalId ="+resourceList.get(h).originalId);
                     log.debug("newId ="+resourceList.get(h).newId);
@@ -917,7 +917,7 @@ public class MQProcessor implements Processor {
         {
 
             // Work around to cope with slicing not validated error in hapi server
-            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) procedureRequest.setResourceMetadata(new ResourceMetadataMap());
+            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) procedureRequest.setMeta(new Meta());
 
             MethodOutcome outcome = client.update().resource(procedureRequest)
                     .conditionalByUrl("ProcedureRequest?identifier=" + procedureRequest.getIdentifier().get(0).getSystem() + "%7C" + procedureRequest.getIdentifier().get(0).getValue())
@@ -927,10 +927,10 @@ public class MQProcessor implements Processor {
       //      }
             procedureRequest.setId(outcome.getId());
             entry.processed = true;
-            entry.newId = outcome.getId().getValue();
+            entry.newId = outcome.getId().toString();
             entry.resource = procedureRequest;
-            log.info("ProcedureRequest: Id="+entry.originalId+" Server Id = "+outcome.getId().getValue());
-            sendToAudit(CareConnectAuditEvent.buildAuditEvent(procedureRequest, outcome, "rest", "create", AuditEventActionEnum.CREATE,"CareConnectMessagingAPI"));
+            log.info("ProcedureRequest: Id="+entry.originalId+" Server Id = "+outcome.getId());
+            sendToAudit(CareConnectAuditEvent.buildAuditEvent(procedureRequest, outcome, "rest", "create", AuditEvent.AuditEventAction.C,"CareConnectMessagingAPI"));
 
         }
 
@@ -940,23 +940,23 @@ public class MQProcessor implements Processor {
 
     private boolean processObservation(Observation observation) {
         Boolean allReferenced = true;
-        EntryProcessing entry = findEntryProcess(observation.getId().getValue());
+        EntryProcessing entry = findEntryProcess(observation.getId());
 
         // Having an identifier makes this a lot easier.
         if (observation.getIdentifier().size() == 0) {
             observation.addIdentifier()
                     .setSystem("https://tools.ietf.org/html/rfc4122")
-                    .setValue(observation.getId().getValue());
+                    .setValue(observation.getId());
         }
 
 
         // Bundle.Observation Patient
         if (!isNullReference(observation.getSubject())) {
-            IResource referencedResource = null;
-            log.info(observation.getSubject().getReference().getValue());
+            Resource referencedResource = null;
+            log.info(observation.getSubject().getReference());
             int i = 0;
             for (int h = 0; h < resourceList.size(); h++) {
-                if (resourceList.get(h).processed && resourceList.get(h).originalId != null && observation.getSubject().getReference().getValue().equals(resourceList.get(h).originalId)) {
+                if (resourceList.get(h).processed && resourceList.get(h).originalId != null && observation.getSubject().getReference().equals(resourceList.get(h).originalId)) {
                     referencedResource = resourceList.get(h).resource;
                     log.debug("originalId =" + resourceList.get(h).originalId);
                     log.debug("newId =" + resourceList.get(h).newId);
@@ -969,16 +969,16 @@ public class MQProcessor implements Processor {
                 addNewReferences(resourceList.get(i).newId);
 
             } else {
-                if (!processed(observation.getSubject().getReference().getValue())) allReferenced = false;
+                if (!processed(observation.getSubject().getReference())) allReferenced = false;
             }
         }
         // bundle observation encounter
         if (!isNullReference(observation.getEncounter())) {
-            IResource referencedResource = null;
-            log.info(observation.getEncounter().getReference().getValue());
+            Resource referencedResource = null;
+            log.info(observation.getEncounter().getReference());
             int i = 0;
             for (int h = 0; h < resourceList.size(); h++) {
-                if (resourceList.get(h).processed && resourceList.get(h).originalId != null && observation.getEncounter().getReference().getValue().equals(resourceList.get(h).originalId)) {
+                if (resourceList.get(h).processed && resourceList.get(h).originalId != null && observation.getEncounter().getReference().equals(resourceList.get(h).originalId)) {
                     referencedResource = resourceList.get(h).resource;
                     log.debug("originalId =" + resourceList.get(h).originalId);
                     log.debug("newId =" + resourceList.get(h).newId);
@@ -991,19 +991,19 @@ public class MQProcessor implements Processor {
                 addNewReferences(resourceList.get(i).newId);
 
             } else {
-                if (!processed(observation.getEncounter().getReference().getValue())) allReferenced = false;
+                if (!processed(observation.getEncounter().getReference())) allReferenced = false;
             }
         }
 
 
         // Bundle.Observation performer
         for (int j = 0; j < observation.getPerformer().size(); j++) {
-            IResource referencedResource = null;
-            log.info(observation.getPerformer().get(j).getReference().getValue());
+            Resource referencedResource = null;
+            log.info(observation.getPerformer().get(j).getReference());
             if (!isNullReference(observation.getPerformer().get(j))) {
                 int i = 0;
                 for (int h = 0; h < resourceList.size(); h++) {
-                    if (resourceList.get(h).processed && resourceList.get(h).originalId != null && observation.getPerformer().get(j).getReference().getValue().equals(resourceList.get(h).originalId)) {
+                    if (resourceList.get(h).processed && resourceList.get(h).originalId != null && observation.getPerformer().get(j).getReference().equals(resourceList.get(h).originalId)) {
                         referencedResource = resourceList.get(h).resource;
                         log.debug("originalId =" + resourceList.get(h).originalId);
                         log.debug("newId =" + resourceList.get(h).newId);
@@ -1015,7 +1015,7 @@ public class MQProcessor implements Processor {
                     observation.getPerformer().get(j).setReference(resourceList.get(i).newId);
                     addNewReferences(resourceList.get(i).newId);
                 } else {
-                    if (!processed(observation.getPerformer().get(j).getReference().getValue()))  allReferenced = false;
+                    if (!processed(observation.getPerformer().get(j).getReference()))  allReferenced = false;
                 }
             }
         }
@@ -1026,7 +1026,7 @@ public class MQProcessor implements Processor {
          //   log.info("Encounter = "+parser.setPrettyPrint(true).encodeResourceToString(observation));
 
             // Work around to cope with slicing not validated error in hapi server
-            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) observation.setResourceMetadata(new ResourceMetadataMap());
+            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) observation.setMeta(new Meta());
 
             MethodOutcome outcome = client.update().resource(observation)
                     .conditionalByUrl("Observation?identifier=" + observation.getIdentifier().get(0).getSystem() + "%7C" + observation.getIdentifier().get(0).getValue())
@@ -1037,9 +1037,9 @@ public class MQProcessor implements Processor {
             observation.setId(outcome.getId());
             entry.processed = true;
             entry.resource = observation;
-            entry.newId = outcome.getId().getValue();
-            log.info("Observation: Id="+entry.originalId+" Server Id = "+outcome.getId().getValue());
-            sendToAudit(CareConnectAuditEvent.buildAuditEvent(observation, outcome, "rest", "create", AuditEventActionEnum.CREATE,"CareConnectMessagingAPI"));
+            entry.newId = outcome.getId().toString();
+            log.info("Observation: Id="+entry.originalId+" Server Id = "+outcome.getId());
+            sendToAudit(CareConnectAuditEvent.buildAuditEvent(observation, outcome, "rest", "create", AuditEvent.AuditEventAction.C,"CareConnectMessagingAPI"));
 
         }
 
@@ -1049,24 +1049,24 @@ public class MQProcessor implements Processor {
 
     private boolean processPractitioner(Practitioner practitioner) {
         Boolean allReferenced = true;
-        EntryProcessing entry = findEntryProcess(practitioner.getId().getValue());
+        EntryProcessing entry = findEntryProcess(practitioner.getId());
         
         if (practitioner.getIdentifier().size() == 0) {
             practitioner.addIdentifier()
                     .setSystem("https://tools.ietf.org/html/rfc4122")
-                    .setValue(practitioner.getId().getValue());
+                    .setValue(practitioner.getId());
         }
 
         // Practioner role organisation
-        for (Practitioner.PractitionerRole role : practitioner.getPractitionerRole()) {
+        for (Practitioner.PractitionerPractitionerRoleComponent role : practitioner.getPractitionerRole()) {
             if (!isNullReference(role.getManagingOrganization())) {
-                log.info(role.getManagingOrganization().getReference().getValue());
+                log.info(role.getManagingOrganization().getReference());
 
-                String referencedResource = findAcutalId(role.getManagingOrganization().getReference().getValue());
+                String referencedResource = findAcutalId(role.getManagingOrganization().getReference());
                 if (referencedResource != null) {
                     role.getManagingOrganization().setReference(referencedResource);
                 } else {
-                    if (!processed(role.getManagingOrganization().getReference().getValue())) allReferenced = false;
+                    if (!processed(role.getManagingOrganization().getReference())) allReferenced = false;
                 }
             }
         }
@@ -1074,7 +1074,7 @@ public class MQProcessor implements Processor {
         if (allReferenced) {
 
             // Work around to cope with slicing not validated error in hapi server
-            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) practitioner.setResourceMetadata(new ResourceMetadataMap());
+            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) practitioner.setMeta(new Meta());
 
 
             MethodOutcome outcome = client.update().resource(practitioner)
@@ -1082,10 +1082,10 @@ public class MQProcessor implements Processor {
                     .execute();
             practitioner.setId(outcome.getId());
             entry.processed = true;
-            entry.newId = outcome.getId().getValue();
+            entry.newId = outcome.getId().toString();
             entry.resource = practitioner;
-            log.info("Practitioner: Id="+entry.originalId+" Server Id = "+outcome.getId().getValue());
-            sendToAudit(CareConnectAuditEvent.buildAuditEvent(practitioner, outcome, "rest", "create", AuditEventActionEnum.CREATE,"CareConnectMessagingAPI"));
+            log.info("Practitioner: Id="+entry.originalId+" Server Id = "+outcome.getId());
+            sendToAudit(CareConnectAuditEvent.buildAuditEvent(practitioner, outcome, "rest", "create", AuditEvent.AuditEventAction.C,"CareConnectMessagingAPI"));
 
         }
         return allReferenced;
@@ -1093,22 +1093,22 @@ public class MQProcessor implements Processor {
 
     private boolean processProcedure(Procedure procedure) {
         Boolean allReferenced = true;
-        EntryProcessing entry = findEntryProcess(procedure.getId().getValue());
+        EntryProcessing entry = findEntryProcess(procedure.getId());
 
         // Having an identifier makes this a lot easier.
         if (procedure.getIdentifier().size() == 0) {
             procedure.addIdentifier()
                     .setSystem("https://tools.ietf.org/html/rfc4122")
-                    .setValue(procedure.getId().getValue());
+                    .setValue(procedure.getId());
         }
 
         // Bundle.COndition Patient
         if (!isNullReference(procedure.getSubject())) {
-            IResource referencedResource = null;
-            log.info(procedure.getSubject().getReference().getValue());
+            Resource referencedResource = null;
+            log.info(procedure.getSubject().getReference());
             int i = 0;
             for (int h = 0; h < resourceList.size(); h++) {
-                if (resourceList.get(h).processed && resourceList.get(h).originalId != null && procedure.getSubject().getReference().getValue().equals(resourceList.get(h).originalId)) {
+                if (resourceList.get(h).processed && resourceList.get(h).originalId != null && procedure.getSubject().getReference().equals(resourceList.get(h).originalId)) {
                     referencedResource = resourceList.get(h).resource;
                     log.debug("originalId =" + resourceList.get(h).originalId);
                     log.debug("newId =" + resourceList.get(h).newId);
@@ -1121,16 +1121,16 @@ public class MQProcessor implements Processor {
                 addNewReferences(resourceList.get(i).newId);
 
             } else {
-                if (!processed(procedure.getSubject().getReference().getValue())) allReferenced = false;
+                if (!processed(procedure.getSubject().getReference())) allReferenced = false;
             }
         }
         // bundle condition encounter
         if (!isNullReference(procedure.getEncounter())) {
-            IResource referencedResource = null;
-            log.info(procedure.getEncounter().getReference().getValue());
+            Resource referencedResource = null;
+            log.info(procedure.getEncounter().getReference());
             int i = 0;
             for (int h = 0; h < resourceList.size(); h++) {
-                if (resourceList.get(h).processed && resourceList.get(h).originalId != null && procedure.getEncounter().getReference().getValue().equals(resourceList.get(h).originalId)) {
+                if (resourceList.get(h).processed && resourceList.get(h).originalId != null && procedure.getEncounter().getReference().equals(resourceList.get(h).originalId)) {
                     referencedResource = resourceList.get(h).resource;
                     log.debug("originalId =" + resourceList.get(h).originalId);
                     log.debug("newId =" + resourceList.get(h).newId);
@@ -1143,17 +1143,17 @@ public class MQProcessor implements Processor {
                 addNewReferences(resourceList.get(i).newId);
 
             } else {
-                if (!processed(procedure.getEncounter().getReference().getValue())) allReferenced = false;
+                if (!processed(procedure.getEncounter().getReference())) allReferenced = false;
             }
         }
 
         // bundle condition location
         if (!isNullReference(procedure.getLocation())) {
-            IResource referencedResource = null;
-      //      log.info(procedure.getLocation().getReference().getValue());
+            Resource referencedResource = null;
+      //      log.info(procedure.getLocation().getReference());
             int i = 0;
             for (int h = 0; h < resourceList.size(); h++) {
-                if (resourceList.get(h).processed && resourceList.get(h).originalId != null && procedure.getLocation().getReference().getValue().equals(resourceList.get(h).originalId)) {
+                if (resourceList.get(h).processed && resourceList.get(h).originalId != null && procedure.getLocation().getReference().equals(resourceList.get(h).originalId)) {
                     referencedResource = resourceList.get(h).resource;
                     log.debug("originalId =" + resourceList.get(h).originalId);
                     log.debug("newId =" + resourceList.get(h).newId);
@@ -1166,19 +1166,19 @@ public class MQProcessor implements Processor {
                 addNewReferences(resourceList.get(i).newId);
 
             } else {
-                if (!processed(procedure.getLocation().getReference().getValue())) allReferenced = false;
+                if (!processed(procedure.getLocation().getReference())) allReferenced = false;
             }
         }
 
 
         // Bundle.Procedure Performer
         for (int j = 0; j < procedure.getPerformer().size(); j++) {
-            IResource referencedResource = null;
-            log.info(procedure.getPerformer().get(j).getActor().getReference().getValue());
+            Resource referencedResource = null;
+            log.info(procedure.getPerformer().get(j).getActor().getReference());
             if (!isNullReference(procedure.getPerformer().get(j).getActor() )) {
                 int i = 0;
                 for (int h = 0; h < resourceList.size(); h++) {
-                    if (resourceList.get(h).processed && resourceList.get(h).originalId != null && procedure.getPerformer().get(j).getActor().getReference().getValue().equals(resourceList.get(h).originalId)) {
+                    if (resourceList.get(h).processed && resourceList.get(h).originalId != null && procedure.getPerformer().get(j).getActor().getReference().equals(resourceList.get(h).originalId)) {
                         referencedResource = resourceList.get(h).resource;
                         log.debug("originalId =" + resourceList.get(h).originalId);
                         log.debug("newId =" + resourceList.get(h).newId);
@@ -1190,7 +1190,7 @@ public class MQProcessor implements Processor {
                     procedure.getPerformer().get(j).getActor().setReference(resourceList.get(i).newId);
                     addNewReferences(resourceList.get(i).newId);
                 } else {
-                    if (!processed(procedure.getPerformer().get(j).getActor().getReference().getValue()))  allReferenced = false;
+                    if (!processed(procedure.getPerformer().get(j).getActor().getReference()))  allReferenced = false;
                 }
             }
         }
@@ -1201,7 +1201,7 @@ public class MQProcessor implements Processor {
       //      log.info("Procedure = "+parser.setPrettyPrint(true).encodeResourceToString(procedure));
 
             // Work around to cope with slicing not validated error in hapi server
-            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) procedure.setResourceMetadata(new ResourceMetadataMap());
+            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) procedure.setMeta(new Meta());
 
             MethodOutcome outcome = client.update().resource(procedure)
                     .conditionalByUrl("Procedure?identifier=" + procedure.getIdentifier().get(0).getSystem() + "%7C" + procedure.getIdentifier().get(0).getValue())
@@ -1212,9 +1212,9 @@ public class MQProcessor implements Processor {
             procedure.setId(outcome.getId());
             entry.processed = true;
             entry.resource = procedure;
-            entry.newId = outcome.getId().getValue();
-            log.info("Procedure: Id="+entry.originalId+" Server Id = "+outcome.getId().getValue());
-            sendToAudit(CareConnectAuditEvent.buildAuditEvent(procedure, outcome, "rest", "create", AuditEventActionEnum.CREATE,"CareConnectMessagingAPI"));
+            entry.newId = outcome.getId().toString();
+            log.info("Procedure: Id="+entry.originalId+" Server Id = "+outcome.getId());
+            sendToAudit(CareConnectAuditEvent.buildAuditEvent(procedure, outcome, "rest", "create", AuditEvent.AuditEventAction.C,"CareConnectMessagingAPI"));
 
         }
 
@@ -1225,57 +1225,57 @@ public class MQProcessor implements Processor {
 
     private boolean processQuestionnaireResponse(QuestionnaireResponse questionnaireResponse) {
         Boolean allReferenced = true;
-        EntryProcessing entry = findEntryProcess(questionnaireResponse.getId().getValue());
+        EntryProcessing entry = findEntryProcess(questionnaireResponse.getId());
         
         if (questionnaireResponse.getIdentifier()  == null) {
             questionnaireResponse.getIdentifier()
                     .setSystem("https://tools.ietf.org/html/rfc4122")
-                    .setValue(questionnaireResponse.getId().getValue());
+                    .setValue(questionnaireResponse.getId());
         }
 
         // Patient
         if (!isNullReference(questionnaireResponse.getSubject())) {
-            ResourceReferenceDt resource = questionnaireResponse.getSubject();
+            Reference resource = questionnaireResponse.getSubject();
 
-            log.debug(resource.getReference().getValue());
-            String referencedResource = findAcutalId(resource.getReference().getValue());
+            log.debug(resource.getReference());
+            String referencedResource = findAcutalId(resource.getReference());
             if (referencedResource != null) {
                 resource.setReference(referencedResource);
             } else {
-                if (!processed(resource.getReference().getValue())) allReferenced = false;
+                if (!processed(resource.getReference())) allReferenced = false;
             }
         }
 
         // Author
         if (!isNullReference(questionnaireResponse.getAuthor())) {
-            ResourceReferenceDt resource = questionnaireResponse.getAuthor();
+            Reference resource = questionnaireResponse.getAuthor();
 
-            log.debug(resource.getReference().getValue());
-            String referencedResource = findAcutalId(resource.getReference().getValue());
+            log.debug(resource.getReference());
+            String referencedResource = findAcutalId(resource.getReference());
             if (referencedResource != null) {
                 resource.setReference(referencedResource);
             } else {
-                if (!processed(resource.getReference().getValue())) allReferenced = false;
+                if (!processed(resource.getReference())) allReferenced = false;
             }
         }
 
         // Encounter
         if (!isNullReference(questionnaireResponse.getEncounter())) {
-            ResourceReferenceDt resource = questionnaireResponse.getEncounter();
+            Reference resource = questionnaireResponse.getEncounter();
 
-            log.debug(resource.getReference().getValue());
-            String referencedResource = findAcutalId(resource.getReference().getValue());
+            log.debug(resource.getReference());
+            String referencedResource = findAcutalId(resource.getReference());
             if (referencedResource != null) {
                 resource.setReference(referencedResource);
             } else {
-                if (!processed(resource.getReference().getValue())) allReferenced = false;
+                if (!processed(resource.getReference())) allReferenced = false;
             }
         }
 
         if (allReferenced) {
 
             // Work around to cope with slicing not validated error in hapi server
-            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) questionnaireResponse.setResourceMetadata(new ResourceMetadataMap());
+            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) questionnaireResponse.setMeta(new Meta());
 
             // Perform a search to look for the identifier - work around
             ca.uhn.fhir.model.api.Bundle searchBundle = client.search().forResource(QuestionnaireResponse.class)
@@ -1290,7 +1290,7 @@ public class MQProcessor implements Processor {
                 entry.newId = id.getValue();
                 entry.resource = questionnaireResponse;
                 log.info("QuestionaireResponse: Id="+entry.originalId+" Server Id = "+id.getValue());
-                sendToAudit(CareConnectAuditEvent.buildAuditEvent(questionnaireResponse, null, "rest", "create", AuditEventActionEnum.CREATE,"CareConnectMessagingAPI"));
+                sendToAudit(CareConnectAuditEvent.buildAuditEvent(questionnaireResponse, null, "rest", "create", AuditEvent.AuditEventAction.C,"CareConnectMessagingAPI"));
 
             }
 
@@ -1300,79 +1300,79 @@ public class MQProcessor implements Processor {
 
     private boolean processReferralRequest(ReferralRequest referralRequest) {
         Boolean allReferenced = true;
-        EntryProcessing entry = findEntryProcess(referralRequest.getId().getValue());
+        EntryProcessing entry = findEntryProcess(referralRequest.getId());
         
         if (referralRequest.getIdentifier().size()  == 0) {
             referralRequest.addIdentifier()
                     .setSystem("https://tools.ietf.org/html/rfc4122")
-                    .setValue(referralRequest.getId().getValue());
+                    .setValue(referralRequest.getId());
         }
 
         // Patient
         if (!isNullReference(referralRequest.getPatient())) {
-            ResourceReferenceDt resource = referralRequest.getPatient();
+            Reference resource = referralRequest.getPatient();
 
-            log.debug(resource.getReference().getValue());
-            String referencedResource = findAcutalId(resource.getReference().getValue());
+            log.debug(resource.getReference());
+            String referencedResource = findAcutalId(resource.getReference());
             if (referencedResource != null) {
                 resource.setReference(referencedResource);
             } else {
-                if (!processed(resource.getReference().getValue())) allReferenced = false;
+                if (!processed(resource.getReference())) allReferenced = false;
             }
         }
 
         // Requester
         if (!isNullReference(referralRequest.getRequester())) {
-            ResourceReferenceDt resource = referralRequest.getRequester();
+            Reference resource = referralRequest.getRequester();
 
-            log.debug(resource.getReference().getValue());
-            String referencedResource = findAcutalId(resource.getReference().getValue());
+            log.debug(resource.getReference());
+            String referencedResource = findAcutalId(resource.getReference());
             if (referencedResource != null) {
                 resource.setReference(referencedResource);
             } else {
-                if (!processed(resource.getReference().getValue())) allReferenced = false;
+                if (!processed(resource.getReference())) allReferenced = false;
             }
         }
         // Recipient
-        for (ResourceReferenceDt resource : referralRequest.getRecipient()) {
+        for (Reference resource : referralRequest.getRecipient()) {
 
-            log.debug(resource.getReference().getValue());
-            String referencedResource = findAcutalId(resource.getReference().getValue());
+            log.debug(resource.getReference());
+            String referencedResource = findAcutalId(resource.getReference());
             if (referencedResource != null) {
                 resource.setReference(referencedResource);
             } else {
-                if (!processed(resource.getReference().getValue())) allReferenced = false;
+                if (!processed(resource.getReference())) allReferenced = false;
             }
         }
 
         // Encounter
         if (!isNullReference(referralRequest.getEncounter())) {
-            ResourceReferenceDt resource = referralRequest.getEncounter();
+            Reference resource = referralRequest.getEncounter();
 
-            log.debug(resource.getReference().getValue());
-            String referencedResource = findAcutalId(resource.getReference().getValue());
+            log.debug(resource.getReference());
+            String referencedResource = findAcutalId(resource.getReference());
             if (referencedResource != null) {
                 resource.setReference(referencedResource);
             } else {
-                if (!processed(resource.getReference().getValue())) allReferenced = false;
+                if (!processed(resource.getReference())) allReferenced = false;
             }
         }
 
         // Supporting information
-        for (ResourceReferenceDt resource : referralRequest.getSupportingInformation()) {
+        for (Reference resource : referralRequest.getSupportingInformation()) {
 
-            log.debug(resource.getReference().getValue());
-            String referencedResource = findAcutalId(resource.getReference().getValue());
+            log.debug(resource.getReference());
+            String referencedResource = findAcutalId(resource.getReference());
             if (referencedResource != null) {
                 resource.setReference(referencedResource);
             } else {
-                if (!processed(resource.getReference().getValue())) allReferenced = false;
+                if (!processed(resource.getReference())) allReferenced = false;
             }
         }
 
         if (allReferenced) {
             // Work around to cope with slicing not validated error in hapi server
-            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) referralRequest.setResourceMetadata(new ResourceMetadataMap());
+            if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) referralRequest.setMeta(new Meta());
 
 
             MethodOutcome outcome = client.update().resource(referralRequest)
@@ -1382,9 +1382,9 @@ public class MQProcessor implements Processor {
             referralRequest.setId(outcome.getId());
             entry.processed = true;
             entry.resource = referralRequest;
-            entry.newId = outcome.getId().getValue();
-            log.info("ReferralRequest: Id="+entry.originalId+" Server Id = "+outcome.getId().getValue());
-            sendToAudit(CareConnectAuditEvent.buildAuditEvent(referralRequest, outcome, "rest", "create", AuditEventActionEnum.CREATE,"CareConnectMessagingAPI"));
+            entry.newId = outcome.getId().toString();
+            log.info("ReferralRequest: Id="+entry.originalId+" Server Id = "+outcome.getId());
+            sendToAudit(CareConnectAuditEvent.buildAuditEvent(referralRequest, outcome, "rest", "create", AuditEvent.AuditEventAction.C,"CareConnectMessagingAPI"));
 
 
         }
@@ -1394,12 +1394,12 @@ public class MQProcessor implements Processor {
     private void processBundle(Bundle bundle)
     {
 
-        sendToAudit(CareConnectAuditEvent.buildAuditEvent(bundle, null, bundle.getType(), "create", AuditEventActionEnum.CREATE,"CareConnectMessagingAPI"));
+        sendToAudit(CareConnectAuditEvent.buildAuditEvent(bundle, null, bundle.getType().toCode(), "create", AuditEvent.AuditEventAction.C,"CareConnectMessagingAPI"));
 
-        for (Bundle.Entry entry : bundle.getEntry()) {
-            IResource resource = entry.getResource();
+        for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
+            Resource resource = entry.getResource();
             EntryProcessing resourceP = new EntryProcessing();
-            resourceP.originalId = resource.getId().getValue();
+            resourceP.originalId = resource.getId();
             resourceP.processed = false;
             resourceP.resource = resource;
             // Miss off MessageHeader, so start at 1 but also processing Composition now
@@ -1412,23 +1412,23 @@ public class MQProcessor implements Processor {
 
         // Process subbundles first - this should be documents.
 
-        for (Bundle.Entry entry : bundle.getEntry()) {
-            IResource resource = entry.getResource();
+        for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
+            Resource resource = entry.getResource();
 
-            if (entry.getResource().getResourceName().equals("Bundle")) {
-                log.info("Another Bundle Found at entry "+entry.getResource().getId().getValue());
+            if (entry.getResource() instanceof Bundle) {
+                log.info("Another Bundle Found at entry "+entry.getResource().getId());
                 processBundle((Bundle) resource);
-                log.info("Returned from sub Bundle call at entry "+entry.getResource().getId().getValue());
+                log.info("Returned from sub Bundle call at entry "+entry.getResource().getId());
             }
         }
 
         for (int g= 0;g < 5;g++) {
             allProcessed = true;
-            for (Bundle.Entry entry : bundle.getEntry()) {
+            for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
 
-                IResource resource = entry.getResource();
-                log.info("---- Looking for "+resource.getResourceName()+" resource with id of = "+resource.getId().getValue());
-                EntryProcessing entryProcess = findEntryProcess(resource.getId().getValue());
+                Resource resource = entry.getResource();
+                log.info("---- Looking for "+resource.getResourceType()+" resource with id of = "+resource.getId());
+                EntryProcessing entryProcess = findEntryProcess(resource.getId());
 
                 if (entryProcess != null && !entryProcess.processed) {
 
@@ -1436,92 +1436,92 @@ public class MQProcessor implements Processor {
                     //if (entryProcess.newId != null) log.info(" New Id "+entryProcess.newId);
 
                     // Bundle.location
-                    if (resource.getResourceName().equals("Location")) {
+                    if (resource instanceof Location) {
                         processLocation((Location) resource);
                     }
 
                     // Bundle.Organization
-                    if (resource.getResourceName().equals("Organization")) {
+                    if (resource instanceof Organization) {
                         processOrganisation( (Organization) resource);
                     }
 
                     //Bundle.Practitioner
-                    if (resource.getResourceName().equals("Practitioner")) {
+                    if (resource instanceof Practitioner) {
                         processPractitioner( (Practitioner) resource);
                     }
 
                     // Bundle. Patient
-                    if (resource.getResourceName().equals("Patient")) {
+                    if (resource instanceof Patient) {
                         processPatient((Patient) resource);
                     }
 
                     // Bundle.Procedure Request
-                    if (resource.getResourceName().equals("ProcedureRequest")) {
+                    if (resource instanceof ProcedureRequest) {
                         processProcedureRequest((ProcedureRequest) resource);
                     }
 
                     // bundle.Appointment
-                    if (resource.getResourceName().equals("Appointment")) {
+                    if (resource instanceof Appointment) {
                         processAppointment((Appointment) resource);
                     }
 
                     // Bundle.Observation
-                    if (resource.getResourceName().equals("Observation")) {
+                    if (resource instanceof Observation) {
                         processObservation((Observation) resource);
                     }
 
                     // Bundle.Encounter
-                    if (resource.getResourceName().equals("Encounter")) {
+                    if (resource instanceof Encounter) {
                         processEncounter( (Encounter) resource);
                     }
 
                     // Bundle.Condition
-                    if (resource.getResourceName().equals("Condition")) {
+                    if (resource instanceof Condition) {
                         processCondition( (Condition) resource);
                     }
 
                     // Bundle.Procedure
-                    if (resource.getResourceName().equals("Procedure")) {
+                    if (resource instanceof Procedure) {
                         processProcedure( (Procedure) resource);
                     }
 
                     // Bundle.MedicationStatement
-                    if (resource.getResourceName().equals("MedicationStatement")) {
+                    if (resource instanceof MedicationStatement) {
                         processMedicationStatement( (MedicationStatement) resource);
                     }
 
                     // Bundle.Medication
-                    if (resource.getResourceName().equals("Medication")) {
+                    if (resource instanceof Medication) {
                         processMedication( (Medication) resource);
                     }
 
 
                     // Bundle.Flag
-                    if (resource.getResourceName().equals("Flag")) {
+                    if (resource instanceof Flag) {
                         processFlag( (Flag) resource);
                     }
 
                     // Bundle.Composition
-                    if (resource.getResourceName().equals("Composition")) {
+                    if (resource instanceof Composition) {
                         processComposition( (Composition) resource);
                     }
 
                     // Bundle.List
-                    if (resource.getResourceName().equals("List")) {
-                        processList( (ListResource) resource);
+                    if (resource instanceof List_) {
+                        processList( (List_) resource);
                     }
 
                     // Bundle.AllergyIntolernace
-                    if (resource.getResourceName().equals("AllergyIntolerance")) {
+                    if (resource instanceof AllergyIntolerance) {
                         processAllergyIntolerance( (AllergyIntolerance) resource);
                     }
                     // Bundle.QuestionaireResponse
-                    if (resource.getResourceName().equals("QuestionnaireResponse")) {
+                    if (resource instanceof QuestionnaireResponse) {
                         processQuestionnaireResponse( (QuestionnaireResponse) resource);
                     }
 
                     // Bundle.QuestionaireResponse
-                    if (resource.getResourceName().equals("ReferralRequest")) {
+                    if (resource instanceof ReferralRequest) {
                         processReferralRequest( (ReferralRequest) resource);
                     }
 

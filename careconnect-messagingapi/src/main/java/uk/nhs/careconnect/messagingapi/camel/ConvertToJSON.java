@@ -2,10 +2,10 @@ package uk.nhs.careconnect.messagingapi.camel;
 
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.model.dstu2.resource.AuditEvent;
 import ca.uhn.fhir.parser.IParser;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
+import org.hl7.fhir.instance.model.AuditEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

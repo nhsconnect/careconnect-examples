@@ -89,7 +89,9 @@
     <orderEntry type="library" name="Maven: commons-io:commons-io:2.5" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:jcl-over-slf4j:1.7.25" level="project" />
     <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpcore:4.4.5" level="project" />
-    <orderEntry type="library" name="Maven: ca.uhn.hapi.fhir:hapi-fhir-structures-dstu2:2.5" level="project" />
+    <orderEntry type="library" name="Maven: ca.uhn.hapi.fhir:hapi-fhir-structures-hl7org-dstu2:2.5" level="project" />
+    <orderEntry type="library" name="Maven: xpp3:xpp3_min:1.1.4c" level="project" />
+    <orderEntry type="library" name="Maven: net.sf.saxon:Saxon-HE:9.6.0-4" level="project" />
     <orderEntry type="library" name="Maven: io.fabric8.insight:insight-log4j:1.2.0.Beta4" level="project" />
     <orderEntry type="library" name="Maven: io.fabric8.insight:insight-log-core:1.2.0.Beta4" level="project" />
     <orderEntry type="library" name="Maven: log4j:log4j:1.2.17" level="project" />

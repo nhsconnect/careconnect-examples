@@ -1,13 +1,14 @@
 package uk.nhs.careconnect.messagingapi.spring;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.model.api.IResource;
-import ca.uhn.fhir.model.dstu2.resource.Bundle;
 import ca.uhn.fhir.parser.IParser;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.impl.DefaultMessage;
+import org.hl7.fhir.instance.model.Bundle;
+import org.hl7.fhir.instance.model.MessageHeader;
+import org.hl7.fhir.instance.model.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
+
 
 /**
  * Created by kevinmayfield on 12/07/2017.
@@ -71,15 +73,15 @@ public class messasgeSplitter {
 
         for (int f = 0; f < bundle.getEntry().size(); f++ ) {
             log.info("Entry numnber "+f);
-            IResource resource = bundle.getEntry().get(f).getResource();
-            log.info(resource.getResourceName());
-            log.info(resource.getId().getValue());
-            if (!resource.getResourceName().equals("MessageHeader")) {
+            Resource resource = bundle.getEntry().get(f).getResource();
+            log.info(resource.getClass().getName());
+            log.info(resource.getIdElement().getId());
+            if (!(resource instanceof MessageHeader)) {
 
                 String response = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(resource);
                 DefaultMessage message = new DefaultMessage();
-                message.setHeader("FHIRResource",resource.getResourceName());
-                message.setHeader("FHIRResourceId",resource.getId().getValue());
+                message.setHeader("FHIRResource",resource.getClass().getCanonicalName());
+                message.setHeader("FHIRResourceId",resource.getId());
                 message.setBody(response);
                 answer.add(message);
             }

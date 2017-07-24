@@ -27,7 +27,7 @@ public class ResourceConfig  {
 	@Bean
 	public static FhirContext fhirContext()
 	{
-		return FhirContext.forDstu2();
+		return FhirContext.forDstu2Hl7Org();
 	}
 
 	@Bean

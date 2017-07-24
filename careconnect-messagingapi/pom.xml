@@ -202,11 +202,11 @@
 
       <!-- At least one "structures" JAR must also be included -->
 
-      <dependency>
-          <groupId>ca.uhn.hapi.fhir</groupId>
-          <artifactId>hapi-fhir-structures-dstu2</artifactId>
-          <version>${hapi-fhir-version}</version>
-      </dependency>
+	  <dependency>
+		  <groupId>ca.uhn.hapi.fhir</groupId>
+		  <artifactId>hapi-fhir-structures-hl7org-dstu2</artifactId>
+		  <version>${hapi-fhir-version}</version>
+	  </dependency>
 
 	  <dependency>
 			<groupId>io.fabric8.insight</groupId>
