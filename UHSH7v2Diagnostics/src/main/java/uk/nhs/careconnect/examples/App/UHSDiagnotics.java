@@ -2,16 +2,6 @@ package uk.nhs.careconnect.examples.App;
 
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.model.api.ResourceMetadataKeyEnum;
-import ca.uhn.fhir.model.dstu2.composite.QuantityDt;
-import ca.uhn.fhir.model.dstu2.composite.ResourceReferenceDt;
-import ca.uhn.fhir.model.dstu2.composite.SimpleQuantityDt;
-import ca.uhn.fhir.model.dstu2.resource.*;
-import ca.uhn.fhir.model.dstu2.valueset.AuditEventActionEnum;
-import ca.uhn.fhir.model.dstu2.valueset.DiagnosticReportStatusEnum;
-import ca.uhn.fhir.model.primitive.DateTimeDt;
-import ca.uhn.fhir.model.primitive.IdDt;
-import ca.uhn.fhir.model.primitive.InstantDt;
 import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.IGenericClient;
@@ -21,6 +11,7 @@ import ca.uhn.hl7v2.parser.GenericParser;
 import ca.uhn.hl7v2.parser.Parser;
 import ca.uhn.hl7v2.util.Terser;
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.hl7.fhir.instance.model.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -28,9 +19,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import javax.jms.*;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 @SpringBootApplication
 public class UHSDiagnotics implements CommandLineRunner {
@@ -68,9 +57,9 @@ public class UHSDiagnotics implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 
         // This is to base HAPI server not the CareConnectAPI
-        //String serverBase = "http://127.0.0.1:8080/FHIRServer/DSTU2/";
-        String serverBase = "http://fhirtest.uhn.ca/baseDstu2/";
-        FhirContext ctxFHIR = FhirContext.forDstu2();
+        String serverBase = "http://127.0.0.1:8080/FHIRServer/DSTU2/";
+        //String serverBase = "http://fhirtest.uhn.ca/baseDstu2/";
+        FhirContext ctxFHIR = FhirContext.forDstu2Hl7Org();
 
         JSONparser = ctxFHIR.newXmlParser();
 
@@ -145,14 +134,13 @@ public class UHSDiagnotics implements CommandLineRunner {
 
             Bundle results = client
                     .search()
-                    .forResource(Patient.class)
-                    .where(Patient.IDENTIFIER.exactly().systemAndCode(SystemNHSNumber, "9876543210"))
-                    .returnBundle(ca.uhn.fhir.model.dstu2.resource.Bundle.class)
+                    .byUrl("Patient?identifier="+SystemNHSNumber+"|9876543210")
+                    .returnBundle(Bundle.class)
                     .execute();
             // Unsafe !!
             // We need to find the Id of the Patient to add a reference to the new FHIR resources.
             Patient patient = (Patient) results.getEntry().get(0).getResource();
-            sendToAudit(CareConnectAuditEvent.buildAuditEvent(results, null, "rest", "read", AuditEventActionEnum.READ_VIEW_PRINT,"UHSDiagnostics.java"));
+            sendToAudit(CareConnectAuditEvent.buildAuditEvent(results, null, "rest", "read", AuditEvent.AuditEventAction.R,"UHSDiagnostics.java"));
 
             String result = null;
             MethodOutcome outcome = null;
@@ -162,11 +150,10 @@ public class UHSDiagnotics implements CommandLineRunner {
             //
             DiagnosticOrder order = new DiagnosticOrder();
 
-            List<IdDt> orderprofiles = new ArrayList<IdDt>();
-            orderprofiles.add(new IdDt("https://fhir.nhs.uk/StructureDefinition/dds-request-1-0"));
-            ResourceMetadataKeyEnum.PROFILES.put(order, orderprofiles);
 
-            order.setSubject(new ResourceReferenceDt(patient.getId()));
+            order.setMeta(new Meta().addProfile("https://fhir.nhs.uk/StructureDefinition/dds-request-1-0"));
+
+            order.setSubjectTarget(patient);
             // First pass of HL7v2 message
             Integer orderNum = 0;
             do {
@@ -178,7 +165,7 @@ public class UHSDiagnotics implements CommandLineRunner {
                 }
 
 
-                DiagnosticOrder.Item orderItem = new DiagnosticOrder.Item();
+                DiagnosticOrder.DiagnosticOrderItemComponent orderItem = new DiagnosticOrder.DiagnosticOrderItemComponent();
                 orderItem.getCode().addCoding()
                         .setSystem(LabCodeSystem)
                         .setCode(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBR-4-1"))
@@ -196,7 +183,7 @@ public class UHSDiagnotics implements CommandLineRunner {
                     .execute();
             order.setId(outcome.getId());
             System.out.println(outcome.getId().getValue());
-            sendToAudit(CareConnectAuditEvent.buildAuditEvent(order, outcome, "rest", "create", AuditEventActionEnum.CREATE,"UHSDiagnostics.java"));
+            sendToAudit(CareConnectAuditEvent.buildAuditEvent(order, outcome, "rest", "create", AuditEvent.AuditEventAction.C,"UHSDiagnostics.java"));
 
 
             //
@@ -206,9 +193,7 @@ public class UHSDiagnotics implements CommandLineRunner {
             DiagnosticReport report = new DiagnosticReport();
             String text = "";
 
-            List<IdDt> profiles = new ArrayList<IdDt>();
-            profiles.add(new IdDt("https://fhir.nhs.uk/StructureDefinition/dds-report-1-0"));
-            ResourceMetadataKeyEnum.PROFILES.put(report, profiles);
+            report.setMeta(new Meta().addProfile("https://fhir.nhs.uk/StructureDefinition/dds-report-1-0"));
             orderNum = 0;
             do {
                 if (report.getIdentifier().size() == 0) {
@@ -220,8 +205,8 @@ public class UHSDiagnotics implements CommandLineRunner {
                     try {
                         Date date;
                         date = fmt.parse(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBR-7-1"));
-                        InstantDt instance = new InstantDt(date);
-                        report.setIssued(instance);
+                        //InstantDt instance = new InstantDt(date);
+                        report.setIssued(date);
 
                     } catch (Exception e1) {
                         // TODO Auto-generated catch block
@@ -232,11 +217,11 @@ public class UHSDiagnotics implements CommandLineRunner {
                 result = terserGet("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBSERVATION(0)/OBX-3-1");
             } while (result != null);
 
-            report.setStatus(DiagnosticReportStatusEnum.FINAL);
+            report.setStatus(DiagnosticReport.DiagnosticReportStatus.FINAL);
 
-            report.setSubject(new ResourceReferenceDt(patient.getId().getValue()));
+            report.setSubject(new Reference(patient.getId()));
 
-            report.getRequest().add(new ResourceReferenceDt(order.getId().getValue()));
+            report.getRequest().add(new Reference(order.getId()));
 
             /* Don't have an code for the report itself. Revisit!!!!
             report.getCode().addCoding()
@@ -264,7 +249,7 @@ public class UHSDiagnotics implements CommandLineRunner {
                                     .setSystem("https://fhir.uhs.nhs.uk/" + sysName + "/Observation")
                                     .setValue(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBR-3-1") + "-" + terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBSERVATION(" + observationNo + ")/OBX-3-1"));
 
-                            observation.setSubject(new ResourceReferenceDt(patient.getId().getValue()));
+                            observation.setSubject(new Reference(patient.getId()));
                             observation.getCode().addCoding()
                                     .setDisplay(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBSERVATION(" + observationNo + ")/OBX-3-2"))
                                     .setSystem(LabCodeSystem)
@@ -280,8 +265,8 @@ public class UHSDiagnotics implements CommandLineRunner {
                             try {
                                 Date date;
                                 date = fmt.parse(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBR-7-1"));
-                                DateTimeDt effectiveDate = new DateTimeDt(date);
-                                observation.setEffective(effectiveDate);
+                             //   DateTimeDt effectiveDate = new DateTimeDt(date);
+                                observation.setEffective(new DateTimeType(date));
 
                             } catch (Exception e1) {
                                 // TODO Auto-generated catch block
@@ -289,7 +274,7 @@ public class UHSDiagnotics implements CommandLineRunner {
 
 
                             observation.setValue(
-                                    new QuantityDt()
+                                    new Quantity()
                                             .setValue(new BigDecimal(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBSERVATION(" + observationNo + ")/OBX-5-1")))
                                             .setUnit(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBSERVATION(" + observationNo + ")/OBX-6-1"))
                                             .setSystem("http://unitsofmeasure.org")
@@ -297,11 +282,16 @@ public class UHSDiagnotics implements CommandLineRunner {
 
                             if (terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBSERVATION(" + observationNo + ")/OBX-7-1") != null) {
                                 String[] highlow = terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBSERVATION(" + observationNo + ")/OBX-7-1").split("-");
-                                BigDecimal low = new BigDecimal(highlow[0]);
-                                BigDecimal high = new BigDecimal(highlow[1]);
+
+                                SimpleQuantity lowsq = new SimpleQuantity();
+                                lowsq.setValue(new BigDecimal(highlow[0])).setSystem("http://unitsofmeasure.org").setCode(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBSERVATION(" + observationNo + ")/OBX-6-1"));
+
+                                SimpleQuantity highsq = new SimpleQuantity();
+                                highsq.setValue(new BigDecimal(highlow[1])).setSystem("http://unitsofmeasure.org").setCode(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBSERVATION(" + observationNo + ")/OBX-6-1"));
+
                                 observation.addReferenceRange()
-                                        .setLow(new SimpleQuantityDt(low.floatValue(), "http://unitsofmeasure.org", terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBSERVATION(" + observationNo + ")/OBX-6-1")))
-                                        .setHigh(new SimpleQuantityDt(high.floatValue(), "http://unitsofmeasure.org", terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBSERVATION(" + observationNo + ")/OBX-6-1")));
+                                        .setLow(lowsq)
+                                        .setHigh(highsq);
                             }
                             if (terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBSERVATION(" + observationNo + ")/OBX-8-1") != null) {
                                 switch (terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBSERVATION(" + observationNo + ")/OBX-8-1")) {
@@ -328,10 +318,10 @@ public class UHSDiagnotics implements CommandLineRunner {
                                     .execute();
                             observation.setId(outcome.getId());
                             System.out.println(outcome.getId().getValue());
-                            sendToAudit(CareConnectAuditEvent.buildAuditEvent(observation, outcome, "rest", "create", AuditEventActionEnum.CREATE,"UHSDiagnostics.java"));
+                            sendToAudit(CareConnectAuditEvent.buildAuditEvent(observation, outcome, "rest", "create", AuditEvent.AuditEventAction.C,"UHSDiagnostics.java"));
 
 
-                            report.getResult().add(new ResourceReferenceDt(observation.getId().getValue()));
+                            report.getResult().add(new Reference(observation.getId()));
 
                         } else {
                             // Handle text section here
@@ -340,7 +330,7 @@ public class UHSDiagnotics implements CommandLineRunner {
                             } else {
                                 text = text + "\r";
                             }
-                            report.getText().setDiv(text);
+                            report.getText().setDivAsString(text);
                         }
                     }
 
@@ -354,7 +344,7 @@ public class UHSDiagnotics implements CommandLineRunner {
                         .execute();
                 report.setId(outcome.getId());
                 System.out.println(outcome.getId().getValue());
-                sendToAudit(CareConnectAuditEvent.buildAuditEvent(report, outcome, "rest", "create", AuditEventActionEnum.CREATE,"UHSDiagnostics.java"));
+                sendToAudit(CareConnectAuditEvent.buildAuditEvent(report, outcome, "rest", "create", AuditEvent.AuditEventAction.C,"UHSDiagnostics.java"));
 
 
                 orderNum++;
@@ -373,16 +363,14 @@ public class UHSDiagnotics implements CommandLineRunner {
                 Procedure procedure = new Procedure();
                 text = "";
 
-                profiles = new ArrayList<IdDt>();
-                profiles.add(new IdDt("https://fhir.hl7.org.uk/StructureDefinition/CareConnect-Procedure-1"));
-                ResourceMetadataKeyEnum.PROFILES.put(report, profiles);
+                procedure.setMeta(new Meta().addProfile("https://fhir.hl7.org.uk/StructureDefinition/CareConnect-Procedure-1"));
 
                 procedure.addIdentifier()
                         .setSystem("https://fhir.uhs.nhs.uk/"+sysName +"/Test/Observation")
                         .setValue(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBR-3-1") + "-" + terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBR-4-1"));
 
 
-                procedure.setSubject(new ResourceReferenceDt(patient.getId().getValue()));
+                procedure.setSubject(new Reference(patient.getId()));
 
                 procedure.getCategory().addCoding()
                         .setSystem("http://snomed.info/sct")
@@ -398,7 +386,7 @@ public class UHSDiagnotics implements CommandLineRunner {
                 try {
                     Date date;
                     date = fmt.parse(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBR-7-1"));
-                    DateTimeDt instance = new DateTimeDt();
+                    DateTimeType instance = new DateTimeType(date);
                     procedure.setPerformed(instance);
 
                 } catch (Exception e1) {
