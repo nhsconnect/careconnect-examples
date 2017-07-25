@@ -5,12 +5,16 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.IGenericClient;
+import ca.uhn.fhir.validation.FhirValidator;
+import ca.uhn.fhir.validation.SingleValidationMessage;
+import ca.uhn.fhir.validation.ValidationResult;
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.parser.GenericParser;
 import ca.uhn.hl7v2.parser.Parser;
 import ca.uhn.hl7v2.util.Terser;
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.hl7.fhir.instance.hapi.validation.FhirInstanceValidator;
 import org.hl7.fhir.instance.model.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -32,6 +36,20 @@ public class UHSDiagnotics implements CommandLineRunner {
     String SystemNHSNumber = "https://fhir.nhs.uk/Id/nhs-number";
 
     IParser JSONparser = null;
+
+    FhirValidator validator;
+
+    FhirInstanceValidator instanceValidator;
+
+    ActiveMQConnectionFactory connectionFactory;
+
+    Connection connection;
+
+    Session session;
+
+    Destination destination;
+
+    MessageProducer producer;
 
 	private String terserGet(String query)
 	{
@@ -60,6 +78,34 @@ public class UHSDiagnotics implements CommandLineRunner {
         String serverBase = "http://127.0.0.1:8080/FHIRServer/DSTU2/";
         //String serverBase = "http://fhirtest.uhn.ca/baseDstu2/";
         FhirContext ctxFHIR = FhirContext.forDstu2Hl7Org();
+
+       // ctxValidator  = FhirContext.forDstu2Hl7Org();
+
+        validator = ctxFHIR.newValidator();
+        instanceValidator = new FhirInstanceValidator();
+        validator.registerValidatorModule(instanceValidator);
+
+        JSONparser = ctxFHIR.newJsonParser();
+
+        FhirValidator validator = ctxFHIR.newValidator();
+
+
+        connectionFactory = new ActiveMQConnectionFactory("tcp://localhost:61616");
+
+        // Create a Connection
+        connection = connectionFactory.createConnection();
+        connection.start();
+
+        // Create a Session
+        session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+
+        // Create the destination (Topic or Queue)
+        destination = session.createQueue("Elastic.Queue");
+
+        // Create a MessageProducer from the Session to the Topic or Queue
+        producer = session.createProducer(destination);
+        producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
+
 
         JSONparser = ctxFHIR.newXmlParser();
 
@@ -104,6 +150,10 @@ public class UHSDiagnotics implements CommandLineRunner {
                 + "OBX|6|TX|XCHES^XR Chest^CRIS3||||||||F|||201704261106||SWHALECOM^Amy LECOMTE\r";
 
         report(ctxFHIR, client, msg,"CRIS");
+
+        // Clean up ActiveMQ
+        session.close();
+        connection.close();
     }
 
 
@@ -177,6 +227,7 @@ public class UHSDiagnotics implements CommandLineRunner {
             } while (result != null);
 
             System.out.println(FHIRparser.setPrettyPrint(true).encodeResourceToString(order));
+            validate(FHIRparser.setPrettyPrint(true).encodeResourceToString(order));
             // Now post the referenced order
             outcome = client.update().resource(order)
                     .conditionalByUrl("DiagnosticOrder?identifier=" + order.getIdentifier().get(0).getSystem() + "%7C" + order.getIdentifier().get(0).getValue())
@@ -313,6 +364,7 @@ public class UHSDiagnotics implements CommandLineRunner {
                             }
 
                             System.out.println(FHIRparser.setPrettyPrint(true).encodeResourceToString(observation));
+                            validate(FHIRparser.setPrettyPrint(true).encodeResourceToString(observation));
                             outcome = client.update().resource(observation)
                                     .conditionalByUrl("Observation?identifier=" + observation.getIdentifier().get(0).getSystem() + "%7C" + observation.getIdentifier().get(0).getValue())
                                     .execute();
@@ -338,7 +390,7 @@ public class UHSDiagnotics implements CommandLineRunner {
                 } while (result != null);
 
                 System.out.println(FHIRparser.setPrettyPrint(true).encodeResourceToString(report));
-
+                validate(FHIRparser.setPrettyPrint(true).encodeResourceToString(report));
                 outcome = client.update().resource(report)
                         .conditionalByUrl("DiagnosticReport?identifier=" + report.getIdentifier().get(0).getSystem() + "%7C" + report.getIdentifier().get(0).getValue())
                         .execute();
@@ -398,6 +450,7 @@ public class UHSDiagnotics implements CommandLineRunner {
                 // Now store the observation as this is referred to in the child observations below
 
                 System.out.println(FHIRparser.setPrettyPrint(true).encodeResourceToString(procedure));
+                validate(FHIRparser.setPrettyPrint(true).encodeResourceToString(procedure));
                 outcome = client.update().resource(procedure)
                         .conditionalByUrl("Procedure?identifier=" + procedure.getIdentifier().get(0).getSystem() + "%7C" + procedure.getIdentifier().get(0).getValue())
                         .execute();
@@ -411,26 +464,21 @@ public class UHSDiagnotics implements CommandLineRunner {
 
         }
 
+    private void validate(String resource)
+    {
+        ValidationResult result = validator.validateWithResult(resource);
 
+        System.out.println(result.isSuccessful()); // false
+
+// Show the issues
+        for (SingleValidationMessage next : result.getMessages()) {
+            System.out.println(" Next issue " + next.getSeverity() + " - " + next.getLocationString() + " - " + next.getMessage());
+        }
+    }
 
     private void sendToAudit(AuditEvent audit) {
         try {
             // Create a ConnectionFactory
-            ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://localhost:61616");
-
-            // Create a Connection
-            Connection connection = connectionFactory.createConnection();
-            connection.start();
-
-            // Create a Session
-            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-
-            // Create the destination (Topic or Queue)
-            Destination destination = session.createQueue("Elastic.Queue");
-
-            // Create a MessageProducer from the Session to the Topic or Queue
-            MessageProducer producer = session.createProducer(destination);
-            producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
 
             // Create a messages
 
@@ -441,16 +489,14 @@ public class UHSDiagnotics implements CommandLineRunner {
             System.out.println("Sent message: "+ message.hashCode() + " : " + Thread.currentThread().getName());
             producer.send(message);
 
-            // Clean up
-            session.close();
-            connection.close();
+
+
         }
         catch (Exception e) {
             System.out.println("Caught: " + e);
             e.printStackTrace();
         }
     }
-
 
 
 }

@@ -32,25 +32,28 @@ public class ConvertToJSON implements Processor {
 		AuditEvent audit = null;
 		
 		Reader reader = new InputStreamReader(new ByteArrayInputStream ((byte[]) exchange.getIn().getBody(byte[].class)));
-		
+
+		IParser JsonParser = ctx.newJsonParser();
+		IParser XMLParser = ctx.newXmlParser();
+
 		// Assume JSON if not present
 		if (exchange.getIn().getHeader(Exchange.CONTENT_TYPE) == null || exchange.getIn().getHeader(Exchange.CONTENT_TYPE).toString().contains("json"))
 		{
-			//JsonParser parser = new JsonParser();
-			IParser parser = ctx.newJsonParser();
+
 			try
 			{
-				audit = parser.parseResource(AuditEvent.class,reader);
+				audit = JsonParser.parseResource(AuditEvent.class,reader);
 			}
 			catch(Exception ex)
 			{
 				log.error("#9 JSON Parse failed "+ex.getMessage());
 
 				if (exchange.getIn().getHeader(Exchange.CONTENT_TYPE) == null) {
-					parser = ctx.newXmlParser();
+
 					try
 					{
-						audit = parser.parseResource(AuditEvent.class,reader);
+					    reader.reset();
+						audit = XMLParser.parseResource(AuditEvent.class,reader);
 					}
 					catch(Exception ex2)
 					{
@@ -61,11 +64,10 @@ public class ConvertToJSON implements Processor {
 		}
 		else
 		{
-			// XmlParser parser = new XmlParser();
-			IParser parser = ctx.newXmlParser();
+
 			try
 			{
-				audit = parser.parseResource(AuditEvent.class,reader);
+				audit = XMLParser.parseResource(AuditEvent.class,reader);
 			}
 			catch(Exception ex)
 			{
