@@ -543,12 +543,14 @@ public class MQProcessor implements Processor {
 
 
             // Perform a search to look for the identifier - work around
-            ca.uhn.fhir.model.api.Bundle searchBundle = client.search().forResource(Flag.class)
+            Bundle searchBundle = client.search().forResource(Flag.class)
                     .where(new StringClientParam("_content").matches().value(flag.getIdentifier().get(0).getValue()))
                     .prettyPrint()
-                    .encodedJson().execute();
+                    .encodedJson()
+                    .returnBundle(Bundle.class)
+                    .execute();
             // Not found so add the resource
-            if (searchBundle.getEntries().size()==0) {
+            if (searchBundle.getEntry().size()==0) {
                 IIdType id = client.create().resource(flag).execute().getId();
                 flag.setId(id);
                 entry.processed = true;
@@ -607,12 +609,13 @@ public class MQProcessor implements Processor {
             if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) list.setMeta(new Meta());
 
             // Perform a search to look for the identifier - work around
-            ca.uhn.fhir.model.api.Bundle searchBundle = client.search().forResource(List_.class)
+            Bundle searchBundle = client.search().forResource(List_.class)
                     .where(new StringClientParam("_content").matches().value(list.getIdentifier().get(0).getValue()))
                     .prettyPrint()
+                    .returnBundle(Bundle.class)
                     .encodedJson().execute();
             // Not found so add the resource
-            if (searchBundle.getEntries().size()==0) {
+            if (searchBundle.getEntry().size()==0) {
                 IIdType id = client.create().resource(list).execute().getId();
                 list.setId(id);
                 entry.processed = true;
@@ -1278,12 +1281,14 @@ public class MQProcessor implements Processor {
             if (client.getServerBase().contains("http://fhirtest.uhn.ca/baseDstu2")) questionnaireResponse.setMeta(new Meta());
 
             // Perform a search to look for the identifier - work around
-            ca.uhn.fhir.model.api.Bundle searchBundle = client.search().forResource(QuestionnaireResponse.class)
+            Bundle searchBundle = client.search().forResource(QuestionnaireResponse.class)
                     .where(new StringClientParam("_content").matches().value(questionnaireResponse.getIdentifier().getValue()))
                     .prettyPrint()
-                    .encodedJson().execute();
+                    .encodedJson()
+                    .returnBundle(Bundle.class)
+                    .execute();
             // Not found so add the resource
-            if (searchBundle.getEntries().size()==0) {
+            if (searchBundle.getEntry().size()==0) {
                 IIdType id = client.create().resource(questionnaireResponse).execute().getId();
                 questionnaireResponse.setId(id);
                 entry.processed = true;
