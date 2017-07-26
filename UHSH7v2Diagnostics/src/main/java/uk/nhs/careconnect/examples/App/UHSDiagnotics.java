@@ -180,7 +180,8 @@ public class UHSDiagnotics implements CommandLineRunner {
 
             IParser FHIRparser = ctxFHIR.newXmlParser();
 
-            SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMddHHmmss");
+            SimpleDateFormat fmtss = new SimpleDateFormat("yyyyMMddHHmmss");
+            SimpleDateFormat fmtmm = new SimpleDateFormat("yyyyMMddHHmm");
 
             Bundle results = client
                     .search()
@@ -191,6 +192,18 @@ public class UHSDiagnotics implements CommandLineRunner {
             // We need to find the Id of the Patient to add a reference to the new FHIR resources.
             Patient patient = (Patient) results.getEntry().get(0).getResource();
             sendToAudit(CareConnectAuditEvent.buildAuditEvent(results, null, "rest", "read", AuditEvent.AuditEventAction.R,"UHSDiagnostics.java"));
+
+            results = client
+                    .search()
+                    .byUrl("Practitioner?identifier=https://fhir.nhs.net/Id/sds-role-profile-id|PT1357")
+                    .returnBundle(Bundle.class)
+                    .execute();
+            // Unsafe !!
+            // We need to find the Id of the Patient to add a reference to the new FHIR resources.
+            Practitioner consultant = (Practitioner) results.getEntry().get(0).getResource();
+            sendToAudit(CareConnectAuditEvent.buildAuditEvent(results, null, "rest", "read", AuditEvent.AuditEventAction.R,"UHSDiagnostics.java"));
+
+
 
             String result = null;
             MethodOutcome outcome = null;
@@ -203,7 +216,7 @@ public class UHSDiagnotics implements CommandLineRunner {
 
             order.setMeta(new Meta().addProfile("https://fhir.nhs.uk/StructureDefinition/dds-request-1-0"));
 
-            order.setSubjectTarget(patient);
+            order.setSubject(new Reference(patient.getId()));
             // First pass of HL7v2 message
             Integer orderNum = 0;
             do {
@@ -254,13 +267,30 @@ public class UHSDiagnotics implements CommandLineRunner {
                 }
                 if (report.getIssued() == null) {
                     try {
-                        Date date;
-                        date = fmt.parse(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBR-7-1"));
+                        Date date = null;
+
+                        if (terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBR-7-1") == null || terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBR-7-1").isEmpty())
+                        {
+                            date = fmtmm.parse(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBR-22-1"));
+                            /*
+                            for (int f=15;f<30;f++) {
+                                System.out.println(f+ " - " + terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBR-"+f+"-1"));
+                            }
+                            */
+                        }
+                        else {
+                            date = fmtss.parse(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBR-7-1"));
+                        }
                         //InstantDt instance = new InstantDt(date);
-                        report.setIssued(date);
+                        if (date!=null) {
+
+                            report.setIssued(date);
+                            report.setEffective(new DateTimeType(date));
+                        }
 
                     } catch (Exception e1) {
                         // TODO Auto-generated catch block
+                        System.out.println("Date conversion error "+e1.getMessage());
                     }
                 }
 
@@ -274,13 +304,15 @@ public class UHSDiagnotics implements CommandLineRunner {
 
             report.getRequest().add(new Reference(order.getId()));
 
-            /* Don't have an code for the report itself. Revisit!!!!
-            report.getCode().addCoding()
-                    .setSystem(LabCodeSystem)
-                    .setCode(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(0)/OBR-4-1"))
-                    .setDisplay(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBR-4-2"));
+            report.setPerformer(new Reference(consultant.getId()));
 
-            */
+           // Don't have an code for the report itself. Revisit!!!!
+            report.getCode().addCoding()
+                    .setSystem("http://snomed.info/sct")
+                    .setCode("15220000")
+                    .setDisplay("Laboratory test");
+
+
 
             // Second pass of HL7v2 message
             orderNum = 0;
@@ -301,6 +333,9 @@ public class UHSDiagnotics implements CommandLineRunner {
                                     .setValue(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBR-3-1") + "-" + terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBSERVATION(" + observationNo + ")/OBX-3-1"));
 
                             observation.setSubject(new Reference(patient.getId()));
+
+                            observation.setStatus(Observation.ObservationStatus.FINAL);
+
                             observation.getCode().addCoding()
                                     .setDisplay(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBSERVATION(" + observationNo + ")/OBX-3-2"))
                                     .setSystem(LabCodeSystem)
@@ -315,7 +350,7 @@ public class UHSDiagnotics implements CommandLineRunner {
 
                             try {
                                 Date date;
-                                date = fmt.parse(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBR-7-1"));
+                                date = fmtss.parse(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBR-7-1"));
                              //   DateTimeDt effectiveDate = new DateTimeDt(date);
                                 observation.setEffective(new DateTimeType(date));
 
@@ -383,6 +418,8 @@ public class UHSDiagnotics implements CommandLineRunner {
                                 text = text + "\r";
                             }
                             report.getText().setDivAsString(text);
+
+                            report.getText().setStatus(Narrative.NarrativeStatus.GENERATED);
                         }
                     }
 
@@ -424,6 +461,8 @@ public class UHSDiagnotics implements CommandLineRunner {
 
                 procedure.setSubject(new Reference(patient.getId()));
 
+                procedure.setStatus(Procedure.ProcedureStatus.COMPLETED);
+
                 procedure.getCategory().addCoding()
                         .setSystem("http://snomed.info/sct")
                         .setCode("15220000")
@@ -437,7 +476,7 @@ public class UHSDiagnotics implements CommandLineRunner {
 
                 try {
                     Date date;
-                    date = fmt.parse(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBR-7-1"));
+                    date = fmtss.parse(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBR-7-1"));
                     DateTimeType instance = new DateTimeType(date);
                     procedure.setPerformed(instance);
 
@@ -468,12 +507,29 @@ public class UHSDiagnotics implements CommandLineRunner {
     {
         ValidationResult result = validator.validateWithResult(resource);
 
-        System.out.println(result.isSuccessful()); // false
 
-// Show the issues
+
+       // System.out.println(result.isSuccessful()); // false
+
+        // Show the issues
+        // Colour values https://github.com/yonchu/shell-color-pallet/blob/master/color16
         for (SingleValidationMessage next : result.getMessages()) {
-            System.out.println(" Next issue " + next.getSeverity() + " - " + next.getLocationString() + " - " + next.getMessage());
+            switch (next.getSeverity())
+            {
+                case ERROR:
+                    System.out.println(" Next issue " + (char)27 + "[31mERROR" + (char)27 + "[0m" + " - " +  next.getLocationString() + " - " + next.getMessage());
+                    break;
+                case WARNING:
+                    System.out.println(" Next issue " + (char)27 + "[33mWARNING" + (char)27 + "[0m" + " - " +  next.getLocationString() + " - " + next.getMessage());
+                    break;
+                case INFORMATION:
+                    System.out.println(" Next issue " + (char)27 + "[34mINFORMATION" + (char)27 + "[0m" + " - " +  next.getLocationString() + " - " + next.getMessage());
+                    break;
+                default:
+                    System.out.println(" Next issue " + next.getSeverity() + " - " + next.getLocationString() + " - " + next.getMessage());
+            }
         }
+
     }
 
     private void sendToAudit(AuditEvent audit) {

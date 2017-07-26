@@ -239,11 +239,24 @@ public class IGExplore implements CommandLineRunner {
     {
         ValidationResult result = validator.validateWithResult(resource);
 
-        System.out.println(result.isSuccessful()); // false
+       // System.out.println(result.isSuccessful()); // false
 
-// Show the issues
+        // Show the issues
         for (SingleValidationMessage next : result.getMessages()) {
-            System.out.println(" Next issue " + next.getSeverity() + " - " + next.getLocationString() + " - " + next.getMessage());
+            switch (next.getSeverity())
+            {
+                case ERROR:
+                    System.out.println(" Next issue " + (char)27 + "[31mERROR" + (char)27 + "[0m" + " - " +  next.getLocationString() + " - " + next.getMessage());
+                    break;
+                case WARNING:
+                    System.out.println(" Next issue " + (char)27 + "[33mWARNING" + (char)27 + "[0m" + " - " +  next.getLocationString() + " - " + next.getMessage());
+                    break;
+                case INFORMATION:
+                    System.out.println(" Next issue " + (char)27 + "[34mINFORMATION" + (char)27 + "[0m" + " - " +  next.getLocationString() + " - " + next.getMessage());
+                    break;
+                default:
+                    System.out.println(" Next issue " + next.getSeverity() + " - " + next.getLocationString() + " - " + next.getMessage());
+            }
         }
     }
 
