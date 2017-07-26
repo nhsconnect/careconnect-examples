@@ -86,8 +86,12 @@ public class IGExplore implements CommandLineRunner {
 
 
         // This is to base HAPI server not the CareConnectAPI
-        String serverBase = "http://127.0.0.1:8080/FHIRServer/DSTU2/";
-        // String serverBase = "http://fhirtest.uhn.ca/baseDstu2/";
+
+
+        String HAPIServer = "http://fhirtest.uhn.ca/baseDstu2/";
+
+        String serverBase = HAPIServer;
+        //String serverBase = "http://127.0.0.1:8080/FHIRServer/DSTU2/";
 
         IGenericClient client = ctxFHIR.newRestfulGenericClient(serverBase);
 
@@ -100,7 +104,11 @@ public class IGExplore implements CommandLineRunner {
                 "Derby",
                 "DE22 3NE"
                 , "prov"
+
         );
+        if (serverBase.equals(HAPIServer))
+            organisation.setMeta(new Meta());
+
         System.out.println(XMLparser.setPrettyPrint(true).encodeResourceToString(organisation));
         MethodOutcome outcome = client.update().resource(organisation)
                 .conditionalByUrl("Organization?identifier=" + organisation.getIdentifier().get(0).getSystem() + "%7C" + organisation.getIdentifier().get(0).getValue())
@@ -124,6 +132,9 @@ public class IGExplore implements CommandLineRunner {
                 "NG10 1QQ"
                 , "prov"
         );
+        if (serverBase.equals(HAPIServer))
+            practice.setMeta(new Meta());
+
         System.out.println(XMLparser.setPrettyPrint(true).encodeResourceToString(practice));
         outcome = client.update().resource(practice)
                 .conditionalByUrl("Organization?identifier="+practice.getIdentifier().get(0).getSystem()+"%7C"+practice.getIdentifier().get(0).getValue())
@@ -148,6 +159,8 @@ public class IGExplore implements CommandLineRunner {
                 "R0260",
                 "General Medical Practitioner"
         );
+        if (serverBase.equals(HAPIServer))
+            gp.setMeta(new Meta());
         System.out.println(XMLparser.setPrettyPrint(true).encodeResourceToString(gp));
         outcome = client.update().resource(gp)
                 .conditionalByUrl("Practitioner?identifier="+gp.getIdentifier().get(0).getSystem()+"%7C"+gp.getIdentifier().get(0).getValue())
@@ -173,6 +186,9 @@ public class IGExplore implements CommandLineRunner {
                 "R0260",
                 "General Medical Practitioner"
         );
+        if (serverBase.equals(HAPIServer))
+            gp2.setMeta(new Meta());
+
         System.out.println(XMLparser.setPrettyPrint(true).encodeResourceToString(gp2));
         outcome = client.update().resource(gp2)
                 .conditionalByUrl("Practitioner?identifier="+gp2.getIdentifier().get(0).getSystem()+"%7C"+gp2.getIdentifier().get(0).getValue())
@@ -185,6 +201,8 @@ public class IGExplore implements CommandLineRunner {
         Patient patient = CareConnectPatient.buildCareConnectPatientCSV("British - Mixed British,01,9876543210,Number present and verified,01,Kanfeld,Bernie,Miss,10 Field Jardin,Long Eaton,Nottingham,NG10 1ZZ,1,1998-03-19"
                 ,practice
                 ,gp );
+        if (serverBase.equals(HAPIServer))
+            patient.setMeta(new Meta());
 
 		System.out.println(XMLparser.setPrettyPrint(true).encodeResourceToString(patient));
 		outcome = client.update().resource(patient)
@@ -196,6 +214,9 @@ public class IGExplore implements CommandLineRunner {
         validate(XMLparser.encodeResourceToString(patient));
 
         MedicationOrder prescription = CareConnectMedicationOrder.buildCareConnectMedicationOrder(patient,gp);
+        if (serverBase.equals(HAPIServer))
+            prescription.setMeta(new Meta());
+
         System.out.println(XMLparser.setPrettyPrint(true).encodeResourceToString(prescription));
         outcome = client.update().resource(prescription)
                 .conditionalByUrl("MedicationOrder?identifier="+prescription.getIdentifier().get(0).getSystem()+"%7C"+prescription.getIdentifier().get(0).getValue())
@@ -206,6 +227,8 @@ public class IGExplore implements CommandLineRunner {
         validate(XMLparser.encodeResourceToString(prescription));
 
         MedicationStatement medicationSummary = CareConnectMedicationStatement.buildCareConnectMedicationStatement(patient,gp2);
+        if (serverBase.equals(HAPIServer))
+            medicationSummary.setMeta(new Meta());
         System.out.println(XMLparser.setPrettyPrint(true).encodeResourceToString(medicationSummary));
         outcome = client.update().resource(medicationSummary)
                 .conditionalByUrl("MedicationStatement?identifier="+medicationSummary.getIdentifier().get(0).getSystem()+"%7C"+medicationSummary.getIdentifier().get(0).getValue())
@@ -218,6 +241,8 @@ public class IGExplore implements CommandLineRunner {
 
         Immunization
                 immunisation = CareConnectImmunization.buildCareConnectImmunization(patient, gp);
+        if (serverBase.equals(HAPIServer))
+            immunisation.setMeta(new Meta());
         System.out.println(XMLparser.setPrettyPrint(true).encodeResourceToString(immunisation));
         outcome = client.update().resource(immunisation)
                 .conditionalByUrl("Immunization?identifier="+immunisation.getIdentifier().get(0).getSystem()+"%7C"+immunisation.getIdentifier().get(0).getValue())
