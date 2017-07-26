@@ -45,6 +45,8 @@ public class IGExplore implements CommandLineRunner {
 
     MessageProducer producer;
 
+    String HAPIServer = "http://fhirtest.uhn.ca/baseDstu2/";
+
 
     @Override
 	public void run(String... args) throws Exception {
@@ -86,9 +88,6 @@ public class IGExplore implements CommandLineRunner {
 
 
         // This is to base HAPI server not the CareConnectAPI
-
-
-        String HAPIServer = "http://fhirtest.uhn.ca/baseDstu2/";
 
         String serverBase = HAPIServer;
         //String serverBase = "http://127.0.0.1:8080/FHIRServer/DSTU2/";
