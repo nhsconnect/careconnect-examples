@@ -117,6 +117,7 @@ public class IGExplore implements CommandLineRunner {
         loc.addContained(org);
         loc.setManagingOrganization(new Reference("#org"));
 
+
         if (serverBase.equals(HAPIServer)) {
             org.setMeta(new Meta());
             loc.setMeta(new Meta());
@@ -130,6 +131,13 @@ public class IGExplore implements CommandLineRunner {
         sendToAudit(audit);
         validate(XMLparser.encodeResourceToString(loc));
 
+        /*
+        HealthcareService hcs = new HealthcareService();
+        loc.setId("#loc");
+        hcs.setLocation(new Reference(loc.getId()));
+        hcs.addContained(loc);
+        System.out.println(XMLparser.setPrettyPrint(true).encodeResourceToString(hcs));
+        */
 
         Organization organisation = CareConnectOrganisation.buildCareConnectOrganisation(
                 "RTG",
