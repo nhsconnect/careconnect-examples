@@ -87,12 +87,49 @@ public class IGExplore implements CommandLineRunner {
 
 
 
+
+
         // This is to base HAPI server not the CareConnectAPI
 
         String serverBase = HAPIServer;
         //String serverBase = "http://127.0.0.1:8080/FHIRServer/DSTU2/";
 
         IGenericClient client = ctxFHIR.newRestfulGenericClient(serverBase);
+
+
+        Location loc = new Location();
+        loc.setMeta(new Meta().addProfile("https://fhir.hl7.org.uk/StructureDefinition/CareConnect-Location-1"));
+        loc.setAddress(new Address().setUse(Address.AddressUse.WORK).addLine("Midland Street").addLine("Long Eaton").setCity("Nottingham").setCountry("GBR").setPostalCode("NG10 1RY"));
+
+        loc.addIdentifier()
+                .setSystem("https://fhir.nhs.uk/Id/ods-site-code")
+                .setValue("RTG08")
+                .setUse(Identifier.IdentifierUse.OFFICIAL);
+        loc.setName("Long Eaton Clinic");
+
+        Organization org = new Organization().setName("Derby Teaching Hospitals NHS Foundation Trust");
+        org.setMeta(new Meta().addProfile("https://fhir.hl7.org.uk/StructureDefinition/CareConnect-Organization-1"));
+        org.addIdentifier()
+                .setSystem("https://fhir.nhs.uk/Id/ods-organization-code")
+                .setValue("RTG");
+        org.setId("#org");
+
+        loc.addContained(org);
+        loc.setManagingOrganization(new Reference("#org"));
+
+        if (serverBase.equals(HAPIServer)) {
+            org.setMeta(new Meta());
+            loc.setMeta(new Meta());
+        }
+
+        MethodOutcome outcome = client.update().resource(loc)
+                .conditionalByUrl("Location?identifier="+loc.getIdentifier().get(0).getSystem()+"%7C"+loc.getIdentifier().get(0).getValue())
+                .execute();
+        System.out.println(XMLparser.setPrettyPrint(true).encodeResourceToString(loc));
+        AuditEvent audit = CareConnectAuditEvent.buildAuditEvent(loc, outcome, "rest", "create", AuditEvent.AuditEventAction.C,"IGExplore.java");
+        sendToAudit(audit);
+        validate(XMLparser.encodeResourceToString(loc));
+
 
         Organization organisation = CareConnectOrganisation.buildCareConnectOrganisation(
                 "RTG",
@@ -109,13 +146,13 @@ public class IGExplore implements CommandLineRunner {
             organisation.setMeta(new Meta());
 
         System.out.println(XMLparser.setPrettyPrint(true).encodeResourceToString(organisation));
-        MethodOutcome outcome = client.update().resource(organisation)
+         outcome = client.update().resource(organisation)
                 .conditionalByUrl("Organization?identifier=" + organisation.getIdentifier().get(0).getSystem() + "%7C" + organisation.getIdentifier().get(0).getValue())
                 .execute();
         organisation.setId(outcome.getId());
         System.out.println(outcome.getId().getValue());
 
-        AuditEvent audit = CareConnectAuditEvent.buildAuditEvent(organisation, outcome, "rest", "create", AuditEvent.AuditEventAction.C,"IGExplore.java");
+        audit = CareConnectAuditEvent.buildAuditEvent(organisation, outcome, "rest", "create", AuditEvent.AuditEventAction.C,"IGExplore.java");
         sendToAudit(audit);
         validate(XMLparser.encodeResourceToString(organisation));
 
