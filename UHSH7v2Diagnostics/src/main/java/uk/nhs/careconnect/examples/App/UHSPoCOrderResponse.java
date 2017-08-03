@@ -39,6 +39,23 @@ public class UHSPoCOrderResponse {
 
     }
 
+    public static Bundle converttoBundle(Order order)
+    {
+        Bundle bundle = new Bundle();
+
+        bundle.setType(Bundle.BundleType.MESSAGE);
+
+        bundle.addEntry().setResource(new MessageHeader()
+                .setReceiver(new Reference("https:///ordercoms.system.org"))
+                .setResponsible(new Reference("https:///resultsviewer.system.org"))
+        );
+
+        bundle.addEntry().setResource(order);
+
+        return bundle;
+
+    }
+
     public static OrderResponse buildFHIROrderResponse(Order order, Patient patient, Practitioner gp) {
 
 

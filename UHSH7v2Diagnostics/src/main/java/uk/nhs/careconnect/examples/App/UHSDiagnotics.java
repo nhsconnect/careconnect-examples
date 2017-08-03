@@ -240,6 +240,12 @@ public class UHSDiagnotics implements CommandLineRunner {
             System.out.println(outcome.getId().getValue());
             sendToAudit(CareConnectAuditEvent.buildAuditEvent(order, outcome, "rest", "create", AuditEvent.AuditEventAction.C,"UHSDiagnostics.java"));
 
+            // Create output as a Bundle
+
+            Bundle bundle = UHSPoCOrderResponse.converttoBundle(order);
+            System.out.println(FHIRparser.setPrettyPrint(true).encodeResourceToString(bundle));
+            validate(FHIRparser.setPrettyPrint(true).encodeResourceToString(bundle));
+
             // Now amend the Order to change practitioner to organisation
 
             order.setTarget(new Reference(gppractice.getId()));
