@@ -37,9 +37,15 @@ public class UHSDiagnotics implements CommandLineRunner {
 
     IParser JSONparser = null;
 
+    IParser FHIRparser = null;
+
     FhirValidator validator;
 
     FhirInstanceValidator instanceValidator;
+
+    FhirContext ctxFHIR;
+
+    IGenericClient client;
 
     ActiveMQConnectionFactory connectionFactory;
 
@@ -52,6 +58,14 @@ public class UHSDiagnotics implements CommandLineRunner {
     MessageProducer producer;
 
     String HAPIServer = "http://fhirtest.uhn.ca/baseDstu2/";
+
+    Patient patient;
+
+    Practitioner consultant;
+
+    Practitioner gp;
+
+    Organization gppractice;
 
 	private String terserGet(String query)
 	{
@@ -76,15 +90,20 @@ public class UHSDiagnotics implements CommandLineRunner {
     @Override
 	public void run(String... args) throws Exception {
 
+
+        // HAPI Terser example https://sourceforge.net/p/hl7api/code/764/tree/releases/2.0/hapi-examples/src/main/java/ca/uhn/hl7v2/examples/ExampleUseTerser.java#l72
+
+        // Ringholm hl7v2 to fhir mapping http://www.ringholm.com/docs/04350_mapping_HL7v2_FHIR.htm
+
+        // Note this code is differing from rene's blog as it's using Procedure to record tests in OBR segments
+
         // This is to base HAPI server not the CareConnectAPI
 
 
        // String serverBase = "http://127.0.0.1:8080/FHIRServer/DSTU2/";
         String serverBase = HAPIServer;
 
-        FhirContext ctxFHIR = FhirContext.forDstu2Hl7Org();
-
-       // ctxValidator  = FhirContext.forDstu2Hl7Org();
+        ctxFHIR = FhirContext.forDstu2Hl7Org();
 
         validator = ctxFHIR.newValidator();
         instanceValidator = new FhirInstanceValidator();
@@ -92,7 +111,11 @@ public class UHSDiagnotics implements CommandLineRunner {
 
         JSONparser = ctxFHIR.newJsonParser();
 
-        FhirValidator validator = ctxFHIR.newValidator();
+
+
+        FHIRparser = ctxFHIR.newXmlParser();
+
+        client = ctxFHIR.newRestfulGenericClient(serverBase);
 
 
         connectionFactory = new ActiveMQConnectionFactory("tcp://localhost:61616");
@@ -115,6 +138,48 @@ public class UHSDiagnotics implements CommandLineRunner {
         JSONparser = ctxFHIR.newXmlParser();
 
         IGenericClient client = ctxFHIR.newRestfulGenericClient(serverBase);
+
+        Bundle results = client
+                .search()
+                .byUrl("Patient?identifier="+SystemNHSNumber+"|9876543210")
+                .returnBundle(Bundle.class)
+                .execute();
+
+        // Unsafe !!
+        // We need to find the Id of the Patient to add a reference to the new FHIR resources.
+        patient = (Patient) results.getEntry().get(0).getResource();
+        sendToAudit(CareConnectAuditEvent.buildAuditEvent(results, null, "rest", "read", AuditEvent.AuditEventAction.R,"UHSDiagnostics.java"));
+
+        results = client
+                .search()
+                .byUrl("Practitioner?identifier=https://fhir.nhs.net/Id/sds-role-profile-id|PT1357")
+                .returnBundle(Bundle.class)
+                .execute();
+        // Unsafe !!
+        // We need to find the Id of the Patient to add a reference to the new FHIR resources.
+        consultant = (Practitioner) results.getEntry().get(0).getResource();
+        sendToAudit(CareConnectAuditEvent.buildAuditEvent(results, null, "rest", "read", AuditEvent.AuditEventAction.R,"UHSDiagnostics.java"));
+
+        results = client
+                .search()
+                .byUrl("Practitioner?identifier=http://fhir.nhs.net/Id/sds-user-id|G8133438")
+                .returnBundle(Bundle.class)
+                .execute();
+        // Unsafe !!
+        // We need to find the Id of the Patient to add a reference to the new FHIR resources.
+        gp = (Practitioner) results.getEntry().get(0).getResource();
+        sendToAudit(CareConnectAuditEvent.buildAuditEvent(results, null, "rest", "read", AuditEvent.AuditEventAction.R,"UHSDiagnostics.java"));
+
+        results = client
+                .search()
+                .byUrl("Organization?identifier=https://fhir.nhs.uk/Id/ods-organization-code|C81010")
+                .returnBundle(Bundle.class)
+                .execute();
+        // Unsafe !!
+        // We need to find the Id of the Patient to add a reference to the new FHIR resources.
+        gppractice = (Organization) results.getEntry().get(0).getResource();
+        sendToAudit(CareConnectAuditEvent.buildAuditEvent(results, null, "rest", "read", AuditEvent.AuditEventAction.R,"UHSDiagnostics.java"));
+
 
         String msg = "MSH|^~\\&|HICSS|eQuest|ROUTE|ROUTE|20170425042348||ORU^R01|22392142__20170425042348|D|2.4|||AL|AL\r"
                 + "PID|1||0772951\r"
@@ -139,7 +204,7 @@ public class UHSDiagnotics implements CommandLineRunner {
                 + "OBX|4||CC_NA^Sodium^SUHT||138|mmol/L|133-146|N|||U\r"
                 + "OBX|5||CC_UR^Urea^SUHT||8.9|mmol/L|2.5-7.8|H|||U\r";
 
-        report(ctxFHIR, client, msg,"HICSS");
+        DiagnosticReport report=report( msg,"HICSS");
 
         msg=  "MSH|^~\\&|CRIS|LIVE|||20170426110809||ORU^R01|J1YMT3JX:31H5|P|2.4\r"
                // + "PID|||30908579^^^CRIS^PI~RHM7000610^^^RHM01^MR\r"
@@ -154,23 +219,54 @@ public class UHSDiagnotics implements CommandLineRunner {
                 + "OBX|5|TX|XCHES^XR Chest^CRIS3||Dr A Lecomte||||||F|||201704261106||SWHALECOM^Amy LECOMTE\r"
                 + "OBX|6|TX|XCHES^XR Chest^CRIS3||||||||F|||201704261106||SWHALECOM^Amy LECOMTE\r";
 
-        report(ctxFHIR, client, msg,"CRIS");
+        report( msg,"CRIS");
 
+        order(report);
         // Clean up ActiveMQ
         session.close();
         connection.close();
     }
-
-
-	    private void report(FhirContext ctxFHIR,IGenericClient client , String msg, String sysName ) throws Exception
+        private void order(DiagnosticReport report)
         {
-            // HAPI Terser example https://sourceforge.net/p/hl7api/code/764/tree/releases/2.0/hapi-examples/src/main/java/ca/uhn/hl7v2/examples/ExampleUseTerser.java#l72
+            MethodOutcome outcome = null;
 
-            // Ringholm hl7v2 to fhir mapping http://www.ringholm.com/docs/04350_mapping_HL7v2_FHIR.htm
+            Order order = UHSPoCOrderResponse.buildFHIROrder(patient, report, gp, consultant);
+            System.out.println(FHIRparser.setPrettyPrint(true).encodeResourceToString(order));
+            validate(FHIRparser.setPrettyPrint(true).encodeResourceToString(order));
+            outcome = client.update().resource(order)
+                    .conditionalByUrl("Order?identifier=" + order.getIdentifier().get(0).getSystem() + "%7C" + order.getIdentifier().get(0).getValue())
+                    .execute();
+            order.setId(outcome.getId());
+            System.out.println(outcome.getId().getValue());
+            sendToAudit(CareConnectAuditEvent.buildAuditEvent(order, outcome, "rest", "create", AuditEvent.AuditEventAction.C,"UHSDiagnostics.java"));
 
-            // Note this code is differing from rene's blog as it's using Procedure to record tests in OBR segments
+            // Now amend the Order to change practitioner to organisation
 
-            String LabCodeSystem = "https://fhir.uhs.nhs.uk/"+sysName +"/CodeSystem";
+            order.setTarget(new Reference(gppractice.getId()));
+            outcome = client.update().resource(order)
+                    .execute();
+            order.setId(outcome.getId());
+            System.out.println(outcome.getId().getValue());
+            sendToAudit(CareConnectAuditEvent.buildAuditEvent(order, outcome, "rest", "update", AuditEvent.AuditEventAction.C,"UHSDiagnostics.java"));
+            System.out.println(FHIRparser.setPrettyPrint(true).encodeResourceToString(order));
+            validate(FHIRparser.setPrettyPrint(true).encodeResourceToString(order));
+
+            OrderResponse orderResponse = UHSPoCOrderResponse.buildFHIROrderResponse(order, patient, consultant);
+            System.out.println(FHIRparser.setPrettyPrint(true).encodeResourceToString(orderResponse));
+            validate(FHIRparser.setPrettyPrint(true).encodeResourceToString(orderResponse));
+            outcome = client.update().resource(orderResponse)
+                    .conditionalByUrl("OrderResponse?identifier=" + orderResponse.getIdentifier().get(0).getSystem() + "%7C" + orderResponse.getIdentifier().get(0).getValue())
+                    .execute();
+            orderResponse.setId(outcome.getId());
+            System.out.println(outcome.getId().getValue());
+            sendToAudit(CareConnectAuditEvent.buildAuditEvent(orderResponse, outcome, "rest", "create", AuditEvent.AuditEventAction.C,"UHSDiagnostics.java"));
+
+        }
+
+	    private DiagnosticReport report(String msg, String sysName ) throws Exception {
+
+
+            String LabCodeSystem = "https://fhir.uhs.nhs.uk/" + sysName + "/CodeSystem";
 
             Parser parser = new GenericParser();
             parser.getParserConfiguration().setDefaultObx2Type("ST");
@@ -183,31 +279,8 @@ public class UHSDiagnotics implements CommandLineRunner {
             System.out.println(sendingApplication);
 
 
-            IParser FHIRparser = ctxFHIR.newXmlParser();
-
             SimpleDateFormat fmtss = new SimpleDateFormat("yyyyMMddHHmmss");
             SimpleDateFormat fmtmm = new SimpleDateFormat("yyyyMMddHHmm");
-
-            Bundle results = client
-                    .search()
-                    .byUrl("Patient?identifier="+SystemNHSNumber+"|9876543210")
-                    .returnBundle(Bundle.class)
-                    .execute();
-            // Unsafe !!
-            // We need to find the Id of the Patient to add a reference to the new FHIR resources.
-            Patient patient = (Patient) results.getEntry().get(0).getResource();
-            sendToAudit(CareConnectAuditEvent.buildAuditEvent(results, null, "rest", "read", AuditEvent.AuditEventAction.R,"UHSDiagnostics.java"));
-
-            results = client
-                    .search()
-                    .byUrl("Practitioner?identifier=https://fhir.nhs.net/Id/sds-role-profile-id|PT1357")
-                    .returnBundle(Bundle.class)
-                    .execute();
-            // Unsafe !!
-            // We need to find the Id of the Patient to add a reference to the new FHIR resources.
-            Practitioner consultant = (Practitioner) results.getEntry().get(0).getResource();
-            sendToAudit(CareConnectAuditEvent.buildAuditEvent(results, null, "rest", "read", AuditEvent.AuditEventAction.R,"UHSDiagnostics.java"));
-
 
 
             String result = null;
@@ -228,7 +301,7 @@ public class UHSDiagnotics implements CommandLineRunner {
 
                 if (order.getIdentifier().size() == 0) {
                     order.addIdentifier()
-                            .setSystem("https://fhir.uhs.nhs.uk/"+sysName +"/DiagnosticOrder")
+                            .setSystem("https://fhir.uhs.nhs.uk/" + sysName + "/DiagnosticOrder")
                             .setValue(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBR-3-1"));
                 }
 
@@ -252,7 +325,7 @@ public class UHSDiagnotics implements CommandLineRunner {
                     .execute();
             order.setId(outcome.getId());
             System.out.println(outcome.getId().getValue());
-            sendToAudit(CareConnectAuditEvent.buildAuditEvent(order, outcome, "rest", "create", AuditEvent.AuditEventAction.C,"UHSDiagnostics.java"));
+            sendToAudit(CareConnectAuditEvent.buildAuditEvent(order, outcome, "rest", "create", AuditEvent.AuditEventAction.C, "UHSDiagnostics.java"));
 
 
             //
@@ -274,20 +347,18 @@ public class UHSDiagnotics implements CommandLineRunner {
                     try {
                         Date date = null;
 
-                        if (terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBR-7-1") == null || terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBR-7-1").isEmpty())
-                        {
+                        if (terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBR-7-1") == null || terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBR-7-1").isEmpty()) {
                             date = fmtmm.parse(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBR-22-1"));
                             /*
                             for (int f=15;f<30;f++) {
                                 System.out.println(f+ " - " + terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBR-"+f+"-1"));
                             }
                             */
-                        }
-                        else {
+                        } else {
                             date = fmtss.parse(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBR-7-1"));
                         }
                         //InstantDt instance = new InstantDt(date);
-                        if (date!=null) {
+                        if (date != null) {
 
                             report.setIssued(date);
                             report.setEffective(new DateTimeType(date));
@@ -295,7 +366,7 @@ public class UHSDiagnotics implements CommandLineRunner {
 
                     } catch (Exception e1) {
                         // TODO Auto-generated catch block
-                        System.out.println("Date conversion error "+e1.getMessage());
+                        System.out.println("Date conversion error " + e1.getMessage());
                     }
                 }
 
@@ -311,12 +382,11 @@ public class UHSDiagnotics implements CommandLineRunner {
 
             report.setPerformer(new Reference(consultant.getId()));
 
-           // Don't have an code for the report itself. Revisit!!!!
+            // Don't have an code for the report itself. Revisit!!!!
             report.getCode().addCoding()
                     .setSystem("http://snomed.info/sct")
                     .setCode("15220000")
                     .setDisplay("Laboratory test");
-
 
 
             // Second pass of HL7v2 message
@@ -332,6 +402,28 @@ public class UHSDiagnotics implements CommandLineRunner {
 
                         if (!terserGet("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBSERVATION(" + observationNo + ")/OBX-2-1").equals("TX")) {
                             Observation observation = new Observation();
+
+                            observation.setMeta(new Meta().addProfile("https://fhir-test.hl7.org.uk/StructureDefinition/CareConnect-Observation-1"));
+
+                            Extension reportExt = observation.addExtension();
+                            reportExt
+                                    .setUrl("https://fhir.uhs.nhs.uk/Extension-CareConnectSketch-DiagnosticReportReference-1")
+                                    .setValue(new Reference(report.getId()));
+
+                            // This is part of STU3 resource (Observation.based.procedureRequest) so can be removed at a later stage.
+
+                            Extension observationRequestExt = observation.addExtension();
+                            observationRequestExt
+                                    .setUrl("https://fhir.uhs.nhs.uk/Extension-CareConnectSketch-ObservationRequestCode-1")
+                                    .setValue(new CodeableConcept().addCoding()
+                                            .setCode(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBR-4-1"))
+                                            .setDisplay(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBR-4-2")));
+
+                            Extension orderExt = observation.addExtension();
+                            orderExt
+                                    .setUrl("https://fhir.uhs.nhs.uk/Extension-Sketch-ObservationbasedOnDiagnosticOrder-1")
+                                    .setValue(new Reference(order.getId()));
+
 
                             observation.addIdentifier()
                                     .setSystem("https://fhir.uhs.nhs.uk/" + sysName + "/Observation")
@@ -356,7 +448,7 @@ public class UHSDiagnotics implements CommandLineRunner {
                             try {
                                 Date date;
                                 date = fmtss.parse(terser.get("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBR-7-1"));
-                             //   DateTimeDt effectiveDate = new DateTimeDt(date);
+                                //   DateTimeDt effectiveDate = new DateTimeDt(date);
                                 observation.setEffective(new DateTimeType(date));
 
                             } catch (Exception e1) {
@@ -410,7 +502,7 @@ public class UHSDiagnotics implements CommandLineRunner {
                                     .execute();
                             observation.setId(outcome.getId());
                             System.out.println(outcome.getId().getValue());
-                            sendToAudit(CareConnectAuditEvent.buildAuditEvent(observation, outcome, "rest", "create", AuditEvent.AuditEventAction.C,"UHSDiagnostics.java"));
+                            sendToAudit(CareConnectAuditEvent.buildAuditEvent(observation, outcome, "rest", "create", AuditEvent.AuditEventAction.C, "UHSDiagnostics.java"));
 
 
                             report.getResult().add(new Reference(observation.getId()));
@@ -438,13 +530,14 @@ public class UHSDiagnotics implements CommandLineRunner {
                         .execute();
                 report.setId(outcome.getId());
                 System.out.println(outcome.getId().getValue());
-                sendToAudit(CareConnectAuditEvent.buildAuditEvent(report, outcome, "rest", "create", AuditEvent.AuditEventAction.C,"UHSDiagnostics.java"));
+                sendToAudit(CareConnectAuditEvent.buildAuditEvent(report, outcome, "rest", "create", AuditEvent.AuditEventAction.C, "UHSDiagnostics.java"));
 
 
                 orderNum++;
                 result = terserGet("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBSERVATION(0)/OBX-3-1");
             } while (result != null);
-
+            return report;
+        }
             //
 
             // PROCEDURE
@@ -452,6 +545,7 @@ public class UHSDiagnotics implements CommandLineRunner {
             //
 
             // Third pass of HL7v2 message
+            /* Removed, doesn't feature in the next version
             orderNum = 0;
             do {
                 Procedure procedure = new Procedure();
@@ -504,9 +598,9 @@ public class UHSDiagnotics implements CommandLineRunner {
                 orderNum++;
                 result = terserGet("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBSERVATION(0)/OBX-3-1");
             } while (result != null);
+            */
 
 
-        }
 
     private void validate(String resource)
     {
