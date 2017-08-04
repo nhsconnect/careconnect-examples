@@ -1,5 +1,4 @@
-package uk.nhs.careconnect.examples.fhir;
-
+package uk.nhs.careconnect.core.dstu2;
 
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import org.hl7.fhir.instance.model.AuditEvent;
@@ -32,7 +31,7 @@ public class CareConnectAuditEvent {
 
         Date recordedDate = new Date();
         try {
-          //  Instant instance = new Instant();
+            //InstantDt instance = new InstantDt(recordedDate);
             event.setDateTime(recordedDate);
         } catch (Exception e) {
             e.printStackTrace();
@@ -57,13 +56,12 @@ public class CareConnectAuditEvent {
             OperationOutcome operationOutcome = (OperationOutcome) outcome.getOperationOutcome();
             if (operationOutcome.getIssue().size()>0) {
                 System.out.println(operationOutcome.getIssue().get(0).getCode());
-                switch (operationOutcome.getIssue().get(0).getCode().toString()) {
-                    case "informational":
+                switch (operationOutcome.getIssue().get(0).getCode()) {
+                    case INFORMATIONAL:
                         event.setOutcome(AuditEvent.AuditEventOutcome._0);
                         break;
                     default:
                         event.setOutcome(AuditEvent.AuditEventOutcome._4);
-
                 }
             }
             try {
@@ -73,7 +71,7 @@ public class CareConnectAuditEvent {
             {
 
             }
-           // event.set
+            // event.set
         }
 
         return audit;

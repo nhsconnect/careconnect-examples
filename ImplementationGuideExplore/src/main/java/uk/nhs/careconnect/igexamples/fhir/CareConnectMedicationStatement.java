@@ -1,6 +1,9 @@
-package uk.nhs.careconnect.examples.fhir;
+package uk.nhs.careconnect.igexamples.fhir;
 
 import org.hl7.fhir.instance.model.*;
+import uk.nhs.careconnect.core.dstu2.CareConnectExtension;
+import uk.nhs.careconnect.core.dstu2.CareConnectProfile;
+import uk.nhs.careconnect.core.dstu2.CareConnectSystem;
 
 import java.math.BigDecimal;
 import java.text.DateFormat;
@@ -21,7 +24,7 @@ public class CareConnectMedicationStatement {
 
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-        statement.setMeta(new Meta().addProfile(CareConnectSystem.ProfileMedicationStatement));
+        statement.setMeta(new Meta().addProfile(CareConnectProfile.MedicationStatement_1));
 
 
         Date lastIssueDate;
@@ -29,7 +32,7 @@ public class CareConnectMedicationStatement {
         try {
             lastIssueDate = dateFormat.parse("2017-03-27");
                 lastIssueExtension
-                    .setUrl(CareConnectSystem.ExtUrlMedicationStatementLastIssueDate)
+                    .setUrl(CareConnectExtension.UrlMedicationStatementLastIssueDate)
                     .setValue(new DateTimeType(lastIssueDate));
 
         } catch (ParseException e) {
@@ -41,7 +44,7 @@ public class CareConnectMedicationStatement {
         Extension repeatInfReviewDate = new Extension();
         Extension repeatNumberIssues = new Extension();
         repeatInformation
-                .setUrl(CareConnectSystem.ExtUrlMedicationRepeatInformation)
+                .setUrl(CareConnectExtension.UrlMedicationRepeatInformation)
                 .addExtension(repeatInfReviewDate);
 
         Date reviewDate;

@@ -1,7 +1,9 @@
-package uk.nhs.careconnect.examples.fhir;
+package uk.nhs.careconnect.igexamples.fhir;
 
 
 import org.hl7.fhir.instance.model.*;
+import uk.nhs.careconnect.core.dstu2.CareConnectProfile;
+import uk.nhs.careconnect.core.dstu2.CareConnectSystem;
 
 /**
  * Created by kevinmayfield on 07/07/2017.
@@ -17,9 +19,9 @@ public class CareConnectPractitioner {
        // profiles.add(new IdDt(CareConnectSystem.ProfilePractitioner));
        // ResourceMetadataKeyEnum.PROFILES.put(practitioner, profiles);
 
-        practitioner.setMeta(new Meta().addProfile(CareConnectSystem.ProfilePractitioner));
+        practitioner.setMeta(new Meta().addProfile(CareConnectProfile.Practitioner_1));
         practitioner.addIdentifier()
-                .setSystem(CareConnectSystem.SystemSDSUserId)
+                .setSystem(CareConnectSystem.SDSUserId)
                 .setValue(SDSUserId);
 
         practitioner.getName()
@@ -47,7 +49,7 @@ public class CareConnectPractitioner {
                 .addCoding()
                     .setDisplay(SDSRoleName)
                     .setCode(SDSRole)
-                    .setSystem(CareConnectSystem.SystemSDSJobRoleName);
+                    .setSystem(CareConnectSystem.SDSJobRoleName);
         role.getManagingOrganization().setDisplay(organistion.getName());
         return practitioner;
     }

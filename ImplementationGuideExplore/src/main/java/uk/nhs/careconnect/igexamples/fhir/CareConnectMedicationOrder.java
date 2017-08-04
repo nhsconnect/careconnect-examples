@@ -1,6 +1,9 @@
-package uk.nhs.careconnect.examples.fhir;
+package uk.nhs.careconnect.igexamples.fhir;
 
 import org.hl7.fhir.instance.model.*;
+import uk.nhs.careconnect.core.dstu2.CareConnectExtension;
+import uk.nhs.careconnect.core.dstu2.CareConnectProfile;
+import uk.nhs.careconnect.core.dstu2.CareConnectSystem;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -21,11 +24,11 @@ public class CareConnectMedicationOrder {
 
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-        prescription.setMeta(new Meta().addProfile(CareConnectSystem.ProfileMedicationOrder));
+        prescription.setMeta(new Meta().addProfile(CareConnectProfile.MedicationOrder_1));
 
 
         Extension supplyType = new Extension();
-        supplyType.setUrl(CareConnectSystem.ExtUrlMedicationSupplyType);
+        supplyType.setUrl(CareConnectExtension.UrlMedicationSupplyType);
         CodeableConcept supplyCode = new CodeableConcept();
         supplyCode.addCoding()
                 .setCode("394823007")

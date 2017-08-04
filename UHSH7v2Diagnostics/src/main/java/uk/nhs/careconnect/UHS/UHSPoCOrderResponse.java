@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.examples.App;
+package uk.nhs.careconnect.UHS;
 
 import org.hl7.fhir.instance.model.*;
 

@@ -1,9 +1,11 @@
-package uk.nhs.careconnect.examples.fhir;
+package uk.nhs.careconnect.igexamples.fhir;
 
 import ca.uhn.fhir.model.api.ResourceMetadataKeyEnum;
 import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
 import ca.uhn.fhir.model.dstu2.resource.Medication;
 import ca.uhn.fhir.model.primitive.IdDt;
+import uk.nhs.careconnect.core.dstu2.CareConnectProfile;
+import uk.nhs.careconnect.core.dstu2.CareConnectSystem;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -23,7 +25,7 @@ public class ExampleMedication {
         Medication medication = new Medication();
 
         List<IdDt> profiles = new ArrayList<IdDt>();
-        profiles.add(new IdDt(CareConnectSystem.ProfileMedication));
+        profiles.add(new IdDt(CareConnectProfile.Medication_1));
         ResourceMetadataKeyEnum.PROFILES.put(medication, profiles);
 
         CodeableConceptDt drugCode = new CodeableConceptDt();

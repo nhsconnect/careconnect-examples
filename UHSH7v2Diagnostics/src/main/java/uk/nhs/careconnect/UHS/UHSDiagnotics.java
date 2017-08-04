@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.examples.App;
+package uk.nhs.careconnect.UHS;
 
 
 import ca.uhn.fhir.context.FhirContext;
@@ -19,6 +19,8 @@ import org.hl7.fhir.instance.model.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import uk.nhs.careconnect.core.dstu2.CareConnectAuditEvent;
+import uk.nhs.careconnect.core.dstu2.CareConnectSystem;
 
 import javax.jms.*;
 import java.math.BigDecimal;
@@ -33,7 +35,6 @@ public class UHSDiagnotics implements CommandLineRunner {
 	}
 
 	Terser terser = null;
-    String SystemNHSNumber = "https://fhir.nhs.uk/Id/nhs-number";
 
     IParser JSONparser = null;
 
@@ -111,8 +112,6 @@ public class UHSDiagnotics implements CommandLineRunner {
 
         JSONparser = ctxFHIR.newJsonParser();
 
-
-
         FHIRparser = ctxFHIR.newXmlParser();
 
         client = ctxFHIR.newRestfulGenericClient(serverBase);
@@ -141,7 +140,7 @@ public class UHSDiagnotics implements CommandLineRunner {
 
         Bundle results = client
                 .search()
-                .byUrl("Patient?identifier="+SystemNHSNumber+"|9876543210")
+                .byUrl("Patient?identifier="+ CareConnectSystem.NHSNumber+"|9876543210")
                 .returnBundle(Bundle.class)
                 .execute();
 

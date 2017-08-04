@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.examples.App;
+package uk.nhs.careconnect.igexamples.App;
 
 
 import ca.uhn.fhir.context.FhirContext;
@@ -14,7 +14,8 @@ import org.hl7.fhir.instance.model.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import uk.nhs.careconnect.examples.fhir.*;
+import uk.nhs.careconnect.core.dstu2.CareConnectAuditEvent;
+import uk.nhs.careconnect.igexamples.fhir.*;
 
 import javax.jms.*;
 

@@ -1,6 +1,9 @@
-package uk.nhs.careconnect.examples.fhir;
+package uk.nhs.careconnect.igexamples.fhir;
 
 import org.hl7.fhir.instance.model.*;
+import uk.nhs.careconnect.core.dstu2.CareConnectExtension;
+import uk.nhs.careconnect.core.dstu2.CareConnectSystem;
+import uk.nhs.careconnect.core.dstu2.CareConnectProfile;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -19,7 +22,7 @@ public class CareConnectImmunization {
         Immunization immunisation = new Immunization();
 
 
-        immunisation.setMeta(new Meta().addProfile(CareConnectSystem.ProfileImmunization));
+        immunisation.setMeta(new Meta().addProfile(CareConnectProfile.Immunization_1));
 
 
         Extension dateRecorded = new Extension();
@@ -27,7 +30,7 @@ public class CareConnectImmunization {
         try {
             recordedDate = dateFormat.parse("2017-05-27");
             dateRecorded
-                    .setUrl(CareConnectSystem.ExtUrlDateRecorded)
+                    .setUrl(CareConnectExtension.UrlDateRecorded)
                     .setValue(new DateTimeType(recordedDate));
         } catch (ParseException e) {
             e.printStackTrace();

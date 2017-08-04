@@ -1,6 +1,9 @@
-package uk.nhs.careconnect.examples.fhir;
+package uk.nhs.careconnect.igexamples.fhir;
 
 import org.hl7.fhir.instance.model.*;
+import uk.nhs.careconnect.core.dstu2.CareConnectExtension;
+import uk.nhs.careconnect.core.dstu2.CareConnectProfile;
+import uk.nhs.careconnect.core.dstu2.CareConnectSystem;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -22,31 +25,31 @@ public class CareConnectPatient {
 
         Patient patient = new Patient();
 
-        patient.setMeta(new Meta().addProfile(CareConnectSystem.ProfilePatient));
+        patient.setMeta(new Meta().addProfile(CareConnectProfile.Patient_1));
 
         CodeableConcept ethnicCode = new CodeableConcept();
         ethnicCode
                 .addCoding()
-                .setSystem(CareConnectSystem.SystemEthnicCategory)
+                .setSystem(CareConnectSystem.EthnicCategory)
                 .setDisplay(csvArray[0])
                 .setCode(csvArray[1]);
         Extension ethnicExtension = new Extension()
-                .setUrl(CareConnectSystem.ExtUrlEthnicCategory)
+                .setUrl(CareConnectExtension.UrlEthnicCategory)
                 .setValue(ethnicCode);
         patient.addExtension(ethnicExtension);
 
         Identifier nhsNumber = patient.addIdentifier()
-                .setSystem(CareConnectSystem.SystemNHSNumber)
+                .setSystem(CareConnectSystem.NHSNumber)
                 .setValue(csvArray[2]);
 
         CodeableConcept verificationStatusCode = new CodeableConcept();
         verificationStatusCode
                 .addCoding()
-                .setSystem(CareConnectSystem.SystemNHSNumberVerificationStatus)
+                .setSystem(CareConnectSystem.NHSNumberVerificationStatus)
                 .setDisplay(csvArray[3])
                 .setCode(csvArray[4]);
         Extension verificationStatus = new Extension()
-                .setUrl(CareConnectSystem.ExtUrlNHSNumberVerificationStatus)
+                .setUrl(CareConnectExtension.UrlNHSNumberVerificationStatus)
                 .setValue(verificationStatusCode);
         nhsNumber.addExtension(verificationStatus);
 

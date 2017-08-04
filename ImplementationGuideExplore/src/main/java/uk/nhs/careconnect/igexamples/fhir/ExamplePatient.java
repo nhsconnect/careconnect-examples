@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.examples.fhir;
+package uk.nhs.careconnect.igexamples.fhir;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.api.ExtensionDt;
@@ -16,6 +16,9 @@ import ca.uhn.fhir.model.primitive.DateDt;
 import ca.uhn.fhir.model.primitive.IdDt;
 import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.rest.client.IGenericClient;
+import uk.nhs.careconnect.core.dstu2.CareConnectExtension;
+import uk.nhs.careconnect.core.dstu2.CareConnectProfile;
+import uk.nhs.careconnect.core.dstu2.CareConnectSystem;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -61,7 +64,7 @@ public class ExamplePatient {
         Bundle results = client
                 .search()
                 .forResource(Patient.class)
-                .where(Patient.IDENTIFIER.exactly().systemAndCode(CareConnectSystem.SystemNHSNumber,"9876543210"))
+                .where(Patient.IDENTIFIER.exactly().systemAndCode(CareConnectSystem.NHSNumber,"9876543210"))
                 .returnBundle(ca.uhn.fhir.model.dstu2.resource.Bundle.class)
                 .execute();
         System.out.println(parser.setPrettyPrint(true).encodeResourceToString(results));
@@ -74,32 +77,32 @@ public class ExamplePatient {
         Patient patient = new Patient();
 
         List<IdDt> profiles = new ArrayList<IdDt>();
-        profiles.add(new IdDt(CareConnectSystem.ProfilePatient));
+        profiles.add(new IdDt(CareConnectProfile.Patient_1));
         ResourceMetadataKeyEnum.PROFILES.put(patient, profiles);
 
         CodeableConceptDt ethnicCode = new CodeableConceptDt();
         ethnicCode
                 .addCoding()
-                .setSystem(CareConnectSystem.SystemEthnicCategory)
+                .setSystem(CareConnectSystem.EthnicCategory)
                 .setDisplay("British, Mixed British")
                 .setCode("01");
         ExtensionDt ethnicExtension = new ExtensionDt()
-                .setUrl(CareConnectSystem.ExtUrlEthnicCategory)
+                .setUrl(CareConnectExtension.UrlEthnicCategory)
                 .setValue(ethnicCode);
         patient.addUndeclaredExtension(ethnicExtension);
 
         IdentifierDt nhsNumber = patient.addIdentifier()
-                .setSystem(CareConnectSystem.SystemNHSNumber)
+                .setSystem(CareConnectSystem.NHSNumber)
                 .setValue("9876543210");
 
         CodeableConceptDt verificationStatusCode = new CodeableConceptDt();
         verificationStatusCode
                 .addCoding()
-                .setSystem(CareConnectSystem.SystemNHSNumberVerificationStatus)
+                .setSystem(CareConnectSystem.NHSNumberVerificationStatus)
                 .setDisplay("Number present and verified")
                 .setCode("01");
         ExtensionDt verificationStatus = new ExtensionDt()
-                .setUrl(CareConnectSystem.ExtUrlNHSNumberVerificationStatus)
+                .setUrl(CareConnectExtension.UrlNHSNumberVerificationStatus)
                 .setValue(verificationStatusCode);
         nhsNumber.addUndeclaredExtension(verificationStatus);
 

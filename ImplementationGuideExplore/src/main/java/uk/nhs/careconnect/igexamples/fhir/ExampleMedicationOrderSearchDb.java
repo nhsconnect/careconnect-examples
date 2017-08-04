@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.examples.fhir;
+package uk.nhs.careconnect.igexamples.fhir;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.api.ExtensionDt;
@@ -16,6 +16,9 @@ import ca.uhn.fhir.model.primitive.DateTimeDt;
 import ca.uhn.fhir.model.primitive.IdDt;
 import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.rest.client.IGenericClient;
+import uk.nhs.careconnect.core.dstu2.CareConnectExtension;
+import uk.nhs.careconnect.core.dstu2.CareConnectProfile;
+import uk.nhs.careconnect.core.dstu2.CareConnectSystem;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -44,7 +47,7 @@ public class ExampleMedicationOrderSearchDb {
         Bundle results = client
                 .search()
                 .forResource(Patient.class)
-                .where(Patient.IDENTIFIER.exactly().systemAndCode(CareConnectSystem.SystemNHSNumber,"9439676165"))
+                .where(Patient.IDENTIFIER.exactly().systemAndCode(CareConnectSystem.NHSNumber,"9439676165"))
                 .returnBundle(ca.uhn.fhir.model.dstu2.resource.Bundle.class)
                 .execute();
 
@@ -85,11 +88,11 @@ public class ExampleMedicationOrderSearchDb {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
         List<IdDt> profiles = new ArrayList<IdDt>();
-        profiles.add(new IdDt(CareConnectSystem.ProfileMedicationOrder));
+        profiles.add(new IdDt(CareConnectProfile.MedicationOrder_1));
         ResourceMetadataKeyEnum.PROFILES.put(prescription, profiles);
 
         ExtensionDt supplyType = new ExtensionDt();
-        supplyType.setUrl(CareConnectSystem.ExtUrlMedicationSupplyType);
+        supplyType.setUrl(CareConnectExtension.UrlMedicationSupplyType);
         CodeableConceptDt supplyCode = new CodeableConceptDt();
         supplyCode.addCoding()
                 .setCode("394823007")
