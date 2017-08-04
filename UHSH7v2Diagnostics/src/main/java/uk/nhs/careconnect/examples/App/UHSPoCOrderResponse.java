@@ -45,10 +45,16 @@ public class UHSPoCOrderResponse {
 
         bundle.setType(Bundle.BundleType.MESSAGE);
 
-        bundle.addEntry().setResource(new MessageHeader()
+        MessageHeader messageHeader =new MessageHeader()
+                .setSource(new MessageHeader.MessageSourceComponent(new UriType("https:///ordercomms.uhs.nhs.uk")))
                 .setReceiver(new Reference("https:///ordercoms.system.org"))
-                .setResponsible(new Reference("https:///resultsviewer.system.org"))
-        );
+                .setResponsible(new Reference("https:///resultsviewer.system.org"));
+
+        messageHeader.getEvent().setCode("task-update").setSystem("https://fhir.uhs.nhs.uk/message-event-type");
+        messageHeader.setTimestamp(new Date());
+
+        bundle.addEntry().setResource(messageHeader);
+
 
         bundle.addEntry().setResource(order);
 

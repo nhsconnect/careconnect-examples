@@ -100,8 +100,8 @@ public class UHSDiagnotics implements CommandLineRunner {
         // This is to base HAPI server not the CareConnectAPI
 
 
-       // String serverBase = "http://127.0.0.1:8080/FHIRServer/DSTU2/";
-        String serverBase = HAPIServer;
+       String serverBase = "http://127.0.0.1:8080/FHIRServer/DSTU2/";
+       // String serverBase = HAPIServer;
 
         ctxFHIR = FhirContext.forDstu2Hl7Org();
 
@@ -162,7 +162,7 @@ public class UHSDiagnotics implements CommandLineRunner {
 
         results = client
                 .search()
-                .byUrl("Practitioner?identifier=http://fhir.nhs.net/Id/sds-user-id|G8133438")
+                .byUrl("Practitioner?identifier=https://fhir.nhs.net/Id/sds-user-id|G8133438")
                 .returnBundle(Bundle.class)
                 .execute();
         // Unsafe !!
@@ -206,6 +206,7 @@ public class UHSDiagnotics implements CommandLineRunner {
 
         DiagnosticReport report=report( msg,"HICSS");
 
+        /*
         msg=  "MSH|^~\\&|CRIS|LIVE|||20170426110809||ORU^R01|J1YMT3JX:31H5|P|2.4\r"
                // + "PID|||30908579^^^CRIS^PI~RHM7000610^^^RHM01^MR\r"
                 + "PID|1||0772951\r"
@@ -220,6 +221,7 @@ public class UHSDiagnotics implements CommandLineRunner {
                 + "OBX|6|TX|XCHES^XR Chest^CRIS3||||||||F|||201704261106||SWHALECOM^Amy LECOMTE\r";
 
         report( msg,"CRIS");
+        */
 
         order(report);
         // Clean up ActiveMQ

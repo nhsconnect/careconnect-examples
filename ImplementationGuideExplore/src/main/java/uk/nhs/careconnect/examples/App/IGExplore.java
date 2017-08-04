@@ -87,8 +87,6 @@ public class IGExplore implements CommandLineRunner {
 
 
 
-
-
         // This is to base HAPI server not the CareConnectAPI
 
         String serverBase = HAPIServer;
