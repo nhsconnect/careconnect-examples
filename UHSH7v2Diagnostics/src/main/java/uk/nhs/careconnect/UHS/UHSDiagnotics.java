@@ -20,7 +20,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import uk.nhs.careconnect.core.dstu2.CareConnectAuditEvent;
+import uk.nhs.careconnect.core.dstu2.CareConnectProfile;
 import uk.nhs.careconnect.core.dstu2.CareConnectSystem;
+import uk.nhs.careconnect.core.dstu2.NHSDigitalProfile;
 
 import javax.jms.*;
 import java.math.BigDecimal;
@@ -101,8 +103,8 @@ public class UHSDiagnotics implements CommandLineRunner {
         // This is to base HAPI server not the CareConnectAPI
 
 
-       String serverBase = "http://127.0.0.1:8080/FHIRServer/DSTU2/";
-       // String serverBase = HAPIServer;
+       //String serverBase = "http://127.0.0.1:8080/FHIRServer/DSTU2/";
+       String serverBase = HAPIServer;
 
         ctxFHIR = FhirContext.forDstu2Hl7Org();
 
@@ -151,7 +153,7 @@ public class UHSDiagnotics implements CommandLineRunner {
 
         results = client
                 .search()
-                .byUrl("Practitioner?identifier=https://fhir.nhs.net/Id/sds-role-profile-id|PT1357")
+                .byUrl("Practitioner?identifier="+ CareConnectSystem.SDSUserId +"|PT1357")
                 .returnBundle(Bundle.class)
                 .execute();
         // Unsafe !!
@@ -161,7 +163,7 @@ public class UHSDiagnotics implements CommandLineRunner {
 
         results = client
                 .search()
-                .byUrl("Practitioner?identifier=https://fhir.nhs.net/Id/sds-user-id|G8133438")
+                .byUrl("Practitioner?identifier="+CareConnectSystem.SDSUserId+"|G8133438")
                 .returnBundle(Bundle.class)
                 .execute();
         // Unsafe !!
@@ -171,7 +173,7 @@ public class UHSDiagnotics implements CommandLineRunner {
 
         results = client
                 .search()
-                .byUrl("Organization?identifier=https://fhir.nhs.uk/Id/ods-organization-code|C81010")
+                .byUrl("Organization?identifier="+CareConnectSystem.ODSOrganisationCode+"|C81010")
                 .returnBundle(Bundle.class)
                 .execute();
         // Unsafe !!
@@ -299,7 +301,7 @@ public class UHSDiagnotics implements CommandLineRunner {
             DiagnosticOrder order = new DiagnosticOrder();
 
 
-            order.setMeta(new Meta().addProfile("https://fhir.nhs.uk/StructureDefinition/dds-request-1-0"));
+            order.setMeta(new Meta().addProfile(NHSDigitalProfile.PMIP_DDS_Request_1));
 
             order.setSubject(new Reference(patient.getId()));
             // First pass of HL7v2 message
@@ -342,7 +344,7 @@ public class UHSDiagnotics implements CommandLineRunner {
             DiagnosticReport report = new DiagnosticReport();
             String text = "";
 
-            report.setMeta(new Meta().addProfile("https://fhir.nhs.uk/StructureDefinition/dds-report-1-0"));
+            report.setMeta(new Meta().addProfile(NHSDigitalProfile.PMIP_DDS_Report_1));
             orderNum = 0;
             do {
                 if (report.getIdentifier().size() == 0) {
@@ -410,7 +412,7 @@ public class UHSDiagnotics implements CommandLineRunner {
                         if (!terserGet("/PATIENT_RESULT/ORDER_OBSERVATION(" + orderNum + ")/OBSERVATION(" + observationNo + ")/OBX-2-1").equals("TX")) {
                             Observation observation = new Observation();
 
-                            observation.setMeta(new Meta().addProfile("https://fhir-test.hl7.org.uk/StructureDefinition/CareConnect-Observation-1"));
+                            observation.setMeta(new Meta().addProfile(CareConnectProfile.Observation_1));
 
                             Extension reportExt = observation.addExtension();
                             reportExt

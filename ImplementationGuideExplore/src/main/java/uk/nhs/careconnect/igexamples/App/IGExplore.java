@@ -97,7 +97,7 @@ public class IGExplore implements CommandLineRunner {
 
 
 
-        Organization organisation = CareConnectOrganisation.buildCareConnectOrganisation(
+        Organization hospitalTrust = CareConnectOrganisation.buildCareConnectOrganisation(
                 "RTG",
                 "Derby Teaching Hospitals NHS Foundation Trust",
                 "01332 340131",
@@ -109,18 +109,18 @@ public class IGExplore implements CommandLineRunner {
 
         );
         if (serverBase.equals(HAPIServer))
-            organisation.setMeta(new Meta());
+            hospitalTrust.setMeta(new Meta());
 
-        System.out.println(XMLparser.setPrettyPrint(true).encodeResourceToString(organisation));
-        MethodOutcome outcome = client.update().resource(organisation)
-                .conditionalByUrl("Organization?identifier=" + organisation.getIdentifier().get(0).getSystem() + "%7C" + organisation.getIdentifier().get(0).getValue())
+        System.out.println(XMLparser.setPrettyPrint(true).encodeResourceToString(hospitalTrust));
+        MethodOutcome outcome = client.update().resource(hospitalTrust)
+                .conditionalByUrl("Organization?identifier=" + hospitalTrust.getIdentifier().get(0).getSystem() + "%7C" +hospitalTrust.getIdentifier().get(0).getValue())
                 .execute();
-        organisation.setId(outcome.getId());
+        hospitalTrust.setId(outcome.getId());
         System.out.println(outcome.getId().getValue());
 
-        AuditEvent audit = CareConnectAuditEvent.buildAuditEvent(organisation, outcome, "rest", "create", AuditEvent.AuditEventAction.C,"IGExplore.java");
+        AuditEvent audit = CareConnectAuditEvent.buildAuditEvent(hospitalTrust, outcome, "rest", "create", AuditEvent.AuditEventAction.C,"IGExplore.java");
         sendToAudit(audit);
-        validate(XMLparser.encodeResourceToString(organisation));
+        validate(XMLparser.encodeResourceToString(hospitalTrust));
 
 
         // GP Practice
@@ -157,7 +157,7 @@ public class IGExplore implements CommandLineRunner {
         loc.setName("Long Eaton Clinic");
 
         //loc.addContained(org);
-        loc.setManagingOrganization(new Reference(organisation.getId()));
+        loc.setManagingOrganization(new Reference(hospitalTrust.getId()));
 
 
         if (serverBase.equals(HAPIServer)) {
@@ -235,6 +235,37 @@ public class IGExplore implements CommandLineRunner {
         System.out.println(outcome.getId().getValue());
         sendToAudit(CareConnectAuditEvent.buildAuditEvent(gp2, outcome, "rest", "create", AuditEvent.AuditEventAction.C,"IGExplore.java"));
         validate(XMLparser.encodeResourceToString(gp2));
+
+
+
+        Practitioner consultant = CareConnectPractitioner.buildCareConnectPractitioner(
+                "PT1357",
+                "Riley",
+                "Amber",
+                "Dr.",
+                Enumerations.AdministrativeGender.FEMALE,
+                "0115 9876543",
+                "Kirkgate",
+                "",
+                "Derby",
+                "DE7 1QQ",
+                hospitalTrust,
+                "R0050",
+                "Consultant"
+        );
+        if (serverBase.equals(HAPIServer))
+            consultant.setMeta(new Meta());
+        System.out.println(XMLparser.setPrettyPrint(true).encodeResourceToString(consultant));
+        outcome = client.update().resource(consultant)
+                .conditionalByUrl("Practitioner?identifier="+consultant.getIdentifier().get(0).getSystem()+"%7C"+consultant.getIdentifier().get(0).getValue())
+                .execute();
+        consultant.setId(outcome.getId());
+        System.out.println(outcome.getId().getValue());
+        sendToAudit(CareConnectAuditEvent.buildAuditEvent(consultant, outcome, "rest", "create", AuditEvent.AuditEventAction.C,"IGExplore.java"));
+        validate(XMLparser.encodeResourceToString(consultant));
+
+
+
 
         Patient patient = CareConnectPatient.buildCareConnectPatientCSV("British - Mixed British,01,9876543210,Number present and verified,01,Kanfeld,Bernie,Miss,10 Field Jardin,Long Eaton,Nottingham,NG10 1ZZ,1,1998-03-19"
                 ,practice
