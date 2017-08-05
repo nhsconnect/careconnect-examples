@@ -86,6 +86,7 @@ public class CareConnectImmunization {
                 .addCoding().setSystem(CareConnectSystem.SNOMEDCT).setCode("36653000");
         protocol.addTargetDisease()
                 .addCoding().setSystem(CareConnectSystem.SNOMEDCT).setCode("36989005");
+
         CodeableConcept doseStatus = new CodeableConcept();
         doseStatus.addCoding()
                 .setCode("count")

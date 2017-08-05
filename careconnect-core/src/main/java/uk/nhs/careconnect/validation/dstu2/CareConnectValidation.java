@@ -5,24 +5,40 @@ import ca.uhn.fhir.rest.client.IGenericClient;
 import ca.uhn.fhir.rest.client.ServerValidationModeEnum;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import org.hl7.fhir.instance.hapi.validation.IValidationSupport;
+import org.hl7.fhir.instance.model.OperationOutcome;
 import org.hl7.fhir.instance.model.ValueSet;
 import org.hl7.fhir.instance.model.api.IBaseResource;
+
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class CareConnectValidation implements IValidationSupport {
 
     private FhirContext myCtx = FhirContext.forDstu2Hl7Org();
 
+    private FhirContext myTermCtx = FhirContext.forDstu3();
+
     private static final org.slf4j.Logger ourLog = org.slf4j.LoggerFactory.getLogger(CareConnectValidation.class);
     @Override
     public ValueSet.ValueSetExpansionComponent expandValueSet(FhirContext theContext, ValueSet.ConceptSetComponent theInclude) {
-
-        return null;
+        System.out.println("CareConnectValidator-expandValueSet "+theInclude.getSystem());
+       // return null;
+        return new ValueSet.ValueSetExpansionComponent();
     }
 
     @Override
     public ValueSet fetchCodeSystem(FhirContext theContext, String theSystem) {
-        System.out.println("CareConnectValidator-"+theSystem);
-        return null;
+        System.out.println("CareConnectValidator-CodeSystem "+theSystem);
+
+        if (theSystem.startsWith("https://fhir-test.hl7.org.uk/") || theSystem.startsWith("https://fhir.hl7.org.uk/")) {
+            theSystem = theSystem.replace("fhir.hl7.org.uk", "fhir-test.hl7.org.uk");
+
+            return null;
+
+        } else {
+
+            return null;
+        }
     }
 
     @Override
@@ -32,7 +48,7 @@ public class CareConnectValidation implements IValidationSupport {
 
 
             if (theUri.contains("/StructureDefinition/") && !theUri.contains("/StructureDefinition/Ext")){
-                System.out.println("CareConnectValidator DISABLED due to slicing issue. fetch Resource - " + theUri);
+                System.out.println("CareConnectValidator-Resource DISABLED due to slicing issue. fetch Resource - " + theUri);
 
                 return null;
             }
@@ -63,13 +79,61 @@ public class CareConnectValidation implements IValidationSupport {
 
     @Override
     public boolean isCodeSystemSupported(FhirContext theContext, String theSystem) {
-        System.out.println("CareConnectValidator-"+theSystem);
-        return false;
+
+        if (theSystem.startsWith("http://hl7.org/fhir")) {
+            return true;
+        }
+        switch (theSystem)
+        {
+            case "https://fhir.hl7.org.uk/CareConnect-SDSJobRoleName-1":
+            case "http://snomed.info/sct" :
+                return true;
+            default:
+                System.out.println("CareConnectValidator-isCodeSystemSupported "+theSystem);
+                return false;
+
+        }
+
+
+
+
+
     }
 
     @Override
     public CodeValidationResult validateCode(FhirContext theContext, String theCodeSystem, String theCode, String theDisplay) {
-        System.out.println("CareConnectValidator-"+theDisplay);
-        return null;
+        CodeValidationResult result = null;
+
+
+        switch(theCodeSystem) {
+            case "https://fhir.hl7.org.uk/CareConnect-SDSJobRoleName-1":
+
+                System.out.println("CareConnectValidator-validateCode System="+theCodeSystem + " Code="+theCode);
+                break;
+            default:
+                String urlString = "http://test.fhir.org/r3/CodeSystem/$lookup?system="+theCodeSystem+"&code="+theCode;
+                try {
+
+                    URL url = new URL(urlString);
+                    HttpURLConnection con = (HttpURLConnection) url.openConnection();
+
+                    con.setRequestMethod("GET");
+                    int responseCode = con.getResponseCode();
+                   // System.out.println("\nSending 'GET' request to URL : " + url);
+                   // System.out.println("Response Code : " + responseCode);
+
+                    if (responseCode != 200) {
+                        result = new CodeValidationResult(OperationOutcome.IssueSeverity.ERROR,"Not Found "+theCodeSystem+ " code "+theCode);
+                    }
+
+                }
+                catch (Exception ex)
+                {
+
+                }
+                break;
+
+        }
+        return result;
     }
 }
