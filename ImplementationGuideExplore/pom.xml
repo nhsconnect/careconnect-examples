@@ -16,7 +16,7 @@
     </parent>
 
     <properties>
-        <hapi-fhir-version>2.5</hapi-fhir-version>
+        <hapi-fhir-version>2.6-SNAPSHOT</hapi-fhir-version>
     </properties>
 
     <dependencies>

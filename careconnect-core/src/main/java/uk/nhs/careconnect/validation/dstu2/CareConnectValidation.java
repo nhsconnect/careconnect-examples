@@ -38,6 +38,8 @@ public class CareConnectValidation implements IValidationSupport {
             }
 
          //   System.out.println("CareConnectValidator fetch Resource-" + theUri);
+            theUri = theUri.replace("fhir.hl7.org.uk", "fhir-test.hl7.org.uk");
+
             String resName = myCtx.getResourceDefinition(theClass).getName();
             ourLog.info("Attempting to fetch {} at URL: {}", resName, theUri);
 
