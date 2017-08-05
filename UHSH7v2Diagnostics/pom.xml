@@ -67,6 +67,12 @@
         </dependency>
 
         <dependency>
+            <groupId>com.helger</groupId>
+            <artifactId>ph-schematron</artifactId>
+            <version>4.3.4</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.activemq</groupId>
             <artifactId>activemq-client</artifactId>
             <version>5.15.0</version>

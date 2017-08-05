@@ -9,13 +9,17 @@ import ca.uhn.fhir.validation.FhirValidator;
 import ca.uhn.fhir.validation.SingleValidationMessage;
 import ca.uhn.fhir.validation.ValidationResult;
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.hl7.fhir.instance.hapi.validation.DefaultProfileValidationSupport;
 import org.hl7.fhir.instance.hapi.validation.FhirInstanceValidator;
+import org.hl7.fhir.instance.hapi.validation.IValidationSupport;
+import org.hl7.fhir.instance.hapi.validation.ValidationSupportChain;
 import org.hl7.fhir.instance.model.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import uk.nhs.careconnect.core.dstu2.CareConnectAuditEvent;
 import uk.nhs.careconnect.igexamples.fhir.*;
+import uk.nhs.careconnect.validation.dstu2.CareConnectValidation;
 
 import javax.jms.*;
 
@@ -63,6 +67,10 @@ public class IGExplore implements CommandLineRunner {
         instanceValidator = new FhirInstanceValidator();
         validator.registerValidatorModule(instanceValidator);
 
+        IValidationSupport valSupport = new CareConnectValidation();
+        ValidationSupportChain support = new ValidationSupportChain(new DefaultProfileValidationSupport(), valSupport);
+        instanceValidator.setValidationSupport(support);
+
         XMLparser = ctxFHIR.newXmlParser();
 
         JSONparser = ctxFHIR.newJsonParser();
@@ -90,8 +98,8 @@ public class IGExplore implements CommandLineRunner {
 
         // This is to base HAPI server not the CareConnectAPI
 
-        String serverBase = HAPIServer;
-        //String serverBase = "http://127.0.0.1:8080/FHIRServer/DSTU2/";
+        //String serverBase = HAPIServer;
+        String serverBase = "http://127.0.0.1:8080/FHIRServer/DSTU2/";
 
         IGenericClient client = ctxFHIR.newRestfulGenericClient(serverBase);
 

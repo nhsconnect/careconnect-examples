@@ -103,8 +103,8 @@ public class UHSDiagnotics implements CommandLineRunner {
         // This is to base HAPI server not the CareConnectAPI
 
 
-       //String serverBase = "http://127.0.0.1:8080/FHIRServer/DSTU2/";
-       String serverBase = HAPIServer;
+       String serverBase = "http://127.0.0.1:8080/FHIRServer/DSTU2/";
+       //String serverBase = HAPIServer;
 
         ctxFHIR = FhirContext.forDstu2Hl7Org();
 
@@ -233,7 +233,7 @@ public class UHSDiagnotics implements CommandLineRunner {
         {
             MethodOutcome outcome = null;
 
-            Order order = UHSPoCOrderResponse.buildFHIROrder(patient, report, gp, consultant);
+            Order order = UHSPoCTask.buildFHIROrder(patient, report, gp, consultant);
             System.out.println(FHIRparser.setPrettyPrint(true).encodeResourceToString(order));
             validate(FHIRparser.setPrettyPrint(true).encodeResourceToString(order));
             outcome = client.update().resource(order)
@@ -243,11 +243,6 @@ public class UHSDiagnotics implements CommandLineRunner {
             System.out.println(outcome.getId().getValue());
             sendToAudit(CareConnectAuditEvent.buildAuditEvent(order, outcome, "rest", "create", AuditEvent.AuditEventAction.C,"UHSDiagnostics.java"));
 
-            // Create output as a Bundle
-
-            Bundle bundle = UHSPoCOrderResponse.converttoBundle(order);
-            System.out.println(FHIRparser.setPrettyPrint(true).encodeResourceToString(bundle));
-            validate(FHIRparser.setPrettyPrint(true).encodeResourceToString(bundle));
 
             // Now amend the Order to change practitioner to organisation
 
@@ -260,7 +255,7 @@ public class UHSDiagnotics implements CommandLineRunner {
             System.out.println(FHIRparser.setPrettyPrint(true).encodeResourceToString(order));
             validate(FHIRparser.setPrettyPrint(true).encodeResourceToString(order));
 
-            OrderResponse orderResponse = UHSPoCOrderResponse.buildFHIROrderResponse(order, patient, consultant);
+            OrderResponse orderResponse = UHSPoCTask.buildFHIROrderResponse(order, patient, consultant);
             System.out.println(FHIRparser.setPrettyPrint(true).encodeResourceToString(orderResponse));
             validate(FHIRparser.setPrettyPrint(true).encodeResourceToString(orderResponse));
             outcome = client.update().resource(orderResponse)
@@ -269,6 +264,16 @@ public class UHSDiagnotics implements CommandLineRunner {
             orderResponse.setId(outcome.getId());
             System.out.println(outcome.getId().getValue());
             sendToAudit(CareConnectAuditEvent.buildAuditEvent(orderResponse, outcome, "rest", "create", AuditEvent.AuditEventAction.C,"UHSDiagnostics.java"));
+
+            // Create output as a Bundle for sample FHIR Message
+
+            Bundle bundle = UHSPoCTask.convertToOrderBundle(order, patient, consultant, gppractice, report);
+            System.out.println(FHIRparser.setPrettyPrint(true).encodeResourceToString(bundle));
+            validate(FHIRparser.setPrettyPrint(true).encodeResourceToString(bundle));
+
+            bundle = UHSPoCTask.convertToOrderResponseBundle(orderResponse, order, patient, consultant, gppractice, report, gp);
+            System.out.println(FHIRparser.setPrettyPrint(true).encodeResourceToString(bundle));
+            validate(FHIRparser.setPrettyPrint(true).encodeResourceToString(bundle));
 
         }
 

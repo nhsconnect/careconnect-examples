@@ -69,6 +69,11 @@
     <orderEntry type="library" name="Maven: ca.uhn.hapi:hapi-structures-v24:2.2" level="project" />
     <orderEntry type="library" name="Maven: ca.uhn.hapi:hapi-base:2.2" level="project" />
     <orderEntry type="library" name="Maven: ca.uhn.hapi.fhir:hapi-fhir-validation-resources-dstu2:2.5" level="project" />
+    <orderEntry type="library" name="Maven: com.helger:ph-schematron:4.3.4" level="project" />
+    <orderEntry type="library" name="Maven: com.helger:ph-commons:8.6.6" level="project" />
+    <orderEntry type="library" name="Maven: com.google.code.findbugs:jsr305:3.0.2" level="project" />
+    <orderEntry type="library" name="Maven: com.helger:ph-xml:8.6.6" level="project" />
+    <orderEntry type="library" name="Maven: com.helger:ph-jaxb:8.6.6" level="project" />
     <orderEntry type="library" name="Maven: org.apache.activemq:activemq-client:5.15.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1" level="project" />
     <orderEntry type="library" name="Maven: org.fusesource.hawtbuf:hawtbuf:1.11" level="project" />
