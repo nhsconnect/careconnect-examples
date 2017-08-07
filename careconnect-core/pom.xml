@@ -35,12 +35,13 @@
             <version>${hapi-fhir-version}</version>
         </dependency>
 
-
+<!--
         <dependency>
         <groupId>ca.uhn.hapi.fhir</groupId>
         <artifactId>hapi-fhir-validation-resources-dstu2</artifactId>
         <version>${hapi-fhir-version}</version>
     </dependency>
+  -->
     </dependencies>
 
     <build>

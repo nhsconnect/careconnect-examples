@@ -1,6 +1,7 @@
 package uk.nhs.careconnect.examples.fhir;
 
 import org.hl7.fhir.dstu3.model.*;
+import uk.nhs.careconnect.core.dstu2.CareConnectSystem;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,18 +14,26 @@ public class CareConnectTask {
     public static Task buildFHIRTask() {
         Task task = new Task();
 
+        List<UriType> profiles = new ArrayList<>();
+        profiles.add(new UriType("https://fhir.uhs.nhs.uk/StructuredDefinition/Task_1"));
+        Meta meta = new Meta();
+        meta.setProfile(profiles);
+        task.setMeta(meta);
+
         Patient patient = new Patient();
 
         patient.setId("#pat");
 
 
-        patient.addIdentifier().setSystem("https://fhir.nhs.uk/Id/nhs-number/").setValue("9876543210");
+        patient.addIdentifier().setSystem(CareConnectSystem.NHSNumber).setValue("9876543210");
 
+        /*
         List<UriType> profiles = new ArrayList<UriType>();
-        profiles.add(new UriType("http://hl7.org.uk/CareConnect-Patient-1.structuredefinition.xml"));
+        profiles.add(new UriType(CareConnectProfile.Patient_1));
         Meta meta = new Meta();
         meta.setProfile(profiles);
         patient.setMeta(meta);
+        */
 
         task.getFor().setResource(patient);
 
@@ -44,18 +53,20 @@ public class CareConnectTask {
 
         Practitioner gp = new Practitioner();
 
+        /*
         List<UriType> gpprofiles = new ArrayList<UriType>();
-        gpprofiles.add(new UriType("http://hl7.org.uk/CareConnect-Practitioner-1.structuredefinition.xml"));
-
+        gpprofiles.add(new UriType(CareConnectProfile.Practitioner_1));
         Meta metagp = new Meta();
         metagp.setProfile(gpprofiles);
         gp.setMeta(metagp);
+        */
+
         gp.setId("#dr");
         gp.addName()
                 .setFamily("McSurname")
                 .addGiven("Jeremy")
                 .addPrefix("Dr");
-        gp.addIdentifier().setSystem("http://fhir.nhs.net/Id/sds-user-id").setValue("123455");
+        gp.addIdentifier().setSystem(CareConnectSystem.SDSUserId).setValue("123455");
 
         task.getRequester().setAgent(new Reference("#dr"));
         task.addContained(gp);
