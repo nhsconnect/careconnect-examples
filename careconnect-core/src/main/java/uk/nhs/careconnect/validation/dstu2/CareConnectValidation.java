@@ -87,6 +87,7 @@ public class CareConnectValidation implements IValidationSupport {
         {
             case "https://fhir.hl7.org.uk/CareConnect-SDSJobRoleName-1":
             case "http://snomed.info/sct" :
+            case "http://loinc.org":
                 return true;
             default:
                 System.out.println("CareConnectValidator-isCodeSystemSupported "+theSystem);
@@ -119,10 +120,24 @@ public class CareConnectValidation implements IValidationSupport {
 
                     con.setRequestMethod("GET");
                     int responseCode = con.getResponseCode();
-                   // System.out.println("\nSending 'GET' request to URL : " + url);
-                   // System.out.println("Response Code : " + responseCode);
 
+                    // will fail on UK SNOMED codes
+                    if ((responseCode != 200) && theCodeSystem.startsWith("http://snomed.info/sct")) {
+                        // Assume UK code so check response code from snomedbrowser
+                        try {
+                            System.out.println("CareConnectValidator-validateCode SNOMED UK Check System="+theCodeSystem + " Code="+theCode);
+                            url = new URL("http://www.snomedbrowser.com/Codes/Details/" + theCode);
+                            con = (HttpURLConnection) url.openConnection();
+
+                            con.setRequestMethod("GET");
+                            responseCode = con.getResponseCode();
+                        } catch (Exception ex1) {
+
+                        }
+                    }
                     if (responseCode != 200) {
+
+
                         result = new CodeValidationResult(OperationOutcome.IssueSeverity.ERROR,"Not Found "+theCodeSystem+ " code "+theCode);
                     }
 

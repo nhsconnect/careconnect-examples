@@ -14,7 +14,10 @@ import ca.uhn.hl7v2.parser.GenericParser;
 import ca.uhn.hl7v2.parser.Parser;
 import ca.uhn.hl7v2.util.Terser;
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.hl7.fhir.instance.hapi.validation.DefaultProfileValidationSupport;
 import org.hl7.fhir.instance.hapi.validation.FhirInstanceValidator;
+import org.hl7.fhir.instance.hapi.validation.IValidationSupport;
+import org.hl7.fhir.instance.hapi.validation.ValidationSupportChain;
 import org.hl7.fhir.instance.model.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -23,6 +26,7 @@ import uk.nhs.careconnect.core.dstu2.CareConnectAuditEvent;
 import uk.nhs.careconnect.core.dstu2.CareConnectProfile;
 import uk.nhs.careconnect.core.dstu2.CareConnectSystem;
 import uk.nhs.careconnect.core.dstu2.NHSDigitalProfile;
+import uk.nhs.careconnect.validation.dstu2.CareConnectValidation;
 
 import javax.jms.*;
 import java.math.BigDecimal;
@@ -103,14 +107,18 @@ public class UHSDiagnotics implements CommandLineRunner {
         // This is to base HAPI server not the CareConnectAPI
 
 
-       String serverBase = "http://127.0.0.1:8080/FHIRServer/DSTU2/";
-       //String serverBase = HAPIServer;
+       //String serverBase = "http://127.0.0.1:8080/FHIRServer/DSTU2/";
+       String serverBase = HAPIServer;
 
         ctxFHIR = FhirContext.forDstu2Hl7Org();
 
         validator = ctxFHIR.newValidator();
         instanceValidator = new FhirInstanceValidator();
         validator.registerValidatorModule(instanceValidator);
+
+        IValidationSupport valSupport = new CareConnectValidation();
+        ValidationSupportChain support = new ValidationSupportChain(new DefaultProfileValidationSupport(), valSupport);
+        instanceValidator.setValidationSupport(support);
 
         JSONparser = ctxFHIR.newJsonParser();
 
@@ -241,6 +249,8 @@ public class UHSDiagnotics implements CommandLineRunner {
                     .execute();
             order.setId(outcome.getId());
             System.out.println(outcome.getId().getValue());
+            String orderId = outcome.getId().getValue();
+
             sendToAudit(CareConnectAuditEvent.buildAuditEvent(order, outcome, "rest", "create", AuditEvent.AuditEventAction.C,"UHSDiagnostics.java"));
 
 
@@ -262,6 +272,7 @@ public class UHSDiagnotics implements CommandLineRunner {
                     .conditionalByUrl("OrderResponse?identifier=" + orderResponse.getIdentifier().get(0).getSystem() + "%7C" + orderResponse.getIdentifier().get(0).getValue())
                     .execute();
             orderResponse.setId(outcome.getId());
+            String orderResponseId = outcome.getId().getValue();
             System.out.println(outcome.getId().getValue());
             sendToAudit(CareConnectAuditEvent.buildAuditEvent(orderResponse, outcome, "rest", "create", AuditEvent.AuditEventAction.C,"UHSDiagnostics.java"));
 
@@ -274,6 +285,22 @@ public class UHSDiagnotics implements CommandLineRunner {
             bundle = UHSPoCTask.convertToOrderResponseBundle(orderResponse, order, patient, consultant, gppractice, report, gp);
             System.out.println(FHIRparser.setPrettyPrint(true).encodeResourceToString(bundle));
             validate(FHIRparser.setPrettyPrint(true).encodeResourceToString(bundle));
+
+            // Examples for contained resources
+            order = client.read()
+                    .resource(Order.class)
+                    .withId(orderId)
+                    .execute();
+
+            orderResponse = client.read()
+                    .resource(OrderResponse.class)
+                    .withId(orderResponseId)
+                    .execute();
+
+            order.setId("#order");
+            orderResponse.setRequest(new Reference(order.getId()));
+            orderResponse.addContained(order);
+            System.out.println(FHIRparser.setPrettyPrint(true).encodeResourceToString(orderResponse));
 
         }
 
