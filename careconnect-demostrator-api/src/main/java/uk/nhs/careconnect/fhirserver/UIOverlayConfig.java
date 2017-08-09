@@ -43,9 +43,6 @@ public class UIOverlayConfig {
 
 		String serverBase = "${serverBase}/DSTU2";
 
-		// TODO Replace me
-
-		serverBase = serverBase.replace(":8080","");
 
 		retVal
 			.addServer()

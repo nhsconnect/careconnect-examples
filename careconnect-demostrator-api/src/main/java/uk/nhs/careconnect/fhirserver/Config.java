@@ -10,9 +10,11 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * Created by kevinmayfield on 21/07/2017.
  */
 
+//@PropertySource("classpath:application.properties")
+
 @Configuration
 @EnableTransactionManagement()
-@PropertySource("classpath:careconnect-ris.properties")
+@PropertySource("classpath:application.properties")
 @ComponentScan(basePackages = "uk.gov.hscic")
 public class Config {
 
