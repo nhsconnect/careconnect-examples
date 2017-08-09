@@ -7,7 +7,6 @@ import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hscic.location.LocationResourceProvider;
 import uk.gov.hscic.medications.MedicationOrderResourceProvider;
-import uk.gov.hscic.order.OrderResourceProvider;
 import uk.gov.hscic.organization.OrganizationResourceProvider;
 import uk.gov.hscic.patient.PatientResourceProvider;
 import uk.gov.hscic.practitioner.PractitionerResourceProvider;
@@ -52,11 +51,12 @@ public class HAPIRestfulConfig extends RestfulServer {
 				myAppCtx.getBean(MedicationOrderResourceProvider.class),
 			//	myAppCtx.getBean(MedicationDispenseResourceProvider.class),
 			//	myAppCtx.getBean(MedicationAdministrationResourceProvider.class),
-				myAppCtx.getBean(LocationResourceProvider.class),
+
 			//	myAppCtx.getBean(AppointmentResourceProvider.class),
 			//	myAppCtx.getBean(ScheduleResourceProvider.class),
 			//	myAppCtx.getBean(SlotResourceProvider.class),
-				myAppCtx.getBean(OrderResourceProvider.class)
+			//	myAppCtx.getBean(OrderResourceProvider.class),
+				myAppCtx.getBean(LocationResourceProvider.class)
 		));
 
 

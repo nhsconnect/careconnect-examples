@@ -39,13 +39,18 @@ public class UIOverlayConfig {
 	@Bean
 	public TesterConfig testerConfig() {
 		TesterConfig retVal = new TesterConfig();
-		
+		String serverBase = "${serverBase}/DSTU2";
+
+		// TODO Replace me
+
+		serverBase = serverBase.replace("8080","80");
+
 		retVal
 			.addServer()
 				.withId("home")
 				.withFhirVersion(FhirVersionEnum.DSTU2)
-				.withBaseUrl("${serverBase}/DSTU2")
-				.withName("CareConnect FHIR Reference Implementation Server")
+				.withBaseUrl(serverBase)
+				.withName("Care Connect FHIR Reference Implementation Server")
 				.addServer()
 				.withId("hapi")
 				.withFhirVersion(FhirVersionEnum.DSTU2)
