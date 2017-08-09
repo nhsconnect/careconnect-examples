@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
 @EnableTransactionManagement()
-@PropertySource("classpath:HAPIJPA.properties")
+@PropertySource("classpath:careconnect-ris.properties")
 @ComponentScan(basePackages = "uk.gov.hscic")
 public class Config {
 
