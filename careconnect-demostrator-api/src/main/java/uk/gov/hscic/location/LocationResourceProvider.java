@@ -13,14 +13,16 @@ import ca.uhn.fhir.rest.annotation.Search;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hscic.SystemURL;
 import uk.gov.hscic.model.location.LocationDetails;
+import uk.nhs.careconnect.core.dstu2.CareConnectProfile;
+import uk.nhs.careconnect.core.dstu2.CareConnectSystem;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class LocationResourceProvider implements IResourceProvider {
@@ -35,7 +37,7 @@ public class LocationResourceProvider implements IResourceProvider {
 
     @Search
     public List<Location> getByIdentifierCode(@RequiredParam(name = Location.SP_IDENTIFIER) TokenParam identifierCode) {
-        List<LocationDetails> locationDetails = SystemURL.ID_ODS_ORGANIZATION_CODE.equalsIgnoreCase(identifierCode.getSystem())
+        List<LocationDetails> locationDetails = CareConnectSystem.ODSOrganisationCode.equalsIgnoreCase(identifierCode.getSystem())
                 ? locationSearch.findLocationDetailsByOrgOdsCode(identifierCode.getValue())
                 : locationSearch.findLocationDetailsBySiteOdsCode(identifierCode.getValue());
 
@@ -69,7 +71,7 @@ public class LocationResourceProvider implements IResourceProvider {
         location.setId(new IdDt(locationDetails.getId()));
         location.getMeta().setLastUpdated(locationDetails.getLastUpdated());
         location.getMeta().setVersionId(String.valueOf(locationDetails.getLastUpdated().getTime()));
-        location.getMeta().addProfile(SystemURL.SD_GPC_LOCATION);
+        location.getMeta().addProfile(CareConnectProfile.Location_1);
         location.setName(new StringDt(locationDetails.getName()));
         location.setIdentifier(Collections.singletonList(new IdentifierDt(locationDetails.getSiteOdsCode(), locationDetails.getSiteOdsCodeName())));
         return location;

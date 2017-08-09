@@ -1,10 +1,6 @@
 package uk.gov.hscic.practitioner;
 
-import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
-import ca.uhn.fhir.model.dstu2.composite.CodingDt;
-import ca.uhn.fhir.model.dstu2.composite.HumanNameDt;
-import ca.uhn.fhir.model.dstu2.composite.IdentifierDt;
-import ca.uhn.fhir.model.dstu2.composite.ResourceReferenceDt;
+import ca.uhn.fhir.model.dstu2.composite.*;
 import ca.uhn.fhir.model.dstu2.resource.OperationOutcome;
 import ca.uhn.fhir.model.dstu2.resource.Practitioner;
 import ca.uhn.fhir.model.dstu2.valueset.AdministrativeGenderEnum;
@@ -18,13 +14,16 @@ import ca.uhn.fhir.rest.annotation.Search;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
-import java.util.List;
-import java.util.Locale;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hscic.SystemURL;
 import uk.gov.hscic.model.practitioner.PractitionerDetails;
+import uk.nhs.careconnect.core.dstu2.CareConnectProfile;
+import uk.nhs.careconnect.core.dstu2.CareConnectSystem;
+
+import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
 
 @Component
 public class PractitionerResourceProvider  implements IResourceProvider {
@@ -60,12 +59,12 @@ public class PractitionerResourceProvider  implements IResourceProvider {
 
     private Practitioner practitionerDetailsToPractitionerResourceConverter(PractitionerDetails practitionerDetails) {
         Practitioner practitioner = new Practitioner()
-                .addIdentifier(new IdentifierDt(SystemURL.ID_SDS_USER_ID, practitionerDetails.getUserId()));
+                .addIdentifier(new IdentifierDt(CareConnectSystem.SDSUserId, practitionerDetails.getUserId()));
 
         practitionerDetails.getRoleIds()
                 .stream()
                 .distinct()
-                .map(roleId -> new IdentifierDt(SystemURL.ID_SDS_ROLE_PROFILE_ID, roleId))
+                .map(roleId -> new IdentifierDt(CareConnectSystem.SDSJobRoleName, roleId))
                 .forEach(practitioner::addIdentifier);
 
         practitioner.setId(new IdDt(practitionerDetails.getId()));
@@ -73,7 +72,7 @@ public class PractitionerResourceProvider  implements IResourceProvider {
         practitioner.getMeta()
                 .setLastUpdated(practitionerDetails.getLastUpdated())
                 .setVersionId(String.valueOf(practitionerDetails.getLastUpdated().getTime()))
-                .addProfile(SystemURL.SD_GPC_PRACTITIONER);
+                .addProfile(CareConnectProfile.Practitioner_1);
 
         HumanNameDt name = new HumanNameDt()
                 .addFamily(practitionerDetails.getNameFamily())

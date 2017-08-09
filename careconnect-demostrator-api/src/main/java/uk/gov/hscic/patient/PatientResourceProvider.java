@@ -36,6 +36,8 @@ import uk.gov.hscic.patient.html.FhirSectionBuilder;
 import uk.gov.hscic.patient.html.Page;
 import uk.gov.hscic.practitioner.PractitionerResourceProvider;
 import uk.gov.hscic.util.NhsCodeValidator;
+import uk.nhs.careconnect.core.dstu2.CareConnectProfile;
+import uk.nhs.careconnect.core.dstu2.CareConnectSystem;
 
 import javax.activation.UnsupportedDataTypeException;
 import java.util.*;
@@ -99,7 +101,7 @@ public class PatientResourceProvider implements IResourceProvider {
 
     @Search
     public List<Patient> getPatientsByPatientId(@RequiredParam(name = Patient.SP_IDENTIFIER) TokenParam tokenParam) {
-        if (!SystemURL.ID_NHS_NUMBER.equals(tokenParam.getSystem())) {
+        if (!CareConnectSystem.NHSNumber.equals(tokenParam.getSystem())) {
             throw OperationOutcomeFactory.buildOperationOutcomeException(
                 new InvalidRequestException("Invalid system code"),
                 SystemCode.INVALID_PARAMETER, IssueTypeEnum.INVALID_CONTENT);
@@ -523,7 +525,7 @@ public class PatientResourceProvider implements IResourceProvider {
     // a cut-down Patient
     private Patient patientDetailsToRegisterPatientResourceConverter(PatientDetails patientDetails) {
         Patient patient = new Patient()
-                .addIdentifier(new IdentifierDt(SystemURL.ID_NHS_NUMBER, patientDetails.getNhsNumber()))
+                .addIdentifier(new IdentifierDt(CareConnectSystem.NHSNumber, patientDetails.getNhsNumber()))
                 .setBirthDate(new DateDt(patientDetails.getDateOfBirth()))
                 .setGender(AdministrativeGenderEnum.forCode(patientDetails.getGender().toLowerCase(Locale.UK)));
 
@@ -546,7 +548,7 @@ public class PatientResourceProvider implements IResourceProvider {
 
     private Patient patientDetailsToPatientResourceConverter(PatientDetails patientDetails) {
         Patient patient = new Patient();
-        patient.addIdentifier(new IdentifierDt(SystemURL.ID_NHS_NUMBER, patientDetails.getNhsNumber()));
+        patient.addIdentifier(new IdentifierDt(CareConnectSystem.NHSNumber, patientDetails.getNhsNumber()));
 
         Date lastUpdated = patientDetails.getLastUpdated();
 
@@ -567,7 +569,7 @@ public class PatientResourceProvider implements IResourceProvider {
                 .setUse(NameUseEnum.USUAL);
 
         patient.setBirthDate(new DateDt(patientDetails.getDateOfBirth()));
-        patient.getMeta().addProfile(SystemURL.SD_GPC_PATIENT);
+        patient.getMeta().addProfile(CareConnectProfile.Patient_1);
 
         String addressLines = patientDetails.getAddress();
 

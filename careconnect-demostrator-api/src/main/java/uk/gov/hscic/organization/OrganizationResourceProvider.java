@@ -1,20 +1,5 @@
 package uk.gov.hscic.organization;
 
-import java.text.ParseException;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import ca.uhn.fhir.model.dstu2.composite.IdentifierDt;
 import ca.uhn.fhir.model.dstu2.composite.PeriodDt;
 import ca.uhn.fhir.model.dstu2.resource.Bundle;
@@ -26,21 +11,24 @@ import ca.uhn.fhir.model.dstu2.valueset.BundleTypeEnum;
 import ca.uhn.fhir.model.dstu2.valueset.IssueTypeEnum;
 import ca.uhn.fhir.model.primitive.DateTimeDt;
 import ca.uhn.fhir.model.primitive.IdDt;
-import ca.uhn.fhir.rest.annotation.IdParam;
-import ca.uhn.fhir.rest.annotation.Operation;
-import ca.uhn.fhir.rest.annotation.Read;
-import ca.uhn.fhir.rest.annotation.RequiredParam;
-import ca.uhn.fhir.rest.annotation.ResourceParam;
-import ca.uhn.fhir.rest.annotation.Search;
+import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import uk.gov.hscic.OperationOutcomeFactory;
 import uk.gov.hscic.SystemCode;
-import uk.gov.hscic.SystemURL;
 import uk.gov.hscic.model.organization.OrganizationDetails;
+import uk.nhs.careconnect.core.dstu2.CareConnectProfile;
+import uk.nhs.careconnect.core.dstu2.CareConnectSystem;
+
+import java.text.ParseException;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 
 @Component
 public class OrganizationResourceProvider implements IResourceProvider {
@@ -79,10 +67,10 @@ public class OrganizationResourceProvider implements IResourceProvider {
         }
 
         switch (tokenParam.getSystem()) {
-            case SystemURL.ID_ODS_ORGANIZATION_CODE:
+            case CareConnectSystem.ODSOrganisationCode:
                 return convertOrganizaitonDetailsListToOrganizationList(organizationSearch.findOrganizationDetailsByOrgODSCode(tokenParam.getValue()));
 
-            case SystemURL.ID_ODS_SITE_CODE:
+            case CareConnectSystem.ODSSiteCode:
                 return convertOrganizaitonDetailsListToOrganizationList(organizationSearch.findOrganizationDetailsBySiteODSCode(tokenParam.getValue()));
 
             default:
@@ -222,17 +210,17 @@ public class OrganizationResourceProvider implements IResourceProvider {
 
         for (OrganizationDetails organizationDetail : organizationDetails) {
             if (map.containsKey(organizationDetail.getOrgCode())) {
-                map.get(organizationDetail.getOrgCode()).addIdentifier(new IdentifierDt(SystemURL.ID_ODS_SITE_CODE, organizationDetail.getSiteCode()));
+                map.get(organizationDetail.getOrgCode()).addIdentifier(new IdentifierDt(CareConnectSystem.ODSSiteCode, organizationDetail.getSiteCode()));
             } else {
                 Organization organization = new Organization()
                         .setName(organizationDetail.getOrgName())
-                        .addIdentifier(new IdentifierDt(SystemURL.ID_ODS_ORGANIZATION_CODE, organizationDetail.getOrgCode()))
-                        .addIdentifier(new IdentifierDt(SystemURL.ID_ODS_SITE_CODE, organizationDetail.getSiteCode()));
+                        .addIdentifier(new IdentifierDt(CareConnectSystem.ODSOrganisationCode, organizationDetail.getOrgCode()))
+                        .addIdentifier(new IdentifierDt(CareConnectSystem.ODSSiteCode, organizationDetail.getSiteCode()));
 
                 organization.setId(String.valueOf(organizationDetail.getId()));
 
                 organization.getMeta()
-                        .addProfile(SystemURL.SD_GPC_ORGANIZATION)
+                        .addProfile(CareConnectProfile.Organization_1)
                         .setLastUpdated(organizationDetail.getLastUpdated())
                         .setVersionId(String.valueOf(organizationDetail.getLastUpdated().getTime()));
 

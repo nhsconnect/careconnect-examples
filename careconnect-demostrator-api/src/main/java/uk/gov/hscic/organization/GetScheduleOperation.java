@@ -1,35 +1,29 @@
 package uk.gov.hscic.organization;
 
-import java.util.Date;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import ca.uhn.fhir.model.api.ExtensionDt;
 import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
 import ca.uhn.fhir.model.dstu2.composite.CodingDt;
 import ca.uhn.fhir.model.dstu2.composite.IdentifierDt;
 import ca.uhn.fhir.model.dstu2.composite.ResourceReferenceDt;
-import ca.uhn.fhir.model.dstu2.resource.Bundle;
+import ca.uhn.fhir.model.dstu2.resource.*;
 import ca.uhn.fhir.model.dstu2.resource.Bundle.Entry;
-import ca.uhn.fhir.model.dstu2.resource.Location;
-import ca.uhn.fhir.model.dstu2.resource.OperationOutcome;
-import ca.uhn.fhir.model.dstu2.resource.Organization;
-import ca.uhn.fhir.model.dstu2.resource.Practitioner;
-import ca.uhn.fhir.model.dstu2.resource.Schedule;
-import ca.uhn.fhir.model.dstu2.resource.Slot;
 import ca.uhn.fhir.model.dstu2.valueset.IssueSeverityEnum;
 import ca.uhn.fhir.model.dstu2.valueset.IssueTypeEnum;
 import ca.uhn.fhir.model.primitive.IdDt;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import uk.gov.hscic.SystemCode;
 import uk.gov.hscic.SystemURL;
 import uk.gov.hscic.appointments.ScheduleResourceProvider;
 import uk.gov.hscic.appointments.SlotResourceProvider;
 import uk.gov.hscic.location.LocationResourceProvider;
 import uk.gov.hscic.practitioner.PractitionerResourceProvider;
+import uk.nhs.careconnect.core.dstu2.CareConnectSystem;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * A Plain Provider. The $gpc.getschedule operation is not tied to a specific
@@ -84,14 +78,14 @@ public class GetScheduleOperation {
 		String organizationSiteOdsCode = null;
 
 		for (IdentifierDt identifier : organization.getIdentifier()) {
-			if (SystemURL.ID_ODS_SITE_CODE.equalsIgnoreCase(identifier.getSystem())) {
+			if (CareConnectSystem.ODSSiteCode.equalsIgnoreCase(identifier.getSystem())) {
 				organizationSiteOdsCode = identifier.getValue();
 				break;
 			}
 		}
 
 		if (organizationSiteOdsCode != null) {
-			List<Location> locations = locationResourceProvider.getByIdentifierCode(new TokenParam(SystemURL.ID_ODS_SITE_CODE, organizationSiteOdsCode));
+			List<Location> locations = locationResourceProvider.getByIdentifierCode(new TokenParam(CareConnectSystem.ODSSiteCode, organizationSiteOdsCode));
                         
 			Entry locationEntry = new Entry();
 			locationEntry.setResource(locations.get(0));
