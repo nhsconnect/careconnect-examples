@@ -45,7 +45,7 @@ public class UIOverlayConfig {
 				.withId("home")
 				.withFhirVersion(FhirVersionEnum.DSTU2)
 				.withBaseUrl("${serverBase}/DSTU2")
-				.withName("Local FHIR Server")
+				.withName("CareConnect FHIR Reference Implementation Server")
 				.addServer()
 				.withId("hapi")
 				.withFhirVersion(FhirVersionEnum.DSTU2)
