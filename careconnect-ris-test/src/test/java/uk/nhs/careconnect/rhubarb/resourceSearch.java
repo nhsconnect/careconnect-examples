@@ -19,7 +19,7 @@ import uk.nhs.careconnect.validation.dstu2.CareConnectValidation;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
-public class patientSearch {
+public class resourceSearch {
 
     String serverBase = "http://127.0.0.1/careconnect-ris/DSTU2/";
 
@@ -38,6 +38,37 @@ public class patientSearch {
         resource = client
                 .search()
                 .byUrl("Patient?identifier="+ CareConnectSystem.NHSNumber+"|" + nhsNumber)
+                .returnBundle(Bundle.class)
+                .execute();
+    }
+
+
+    @Given("^I search for a Organisation by ODS Code (\\w+)$")
+    public void i_search_for_a_Organisation_by_ODS_Code_R_A(String ODSCode) throws Throwable {
+        FhirContext ctxFHIR = FhirContext.forDstu2Hl7Org();
+
+        IParser parser = ctxFHIR.newXmlParser();
+
+        IGenericClient client = ctxFHIR.newRestfulGenericClient(serverBase);
+
+        resource = client
+                .search()
+                .byUrl("Organization?identifier="+ CareConnectSystem.ODSOrganisationCode+"|" + ODSCode)
+                .returnBundle(Bundle.class)
+                .execute();
+    }
+
+    @Given("^I search for a Practitioner by SDS User Id (\\w+)$")
+    public void i_search_for_a_Practitioner_by_SDS_User_Id_G(String SDSUserId) throws Throwable {
+        FhirContext ctxFHIR = FhirContext.forDstu2Hl7Org();
+
+        IParser parser = ctxFHIR.newXmlParser();
+
+        IGenericClient client = ctxFHIR.newRestfulGenericClient(serverBase);
+
+        resource = client
+                .search()
+                .byUrl("Practitioner?identifier="+ CareConnectSystem.SDSUserId+"|" + SDSUserId)
                 .returnBundle(Bundle.class)
                 .execute();
     }
@@ -71,10 +102,11 @@ public class patientSearch {
                     fail("FHIR Validation ERROR - "+ next.getMessage());
                     break;
                 case WARNING:
-                    fail("FHIR Validation WARNING - "+ next.getMessage());
+                    //fail("FHIR Validation WARNING - "+ next.getMessage());
+                    System.out.println(  (char)27 + "[34mWARNING" + (char)27 + "[0m" + " - " +  next.getLocationString() + " - " + next.getMessage());
                     break;
                 case INFORMATION:
-                    System.out.println(" Next issue " + (char)27 + "[34mINFORMATION" + (char)27 + "[0m" + " - " +  next.getLocationString() + " - " + next.getMessage());
+                    System.out.println( (char)27 + "[34mINFORMATION" + (char)27 + "[0m" + " - " +  next.getLocationString() + " - " + next.getMessage());
                     break;
                 default:
                     System.out.println(" Next issue " + next.getSeverity() + " - " + next.getLocationString() + " - " + next.getMessage());
