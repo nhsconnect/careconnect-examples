@@ -49,4 +49,10 @@
             </dependency>
 	  	</dependencies>
     </dependencyManagement>
+    <modules>
+        <module>careconnect-core</module>
+        <module>careconnect-ris-dbcore</module>
+        <module>careconnect-ris-database</module>
+        <module>careconnect-ris-fhir-server</module>
+    </modules>
 </project>
