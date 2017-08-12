@@ -27,7 +27,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 public class ExampleServerIT {
-    
+
+    private static boolean dunit = false;
 
 
     private static Server ourServer;
@@ -36,7 +37,7 @@ public class ExampleServerIT {
 
     @After
     public static void afterClass() throws Exception {
-        ourServer.stop();
+       // ourServer.stop();
     }
 
 
@@ -52,35 +53,53 @@ public class ExampleServerIT {
 		 * This runs under maven, and I'm not sure how else to figure out the target directory from code..
 		 */
 
+        if (!dunit) {
 
-        ourLog.info("Lets Do this!");
+            Runtime.getRuntime().addShutdownHook(new Thread() {
+                @Override
+                public void run() {
+                    try {
+                        ourServer.stop();
+                    } catch (Exception ex) {}
 
-        String path = ExampleServerIT.class.getClassLoader().getResource("application.properties").getPath();
-        ourLog.info("Properties Path = "+path);
-        path = new File(path).getParent();
-        path = new File(path).getParent();
-        path = new File(path).getParent();
+                    System.out.println("Inside Add Shutdown Hook");
+                }
+            });
 
-        ourLog.info("Project base path is: {}", path);
+            System.out.println("Shut Down Hook Attached.");
+            ourLog.info("Lets Do this!");
 
-        ourPort = RandomServerPortProvider.findFreePort();
-        ourServer = new Server(ourPort);
+            String path = ExampleServerIT.class.getClassLoader().getResource("application.properties").getPath();
+            ourLog.info("Properties Path = " + path);
+            path = new File(path).getParent();
+            path = new File(path).getParent();
+            path = new File(path).getParent();
 
-        WebAppContext webAppContext = new WebAppContext();
-        webAppContext.setContextPath("/");
-        webAppContext.setDescriptor(path + "/src/main/webapp/WEB-INF/web.xml");
-        webAppContext.setResourceBase(path + "/target/careconnect-ris");
-        webAppContext.setParentLoaderPriority(true);
+            ourLog.info("Project base path is: {}", path);
 
-        ourServer.setHandler(webAppContext);
-        ourServer.start();
+            ourPort = RandomServerPortProvider.findFreePort();
+            ourServer = new Server(ourPort);
 
-        ctxFHIR.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
-        ctxFHIR.getRestfulClientFactory().setSocketTimeout(1200 * 1000);
-        ourServerBase = "http://localhost:" + ourPort + "/DSTU2";
-        ourClient = ctxFHIR.newRestfulGenericClient(ourServerBase);
-        ourClient.registerInterceptor(new LoggingInterceptor(true));
-        return ourClient;
+            WebAppContext webAppContext = new WebAppContext();
+            webAppContext.setContextPath("/");
+            webAppContext.setDescriptor(path + "/src/main/webapp/WEB-INF/web.xml");
+            webAppContext.setResourceBase(path + "/target/careconnect-ris");
+            webAppContext.setParentLoaderPriority(true);
+
+            ourServer.setHandler(webAppContext);
+            ourServer.start();
+
+            ctxFHIR.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
+            ctxFHIR.getRestfulClientFactory().setSocketTimeout(1200 * 1000);
+            ourServerBase = "http://localhost:" + ourPort + "/DSTU2";
+            ourClient = ctxFHIR.newRestfulGenericClient(ourServerBase);
+            ourClient.registerInterceptor(new LoggingInterceptor(true));
+            return ourClient;
+        }
+        else
+        {
+            return ourClient;
+        }
     }
 
 
