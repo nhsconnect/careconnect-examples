@@ -33,7 +33,7 @@ public class ExampleServerIT {
 
 	@Test
 	public void testCreateAndRead() throws IOException {
-		String methodName = "testCreateResourceConditional";
+		String methodName = "testAPIPatientIdentifierSearch";
 
 		Patient pt = new Patient();
 		pt.addName().addFamily(methodName);
