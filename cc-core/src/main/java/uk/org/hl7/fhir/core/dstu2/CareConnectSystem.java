@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.core.dstu2;
+package uk.org.hl7.fhir.core.dstu2;
 
 /**
  * Created by kevinmayfield on 26/05/2017.

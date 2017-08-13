@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.validation.dstu2;
+package uk.org.hl7.fhir.validation.dstu2;
 
 import ca.uhn.fhir.validation.FhirValidator;
 import ca.uhn.fhir.validation.SingleValidationMessage;

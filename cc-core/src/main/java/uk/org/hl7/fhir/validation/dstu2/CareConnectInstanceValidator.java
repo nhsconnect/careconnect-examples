@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.validation.dstu2;
+package uk.org.hl7.fhir.validation.dstu2;
 
 import org.hl7.fhir.instance.model.ElementDefinition;
 import org.hl7.fhir.instance.utils.IWorkerContext;

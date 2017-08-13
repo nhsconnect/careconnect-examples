@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.validation.stu3;
+package uk.org.hl7.fhir.validation.dstu2;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.client.IGenericClient;
@@ -14,7 +14,7 @@ import java.net.URL;
 
 public class CareConnectValidation implements IValidationSupport {
 
-    private FhirContext myCtx = FhirContext.forDstu3();
+    private FhirContext myCtx = FhirContext.forDstu2Hl7Org();
 
     private FhirContext myTermCtx = FhirContext.forDstu3();
 
