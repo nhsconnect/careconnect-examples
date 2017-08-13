@@ -16,7 +16,7 @@ import org.hl7.fhir.instance.hapi.validation.FhirInstanceValidator;
 import org.hl7.fhir.instance.hapi.validation.IValidationSupport;
 import org.hl7.fhir.instance.hapi.validation.ValidationSupportChain;
 import org.hl7.fhir.instance.model.Bundle;
-import uk.nhs.careconnect.ris.fhirserver.hooks.serverHooks;
+import uk.nhs.careconnect.ris.fhirserver.hooks.serverHookTest;
 import uk.org.hl7.fhir.core.dstu2.CareConnectSystem;
 import uk.org.hl7.fhir.validation.dstu2.CareConnectValidation;
 
@@ -48,7 +48,7 @@ public class apiSteps {
             ctxFHIR.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
             ctxFHIR.getRestfulClientFactory().setSocketTimeout(1200 * 1000);
 
-            ourServerBase = "http://localhost:" + serverHooks.ourPort + "/DSTU2";
+            ourServerBase = "http://localhost:" + serverHookTest.ourPort + "/DSTU2";
             ourClient = ctxFHIR.newRestfulGenericClient(ourServerBase);
             ourClient.registerInterceptor(new LoggingInterceptor(true));
             return ourClient;

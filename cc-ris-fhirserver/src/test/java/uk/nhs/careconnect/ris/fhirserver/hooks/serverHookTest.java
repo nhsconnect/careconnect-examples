@@ -7,7 +7,7 @@ import uk.nhs.careconnect.ris.fhirserver.test.apiSteps;
 
 import java.io.File;
 
-public class serverHooks {
+public class serverHookTest {
 
 
     private static boolean dunit = false;

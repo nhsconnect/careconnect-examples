@@ -24,6 +24,14 @@
     </parent>
 
 	<properties>
+
+		<!-- For local tests remove this line.
+		Add back in for jenkins
+
+
+		<maven.test.skip>true</maven.test.skip>
+-->
+
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<junit-version>4.12</junit-version>
         <log4j-version>1.2.17</log4j-version>
