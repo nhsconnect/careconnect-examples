@@ -7,45 +7,34 @@ import ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor;
 import ca.uhn.fhir.validation.FhirValidator;
 import ca.uhn.fhir.validation.SingleValidationMessage;
 import ca.uhn.fhir.validation.ValidationResult;
-import cucumber.api.java.After;
+
 import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.webapp.WebAppContext;
 import org.hl7.fhir.instance.hapi.validation.DefaultProfileValidationSupport;
 import org.hl7.fhir.instance.hapi.validation.FhirInstanceValidator;
 import org.hl7.fhir.instance.hapi.validation.IValidationSupport;
 import org.hl7.fhir.instance.hapi.validation.ValidationSupportChain;
 import org.hl7.fhir.instance.model.Bundle;
 import uk.nhs.careconnect.core.dstu2.CareConnectSystem;
+import uk.nhs.careconnect.fhirserver.hooks.serverHooks;
 import uk.nhs.careconnect.validation.dstu2.CareConnectValidation;
 
-import java.io.File;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
-public class ExampleServerIT {
-
-    private static boolean dunit = false;
-
-
-    private static Server ourServer;
-    private static String ourServerBase;
-    private static int ourPort;
-
-    @After
-    public static void afterClass() throws Exception {
-       // ourServer.stop();
-    }
-
+public class apiSteps {
 
     public final static FhirContext ctxFHIR = FhirContext.forDstu2Hl7Org();
 
-    public final static org.slf4j.Logger ourLog = org.slf4j.LoggerFactory.getLogger(ExampleServerIT.class);;
 
     public IGenericClient ourClient;
+
+    private static boolean dunit = false;
+
+    private String ourServerBase;
+
 
     @Before
     public IGenericClient getClient() throws Exception {
@@ -55,43 +44,11 @@ public class ExampleServerIT {
 
         if (!dunit) {
 
-            Runtime.getRuntime().addShutdownHook(new Thread() {
-                @Override
-                public void run() {
-                    try {
-                        ourServer.stop();
-                    } catch (Exception ex) {}
-
-                    System.out.println("Inside Add Shutdown Hook");
-                }
-            });
-
-            System.out.println("Shut Down Hook Attached.");
-            ourLog.info("Lets Do this!");
-
-            String path = ExampleServerIT.class.getClassLoader().getResource("application.properties").getPath();
-            ourLog.info("Properties Path = " + path);
-            path = new File(path).getParent();
-            path = new File(path).getParent();
-            path = new File(path).getParent();
-
-            ourLog.info("Project base path is: {}", path);
-
-            ourPort = RandomServerPortProvider.findFreePort();
-            ourServer = new Server(ourPort);
-
-            WebAppContext webAppContext = new WebAppContext();
-            webAppContext.setContextPath("/");
-            webAppContext.setDescriptor(path + "/src/main/webapp/WEB-INF/web.xml");
-            webAppContext.setResourceBase(path + "/target/careconnect-ris");
-            webAppContext.setParentLoaderPriority(true);
-
-            ourServer.setHandler(webAppContext);
-            ourServer.start();
 
             ctxFHIR.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
             ctxFHIR.getRestfulClientFactory().setSocketTimeout(1200 * 1000);
-            ourServerBase = "http://localhost:" + ourPort + "/DSTU2";
+
+            ourServerBase = "http://localhost:" + serverHooks.ourPort + "/DSTU2";
             ourClient = ctxFHIR.newRestfulGenericClient(ourServerBase);
             ourClient.registerInterceptor(new LoggingInterceptor(true));
             return ourClient;
