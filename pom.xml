@@ -4,55 +4,25 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>uk.nhs.careconnect</groupId>
-    <artifactId>java-examples</artifactId>
+    <groupId>uk.nhs.careconnect-ris</groupId>
+    <artifactId>ris</artifactId>
     <version>2.5.0-SNAPSHOT</version>
     <packaging>pom</packaging>
+
+
     
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java.version>1.8</java.version>
-       
-        <hawtio.version>1.5.1</hawtio.version>
-        <spring-boot-version>1.5.2.RELEASE</spring-boot-version>
-       
-        <lucene_version>5.5.4</lucene_version>
-        <slf4j-version>1.7.5</slf4j-version>
-	    <junit-version>4.12</junit-version>
-	    <swagger-ui-version>2.1.4</swagger-ui-version>
-	    <log4j-version>2.8.1</log4j-version>
-       
-        <derby_version>10.13.1.1</derby_version>
-        <phloc_schematron_version>2.7.1</phloc_schematron_version>
-      	
-      	<hibernate_version>5.2.9.Final</hibernate_version>
-      	<hibernate_validator_version>5.4.1.Final</hibernate_validator_version>
-      	<hibernate_search_version>5.7.0.Final</hibernate_search_version>
-      	
-      	<!--  not working with newer versions of camel -->
-	    <spring_version>4.3.1.RELEASE</spring_version>
-		<thymeleaf-version>3.0.1.RELEASE</thymeleaf-version>
-		
-		 <ebay_cors_filter_version>1.0.1</ebay_cors_filter_version>
+        <care-connect-version>2.5.0-SNAPSHOT</care-connect-version>
+        <hapi-fhir-version>2.5</hapi-fhir-version>
+        <cucumber-version>1.2.5</cucumber-version>
+
     </properties>
     
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <!-- Import dependency management from Spring Boot -->
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-dependencies</artifactId>
-                <version>${spring-boot-version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-	  	</dependencies>
-    </dependencyManagement>
+
     <modules>
         <module>careconnect-core</module>
-        <module>careconnect-ris-dbcore</module>
-        <module>careconnect-ris-database</module>
-        <module>careconnect-ris-fhir-server</module>
+        <module>cc-ris-dbcore</module>
+        <module>cc-ris-database</module>
+        <module>cc-ris-fhirserver</module>
     </modules>
 </project>
