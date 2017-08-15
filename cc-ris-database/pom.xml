@@ -25,11 +25,13 @@
         <version>1.5.2.RELEASE</version>
     </parent>
 
-    <groupId>uk.nhs.careconnect.ris</groupId>
+
     <name>cc-ris-database</name>
     <artifactId>cc-ris-database</artifactId>
     <packaging>jar</packaging>
-    <version>2.5.0-SNAPSHOT</version>
+   <!-- <version>${care-connect-version}</version>
+  <groupId>uk.nhs.careconnect.ris</groupId>
+   -->
 
 
 
@@ -116,4 +118,12 @@
             </plugin>
         </plugins>
     </build>
+
+    <distributionManagement>
+        <repository>
+            <id>bintray-kevinmayfield-careconnect</id>
+            <name>kevinmayfield-careconnect</name>
+            <url>https://api.bintray.com/maven/kevinmayfield/careconnect/cc-ris-database/;publish=1</url>
+        </repository>
+    </distributionManagement>
 </project>

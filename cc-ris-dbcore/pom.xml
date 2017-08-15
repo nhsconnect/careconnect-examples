@@ -31,7 +31,7 @@
     <name>cc-ris-dbcore</name>
     <artifactId>cc-ris-dbcore</artifactId>
     <packaging>jar</packaging>
-    <version>2.5.0-SNAPSHOT</version>
+    <version>${care-connect-version}</version>
 
     <properties>
 
@@ -58,4 +58,12 @@
         </dependency>
 
     </dependencies>
+
+    <distributionManagement>
+        <repository>
+            <id>bintray-kevinmayfield-careconnect</id>
+            <name>kevinmayfield-careconnect</name>
+            <url>https://api.bintray.com/maven/kevinmayfield/careconnect/cc-ris-dbcore/;publish=1</url>
+        </repository>
+    </distributionManagement>
 </project>

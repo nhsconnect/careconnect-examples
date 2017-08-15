@@ -6,13 +6,13 @@
 
     <groupId>uk.nhs.careconnect.ris</groupId>
     <artifactId>cc-ris</artifactId>
-    <version>2.5.0-SNAPSHOT</version>
+    <version>2.5.0</version>
     <packaging>pom</packaging>
 
 
     
     <properties>
-        <care-connect-version>2.5.0-SNAPSHOT</care-connect-version>
+        <care-connect-version>2.5.0</care-connect-version>
         <hapi-fhir-version>2.5</hapi-fhir-version>
         <cucumber-version>1.2.5</cucumber-version>
 
@@ -32,4 +32,12 @@
         <module>cc-ris-database</module>
         <module>cc-ris-fhirserver</module>
     </modules>
+
+    <distributionManagement>
+        <repository>
+            <id>bintray-kevinmayfield-careconnect</id>
+            <name>kevinmayfield-careconnect</name>
+            <url>https://api.bintray.com/maven/kevinmayfield/careconnect/CareConnectPkg/;publish=1</url>
+        </repository>
+    </distributionManagement>
 </project>
