@@ -5,18 +5,16 @@
       <configuration />
     </facet>
   </component>
-  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8">
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_6">
     <output url="file://$MODULE_DIR$/target/classes" />
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/../careconnect-client/target" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Maven: uk.org.hl7.fhir:cc-core:3.4.8" level="project" />
-    <orderEntry type="library" name="Maven: uk.org.hl7.fhir:cc-fhir-validation-resources-stu3:3.4.8" level="project" />
-    <orderEntry type="library" name="Maven: ca.uhn.hapi.fhir:hapi-fhir-structures-dstu3:3.0.0" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter:1.5.10.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot:1.5.10.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-context:4.3.14.RELEASE" level="project" />
@@ -59,20 +57,12 @@
     <orderEntry type="library" name="Maven: org.codehaus.mojo:animal-sniffer-annotations:1.14" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.25" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:jcl-over-slf4j:1.7.25" level="project" />
-    <orderEntry type="library" name="Maven: ca.uhn.hapi.fhir:hapi-fhir-structures-hl7org-dstu2:3.2.0" level="project" />
+    <orderEntry type="library" name="Maven: ca.uhn.hapi.fhir:hapi-fhir-structures-dstu3:3.2.0" level="project" />
     <orderEntry type="library" name="Maven: ca.uhn.hapi.fhir:hapi-fhir-utilities:3.2.0" level="project" />
+    <orderEntry type="library" name="Maven: uk.org.hl7.fhir:cc-core:3.4.8" level="project" />
+    <orderEntry type="library" name="Maven: uk.org.hl7.fhir:cc-fhir-validation-resources-stu3:3.4.8" level="project" />
+    <orderEntry type="library" name="Maven: ca.uhn.hapi.fhir:hapi-fhir-structures-hl7org-dstu2:3.0.0" level="project" />
     <orderEntry type="library" name="Maven: xpp3:xpp3_min:1.1.4c" level="project" />
     <orderEntry type="library" name="Maven: net.sf.saxon:Saxon-HE:9.5.1-5" level="project" />
-    <orderEntry type="library" name="Maven: ca.uhn.hapi:hapi-structures-v24:2.2" level="project" />
-    <orderEntry type="library" name="Maven: ca.uhn.hapi:hapi-base:2.2" level="project" />
-    <orderEntry type="library" name="Maven: ca.uhn.hapi.fhir:hapi-fhir-validation-resources-dstu3:3.2.0" level="project" />
-    <orderEntry type="library" name="Maven: com.helger:ph-schematron:4.3.4" level="project" />
-    <orderEntry type="library" name="Maven: com.helger:ph-commons:8.6.6" level="project" />
-    <orderEntry type="library" name="Maven: com.helger:ph-xml:8.6.6" level="project" />
-    <orderEntry type="library" name="Maven: com.helger:ph-jaxb:8.6.6" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.activemq:activemq-client:5.15.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1" level="project" />
-    <orderEntry type="library" name="Maven: org.fusesource.hawtbuf:hawtbuf:1.11" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1" level="project" />
   </component>
 </module>

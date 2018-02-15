@@ -1,6 +1,7 @@
 package uk.nhs.careconnect.UHS;
 
-import org.hl7.fhir.instance.model.*;
+import org.hl7.fhir.dstu3.model.*;
+
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -11,17 +12,17 @@ import java.util.Date;
  */
 public class UHSPoCTask {
 
-    public static Order buildFHIROrder(Patient patient,DiagnosticReport report, Practitioner gp, Practitioner consultant) {
+    public static Task buildFHIROrder(Patient patient, DiagnosticReport report, Practitioner gp, Practitioner consultant) {
 
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-        Task order = new Order();
+        Task order = new Task();
 
         order.addIdentifier()
                 .setSystem("https://fhir.uhs.nhs.uk/OrderComms/Order")
                 .setValue("ABCDE");
 
-        order.getSubject().setReference(patient.getId());
+        order.setFor(new Reference(patient));
 
         CodeableConcept classCode = new CodeableConcept();
         classCode.addCoding()
@@ -30,16 +31,16 @@ public class UHSPoCTask {
                 .setDisplay("Review of patient laboratory test report");
         order.setReason(classCode);
 
-        order.setSource(new Reference(consultant.getId()));
-        order.setTarget(new Reference(gp.getId()));
+        //order.set Source(new Reference(consultant.getId()));
+        //order.setF(new Reference(gp.getId()));
 
-        order.addDetail().setReference(report.getId());
+        //order.addDetail().setReference(report.getId());
 
         return order;
 
     }
 
-    public static Bundle convertToOrderBundle(Order order, Patient patient, Practitioner sourcePractitioner, Organization destinationPractice, DiagnosticReport report)
+    public static Bundle convertToOrderBundle(Task order, Patient patient, Practitioner sourcePractitioner, Organization destinationPractice, DiagnosticReport report)
     {
         Bundle bundle = new Bundle();
 
@@ -59,26 +60,27 @@ public class UHSPoCTask {
         order.setId(""); // null the order id
         patient.setId("#pat");
         patient.setManagingOrganization(null);
-        patient.getCareProvider().clear();
-        order.setSubject(new Reference(patient.getId()));
+        patient.getGeneralPractitioner().clear();
+        order.setFor(new Reference(patient.getId()));
 
         sourcePractitioner.setId("#pracsource");
-        sourcePractitioner.getPractitionerRole().clear();
+        //sourcePractitioner.getPractitionerRole().clear();
 
         destinationPractice.setId("#pracdestination");
 
-        order.setTarget(new Reference(destinationPractice.getId()));
-        order.setSource(new Reference(sourcePractitioner.getId()));
+        //order.setTarget(new Reference(destinationPractice.getId()));
+        order.getRequester()
+            .setAgent(new Reference(sourcePractitioner.getId()));
 
         report.setId("#report");
         // Remove the results. We are not sending the report here, just enough information to work with
         report.getResult().clear();
         report.setSubject(new Reference(patient.getId()));
-        report.setPerformer(new Reference(sourcePractitioner.getId()));
-        report.getRequest().clear();
+        // TODO report.getPerformer().(new Reference(sourcePractitioner));
+        //report.getRequest().clear();
 
 
-        order.getDetail().get(0).setReference(report.getId());
+        order.getRelevantHistory().add(new Reference(report));
 
         bundle.addEntry().setResource(order);
 
@@ -93,7 +95,7 @@ public class UHSPoCTask {
 
     }
 
-    public static Bundle convertToOrderResponseBundle(OrderResponse taskResponse, Order order, Patient patient, Practitioner sourcePractitioner, Organization destinationPractice, DiagnosticReport report, Practitioner gp)
+    public static Bundle convertToOrderResponseBundle(Task taskResponse, Task order, Patient patient, Practitioner sourcePractitioner, Organization destinationPractice, DiagnosticReport report, Practitioner gp)
     {
         Bundle bundle = new Bundle();
 
@@ -118,32 +120,32 @@ public class UHSPoCTask {
         order.setId("#order"); // null the order id
         patient.setId("#pat");
         patient.setManagingOrganization(null);
-        patient.getCareProvider().clear();
-        order.setSubject(new Reference(patient.getId()));
+        //patient.getCareProvider().clear();
+        order.setFor(new Reference(patient.getId()));
 
-        taskResponse.setRequest(new Reference(order.getId()));
+        //taskResponse.setRequest(new Reference(order.getId()));
 
         sourcePractitioner.setId("#pracsource");
-        sourcePractitioner.getPractitionerRole().clear();
+        //sourcePractitioner.getPractitionerRole().clear();
 
         destinationPractice.setId("#pracdestination");
 
-        order.setTarget(new Reference(destinationPractice.getId()));
-        order.setSource(new Reference(sourcePractitioner.getId()));
+        //order.setTarget(new Reference(destinationPractice.getId()));
+        //order.setSource(new Reference(sourcePractitioner.getId()));
 
         gp.setId("#gp");
-        gp.getPractitionerRole().clear();
-        taskResponse.setWho(new Reference(gp.getId()));
+        //gp.getPractitionerRole().clear();
+        //taskResponse.setWho(new Reference(gp.getId()));
 
         report.setId("#report");
         // Remove the results. We are not sending the report here, just enough information to work with
         report.getResult().clear();
-        report.setSubject(new Reference(patient.getId()));
-        report.setPerformer(new Reference(sourcePractitioner.getId()));
-        report.getRequest().clear();
+        report.setSubject(new Reference(patient));
+        //report.getPerformer().(new Reference(sourcePractitioner));
+        //report.getRequest().clear();
 
 
-        order.getDetail().get(0).setReference(report.getId());
+        //order.getDetail().get(0).setReference(report.getId());
 
         bundle.addEntry().setResource(taskResponse);
 
@@ -160,10 +162,10 @@ public class UHSPoCTask {
 
     }
 
-    public static OrderResponse buildFHIROrderResponse(Order order, Patient patient, Practitioner gp) {
+    public static Task buildFHIROrderResponse(Task order, Patient patient, Practitioner gp) {
 
 
-        OrderResponse task = new OrderResponse();
+        Task task = new Task();
 
         task.addIdentifier()
                 .setSystem("https://fhir.uhs.nhs.uk/MobileApp/OrderResponse")
@@ -172,13 +174,13 @@ public class UHSPoCTask {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
 
-        task.setDate(new Date());
+        task.setAuthoredOn(new Date());
 
-        task.getWho().setReference(gp.getId());
+        //task.getWho().setReference(gp.getId());
 
         //task.setTarget(new ResourceReferenceDt("https://fhir.uhs.nhs.uk/Device/OrderComms"));
-        task.getRequest().setResource(order);
-        task.setOrderStatus(OrderResponse.OrderStatus.COMPLETED);
+      //  task.getRequest().setResource(order);
+        task.setStatus(Task.TaskStatus.COMPLETED);
 
         //order.addDetail().setReference("https://fhir.uhs.nhs.uk/OrderComms/DiagnosticReport/12345ReportId");
 
