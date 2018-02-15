@@ -1,0 +1,78 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>FHIR Renderer</title>
+    <style type="text/css">
+        body { color: #000000; font-size: 12pt; line-height: normal; font-family: Verdana, Arial, sans-serif; margin: 10px; }
+        h1 { font-size: 14pt; font-weight: bold; color: #000000; margin-top: 5px; margin-bottom: 15px;}
+        h2 { font-size: 12pt; font-weight: bold; color: #000000; margin-top: 5px; margin-bottom: 15px; }
+        h3 { font-size: 10pt; font-weight: bold; color: #000000; margin-top: 5px; margin-bottom: 15px; }
+        h4 { font-size: 10pt; font-weight: bold; text-decoration: underline; color: #000000; margin-top: 5px; margin-bottom: 15px; }
+        h5 { font-size: 10pt; font-weight: normal; text-decoration: underline;  color: #000000; margin-top: 5px; margin-bottom: 15px; }
+        h6 { font-size: 10pt; font-weight: normal; color: #000000; margin-top: 5px; margin-bottom: 15px; }
+        table { border: 0px solid #000000; table-layout: fixed; text-align: left; width: 100%;}
+        th.default {padding: 3px; color: #000000; background-color: #eeeeee; text-align: left;}
+        th {padding: 3px;}
+        td {padding: 3px;}
+        /*Banner styles*/
+        div.banner {margin-bottom: 30px; border: 1px solid #000000; background-color: #eeeeee;}
+        div.banner TABLE {border: 1px solid black; background-color: #ffffff; margin-bottom: 5px; }
+        div.banner TD {background-color: #eeeeee; vertical-align: top; padding: 3px; font-weight: normal; font-size: 12pt;}
+        div.banner TH {background-color: #dddddd; vertical-align: top; padding: 3px; font-weight: bold; font-size: 12pt;}
+        div.banner TABLE P {margin: 0;}
+        div.banner-partial-cream {margin-bottom: 30px; border: 1px solid #000000; background-color: #ffffee; padding-left: 5px;}
+        div.banner-partial-cream TABLE {border: 0px; background-color: #ffffee;}
+        div.banner-partial-cream TD {background-color: #ffffee; vertical-align: top; padding: 3px; font-weight: bold; font-size: 12pt;}
+        div.banner-partial-cream TH {background-color: #ffffee; vertical-align: top; padding: 3px; font-weight: normal; font-style:italic; font-size: 12pt;}
+        div.banner-partial-cream TABLE P {margin: 0;}
+        div.banner-partial-violet {margin-bottom: 30px; border: 1px solid #000000; background-color: #eeeeff; padding-left: 5px;}
+        div.banner-partial-violet TABLE {border: 0px; background-color: #eeeeff; }
+        div.banner-partial-violet TD {background-color: #eeeeff; vertical-align: top; padding: 3px; font-weight: bold; font-size: 12pt;}
+        div.banner-partial-violet TH {background-color: #ffffee; vertical-align: top; padding: 3px; font-weight: normal; font-style:italic; font-size: 12pt;}
+        div.banner-partial-violet TABLE P {margin: 0;}
+        div.banner-partial-gray {margin-bottom: 30px; border: 0px solid #000000; background-color: #ffffff; padding-left: 5px;}
+        div.banner-partial-gray TABLE {border: 1px solid black; background-color: #ffffff; margin-bottom: 5px; }
+        div.banner-partial-gray TD {background-color: #eeeeee; vertical-align: top; padding: 3px; font-weight: normal; font-size: 12pt;}
+        div.banner-partial-gray TH {background-color: #dddddd; vertical-align: top; padding: 3px; font-weight: bold; font-size: 12pt;}
+        div.banner-partial-gray TABLE P {margin: 0; }
+        .label {font-style:italic; font-weight: normal;}
+        .bold {font-weight: bold;}
+        .bold-italic {font-style:italic; font-weight: bold;}
+
+        /******************** CONFIG OPTIONS FOR RENDERING - START ********************/
+        /************************************************************************************************/
+        /* The FHIR Renderer has two options to either display the Full resource with all elements or a Partial resource with chosen elements,
+            to hide a particular view then un-comment the statement to hide, e.g. un-comment display:none so it will not display that particular view. */
+        #bundledetails-full {display: none;}
+        #full-resources {display: none;}
+        //#partial-resources {display: none;}
+        /**********************************************************************************************/
+        /******************** CONFIG OPTIONS FOR RENDERING - END ********************/
+    </style>
+</head>
+<body>
+<div>
+<hr id="patient-full" class="banner">
+    <h1>Patient Demographics</h1>
+    <table>
+        <tbody>
+        <tr>
+
+            <th><strong>Name: </strong></th>
+            <th><strong>NHS Number: </strong></th>
+            <th><strong>Date Of Birth: </strong></th>
+        </tr>
+        <tr>
+            <td th:text="${patient.getName()}"></td>
+            <td th:text="${patient.getNHSNumber()}"></td>
+            <td th:text="${patient.getDateOfBirth()}"></td>
+        </tr>
+        </tbody>
+    </table>
+   </hr>
+</div>
+
+
+<div th:remove="tag" th:utext="${body}"></div>
+</body>
+</html>
