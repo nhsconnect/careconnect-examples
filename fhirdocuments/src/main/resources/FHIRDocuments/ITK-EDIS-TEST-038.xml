@@ -1,0 +1,1177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--This xml example is for illustrative purposes only and has not been clinically verified-->
+<Bundle xmlns="http://hl7.org/fhir">
+ <id value="f862ec24-e05a-42d1-aea5-d0a9c092e6ae"/>
+ <meta>
+  <profile value="https://fhir.nhs.uk/STU3/StructureDefinition/ITK-Document-Bundle-1"/>
+ </meta>
+ <identifier>
+  <system value="https://tools.ietf.org/html/rfc4122"/>
+  <value value="f36927ef-7703-45ed-b0e5-6ec6723cf0f6"/>
+ </identifier>
+ <type value="document"/>
+ <entry>
+  <fullUrl value="urn:uuid:3aa7a8bf-0628-44f2-8c1f-bdf81ac54b14"/>
+  <resource>
+   <!--A resource carrying a set of healthcare-related information about the patient-->
+   <Composition>
+    <id value="3aa7a8bf-0628-44f2-8c1f-bdf81ac54b14"/>
+    <meta>
+     <profile value="https://fhir.nhs.uk/STU3/StructureDefinition/ITK-MH-Composition-1"/>
+    </meta>
+    <!--Extension carrying reference(s) to the document recipients-->
+    <!--Patient's GP-->
+    <extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-ITK-InformationRecipient-1">
+     <valueReference>
+      <reference value="urn:uuid:5e414a77-d394-4248-a631-00e45ddb64a0"/>
+     </valueReference>
+    </extension>
+    <!--Community Nurse Team member -->
+    <extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-ITK-InformationRecipient-1">
+     <valueReference>
+      <reference value="urn:uuid:a74e1942-8ff8-4c4a-9edb-7b5e4e2f198c"/>
+     </valueReference>
+    </extension>
+    <!-- Extension to carry details of the Correspondence Care Setting Type. -->
+    <extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-ITK-CareSettingType-1">
+     <valueCodeableConcept>
+      <coding>
+       <system value="http://snomed.info/sct"/>
+       <code value="892811000000109"/>
+       <display value="Adult mental health service"/>
+      </coding>
+     </valueCodeableConcept>
+    </extension>
+    <identifier>
+     <value value="6d377e88-ff86-4db9-9c9b-6c61411c50f9"/>
+    </identifier>
+    <!--The workflow/clinical status of this composition. The status is a marker for the clinical standing of the document.-->
+    <status value="final"/>
+    <type>
+     <!--Discharge Summary document type-->
+     <coding>
+      <system value="http://snomed.info/sct"/>
+      <code value="373942005"/>
+      <display value="Discharge summary"/>
+     </coding>
+    </type>
+    <!--Reference to the patient subject of the Composition-->
+    <subject>
+     <reference value="urn:uuid:f919dedc-3c62-462f-a171-8d86c5aaa074"/>
+    </subject>
+    <!--Reference to the clinical encounter or type of care this documentation is associated with.-->
+    <encounter>
+     <reference value="urn:uuid:cf080749-31c9-4ff6-b2d8-a2dd3dce851c"/>
+    </encounter>
+    <!--The composition editing time, when the composition was last logically changed by the author.-->
+    <date value="2015-04-07T17:30:00+00:00"/>
+    <!--Identifies who is responsible for the information in the composition, not necessarily who typed it in-->
+    <author>
+     <reference value="urn:uuid:04d089aa-be17-42fd-a6fc-961245696263"/>
+    </author>
+    <title value="Discharge summary"/>
+    <!--The code specifying the level of confidentiality of the Composition.-->
+    <confidentiality value="V"/>
+    <!--Identifies the organization responsible for ongoing maintenance of and access to the composition/document information.-->
+    <custodian>
+     <reference value="urn:uuid:6de0a05a-d4b2-4f67-b0d4-80cc2a670f90"/>
+    </custodian>
+    <section>
+     <!--The label for this particular section. This will be part of the rendered content for the document, and is often used to build a table of contents.-->
+     <title value="Admission details"/>
+     <!--A SNOMED CT code identifying the kind of content contained within the section-->
+     <code>
+      <coding>
+       <system value="http://snomed.info/sct"/>
+       <code value="886781000000108"/>
+       <display value="Admission details"/>
+      </coding>
+     </code>
+     <!--A human-readable narrative that contains the attested content of the section-->
+     <text>
+      <status value="generated"/>
+      <div xmlns="http://www.w3.org/1999/xhtml">
+       <table width="100%">
+        <tbody>
+         <tr>
+          <th>Admission method</th>
+          <td>Emergency</td>
+         </tr>
+         <tr>
+          <th>Date of admission</th>
+          <td>13-Mar-2015</td>
+         </tr>
+         <tr>
+          <th>Source of admission</th>
+          <td>Local park</td>
+         </tr>
+        </tbody>
+       </table>
+      </div>
+     </text>
+     <!--Specifies the order applied to the items in the section entries-->
+     <orderedBy>
+      <coding>
+       <system value="http://hl7.org/fhir/list-order"/>
+       <code value="system"/>
+       <display value="Sorted by System"/>
+      </coding>
+     </orderedBy>
+     <!--Reference to the encounter resource where information for this section can be found-->
+     <entry>
+      <reference value="urn:uuid:cf080749-31c9-4ff6-b2d8-a2dd3dce851c"/>
+     </entry>
+    </section>
+    <section>
+     <title value="Assessment scales"/>
+     <code>
+      <coding>
+       <system value="http://snomed.info/sct"/>
+       <code value="887141000000103"/>
+       <display value="Assessment scales"/>
+      </coding>
+     </code>
+     <text>
+      <status value="generated"/>
+      <div xmlns="http://www.w3.org/1999/xhtml">
+       <table width="100%">
+        <tbody>
+         <tr>
+          <th>Assessment scales</th>
+          <td>HoNOS Total = 19</td>
+         </tr>
+        </tbody>
+       </table>
+      </div>
+     </text>
+    </section>
+    <section>
+     <title value="Clinical summary"/>
+     <code>
+      <coding>
+       <system value="http://snomed.info/sct"/>
+       <code value="887181000000106"/>
+       <display value="Clinical summary"/>
+      </coding>
+     </code>
+     <text>
+      <status value="generated"/>
+      <div xmlns="http://www.w3.org/1999/xhtml">
+       <table width="100%">
+        <tbody>
+         <tr>
+          <th>Clinical Summary</th>
+         </tr>
+         <tr>
+          <td>Jon was taken to casualty and admitted to a medical ward two weeks ago after taking a serious overdose of paracetamol and drinking half a bottle of whisky.</td>
+         </tr>
+         <tr>
+          <td>He was found unconscious face down among the bushes in a local park.</td>
+         </tr>
+         <tr>
+          <td>Jon had been depressed for some months prior to this having lost his job as a building surveyor.</td>
+         </tr>
+         <tr>
+          <td>He was having difficulty sleeping and often waking early, sometimes at three of four in the morning.</td>
+         </tr>
+         <tr>
+          <td>While on the ward his suicidal urges have reduced and he has been started on an atypical antidepressant to good effect.</td>
+         </tr>
+         <tr>
+          <td>He now regrets attempting to take his own life, is thankful for the support of his family and looks forward 
+to commencing psychological therapies for depression (IAPT) and seeking new employment.</td>
+         </tr>
+        </tbody>
+       </table>
+      </div>
+     </text>
+    </section>
+    <section>
+     <title value="Discharge details"/>
+     <code>
+      <coding>
+       <system value="http://snomed.info/sct"/>
+       <code value="886811000000106"/>
+       <display value="Discharge details"/>
+      </coding>
+     </code>
+     <text>
+      <status value="generated"/>
+      <div xmlns="http://www.w3.org/1999/xhtml">
+       <table width="100%">
+        <tbody>
+         <tr>
+          <th>Discharging consultant</th>
+          <td>Dr Scott</td>
+         </tr>
+         <tr>
+          <th>Date of discharge</th>
+          <td>06-Apr-2015</td>
+         </tr>
+         <tr>
+          <th>Time of discharge</th>
+          <td>13:00</td>
+         </tr>
+         <tr>
+          <th>Discharge method</th>
+          <td>Patient discharged on clinical advice</td>
+         </tr>
+         <tr>
+          <th>Discharge type</th>
+          <td>Usual  residence</td>
+         </tr>
+        </tbody>
+       </table>
+      </div>
+     </text>
+     <orderedBy>
+      <coding>
+       <system value="http://hl7.org/fhir/list-order"/>
+       <code value="system"/>
+       <display value="Sorted by System"/>
+      </coding>
+     </orderedBy>
+     <!--Reference to the Encounter entry as the source of information for this section-->
+     <entry>
+      <reference value="urn:uuid:cf080749-31c9-4ff6-b2d8-a2dd3dce851c"/>
+     </entry>
+    </section>
+    <section>
+     <title value="Individual requirements"/>
+     <code>
+      <coding>
+       <system value="http://snomed.info/sct"/>
+       <code value="1052901000000109"/>
+       <display value="Individual requirement"/>
+      </coding>
+     </code>
+     <text>
+      <status value="generated"/>
+      <div xmlns="http://www.w3.org/1999/xhtml">
+       <table width="100%">
+        <tbody>
+         <tr>
+          <th>Individual requirement</th>
+          <td>No special requirements but always wants family to be kept informed</td>
+         </tr>
+        </tbody>
+       </table>
+      </div>
+     </text>
+    </section>
+    <section>
+     <title value="Information and advice given"/>
+     <code>
+      <coding>
+       <system value="http://snomed.info/sct"/>
+       <code value="1052951000000105"/>
+       <display value="Information and advice given"/>
+      </coding>
+     </code>
+     <text>
+      <status value="generated"/>
+      <div xmlns="http://www.w3.org/1999/xhtml">
+       <table width="100%">
+        <tbody>
+         <tr>
+          <th>Information and advice given</th>
+          <td>CBT for Depression referral to local IAPT services - High Intensity</td>
+         </tr>
+        </tbody>
+       </table>
+      </div>
+     </text>
+    </section>
+    <section>
+     <title value="Investigation results"/>
+     <code>
+      <coding>
+       <system value="http://snomed.info/sct"/>
+       <code value="1082101000000102"/>
+       <display value="Investigation results"/>
+      </coding>
+     </code>
+     <text>
+      <status value="generated"/>
+      <div xmlns="http://www.w3.org/1999/xhtml">
+       <table>
+        <tbody>
+         <tr>
+          <th>Investigation results</th>
+         </tr>
+         <tr>
+          <td>
+           <pre>
+Full Blood Count      
+      
+Test						Value			Units			Reference Range
+White Cell Count				11.1			x10*9/L			3.5 - 10.0
+Red Cell Count					5.0			x10*12/L		4.25 - 5.75 
+Haemoglobin					150			g/L			13.0 - 17.0
+Haematocrit					0.230						0.400 - 0.500
+Mean Cell Volume				90			fL			84 - 98
+Mean Cell Hb					33.0			pg			27.5 - 32.0
+Mean Cell Hb Con				34.0			pg			31.0 - 35.0
+RDW						12.0			%			&lt; 14.5
+Platelet Count					300			x10*9/L			150 - 400
+
+Machine Differential      
+      
+Test                  				Value			Units        		Reference Range
+Neutrophils					7.0			x10*9/L			1.7 - 7.5
+Lymphocytes					3.5			x10*9/L			1.0 - 3.5   
+Monocytes					0.3			x10*9/L			&lt; 0.6  
+Eosinophils					0.4			x10*9/L			&lt; 0.4  
+Basophils					0.1			x10*9/L			&lt; 0.1 
+LUCs						0.2			x10*9/L			&lt; 0.4 
+      </pre>
+          </td>
+         </tr>
+        </tbody>
+       </table>
+      </div>
+     </text>
+    </section>
+    <section>
+     <title value="Legal information"/>
+     <code>
+      <coding>
+       <system value="http://snomed.info/sct"/>
+       <code value="886961000000102"/>
+       <display value="Legal information"/>
+      </coding>
+     </code>
+     <text>
+      <status value="generated"/>
+      <div xmlns="http://www.w3.org/1999/xhtml">
+       <table width="100%">
+        <tbody>
+         <tr>
+          <th>Consent for treatment/ intervention record</th>
+          <td>Yes</td>
+         </tr>
+         <tr>
+          <th>Consent for information sharing</th>
+          <td>Yes</td>
+         </tr>
+         <tr>
+          <th>Mental Health Act or equivalent status</th>
+          <td>None</td>
+         </tr>
+        </tbody>
+       </table>
+      </div>
+     </text>
+    </section>
+    <section>
+     <title value="Participation in research"/>
+     <code>
+      <coding>
+       <system value="http://snomed.info/sct"/>
+       <code value="886751000000102"/>
+       <display value="Participation in research"/>
+      </coding>
+     </code>
+     <text>
+      <status value="generated"/>
+      <div xmlns="http://www.w3.org/1999/xhtml">
+       <table width="100%">
+        <tbody>
+         <tr>
+          <th>Participation in research</th>
+          <td>Yes - patient agrees to be approached for potential participation in appropriate research</td>
+         </tr>
+        </tbody>
+       </table>
+      </div>
+     </text>
+    </section>
+    <section>
+     <title value="Patient and carer concerns, expectations and wishes"/>
+     <code>
+      <coding>
+       <system value="http://snomed.info/sct"/>
+       <code value="1052941000000107"/>
+       <display value="Patient and carer concerns, expectations and wishes"/>
+      </coding>
+     </code>
+     <text>
+      <status value="generated"/>
+      <div xmlns="http://www.w3.org/1999/xhtml">
+       <table width="100%">
+        <tbody>
+         <tr>
+          <th>Patient and carer concerns, expectations and wishes</th>
+          <td>Patient stated "I do not want ECT"</td>
+         </tr>
+        </tbody>
+       </table>
+      </div>
+     </text>
+    </section>
+    <section>
+     <title value="Person completing record"/>
+     <code>
+      <coding>
+       <system value="http://snomed.info/sct"/>
+       <code value="887231000000104"/>
+       <display value="Person completing record"/>
+      </coding>
+     </code>
+     <text>
+      <status value="generated"/>
+      <div xmlns="http://www.w3.org/1999/xhtml">
+       <table width="100%">
+        <tbody>
+         <tr>
+          <th>Name</th>
+          <td>Dr Mike Scott</td>
+         </tr>
+         <tr>
+          <th>Role</th>
+          <td>Consultant</td>
+         </tr>
+         <tr>
+          <th>Date completed</th>
+          <td>07-Apr-2015</td>
+         </tr>
+         <tr>
+          <th>Contact details</th>
+          <td>Phone: 0113 111222</td>
+         </tr>
+        </tbody>
+       </table>
+      </div>
+     </text>
+    </section>
+    <section>
+     <title value="Plan and requested actions"/>
+     <code>
+      <coding>
+       <system value="http://snomed.info/sct"/>
+       <code value="887201000000105"/>
+       <display value="Plan and requested actions"/>
+      </coding>
+     </code>
+     <text>
+      <status value="generated"/>
+      <div xmlns="http://www.w3.org/1999/xhtml">
+       <table width="100%">
+        <tbody>
+         <tr>
+          <th>Actions</th>
+          <td>Routine follow up will be needed from Primary Care e.g. Well man clinic.  The Community Consultant responsible for this action is Dr Gillingham working for the Leeds Recovery and Support Team.</td>
+         </tr>
+         <tr>
+          <th>Care planning arrangements</th>
+          <td>CPA Status and 117 Aftercare: Follow up will be made by the Leeds Recovery and Support team. 7 Day Follow up will be done by the community team.</td>
+         </tr>
+        </tbody>
+       </table>
+      </div>
+     </text>
+    </section>
+    <section>
+     <title value="Referrer details"/>
+     <code>
+      <coding>
+       <system value="http://snomed.info/sct"/>
+       <code value="1052891000000108"/>
+       <display value="Referrer details"/>
+      </coding>
+     </code>
+     <text>
+      <status value="generated"/>
+      <div xmlns="http://www.w3.org/1999/xhtml">
+       <table width="100%">
+        <tbody>
+         <tr>
+          <th>Referrer details</th>
+          <td>Brought to Emergency department by family member</td>
+         </tr>
+        </tbody>
+       </table>
+      </div>
+     </text>
+    </section>
+    <section>
+     <title value="Safety alerts"/>
+     <code>
+      <coding>
+       <system value="http://snomed.info/sct"/>
+       <code value="886931000000107"/>
+       <display value="Safety alerts"/>
+      </coding>
+     </code>
+     <text>
+      <status value="generated"/>
+      <div xmlns="http://www.w3.org/1999/xhtml">
+       <table width="100%">
+        <tbody>
+         <tr>
+          <th>Risks to self</th>
+          <td>Suicidality - serious past attempts</td>
+         </tr>
+        </tbody>
+       </table>
+      </div>
+     </text>
+    </section>
+    <section>
+     <title value="Social context"/>
+     <code>
+      <coding>
+       <system value="http://snomed.info/sct"/>
+       <code value="887051000000101"/>
+       <display value="Social context"/>
+      </coding>
+     </code>
+     <text>
+      <status value="generated"/>
+      <div xmlns="http://www.w3.org/1999/xhtml">
+       <table width="100%">
+        <tbody>
+         <tr>
+          <th>Household composition</th>
+          <td>Lives with wife and two teenage daughters</td>
+         </tr>
+         <tr>
+          <th>Alcohol intake</th>
+          <td>Does not drink</td>
+         </tr>
+        </tbody>
+       </table>
+      </div>
+     </text>
+    </section>
+   </Composition>
+  </resource>
+ </entry>
+ <entry>
+  <fullUrl value="urn:uuid:cf080749-31c9-4ff6-b2d8-a2dd3dce851c"/>
+  <resource>
+   <!--Encounter resource providing context for the discharge-->
+   <Encounter>
+    <id value="cf080749-31c9-4ff6-b2d8-a2dd3dce851c"/>
+    <meta>
+     <profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-ITK-Encounter-1"/>
+    </meta>
+    <identifier>
+     <system value="https://tools.ietf.org/html/rfc4122"/>
+     <value value="24c91f00-dde0-4662-bdce-2e483fe89daa"/>
+    </identifier>
+    <status value="finished"/>
+    <class>
+     <system value="http://hl7.org/fhir/v3-ActEncounterCode"/>
+     <code value="IMP"/>
+     <display value="inpatient encounter"/>
+    </class>
+    <!--Specific type of encounter-->
+    <type>
+     <coding>
+      <system value="http://snomed.info/sct"/>
+      <code value="24882007"/>
+      <display value="Medical consultation on hospital inpatient"/>
+     </coding>
+    </type>
+    <!--Reference to the patient as the subject of the Encounter-->
+    <subject>
+     <reference value="urn:uuid:f919dedc-3c62-462f-a171-8d86c5aaa074"/>
+    </subject>
+    <!--	List of participant(s) involved in the encounter-->
+    <participant>
+     <type>
+      <coding>
+       <system value="http://hl7.org/fhir/v3/ParticipationType"/>
+       <code value="ATND"/>
+       <display value="attender"/>
+      </coding>
+     </type>
+     <!--Reference to the person (Practitioner) involved in the encounter other than the patient, in this case the overseeing clinician, Dr. Daniel Beck -->
+     <individual>
+      <reference value="urn:uuid:04d089aa-be17-42fd-a6fc-961245696263"/>
+     </individual>
+    </participant>
+    <participant>
+     <type>
+      <coding>
+       <system value="http://hl7.org/fhir/v3/ParticipationType"/>
+       <code value="DIS"/>
+       <display value="discharger"/>
+      </coding>
+     </type>
+     <!--Reference to the person (Practitioner) involved in the encounter other than the patient, in this case the discharging clinician, Dr. Mike Scott -->
+     <individual>
+      <reference value="urn:uuid:44c853c7-a22f-49ce-8eb5-27a05c83e6ec"/>
+     </individual>
+    </participant>
+    <!--Reference to the patient's father who was present during the encounter-->
+    <participant>
+     <type>
+      <coding>
+       <system value="http://hl7.org/fhir/v3/ParticipationType"/>
+       <code value="PART"/>
+       <display value="Participation"/>
+      </coding>
+     </type>
+     <individual>
+      <reference value="urn:uuid:b1d75244-5ded-4c55-b4b3-0f7b639d0b49"/>
+     </individual>
+    </participant>
+    <!--	The start and end time of the encounter-->
+    <period>
+     <start value="2015-03-13T12:00:00+00:00"/>
+     <end value="2015-04-06T12:00:00+00:00"/>
+    </period>
+    <!--	The list of diagnoses relevant to this encounter-->
+    <diagnosis>
+     <condition>
+      <!--Reason the encounter takes place (resource)-->
+      <reference value="urn:uuid:11ae3617-f898-4503-a895-54eed614a574"/>
+     </condition>
+     <!--Role that this diagnosis has within the encounter-->
+     <role>
+      <coding>
+       <system value="http://hl7.org/fhir/diagnosis-role"/>
+       <code value="DD"/>
+       <display value="Discharge diagnosis"/>
+      </coding>
+     </role>
+    </diagnosis>
+    <hospitalization>
+     <!--From where patient was admitted-->
+     <admitSource>
+      <coding>
+       <system value="http://hl7.org/fhir/admit-source"/>
+       <code value="emd"/>
+       <display value="From accident/emergency department"/>
+      </coding>
+     </admitSource>
+     <!--	Category or kind of location after discharge-->
+     <dischargeDisposition>
+      <coding>
+       <system value="http://hl7.org/fhir/discharge-disposition"/>
+       <code value="home"/>
+       <display value="Home"/>
+      </coding>
+     </dischargeDisposition>
+    </hospitalization>
+    <!--List of locations where the patient has been-->
+    <location>
+     <!--Location the encounter takes place-->
+     <location>
+      <reference value="urn:uuid:cd265d1d-2254-4671-8f97-37876c9bac6a"/>
+     </location>
+    </location>
+   </Encounter>
+  </resource>
+ </entry>
+ <entry>
+  <fullUrl value="urn:uuid:f919dedc-3c62-462f-a171-8d86c5aaa074"/>
+  <resource>
+   <Patient>
+    <id value="f919dedc-3c62-462f-a171-8d86c5aaa074"/>
+    <meta>
+     <profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Patient-1"/>
+    </meta>
+    <extension url="https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-EthnicCategory-1">
+     <valueCodeableConcept>
+      <coding>
+       <system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-EthnicCategory-1"/>
+       <code value="CA"/>
+       <display value="English"/>
+      </coding>
+     </valueCodeableConcept>
+    </extension>
+    <extension url="https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-ResidentialStatus-1">
+     <valueCodeableConcept>
+      <coding>
+       <system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-ResidentialStatus-1"/>
+       <code value="H"/>
+       <display value="UK Resident"/>
+      </coding>
+     </valueCodeableConcept>
+    </extension>
+    <extension url="https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-TreatmentCategory-1">
+     <valueCodeableConcept>
+      <coding>
+       <system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-TreatmentCategory-1"/>
+       <code value="8"/>
+       <display value="Not applicable"/>
+      </coding>
+     </valueCodeableConcept>
+    </extension>
+    <extension url="https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-NHSCommunication-1">
+     <extension url="language">
+      <valueCodeableConcept>
+       <coding>
+        <system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-HumanLanguage-1"/>
+        <code value="en"/>
+        <display value="English"/>
+       </coding>
+      </valueCodeableConcept>
+     </extension>
+     <extension url="preferred">
+      <valueBoolean value="true"/>
+     </extension>
+     <extension url="modeOfCommunication">
+      <valueCodeableConcept>
+       <coding>
+        <system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-LanguageAbilityMode-1"/>
+        <code value="ESP"/>
+        <display value="Expressed spoken"/>
+       </coding>
+      </valueCodeableConcept>
+     </extension>
+     <extension url="modeOfCommunication">
+      <valueCodeableConcept>
+       <coding>
+        <system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-LanguageAbilityMode-1"/>
+        <code value="RWR"/>
+        <display value="Received written"/>
+       </coding>
+      </valueCodeableConcept>
+     </extension>
+     <extension url="communicationProficiency">
+      <valueCodeableConcept>
+       <coding>
+        <system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-LanguageAbilityProficiency-1"/>
+        <code value="E"/>
+        <display value="Excellent"/>
+       </coding>
+      </valueCodeableConcept>
+     </extension>
+     <extension url="interpreterRequired">
+      <valueBoolean value="false"/>
+     </extension>
+    </extension>
+    <identifier>
+     <extension url="https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-NHSNumberVerificationStatus-1">
+      <valueCodeableConcept>
+       <coding>
+        <system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-NHSNumberVerificationStatus-1"/>
+        <code value="01"/>
+        <display value="Number present and verified"/>
+       </coding>
+      </valueCodeableConcept>
+     </extension>
+     <system value="https://fhir.nhs.uk/Id/nhs-number"/>
+     <value value="9657702070"/>
+    </identifier>
+    <active value="true"/>
+    <name>
+     <use value="usual"/>
+     <family value="Burrows"/>
+     <given value="Jon"/>
+     <prefix value="Mr"/>
+    </name>
+    <gender value="male"/>
+    <birthDate value="1970-09-10"/>
+    <address>
+     <use value="home"/>
+     <line value="22, Brown Street, Overtown"/>
+     <city value="Leeds"/>
+     <district value="West Yorkshire"/>
+     <postalCode value="LS22 2JK"/>
+    </address>
+    <maritalStatus>
+     <coding>
+      <system value="http://hl7.org/fhir/v3/MaritalStatus"/>
+      <code value="M"/>
+      <display value="Married"/>
+     </coding>
+    </maritalStatus>
+    <contact>
+     <relationship>
+      <coding>
+       <system value="https://fhir.nhs.uk/STU3/PersonRelationshipType-1"/>
+       <code value="22"/>
+       <display value="Wife"/>
+      </coding>
+     </relationship>
+     <name>
+      <use value="usual"/>
+      <family value="Burrows"/>
+      <given value="Eve"/>
+      <prefix value="Mrs"/>
+     </name>
+     <telecom>
+      <system value="phone"/>
+      <value value="07912678910"/>
+      <use value="mobile"/>
+     </telecom>
+     <telecom>
+      <system value="email"/>
+      <value value="eburrows@mymail.com"/>
+     </telecom>
+     <gender value="female"/>
+    </contact>
+   </Patient>
+  </resource>
+ </entry>
+ <!--Related person example-->
+ <entry>
+  <fullUrl value="urn:uuid:b1d75244-5ded-4c55-b4b3-0f7b639d0b49"/>
+  <resource>
+   <RelatedPerson>
+    <id value="b1d75244-5ded-4c55-b4b3-0f7b639d0b49"/>
+    <meta>
+     <profile value="https://fhir.nhs.uk/STU3/StructureDefinition/ITK-RelatedPerson-1"/>
+    </meta>
+    <patient>
+     <reference value="urn:uuid:f919dedc-3c62-462f-a171-8d86c5aaa074"/>
+    </patient>
+    <relationship>
+     <coding>
+      <system value="http://hl7.org/fhir/v3/RoleCode"/>
+      <code value="FTH"/>
+      <display value="father"/>
+     </coding>
+    </relationship>
+    <name>
+     <use value="official"/>
+     <family value="Burrows"/>
+     <given value="Andrew"/>
+    </name>
+    <telecom>
+     <system value="phone"/>
+     <value value="07998367352"/>
+     <use value="mobile"/>
+    </telecom>
+    <gender value="male"/>
+    <address>
+     <use value="home"/>
+     <line value="18, Hollin Street"/>
+     <city value="Leeds"/>
+     <postalCode value="LS8 6YY"/>
+    </address>
+   </RelatedPerson>
+  </resource>
+ </entry>
+ <!--Practitioner-Example-1-->
+ <entry>
+  <fullUrl value="urn:uuid:5e414a77-d394-4248-a631-00e45ddb64a0"/>
+  <resource>
+   <Practitioner>
+    <id value="5e414a77-d394-4248-a631-00e45ddb64a0"/>
+    <meta>
+     <profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Practitioner-1"/>
+    </meta>
+    <identifier>
+     <system value="https://fhir.nhs.uk/Id/sds-user-id"/>
+     <value value="GP12345600"/>
+    </identifier>
+    <name>
+     <family value="Lozo"/>
+     <given value="James"/>
+     <prefix value="Dr"/>
+    </name>
+    <telecom>
+     <system value="phone"/>
+     <value value="01634111222"/>
+     <use value="work"/>
+    </telecom>
+    <telecom>
+     <system value="email"/>
+     <value value="James.Lozo@MMC.co.uk"/>
+    </telecom>
+   </Practitioner>
+  </resource>
+ </entry>
+ <entry>
+  <fullUrl value="urn:uuid:04d089aa-be17-42fd-a6fc-961245696263"/>
+  <resource>
+   <Practitioner>
+    <id value="04d089aa-be17-42fd-a6fc-961245696263"/>
+    <meta>
+     <profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Practitioner-1"/>
+    </meta>
+    <active value="true"/>
+    <name>
+     <family value="Beck"/>
+     <given value="Daniel"/>
+     <prefix value="Dr"/>
+    </name>
+   </Practitioner>
+  </resource>
+ </entry>
+ <entry>
+  <fullUrl value="urn:uuid:44c853c7-a22f-49ce-8eb5-27a05c83e6ec"/>
+  <resource>
+   <Practitioner>
+    <id value="44c853c7-a22f-49ce-8eb5-27a05c83e6ec"/>
+    <meta>
+     <profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Practitioner-1"/>
+    </meta>
+    <active value="true"/>
+    <name>
+     <family value="Scott"/>
+     <given value="Mike"/>
+     <prefix value="Dr"/>
+    </name>
+    <telecom>
+     <system value="phone"/>
+     <value value="0113111222"/>
+     <use value="work"/>
+    </telecom>
+   </Practitioner>
+  </resource>
+ </entry>
+ <entry>
+  <fullUrl value="urn:uuid:a74e1942-8ff8-4c4a-9edb-7b5e4e2f198c"/>
+  <resource>
+   <Practitioner>
+    <id value="a74e1942-8ff8-4c4a-9edb-7b5e4e2f198c"/>
+    <meta>
+     <profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Practitioner-1"/>
+    </meta>
+    <name>
+     <family value="Gillingham"/>
+     <given value="Gay"/>
+     <prefix value="Mrs"/>
+    </name>
+    <telecom>
+     <system value="phone"/>
+     <value value="01136323200"/>
+     <use value="work"/>
+    </telecom>
+   </Practitioner>
+  </resource>
+ </entry>
+ <!--Role details for referenced practitioners-->
+ <entry>
+  <fullUrl value="urn:uuid:001c858c-3e3d-4b58-be94-0f46c79d8bae"/>
+  <resource>
+   <PractitionerRole>
+    <id value="001c858c-3e3d-4b58-be94-0f46c79d8bae"/>
+    <meta>
+     <profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-PractitionerRole-1"/>
+    </meta>
+    <practitioner>
+     <reference value="urn:uuid:5e414a77-d394-4248-a631-00e45ddb64a0"/>
+    </practitioner>
+    <organization>
+     <reference value="urn:uuid:f9f24f89-646b-4a19-a6b1-cabfa3b612e1"/>
+    </organization>
+    <code>
+     <coding>
+      <system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-SDSJobRoleName-1"/>
+      <code value="R0260"/>
+      <display value="General Medical Practitioner"/>
+     </coding>
+    </code>
+   </PractitionerRole>
+  </resource>
+ </entry>
+ <entry>
+  <fullUrl value="urn:uuid:d53edede-fcb0-4bdd-9724-e4e5745f1b63"/>
+  <resource>
+   <PractitionerRole>
+    <id value="d53edede-fcb0-4bdd-9724-e4e5745f1b63"/>
+    <meta>
+     <profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-PractitionerRole-1"/>
+    </meta>
+    <practitioner>
+     <reference value="urn:uuid:04d089aa-be17-42fd-a6fc-961245696263"/>
+    </practitioner>
+    <organization>
+     <reference value="urn:uuid:6de0a05a-d4b2-4f67-b0d4-80cc2a670f90"/>
+    </organization>
+    <code>
+     <coding>
+      <system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-SDSJobRoleName-1"/>
+      <code value="R0050"/>
+      <display value="Consultant"/>
+     </coding>
+    </code>
+   </PractitionerRole>
+  </resource>
+ </entry>
+ <entry>
+  <fullUrl value="urn:uuid:18e9c262-e21a-4b32-bf59-eae2e549f5a4"/>
+  <resource>
+   <PractitionerRole>
+    <id value="18e9c262-e21a-4b32-bf59-eae2e549f5a4"/>
+    <meta>
+     <profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-PractitionerRole-1"/>
+    </meta>
+    <practitioner>
+     <reference value="urn:uuid:44c853c7-a22f-49ce-8eb5-27a05c83e6ec"/>
+    </practitioner>
+    <organization>
+     <reference value="urn:uuid:6de0a05a-d4b2-4f67-b0d4-80cc2a670f90"/>
+    </organization>
+    <code>
+     <coding>
+      <system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-SDSJobRoleName-1"/>
+      <code value="R0050"/>
+      <display value="Consultant"/>
+     </coding>
+    </code>
+   </PractitionerRole>
+  </resource>
+ </entry>
+ <entry>
+  <fullUrl value="urn:uuid:95fa0336-21f0-4cf1-b453-9117efbfbaa4"/>
+  <resource>
+   <PractitionerRole>
+    <id value="95fa0336-21f0-4cf1-b453-9117efbfbaa4"/>
+    <meta>
+     <profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-PractitionerRole-1"/>
+    </meta>
+    <practitioner>
+     <reference value="urn:uuid:a74e1942-8ff8-4c4a-9edb-7b5e4e2f198c"/>
+    </practitioner>
+    <organization>
+     <reference value="urn:uuid:6de0a05a-d4b2-4f67-b0d4-80cc2a670f90"/>
+    </organization>
+    <code>
+     <coding>
+      <system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-SDSJobRoleName-1"/>
+   	 <code value="R0050"/>
+      <display value="Consultant"/>
+     </coding>
+     <text value="Community Team Member"/>
+    </code>
+   </PractitionerRole>
+  </resource>
+ </entry>
+ <!--Organization-Example-1-->
+ <entry>
+  <fullUrl value="urn:uuid:f9f24f89-646b-4a19-a6b1-cabfa3b612e1"/>
+  <resource>
+   <Organization>
+    <id value="f9f24f89-646b-4a19-a6b1-cabfa3b612e1"/>
+    <meta>
+     <profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Organization-1"/>
+    </meta>
+    <identifier>
+     <system value="https://fhir.nhs.uk/Id/ods-organization-code"/>
+     <value value="GP123456"/>
+    </identifier>
+    <type>
+     <coding>
+      <system value="http://hl7.org/fhir/organization-type"/>
+      <code value="prov"/>
+      <display value="Healthcare Provider"/>
+     </coding>
+    </type>
+    <name value="MGP Medical Centre"/>
+    <telecom>
+     <system value="phone"/>
+     <value value="01634111223"/>
+     <use value="work"/>
+    </telecom>
+    <telecom>
+     <system value="email"/>
+     <value value="Admin@MMC.co.uk"/>
+    </telecom>
+    <address>
+     <use value="work"/>
+     <line value="1 MGP House"/>
+     <line value="Overtown"/>
+     <line value="Leeds"/>
+     <line value="LS21 7PA"/>
+    </address>
+   </Organization>
+  </resource>
+ </entry>
+ <!--Organization-Example-2-->
+ <entry>
+  <fullUrl value="urn:uuid:6de0a05a-d4b2-4f67-b0d4-80cc2a670f90"/>
+  <resource>
+   <Organization>
+    <id value="6de0a05a-d4b2-4f67-b0d4-80cc2a670f90"/>
+    <meta>
+     <profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Organization-1"/>
+    </meta>
+    <identifier>
+     <system value="https://fhir.nhs.uk/Id/ods-organization-code"/>
+     <value value="RGD"/>
+    </identifier>
+    <type>
+     <coding>
+      <system value="http://hl7.org/fhir/organization-type"/>
+      <code value="prov"/>
+      <display value="Healthcare Provider"/>
+     </coding>
+    </type>
+    <name value="Leeds Mental Health NHS Trust"/>
+    <telecom>
+     <system value="phone"/>
+     <value value="01132434444"/>
+     <use value="work"/>
+    </telecom>
+    <address>
+     <line value="Twenty One Fifty"/>
+     <line value="Thorpe Park"/>
+     <city value="Leeds"/>
+     <postalCode value="LS15 8ZB"/>
+    </address>
+   </Organization>
+  </resource>
+ </entry>
+ <entry>
+  <fullUrl value="urn:uuid:a89445ff-74c1-4617-83bb-d723fefa50b4"/>
+  <resource>
+   <Location>
+    <id value="a89445ff-74c1-4617-83bb-d723fefa50b4"/>
+    <meta>
+     <profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Location-1"/>
+    </meta>
+    <identifier>
+     <system value="https://fhir.nhs.uk/Id/ods-site-code"/>
+     <value value="RGDBL"/>
+    </identifier>
+    <name value="Becklin Centre"/>
+    <address>
+     <line value="Alma Street"/>
+     <city value="Leeds"/>
+     <postalCode value="LS9 7BE"/>
+    </address>
+    <physicalType>
+     <coding>
+      <system value="http://hl7.org/fhir/location-physical-type"/>
+      <code value="si"/>
+      <display value="Site"/>
+     </coding>
+    </physicalType>
+    <managingOrganization>
+     <reference value="urn:uuid:6de0a05a-d4b2-4f67-b0d4-80cc2a670f90"/>
+    </managingOrganization>
+   </Location>
+  </resource>
+ </entry>
+ <entry>
+  <fullUrl value="urn:uuid:cd265d1d-2254-4671-8f97-37876c9bac6a"/>
+  <resource>
+   <Location>
+    <id value="cd265d1d-2254-4671-8f97-37876c9bac6a"/>
+    <meta>
+     <profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Location-1"/>
+    </meta>
+    <name value="Alder Ward"/>
+    <address>
+     <line value="Second Floor"/>
+     <line value="Becklin Centre"/>
+     <line value="Alma Street"/>
+     <city value="Leeds"/>
+     <postalCode value="LS9 7BE"/>
+    </address>
+    <physicalType>
+     <coding>
+      <system value="http://hl7.org/fhir/location-physical-type"/>
+      <code value="wa"/>
+      <display value="Ward"/>
+     </coding>
+    </physicalType>
+    <managingOrganization>
+     <reference value="urn:uuid:6de0a05a-d4b2-4f67-b0d4-80cc2a670f90"/>
+    </managingOrganization>
+    <partOf>
+     <reference value="urn:uuid:a89445ff-74c1-4617-83bb-d723fefa50b4"/>
+    </partOf>
+   </Location>
+  </resource>
+ </entry>
+</Bundle>

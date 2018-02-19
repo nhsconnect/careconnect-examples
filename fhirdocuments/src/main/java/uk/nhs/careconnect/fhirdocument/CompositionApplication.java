@@ -8,14 +8,13 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.xhtmlrenderer.pdf.ITextRenderer;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.*;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -50,12 +49,91 @@ public class CompositionApplication {
                 File file = new File(classLoader.getResource("FHIRDocuments").getFile());
 
                 for (File fileD : file.listFiles()) {
-                    System.out.println(fileD.getName());
+
+                    performTransform(fileD.getAbsolutePath(),"C:\\Temp\\"+df.format(date)+"+"+fileD.getName()+".html","XML/DocumentToHTML.xslt");
+
+                    saveToPDF("C:\\Temp\\"+df.format(date)+"+"+fileD.getName()+".html", "C:\\Temp\\"+df.format(date)+"+"+fileD.getName()+".pdf");
+
+                }
+            } catch (Exception ex) {
+                System.out.println("ERROR + "+ex.getMessage());
+                throw ex;
+
+            }
 
 
-                    performTransform(fileD.getAbsolutePath(),"C:\\Temp\\"+df.format(date)+fileD.getName()+".hl7xslt.html","XML/DocumentToHTML.xslt");
 
-                    /*
+		};
+	}
+
+	private String saveToPDF(String inputFile, String outputFileName) {
+        FileOutputStream os = null;
+        File file = new File(inputFile);
+
+        try {
+            String processedHtml = org.apache.commons.io.IOUtils.toString(new InputStreamReader(new FileInputStream(file), "UTF-8"));
+            final File outputFile = new File(outputFileName);
+
+            os = new FileOutputStream(outputFile);
+
+            ITextRenderer renderer = new ITextRenderer();
+            renderer.setDocumentFromString(processedHtml);
+            renderer.layout();
+            renderer.createPDF(os, false);
+            renderer.finishPDF();
+            return outputFile.getAbsolutePath();
+        }
+        catch(Exception ex) {
+            System.out.println("ERROR - "+ex.getMessage());
+        }
+        finally {
+
+            if (os != null) {
+                try {
+                    os.close();
+                } catch (IOException e) { /*ignore*/ }
+            }
+            return null;
+        }
+    }
+
+	private void performTransform(String xmlInput, String htmlOutput, String styleSheet) {
+        // Input xml data file
+        ClassLoader classLoader = getContextClassLoader();
+
+        // Input xsl (stylesheet) file
+
+        String xslInput = classLoader.getResource(styleSheet).getFile(); // "resources/input.xsl";
+
+        // Set the property to use xalan processor
+        System.setProperty("javax.xml.transform.TransformerFactory",
+                "org.apache.xalan.processor.TransformerFactoryImpl");
+
+        // try with resources
+        try ( FileOutputStream os = new FileOutputStream(htmlOutput) )
+        {
+            FileInputStream xml = new FileInputStream(xmlInput);
+            FileInputStream xsl = new FileInputStream(xslInput);
+
+            // Instantiate a transformer factory
+            TransformerFactory tFactory = TransformerFactory.newInstance();
+
+            // Use the TransformerFactory to process the stylesheet source and produce a Transformer
+            StreamSource styleSource = new StreamSource(xsl);
+            Transformer transformer = tFactory.newTransformer(styleSource);
+
+            // Use the transformer and perform the transformation
+            StreamSource xmlSource = new StreamSource(xml);
+            StreamResult result = new StreamResult(os);
+            transformer.transform(xmlSource, result);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+           /*
 
                     Thymeleaf processing and pdf conversion. Disable for now
 
@@ -105,56 +183,5 @@ public class CompositionApplication {
                        // performTransform(fileD.getAbsolutePath(),"C:\\Temp\\"+df.format(date)+fileD.getName()+".nhsdxslt.html","XML/NHS_FHIR_Document_Renderer.xsl");
                     }
 */
-                }
-            } catch (Exception ex) {
-                System.out.println(ex.getMessage());
-                throw ex;
-
-            }
-
-
-
-		};
-	}
-
-	private void performTransform(String xmlInput, String htmlOutput, String styleSheet) {
-        // Input xml data file
-        ClassLoader classLoader = getContextClassLoader();
-
-        // Input xsl (stylesheet) file
-        //String xslInput = classLoader.getResource("resources/input.xsl").getFile(); // "resources/input.xsl";
-        String xslInput = classLoader.getResource(styleSheet).getFile(); // "resources/input.xsl";
-        System.out.println("In Transform");
-        System.out.println("xmlInput="+xmlInput);
-        System.out.println("htmlOutput="+htmlOutput);
-        System.out.println("xslInput="+xslInput);
-
-        // Set the property to use xalan processor
-        System.setProperty("javax.xml.transform.TransformerFactory",
-                "org.apache.xalan.processor.TransformerFactoryImpl");
-
-        // try with resources
-        try ( FileOutputStream os = new FileOutputStream(htmlOutput) )
-        {
-            FileInputStream xml = new FileInputStream(xmlInput);
-            FileInputStream xsl = new FileInputStream(xslInput);
-
-            // Instantiate a transformer factory
-            TransformerFactory tFactory = TransformerFactory.newInstance();
-
-            // Use the TransformerFactory to process the stylesheet source and produce a Transformer
-            StreamSource styleSource = new StreamSource(xsl);
-            Transformer transformer = tFactory.newTransformer(styleSource);
-
-            // Use the transformer and perform the transformation
-            StreamSource xmlSource = new StreamSource(xml);
-            StreamResult result = new StreamResult(os);
-            transformer.transform(xmlSource, result);
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-    }
 
 }

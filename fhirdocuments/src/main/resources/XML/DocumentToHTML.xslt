@@ -77,7 +77,7 @@
           h4 { font-size: 10pt; font-weight: bold; text-decoration: underline; color: #000000; margin-top: 5px; margin-bottom: 15px; }
           h5 { font-size: 10pt; font-weight: normal; text-decoration: underline;  color: #000000; margin-top: 5px; margin-bottom: 15px; }
           h6 { font-size: 10pt; font-weight: normal; color: #000000; margin-top: 5px; margin-bottom: 15px; }
-          table { border: 0px solid #000000;  border: 1px solid black; table-layout: fixed; text-align: left; width: 100%;}
+          table { border: 1px solid lightgrey;   table-layout: fixed; text-align: left; width: 100%;}
           th.default {padding: 3px; color: #000000; background-color: #eeeeee; text-align: left;}
           th {padding: 3px; font-size: 10pt;}
           td {padding: 3px; font-size: 10pt;}
