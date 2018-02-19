@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>uk.nhs.careconnect.examples</groupId>
-    <artifactId>java-examples</artifactId>
+    <artifactId>careconnect-java-examples</artifactId>
     <version>3.5.9-SNAPSHOT</version>
     <packaging>pom</packaging>
 
