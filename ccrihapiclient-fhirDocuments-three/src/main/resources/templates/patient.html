@@ -1,6 +1,9 @@
 <div>
     <h2>Patient</h2>
     <div>
+        <b>THIS IS A MOCK OF OVERRAL STRUCTURE AND IS NOT MEANT TO BE PRETTY</b>
+    </div>
+    <div>
         <p th:text="${patient.getNameFirstRep().getNameAsSingleString()}">Unknown</p>
     </div>
     <div>
@@ -19,5 +22,14 @@
 
             </tbody>
         </table>
+    </div>
+    <div>
+        DoB : <b th:text="${#dates.format(patient.getBirthDate(),'dd MMM YYYY')}">Unknown</b>
+    </div>
+    <div>
+        GP Practice :<b th:text="${patient.getManagingOrganization().getDisplay()}">Unknown</b>
+    </div>
+    <div>
+        GP  :<b th:text="${patient.getGeneralPractitionerFirstRep().getDisplay()}">Unknown</b>
     </div>
 </div>

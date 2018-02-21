@@ -14,7 +14,7 @@
             </thead>
             <tbody>
                 <tr th:each="encounter : ${encounters}">
-                    <td th:text="${encounter.getPeriod().getStart()}">Unknown</td>
+                    <td th:text="${#dates.format(encounter.getPeriod().getStart(),'dd MMM YYYY')}">Unknown</td>
                     <td th:text="${encounter.getTypeFirstRep().getCodingFirstRep().getDisplay()}">No type given</td>
                     <td th:text="${encounter.getServiceProvider().getDisplay()}">No provider specified</td>
                 </tr>

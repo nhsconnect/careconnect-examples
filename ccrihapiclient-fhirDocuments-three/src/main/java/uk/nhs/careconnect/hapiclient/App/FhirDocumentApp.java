@@ -25,7 +25,6 @@ import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -64,6 +63,8 @@ public class FhirDocumentApp implements CommandLineRunner {
 
     Map<String,String> referenceMap = new HashMap<>();
 
+    DateFormat df = new SimpleDateFormat("HHmm_dd_MM_yyyy");
+
     final String uuidtag = "urn:uuid:";
 
 
@@ -74,18 +75,27 @@ public class FhirDocumentApp implements CommandLineRunner {
             throw new Exception();
         }
 
+
         client = ctxFHIR.newRestfulGenericClient("http://purple.testlab.nhs.uk/careconnect-ri/STU3/");
-        Date date = new Date();
-        DateFormat df = new SimpleDateFormat("HHmm_dd_MM_yyyy");
 
-        Bundle careRecord = getCareRecord("1177");
-        String xmlResult = ctxFHIR.newXmlParser().encodeResourceToString(careRecord);
 
-        Files.write(Paths.get("C:\\Temp\\"+df.format(date)+"+patient-1177.xml"),xmlResult.getBytes());
+        outputCareRecord("1177");
+        outputCareRecord("1098");
 
-        performTransform(xmlResult,"C:\\Temp\\"+df.format(date)+"+patient-1177.html","XML/DocumentToHTML.xslt");
 
     }
+    private void outputCareRecord(String patientId) throws Exception {
+        Date date = new Date();
+
+        Bundle careRecord = getCareRecord(patientId);
+        String xmlResult = ctxFHIR.newXmlParser().encodeResourceToString(careRecord);
+
+        Files.write(Paths.get("C:\\Temp\\"+df.format(date)+"+patient-"+patientId+".xml"),xmlResult.getBytes());
+
+        performTransform(xmlResult,"C:\\Temp\\"+df.format(date)+"+patient-"+patientId+".html","XML/DocumentToHTML.xslt");
+    }
+
+
 
     private Bundle getCareRecord(String patientId) throws Exception {
         // Create Bundle of type Document
@@ -95,6 +105,7 @@ public class FhirDocumentApp implements CommandLineRunner {
         Composition composition = new Composition();
         composition.setId(UUID.randomUUID().toString());
         composition.setTitle("Patient Summary Care Record");
+
 
         fhirDocument.addEntry().setResource(composition);
 
@@ -112,6 +123,7 @@ public class FhirDocumentApp implements CommandLineRunner {
                 patient = generatePatientHtml(patient);
                 patientId = patient.getId();
                 patient.setId(getNewReferenceUri(patient));
+
                 composition.setSubject(new Reference(uuidtag+patient.getId()));
                 fhirDocument.addEntry().setResource(patient).setFullUrl(uuidtag + patient.getId());;
             }
@@ -134,6 +146,36 @@ public class FhirDocumentApp implements CommandLineRunner {
         }
         if (patient == null) throw new Exception("404 Patient not found");
 
+        /* CONDITION */
+
+        Bundle conditionBundle = getConditionBundle(patientId);
+        for (Bundle.BundleEntryComponent entry : conditionBundle.getEntry()) {
+            if (entry.getResource() instanceof Condition) {
+                Condition condition = (Condition) entry.getResource();
+
+                condition.setId(getNewReferenceUri(condition));
+                condition.setSubject(new Reference(uuidtag+patient.getId()));
+                fhirDocument.addEntry().setResource(entry.getResource()).setFullUrl(uuidtag + condition.getId());
+            }
+        }
+        composition.addSection(getConditionSection(conditionBundle));
+
+
+        /* ALLERGY INTOLERANCE */
+
+        Bundle allergyBundle = getAllergyBundle(patientId);
+        for (Bundle.BundleEntryComponent entry : allergyBundle.getEntry()) {
+            if (entry.getResource() instanceof AllergyIntolerance) {
+                AllergyIntolerance allergyIntolerance = (AllergyIntolerance) entry.getResource();
+
+                allergyIntolerance.setId(getNewReferenceUri(allergyIntolerance));
+                allergyIntolerance.setPatient(new Reference(uuidtag+patient.getId()));
+                fhirDocument.addEntry().setResource(entry.getResource()).setFullUrl(uuidtag + allergyIntolerance.getId());
+            }
+        }
+        composition.addSection(getAllergySection(allergyBundle));
+
+        /* ENCOUNTER */
 
         Bundle encounterBundle = getEncounterBundle(patientId);
         for (Bundle.BundleEntryComponent entry : encounterBundle.getEntry()) {
@@ -188,32 +230,95 @@ public class FhirDocumentApp implements CommandLineRunner {
         return xhtmlNode;
     }
 
-    private Composition.SectionComponent getEncounterSection(Bundle encounterBundle) {
-        Composition.SectionComponent encounterSection = new Composition.SectionComponent();
+    private Composition.SectionComponent getConditionSection(Bundle bundle) {
+        Composition.SectionComponent section = new Composition.SectionComponent();
+
+        ArrayList<Condition>  conditions = new ArrayList<>();
+
+        section.getCode().addCoding()
+                .setSystem(CareConnectSystem.SNOMEDCT)
+                .setCode("887151000000100")
+                .setDisplay("Problems and issues");
+        section.setTitle("Problems and issues");
+
+        for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
+            if (entry.getResource() instanceof Condition) {
+                Condition condition = (Condition) entry.getResource();
+                section.getEntry().add(new Reference("urn:uuid:"+condition.getId()));
+                conditions.add(condition);
+            }
+        }
+        ctxThymeleaf.clearVariables();
+        ctxThymeleaf.setVariable("conditions", conditions);
+
+        section.getText().setDiv(getDiv("condition")).setStatus(Narrative.NarrativeStatus.GENERATED);
+
+        return section;
+    }
+
+    private Composition.SectionComponent getAllergySection(Bundle bundle) {
+        Composition.SectionComponent section = new Composition.SectionComponent();
+
+        ArrayList<AllergyIntolerance>  allergyIntolerances = new ArrayList<>();
+
+        section.getCode().addCoding()
+                .setSystem(CareConnectSystem.SNOMEDCT)
+                .setCode("886921000000105")
+                .setDisplay("Allergies and adverse reactions");
+        section.setTitle("Allergies and adverse reactions");
+
+        for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
+            if (entry.getResource() instanceof AllergyIntolerance) {
+                AllergyIntolerance allergyIntolerance = (AllergyIntolerance) entry.getResource();
+                section.getEntry().add(new Reference("urn:uuid:"+allergyIntolerance.getId()));
+                allergyIntolerances.add(allergyIntolerance);
+            }
+        }
+        ctxThymeleaf.clearVariables();
+
+        ctxThymeleaf.setVariable("allergies", allergyIntolerances);
+
+        section.getText().setDiv(getDiv("allergy")).setStatus(Narrative.NarrativeStatus.GENERATED);
+
+        return section;
+    }
+
+    private Composition.SectionComponent getEncounterSection(Bundle bundle) {
+        Composition.SectionComponent section = new Composition.SectionComponent();
         // TODO Get Correct code.
         ArrayList<Encounter>  encounters = new ArrayList<>();
 
-        encounterSection.getCode().addCoding()
+        section.getCode().addCoding()
                 .setSystem(CareConnectSystem.SNOMEDCT)
                 .setCode("713511000000103")
                 .setDisplay("Encounter administration");
-        encounterSection.setTitle("Encounters");
+        section.setTitle("Encounters");
 
-        for (Bundle.BundleEntryComponent entry : encounterBundle.getEntry()) {
+        for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
             if (entry.getResource() instanceof Encounter) {
                 Encounter encounter = (Encounter) entry.getResource();
-                encounterSection.getEntry().add(new Reference("urn:uuid:"+encounter.getId()));
+                section.getEntry().add(new Reference("urn:uuid:"+encounter.getId()));
                 encounters.add(encounter);
             }
         }
         ctxThymeleaf.clearVariables();
         ctxThymeleaf.setVariable("encounters", encounters);
 
-        encounterSection.getText().setDiv(getDiv("encounter")).setStatus(Narrative.NarrativeStatus.GENERATED);
+        section.getText().setDiv(getDiv("encounter")).setStatus(Narrative.NarrativeStatus.GENERATED);
 
-        return encounterSection;
+        return section;
     }
 
+    private Bundle getConditionBundle(String patientId) {
+
+        return client
+                .search()
+                .forResource(Condition.class)
+                .where(Condition.PATIENT.hasId(patientId))
+                .and(Condition.CLINICAL_STATUS.exactly().code("active"))
+                .returnBundle(Bundle.class)
+                .execute();
+    }
     private Bundle getEncounterBundle(String patientId) {
 
         return client
@@ -221,6 +326,16 @@ public class FhirDocumentApp implements CommandLineRunner {
                 .forResource(Encounter.class)
                 .where(Encounter.PATIENT.hasId(patientId))
                 .count(3) // Last 3 entries same as GP Connect
+                .returnBundle(Bundle.class)
+                .execute();
+    }
+
+    private Bundle getAllergyBundle(String patientId) {
+
+        return client
+                .search()
+                .forResource(AllergyIntolerance.class)
+                .where(AllergyIntolerance.PATIENT.hasId(patientId))
                 .returnBundle(Bundle.class)
                 .execute();
     }

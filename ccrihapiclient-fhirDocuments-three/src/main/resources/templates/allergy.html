@@ -1,0 +1,22 @@
+
+<div>
+
+    <div>
+        <table>
+            <thead>
+            <tr>
+                <th>Date</th>
+                <th>Type</th>
+
+            </tr>
+            </thead>
+            <tbody>
+                <tr th:each="allergy : ${allergies}">
+                    <td th:text="${#dates.format(allergy.getAssertedDate(),'dd MMM YYYY')}">Unknown</td>
+                    <td th:text="${allergy.getCode().getCodingFirstRep().getDisplay()}">No Condition given</td>
+
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
