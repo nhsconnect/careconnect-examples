@@ -1,0 +1,23 @@
+<div>
+    <h2>Patient</h2>
+    <div>
+        <p th:text="${patient.getNameFirstRep().getNameAsSingleString()}">Unknown</p>
+    </div>
+    <div>
+        <table>
+            <thead>
+            <tr>
+                <th>Identifiers</th>
+                <th>System</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="identifier : ${patient.getIdentifier()}">
+                <td th:text="${identifier.getValue()}"></td>
+                <td th:text="${identifier.getSystem()}"></td>
+            </tr>
+
+            </tbody>
+        </table>
+    </div>
+</div>

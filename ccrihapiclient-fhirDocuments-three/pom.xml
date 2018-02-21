@@ -5,12 +5,9 @@
     <modelVersion>4.0.0</modelVersion>
 
 
-    <artifactId>UHSDiagnosticReports</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <properties>
+    <artifactId>ccrihapiclient-fhirDocuments-three</artifactId>
+    <version>3.5.9-SNAPSHOT</version>
 
-
-    </properties>
     <parent>
         <groupId>uk.nhs.careconnect.examples</groupId>
         <artifactId>careconnect-java-examples</artifactId>
@@ -18,14 +15,8 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-
     <dependencies>
 
-        <dependency>
-            <groupId>uk.org.hl7.fhir</groupId>
-            <artifactId>cc-core</artifactId>
-            <version>${care-connect-version}</version>
-        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -37,6 +28,12 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+
         <!-- This dependency includes the core HAPI-FHIR classes -->
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
@@ -44,39 +41,32 @@
             <version>${hapi-fhir-version}</version>
         </dependency>
 
-        <!-- At least one "structures" JAR must also be included -->
-
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
-            <artifactId>hapi-fhir-structures-hl7org-dstu2</artifactId>
+            <artifactId>hapi-fhir-structures-dstu3</artifactId>
             <version>${hapi-fhir-version}</version>
         </dependency>
 
         <dependency>
-            <groupId>ca.uhn.hapi</groupId>
-            <artifactId>hapi-structures-v24</artifactId>
-            <version>${hapi-hl7v2-version}</version>
-            <!--  use the same version as your hapi-base version -->
-        </dependency>
-
-        <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
-            <artifactId>hapi-fhir-validation-resources-dstu3</artifactId>
+            <artifactId>hapi-fhir-client</artifactId>
             <version>${hapi-fhir-version}</version>
         </dependency>
 
+        <!-- For stylesheet transform -->
         <dependency>
-            <groupId>com.helger</groupId>
-            <artifactId>ph-schematron</artifactId>
-            <version>4.3.4</version>
+            <groupId>xalan</groupId>
+            <artifactId>xalan</artifactId>
+            <version>2.7.2</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-client</artifactId>
-            <version>5.15.0</version>
-        </dependency>
 
+        <!-- flying saucer pdf -->
+        <dependency>
+            <groupId>org.xhtmlrenderer</groupId>
+            <artifactId>flying-saucer-pdf</artifactId>
+            <version>9.1.4</version>
+        </dependency>
 
     </dependencies>
 
@@ -89,7 +79,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
+                <version>3.3</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>

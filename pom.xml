@@ -35,6 +35,7 @@
         <module>fhirdocuments</module>
         <module>ccrihapiclient-one</module>
         <module>ccrihapiclient-two</module>
+        <module>ccrihapiclient-fhirDocuments-three</module>
         <module>UHSDiagnosticReports</module>
 
     </modules>
