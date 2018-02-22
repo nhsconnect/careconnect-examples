@@ -51,7 +51,6 @@ public class FhirDocumentApp implements CommandLineRunner {
 	public static void main(String[] args) {
         System.getProperties().put( "server.port", 8083 );
 		SpringApplication.run(FhirDocumentApp.class, args).close();
-
 	}
 
 
@@ -78,9 +77,9 @@ public class FhirDocumentApp implements CommandLineRunner {
 
         client = ctxFHIR.newRestfulGenericClient("http://purple.testlab.nhs.uk/careconnect-ri/STU3/");
 
-
-        outputCareRecord("1177");
         outputCareRecord("1098");
+        outputCareRecord("1177");
+
 
 
     }
@@ -103,11 +102,32 @@ public class FhirDocumentApp implements CommandLineRunner {
 
         // Main resource of a FHIR Bundle is a Composition
         Composition composition = new Composition();
+        fhirDocument.addEntry().setResource(composition);
         composition.setId(UUID.randomUUID().toString());
         composition.setTitle("Patient Summary Care Record");
+        composition.setDate(new Date());
+        composition.setStatus(Composition.CompositionStatus.FINAL);
+
+        Organization leedsTH = getOrganization("RR8");
+        leedsTH.setId(getNewReferenceUri(leedsTH));
+        fhirDocument.addEntry().setResource(leedsTH);
+
+        composition.addAttester()
+                .setParty(new Reference(uuidtag+leedsTH.getId()))
+                .addMode(Composition.CompositionAttestationMode.OFFICIAL);
 
 
-        fhirDocument.addEntry().setResource(composition);
+        Device device = new Device();
+        device.setId(UUID.randomUUID().toString());
+        device.getType().addCoding()
+                .setSystem("http://snomed.info/sct")
+                .setCode("58153004")
+                .setDisplay("Android");
+        device.setOwner(new Reference(uuidtag+leedsTH.getId()));
+        fhirDocument.addEntry().setResource(device);
+
+        composition.addAuthor(new Reference(uuidtag+device.getId()));
+
 
         Patient patient = null;
         Practitioner gp = null;
@@ -120,8 +140,9 @@ public class FhirDocumentApp implements CommandLineRunner {
         for (Bundle.BundleEntryComponent entry : patientBundle.getEntry()) {
             if (entry.getResource() instanceof Patient) {
                 patient = (Patient) entry.getResource();
-                patient = generatePatientHtml(patient);
+
                 patientId = patient.getId();
+
                 patient.setId(getNewReferenceUri(patient));
 
                 composition.setSubject(new Reference(uuidtag+patient.getId()));
@@ -129,6 +150,7 @@ public class FhirDocumentApp implements CommandLineRunner {
             }
             if (entry.getResource() instanceof Practitioner) {
                 gp = (Practitioner) entry.getResource();
+
                 gp.setId(getNewReferenceUri(gp));
                 if (patient != null && patient.getGeneralPractitioner().size()==1) {
                     patient.getGeneralPractitioner().get(0).setReference(uuidtag + gp.getId());
@@ -137,6 +159,7 @@ public class FhirDocumentApp implements CommandLineRunner {
             }
             if (entry.getResource() instanceof Organization) {
                 practice = (Organization) entry.getResource();
+
                 practice.setId(getNewReferenceUri(practice));
                 if (patient != null ) {
                     patient.setManagingOrganization(new Reference(uuidtag + practice.getId()));
@@ -146,9 +169,12 @@ public class FhirDocumentApp implements CommandLineRunner {
         }
         if (patient == null) throw new Exception("404 Patient not found");
 
+        generatePatientHtml(patient,patientBundle);
+
         /* CONDITION */
 
         Bundle conditionBundle = getConditionBundle(patientId);
+
         for (Bundle.BundleEntryComponent entry : conditionBundle.getEntry()) {
             if (entry.getResource() instanceof Condition) {
                 Condition condition = (Condition) entry.getResource();
@@ -159,6 +185,22 @@ public class FhirDocumentApp implements CommandLineRunner {
             }
         }
         composition.addSection(getConditionSection(conditionBundle));
+
+        /* MEDICATION STATEMENT */
+
+        Bundle medicationStatementBundle = getMedicationStatementBundle(patientId);
+
+        for (Bundle.BundleEntryComponent entry : medicationStatementBundle.getEntry()) {
+            if (entry.getResource() instanceof MedicationStatement) {
+                MedicationStatement medicationStatement = (MedicationStatement) entry.getResource();
+
+                medicationStatement.setId(getNewReferenceUri(medicationStatement));
+                medicationStatement.setSubject(new Reference(uuidtag+patient.getId()));
+                fhirDocument.addEntry().setResource(entry.getResource()).setFullUrl(uuidtag + medicationStatement.getId());
+                //Date date = medicationStatement.getEffectiveDateTimeType().getValue()
+            }
+        }
+        composition.addSection(getMedicationStatementSection(medicationStatementBundle));
 
 
         /* ALLERGY INTOLERANCE */
@@ -205,11 +247,17 @@ public class FhirDocumentApp implements CommandLineRunner {
                 .returnBundle(Bundle.class)
                 .execute();
     }
-    private Patient generatePatientHtml(Patient patient) {
+    private Patient generatePatientHtml(Patient patient, Bundle fhirDocument) {
         if (!patient.hasText()) {
 
             ctxThymeleaf.clearVariables();
             ctxThymeleaf.setVariable("patient", patient);
+            for (Bundle.BundleEntryComponent entry : fhirDocument.getEntry()) {
+                if (entry.getResource() instanceof Practitioner) ctxThymeleaf.setVariable("gp", entry.getResource());
+                if (entry.getResource() instanceof Organization) ctxThymeleaf.setVariable("practice", entry.getResource());
+                Practitioner practice;
+
+            }
 
             patient.getText().setDiv(getDiv("patient")).setStatus(Narrative.NarrativeStatus.GENERATED);
             log.debug(patient.getText().getDiv().getValueAsString());
@@ -252,6 +300,33 @@ public class FhirDocumentApp implements CommandLineRunner {
         ctxThymeleaf.setVariable("conditions", conditions);
 
         section.getText().setDiv(getDiv("condition")).setStatus(Narrative.NarrativeStatus.GENERATED);
+
+        return section;
+    }
+
+    private Composition.SectionComponent getMedicationStatementSection(Bundle bundle) {
+        Composition.SectionComponent section = new Composition.SectionComponent();
+
+        ArrayList<MedicationStatement>  medicationStatements = new ArrayList<>();
+
+        section.getCode().addCoding()
+                .setSystem(CareConnectSystem.SNOMEDCT)
+                .setCode("933361000000108")
+                .setDisplay("Medications and medical devices");
+        section.setTitle("Medications and medical devices");
+
+        for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
+            if (entry.getResource() instanceof MedicationStatement) {
+                MedicationStatement medicationStatement = (MedicationStatement) entry.getResource();
+                section.getEntry().add(new Reference("urn:uuid:"+medicationStatement.getId()));
+                medicationStatements.add(medicationStatement);
+
+            }
+        }
+        ctxThymeleaf.clearVariables();
+        ctxThymeleaf.setVariable("medicationStatements", medicationStatements);
+
+        section.getText().setDiv(getDiv("medicationStatement")).setStatus(Narrative.NarrativeStatus.GENERATED);
 
         return section;
     }
@@ -326,6 +401,32 @@ public class FhirDocumentApp implements CommandLineRunner {
                 .forResource(Encounter.class)
                 .where(Encounter.PATIENT.hasId(patientId))
                 .count(3) // Last 3 entries same as GP Connect
+                .returnBundle(Bundle.class)
+                .execute();
+    }
+
+    private Organization getOrganization(String sdsCode) {
+        Organization organization = null;
+        Bundle bundle =  client
+                .search()
+                .forResource(Organization.class)
+                .where(Organization.IDENTIFIER.exactly().code(sdsCode))
+
+                .returnBundle(Bundle.class)
+                .execute();
+        if (bundle.getEntry().size()>0) {
+            if (bundle.getEntry().get(0).getResource() instanceof Organization)
+            organization = (Organization) bundle.getEntry().get(0).getResource();
+        }
+        return organization;
+    }
+    private Bundle getMedicationStatementBundle(String patientId) {
+
+        return client
+                .search()
+                .forResource(MedicationStatement.class)
+                .where(MedicationStatement.PATIENT.hasId(patientId))
+                .and(MedicationStatement.STATUS.exactly().code("active"))
                 .returnBundle(Bundle.class)
                 .execute();
     }

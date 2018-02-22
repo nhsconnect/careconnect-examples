@@ -1,7 +1,9 @@
 
 <div>
-
-    <div>
+    <div th:if="${#lists.isEmpty(allergies)}">
+    <p>None Recorded</p>
+    </div>
+    <div th:if="${not #lists.isEmpty(allergies)}">
         <table>
             <thead>
             <tr>
