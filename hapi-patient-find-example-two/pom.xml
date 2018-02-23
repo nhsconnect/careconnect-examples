@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
 
-    <artifactId>hapiclient-two</artifactId>
+    <artifactId>hapi-patient-find-example-two</artifactId>
     <version>3.5.9-SNAPSHOT</version>
 
     <parent>

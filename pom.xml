@@ -32,10 +32,10 @@
     </dependencies>
 
     <modules>
-        <module>fhirdocuments</module>
-        <module>ccrihapiclient-one</module>
-        <module>ccrihapiclient-two</module>
-        <module>ccrihapiclient-fhirDocuments-three</module>
+        <module>hapi-fhirDocument-convert2PdfOrHtml</module>
+        <module>hapi-fhirDocument-create</module>
+        <module>hapi-patient-find-example-one</module>
+        <module>hapi-patient-find-example-two</module>
         <module>UHSDiagnosticReports</module>
 
     </modules>
