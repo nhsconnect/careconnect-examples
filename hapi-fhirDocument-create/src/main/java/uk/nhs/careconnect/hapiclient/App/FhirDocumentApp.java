@@ -87,9 +87,10 @@ public class FhirDocumentApp implements CommandLineRunner {
         Date date = new Date();
 
         Bundle careRecord = getCareRecord(patientId);
-        String xmlResult = ctxFHIR.newXmlParser().encodeResourceToString(careRecord);
+        String xmlResult = ctxFHIR.newXmlParser().setPrettyPrint(true).encodeResourceToString(careRecord);
 
         Files.write(Paths.get("C:\\Temp\\"+df.format(date)+"+patient-"+patientId+".xml"),xmlResult.getBytes());
+        Files.write(Paths.get("C:\\Temp\\"+df.format(date)+"+patient-"+patientId+".json"),ctxFHIR.newJsonParser().setPrettyPrint(true).encodeResourceToString(careRecord).getBytes());
 
         performTransform(xmlResult,"C:\\Temp\\"+df.format(date)+"+patient-"+patientId+".html","XML/DocumentToHTML.xslt");
     }

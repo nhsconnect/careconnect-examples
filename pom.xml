@@ -37,7 +37,6 @@
         <module>hapi-patient-find-example-one</module>
         <module>hapi-patient-find-example-two</module>
         <module>UHSDiagnosticReports</module>
-
     </modules>
 
 </project>
