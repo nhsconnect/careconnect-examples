@@ -16,16 +16,14 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
+import org.xhtmlrenderer.pdf.ITextRenderer;
 import uk.org.hl7.fhir.core.Stu3.CareConnectSystem;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -90,12 +88,37 @@ public class FhirDocumentApp implements CommandLineRunner {
         Bundle careRecord = getCareRecord(patientId);
         String xmlResult = ctxFHIR.newXmlParser().setPrettyPrint(true).encodeResourceToString(careRecord);
 
-        Files.write(Paths.get("C:\\Temp\\"+df.format(date)+"+patient-"+patientId+".xml"),xmlResult.getBytes());
-        Files.write(Paths.get("C:\\Temp\\"+df.format(date)+"+patient-"+patientId+".json"),ctxFHIR.newJsonParser().setPrettyPrint(true).encodeResourceToString(careRecord).getBytes());
+        Files.write(Paths.get("/Temp/"+df.format(date)+"+patient-"+patientId+".xml"),xmlResult.getBytes());
+        Files.write(Paths.get("/Temp/"+df.format(date)+"+patient-"+patientId+".json"),ctxFHIR.newJsonParser().setPrettyPrint(true).encodeResourceToString(careRecord).getBytes());
 
-        performTransform(xmlResult,"C:\\Temp\\"+df.format(date)+"+patient-"+patientId+".html","XML/DocumentToHTML.xslt");
+        String htmlFilename = "/Temp/"+df.format(date)+"+patient-"+patientId+".html";
+        performTransform(xmlResult,htmlFilename,"XML/DocumentToHTML.xslt");
+        outputPDF(htmlFilename, "/Temp/"+df.format(date)+"+patient-"+patientId+".pdf");
     }
 
+    private void outputPDF(String processedHtml, String outputFileName ) throws Exception {
+        FileOutputStream os = null;
+        String fileName = UUID.randomUUID().toString();
+        try {
+            final File outputFile = new File(outputFileName);
+            os = new FileOutputStream(outputFile);
+
+            ITextRenderer renderer = new ITextRenderer();
+            renderer.setDocument(new File(processedHtml));
+            renderer.layout();
+            renderer.createPDF(os, false);
+            renderer.finishPDF();
+            //return outputFile.getAbsolutePath();
+        }
+        finally {
+
+            if (os != null) {
+                try {
+                    os.close();
+                } catch (IOException e) { /*ignore*/ }
+            }
+        }
+    }
 
 
     private Bundle getCareRecord(String patientId) throws Exception {
