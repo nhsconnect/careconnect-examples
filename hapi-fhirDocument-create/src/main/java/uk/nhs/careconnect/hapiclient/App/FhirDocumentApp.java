@@ -2,6 +2,7 @@ package uk.nhs.careconnect.hapiclient.App;
 
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.api.EncodingEnum;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.utilities.xhtml.XhtmlDocument;
@@ -58,8 +59,6 @@ public class FhirDocumentApp implements CommandLineRunner {
 
     IGenericClient client = null;
 
-    String HAPIServer = "http://fhirtest.uhn.ca/baseDstu2/";
-
     Map<String,String> referenceMap = new HashMap<>();
 
     DateFormat df = new SimpleDateFormat("HHmm_dd_MM_yyyy");
@@ -76,6 +75,8 @@ public class FhirDocumentApp implements CommandLineRunner {
 
 
         client = ctxFHIR.newRestfulGenericClient("http://purple.testlab.nhs.uk/careconnect-ri/STU3/");
+
+        client.setEncoding(EncodingEnum.XML);
 
         outputCareRecord("1098");
         outputCareRecord("1177");
@@ -99,19 +100,23 @@ public class FhirDocumentApp implements CommandLineRunner {
 
     private Bundle getCareRecord(String patientId) throws Exception {
         // Create Bundle of type Document
-        Bundle fhirDocument = new Bundle().setType(Bundle.BundleType.DOCUMENT);
+        Bundle fhirDocument = new Bundle()
+                .setType(Bundle.BundleType.DOCUMENT);
+
+        fhirDocument.getIdentifier().setValue(UUID.randomUUID().toString()).setSystem("https://tools.ietf.org/html/rfc4122");
 
         // Main resource of a FHIR Bundle is a Composition
         Composition composition = new Composition();
-        fhirDocument.addEntry().setResource(composition);
         composition.setId(UUID.randomUUID().toString());
+        fhirDocument.addEntry().setResource(composition).setFullUrl(uuidtag + composition.getId());
+
         composition.setTitle("Patient Summary Care Record");
         composition.setDate(new Date());
         composition.setStatus(Composition.CompositionStatus.FINAL);
 
         Organization leedsTH = getOrganization("RR8");
         leedsTH.setId(getNewReferenceUri(leedsTH));
-        fhirDocument.addEntry().setResource(leedsTH);
+        fhirDocument.addEntry().setResource(leedsTH).setFullUrl(uuidtag + leedsTH.getId());
 
         composition.addAttester()
                 .setParty(new Reference(uuidtag+leedsTH.getId()))
@@ -125,7 +130,7 @@ public class FhirDocumentApp implements CommandLineRunner {
                 .setCode("58153004")
                 .setDisplay("Android");
         device.setOwner(new Reference(uuidtag+leedsTH.getId()));
-        fhirDocument.addEntry().setResource(device);
+        fhirDocument.addEntry().setResource(device).setFullUrl(uuidtag +device.getId());
 
         composition.addAuthor(new Reference(uuidtag+device.getId()));
 
@@ -153,10 +158,11 @@ public class FhirDocumentApp implements CommandLineRunner {
                 gp = (Practitioner) entry.getResource();
 
                 gp.setId(getNewReferenceUri(gp));
-                if (patient != null && patient.getGeneralPractitioner().size()==1) {
+                if (patient != null && patient.getGeneralPractitioner().size()>0) {
                     patient.getGeneralPractitioner().get(0).setReference(uuidtag + gp.getId());
+                    fhirDocument.addEntry().setResource(gp).setFullUrl(uuidtag + gp.getId());
                 }
-                fhirDocument.addEntry().setResource(gp).setFullUrl(uuidtag + gp.getId());
+
             }
             if (entry.getResource() instanceof Organization) {
                 practice = (Organization) entry.getResource();
@@ -165,7 +171,7 @@ public class FhirDocumentApp implements CommandLineRunner {
                 if (patient != null ) {
                     patient.setManagingOrganization(new Reference(uuidtag + practice.getId()));
                 }
-                fhirDocument.addEntry().setResource(gp).setFullUrl(uuidtag + practice.getId());
+                fhirDocument.addEntry().setResource(practice).setFullUrl(uuidtag + practice.getId());
             }
         }
         if (patient == null) throw new Exception("404 Patient not found");
