@@ -133,55 +133,5 @@ public class CompositionApplication {
         }
     }
 
-           /*
-
-                    Thymeleaf processing and pdf conversion. Disable for now
-
-                    String contents = org.apache.commons.io.IOUtils.toString(new InputStreamReader(new FileInputStream(fileD), "UTF-8"));
-                    IBaseResource document = ca.uhn.fhir.rest.api.EncodingEnum.detectEncodingNoDefault(contents).newParser(fhirCtx).parseResource(contents);
-
-
-                    if (document instanceof Bundle) {
-
-                        Bundle bundle = (Bundle) document;
-
-                        Map<String,Object> data = new HashMap<>();
-
-                        String body = "";
-                        for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
-
-                            if (entry.getResource() instanceof Composition) {
-                                Composition composition = (Composition) entry.getResource();
-                                for (Composition.SectionComponent section : composition.getSection()) {
-                                    body = body + section.getText().getDiv().toString();
-                                }
-                            }
-                            if (entry.getResource() instanceof Patient) {
-
-                                CareConnectPatient ccPatient = new CareConnectPatient((Patient) entry.getResource());
-                                data.put("patient",ccPatient);
-                            }
-                        }
-
-                        Patient patient = new Patient();
-                       //
-                        data.put("body",body);
-
-                        String pdfFile = pdfGenaratorUtil.createPdf("eDischarge",data);
-                        Path FROM = Paths.get(pdfFile);
-
-                        Path TO = Paths.get("C:\\Temp\\"+df.format(date)+fileD.getName()+".thymeleaf.pdf");
-                        //overwrite existing file, if exists
-                        CopyOption[] options = new CopyOption[]{
-                                StandardCopyOption.REPLACE_EXISTING,
-                                StandardCopyOption.COPY_ATTRIBUTES
-                        };
-                        Files.copy(FROM, TO, options);
-                        System.out.println("Done");
-
-
-                       // performTransform(fileD.getAbsolutePath(),"C:\\Temp\\"+df.format(date)+fileD.getName()+".nhsdxslt.html","XML/NHS_FHIR_Document_Renderer.xsl");
-                    }
-*/
 
 }
