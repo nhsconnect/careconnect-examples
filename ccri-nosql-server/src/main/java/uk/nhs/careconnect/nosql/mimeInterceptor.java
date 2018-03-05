@@ -1,4 +1,4 @@
-package mayfieldis.careconnect.nosql;
+package uk.nhs.careconnect.nosql;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.api.server.RequestDetails;

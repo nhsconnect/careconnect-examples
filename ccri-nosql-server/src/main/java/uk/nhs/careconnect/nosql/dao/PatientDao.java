@@ -1,13 +1,13 @@
-package mayfieldis.careconnect.nosql.dao;
+package uk.nhs.careconnect.nosql.dao;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
-import mayfieldis.careconnect.nosql.dao.transform.PatientEntityToFHIRPatient;
+import uk.nhs.careconnect.nosql.dao.transform.PatientEntityToFHIRPatient;
 
-import mayfieldis.careconnect.nosql.entities.Name;
-import mayfieldis.careconnect.nosql.entities.PatientEntity;
+import uk.nhs.careconnect.nosql.entities.Name;
+import uk.nhs.careconnect.nosql.entities.PatientEntity;
 import org.bson.types.ObjectId;
 import org.hl7.fhir.dstu3.model.HumanName;
 import org.hl7.fhir.dstu3.model.Identifier;
@@ -52,7 +52,7 @@ public class PatientDao implements IPatient {
         PatientEntity patientE = new PatientEntity();
 
         for (Identifier identifier : patient.getIdentifier()) {
-            mayfieldis.careconnect.nosql.entities.Identifier identifierE = new mayfieldis.careconnect.nosql.entities.Identifier();
+            uk.nhs.careconnect.nosql.entities.Identifier identifierE = new uk.nhs.careconnect.nosql.entities.Identifier();
             identifierE.setSystem(identifier.getSystem());
             identifierE.setValue(identifier.getValue());
 

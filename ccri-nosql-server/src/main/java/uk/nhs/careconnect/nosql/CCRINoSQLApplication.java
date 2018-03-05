@@ -1,4 +1,4 @@
-package mayfieldis.careconnect.nosql;
+package uk.nhs.careconnect.nosql;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -12,7 +12,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @SpringBootApplication
-@ComponentScan("mayfieldis.careconnect.nosql")
+@ComponentScan("uk.nhs.careconnect.nosql")
 public class CCRINoSQLApplication {
 
     @Autowired

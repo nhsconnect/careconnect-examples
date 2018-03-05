@@ -1,4 +1,4 @@
-package mayfieldis.careconnect.nosql;
+package uk.nhs.careconnect.nosql;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
@@ -9,13 +9,13 @@ import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
 import ca.uhn.fhir.util.VersionUtil;
-import mayfieldis.careconnect.nosql.providers.CompositionProvider;
-import mayfieldis.careconnect.nosql.providers.PatientProvider;
+import uk.nhs.careconnect.nosql.providers.CompositionProvider;
+import uk.nhs.careconnect.nosql.providers.PatientProvider;
 import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import mayfieldis.careconnect.nosql.providers.BundleProvider;
+import uk.nhs.careconnect.nosql.providers.BundleProvider;
 
 
 import javax.servlet.ServletException;

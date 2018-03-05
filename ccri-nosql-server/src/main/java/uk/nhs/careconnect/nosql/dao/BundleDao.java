@@ -1,10 +1,10 @@
-package mayfieldis.careconnect.nosql.dao;
+package uk.nhs.careconnect.nosql.dao;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.server.exceptions.ResourceVersionConflictException;
-import mayfieldis.careconnect.nosql.entities.BundleEntity;
-import mayfieldis.careconnect.nosql.entities.Entry;
-import mayfieldis.careconnect.nosql.entities.PatientEntity;
+import uk.nhs.careconnect.nosql.entities.BundleEntity;
+import uk.nhs.careconnect.nosql.entities.Entry;
+import uk.nhs.careconnect.nosql.entities.PatientEntity;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.hl7.fhir.dstu3.model.*;
@@ -42,7 +42,7 @@ public class BundleDao implements IBundle {
 
 
        if (bundle.hasIdentifier()) {
-           mayfieldis.careconnect.nosql.entities.Identifier identifierE = new mayfieldis.careconnect.nosql.entities.Identifier();
+           uk.nhs.careconnect.nosql.entities.Identifier identifierE = new uk.nhs.careconnect.nosql.entities.Identifier();
            identifierE.setValue(bundle.getIdentifier().getValue());
            identifierE.setSystem(bundle.getIdentifier().getSystem());
            bundleEntity.setIdentifier(identifierE);

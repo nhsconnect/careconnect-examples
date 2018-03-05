@@ -1,4 +1,4 @@
-package mayfieldis.careconnect.nosql.entities;
+package uk.nhs.careconnect.nosql.entities;
 
 
 import org.hl7.fhir.dstu3.model.HumanName;

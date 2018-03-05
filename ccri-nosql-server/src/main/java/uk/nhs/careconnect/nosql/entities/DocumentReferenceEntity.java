@@ -1,4 +1,4 @@
-package mayfieldis.careconnect.nosql.entities;
+package uk.nhs.careconnect.nosql.entities;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;

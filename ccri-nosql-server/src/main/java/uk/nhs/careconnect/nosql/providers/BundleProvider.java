@@ -1,4 +1,4 @@
-package mayfieldis.careconnect.nosql.providers;
+package uk.nhs.careconnect.nosql.providers;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.Create;
@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import mayfieldis.careconnect.nosql.dao.IBundle;
+import uk.nhs.careconnect.nosql.dao.IBundle;
 
 
 import javax.servlet.http.HttpServletRequest;

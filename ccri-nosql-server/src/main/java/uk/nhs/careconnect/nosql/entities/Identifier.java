@@ -1,4 +1,4 @@
-package mayfieldis.careconnect.nosql.entities;
+package uk.nhs.careconnect.nosql.entities;
 
 
 public class Identifier {

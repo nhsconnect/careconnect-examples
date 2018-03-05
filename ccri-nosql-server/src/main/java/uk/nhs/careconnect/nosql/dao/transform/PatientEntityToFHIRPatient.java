@@ -1,8 +1,8 @@
-package mayfieldis.careconnect.nosql.dao.transform;
+package uk.nhs.careconnect.nosql.dao.transform;
 
-import mayfieldis.careconnect.nosql.entities.Identifier;
-import mayfieldis.careconnect.nosql.entities.Name;
-import mayfieldis.careconnect.nosql.entities.PatientEntity;
+import uk.nhs.careconnect.nosql.entities.Identifier;
+import uk.nhs.careconnect.nosql.entities.Name;
+import uk.nhs.careconnect.nosql.entities.PatientEntity;
 import org.hl7.fhir.dstu3.model.Meta;
 import org.hl7.fhir.dstu3.model.Patient;
 import org.springframework.stereotype.Component;

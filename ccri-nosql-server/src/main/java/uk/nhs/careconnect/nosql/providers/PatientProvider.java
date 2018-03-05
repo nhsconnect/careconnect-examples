@@ -1,4 +1,4 @@
-package mayfieldis.careconnect.nosql.providers;
+package uk.nhs.careconnect.nosql.providers;
 
 import ca.uhn.fhir.context.FhirContext;
 
@@ -10,7 +10,7 @@ import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 
-import mayfieldis.careconnect.nosql.dao.IPatient;
+import uk.nhs.careconnect.nosql.dao.IPatient;
 import org.hl7.fhir.dstu3.model.Patient;
 import org.hl7.fhir.dstu3.model.Resource;
 import org.hl7.fhir.instance.model.api.IBaseResource;

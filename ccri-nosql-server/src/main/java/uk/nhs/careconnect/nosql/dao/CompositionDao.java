@@ -1,4 +1,4 @@
-package mayfieldis.careconnect.nosql.dao;
+package uk.nhs.careconnect.nosql.dao;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.param.ReferenceParam;
@@ -9,9 +9,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
-import mayfieldis.careconnect.nosql.entities.BundleEntity;
-import mayfieldis.careconnect.nosql.entities.Entry;
-import mayfieldis.careconnect.nosql.entities.PatientEntity;
+import uk.nhs.careconnect.nosql.entities.BundleEntity;
+import uk.nhs.careconnect.nosql.entities.Entry;
+import uk.nhs.careconnect.nosql.entities.PatientEntity;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.hl7.fhir.dstu3.model.Bundle;
