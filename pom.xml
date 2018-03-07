@@ -38,6 +38,7 @@
         <module>hapi-patient-find-example-two</module>
         <module>UHSDiagnosticReports</module>
         <module>ccri-nosql-server</module>
+        <module>ccri-document-gateway</module>
     </modules>
 
 </project>
