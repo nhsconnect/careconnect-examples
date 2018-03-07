@@ -17,7 +17,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @SpringBootApplication
 @ComponentScan("uk.nhs.careconnect.ri.extranet")
-public class ccriExtranetApplication{
+public class CcriDocumentGatewayApplication {
 
     @Autowired
     ApplicationContext context;
@@ -25,13 +25,13 @@ public class ccriExtranetApplication{
     public static void main(String[] args) {
         //System.setProperty(AuthenticationFilter.HAWTIO_AUTHENTICATION_ENABLED, "false");
         System.setProperty("server.port", "8182");
-        SpringApplication.run(ccriExtranetApplication.class, args);
+        SpringApplication.run(CcriDocumentGatewayApplication.class, args);
 
     }
 
     @Bean
     public ServletRegistrationBean ServletRegistrationBean() {
-        ServletRegistrationBean registration = new ServletRegistrationBean(new ccriExtranetHAPIServer(context), "/STU3/*");
+        ServletRegistrationBean registration = new ServletRegistrationBean(new ccriDocumentGatewayHAPIServer(context), "/STU3/*");
         registration.setName("FhirServlet");
         return registration;
     }

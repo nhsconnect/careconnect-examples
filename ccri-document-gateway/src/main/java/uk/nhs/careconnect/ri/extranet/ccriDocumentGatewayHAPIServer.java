@@ -25,14 +25,14 @@ import java.util.Arrays;
 import java.util.TimeZone;
 
 
-public class ccriExtranetHAPIServer extends RestfulServer {
+public class ccriDocumentGatewayHAPIServer extends RestfulServer {
 
 	private static final long serialVersionUID = 1L;
-	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ccriExtranetHAPIServer.class);
+	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ccriDocumentGatewayHAPIServer.class);
 
 	private ApplicationContext applicationContext;
 
-	ccriExtranetHAPIServer(ApplicationContext context) {
+	ccriDocumentGatewayHAPIServer(ApplicationContext context) {
 		this.applicationContext = context;
 	}
 

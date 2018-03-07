@@ -39,6 +39,7 @@
         <module>UHSDiagnosticReports</module>
         <module>ccri-nosql-server</module>
         <module>ccri-document-gateway</module>
+        <module>ccri-nosql-fhirStarter</module>
     </modules>
 
 </project>
