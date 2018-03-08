@@ -23,13 +23,6 @@
         <hapi-hl7v2-version>2.2</hapi-hl7v2-version>
     </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>uk.org.hl7.fhir</groupId>
-            <artifactId>cc-core</artifactId>
-            <version>${care-connect-version}</version>
-        </dependency>
-    </dependencies>
 
     <modules>
         <module>hapi-fhirDocument-convert2PdfOrHtml</module>

@@ -14,8 +14,8 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Maven: uk.org.hl7.fhir:cc-core:3.4.8" level="project" />
-    <orderEntry type="library" name="Maven: uk.org.hl7.fhir:cc-fhir-validation-resources-stu3:3.4.8" level="project" />
+    <orderEntry type="library" name="Maven: uk.org.hl7.fhir:cc-core:3.5.0" level="project" />
+    <orderEntry type="library" name="Maven: uk.org.hl7.fhir:cc-fhir-validation-resources-stu3:3.5.0" level="project" />
     <orderEntry type="library" name="Maven: ca.uhn.hapi.fhir:hapi-fhir-structures-dstu3:3.0.0" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter:1.5.10.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot:1.5.10.RELEASE" level="project" />

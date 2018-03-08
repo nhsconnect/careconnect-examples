@@ -20,6 +20,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import uk.org.hl7.fhir.validation.stu3.CareConnectProfileValidationSupport;
+import uk.org.hl7.fhir.validation.stu3.SNOMEDUKMockValidationSupport;
 
 @SpringBootApplication
 public class ClientExampleAppValidation implements CommandLineRunner {
@@ -57,8 +58,12 @@ public class ClientExampleAppValidation implements CommandLineRunner {
         instanceValidator = new FhirInstanceValidator();
         validator.registerValidatorModule(instanceValidator);
 
-        IValidationSupport valSupport = new CareConnectProfileValidationSupport();
-        ValidationSupportChain support = new ValidationSupportChain(new DefaultProfileValidationSupport(), valSupport);
+
+        ValidationSupportChain support = new ValidationSupportChain(
+                new DefaultProfileValidationSupport()
+                ,new CareConnectProfileValidationSupport()
+                ,new SNOMEDUKMockValidationSupport() // This is to disable SNOMED CT Warnings. Mock validation to return ok for SNOMED Concepts
+        );
         instanceValidator.setValidationSupport(support);
 
         XMLparser = ctxFHIR.newXmlParser();
