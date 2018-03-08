@@ -5,7 +5,7 @@
 
 	<groupId>uk.nhs.careconnect.examples</groupId>
 	<artifactId>hapi-fhirDocument-convert2PdfOrHtml</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>3.5.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>hapi-fhirDocument-convert2PdfOrHtml</name>
@@ -63,7 +63,7 @@
 		<dependency>
 			<groupId>uk.org.hl7.fhir</groupId>
 			<artifactId>cc-core</artifactId>
-			<version>3.4.8</version>
+			<version>3.5.0</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/xalan/xalan -->

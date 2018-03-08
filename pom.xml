@@ -6,7 +6,7 @@
 
     <groupId>uk.nhs.careconnect.examples</groupId>
     <artifactId>careconnect-java-examples</artifactId>
-    <version>3.5.9-SNAPSHOT</version>
+    <version>3.5.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <parent>
@@ -17,7 +17,7 @@
     </parent>
     
     <properties>
-        <care-connect-version>3.4.8</care-connect-version>
+        <care-connect-version>3.5.0</care-connect-version>
         <hapi-fhir-version>3.2.0</hapi-fhir-version>
         <cucumber-version>1.2.5</cucumber-version>
         <hapi-hl7v2-version>2.2</hapi-hl7v2-version>
