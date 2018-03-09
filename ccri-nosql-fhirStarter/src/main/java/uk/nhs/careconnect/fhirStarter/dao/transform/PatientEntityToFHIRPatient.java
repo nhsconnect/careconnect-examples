@@ -8,7 +8,7 @@ import uk.nhs.careconnect.fhirStarter.entities.PatientEntity;
 import org.springframework.stereotype.Component;
 import org.apache.commons.collections4.Transformer;
 import uk.nhs.careconnect.fhirStarter.entities.Telecom;
-import uk.org.hl7.fhir.core.Stu3.CareConnectProfile;
+
 
 @Component
 public class PatientEntityToFHIRPatient  implements Transformer<PatientEntity, Patient> {
@@ -16,7 +16,7 @@ public class PatientEntityToFHIRPatient  implements Transformer<PatientEntity, P
     public Patient transform(PatientEntity patientEntity) {
         final Patient patient = new Patient();
 
-        Meta meta = new Meta().addProfile(CareConnectProfile.Patient_1);
+        Meta meta = new Meta().addProfile("https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Patient-1");
 
         patient.setMeta(meta);
 
