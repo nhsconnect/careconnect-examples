@@ -25,6 +25,14 @@
 		<hapi-fhir-version>3.2.0</hapi-fhir-version>
 	</properties>
 
+	<repositories>
+		<repository>
+			<id>bintray-kevinmayfield-careconnect</id>
+			<name>kevinmayfield-careconnect</name>
+			<url>https://dl.bintray.com/kevinmayfield/careconnect</url>
+		</repository>
+	</repositories>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

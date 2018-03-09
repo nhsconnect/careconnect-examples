@@ -23,6 +23,13 @@
         <hapi-hl7v2-version>2.2</hapi-hl7v2-version>
     </properties>
 
+    <repositories>
+        <repository>
+            <id>bintray-kevinmayfield-careconnect</id>
+            <name>kevinmayfield-careconnect</name>
+            <url>https://dl.bintray.com/kevinmayfield/careconnect</url>
+        </repository>
+    </repositories>
 
     <modules>
         <module>hapi-fhirDocument-convert2PdfOrHtml</module>
