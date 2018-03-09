@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.*;
 
 
-@Document(collection = "docPatient")
+@Document(collection = "idxPatient")
 public class PatientEntity  {
 
     @Id
