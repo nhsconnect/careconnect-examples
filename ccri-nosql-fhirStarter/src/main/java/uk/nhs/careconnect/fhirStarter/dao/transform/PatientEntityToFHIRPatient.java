@@ -1,6 +1,7 @@
 package uk.nhs.careconnect.fhirStarter.dao.transform;
 
 import org.hl7.fhir.dstu3.model.*;
+import uk.nhs.careconnect.fhirStarter.entities.Address;
 import uk.nhs.careconnect.fhirStarter.entities.Identifier;
 import uk.nhs.careconnect.fhirStarter.entities.Name;
 import uk.nhs.careconnect.fhirStarter.entities.PatientEntity;
@@ -52,6 +53,18 @@ public class PatientEntityToFHIRPatient  implements Transformer<PatientEntity, P
                 contactPoint.setUse(telecom.getTelecomUse());
             }
             patient.getTelecom().add(contactPoint);
+        }
+        for (Address addressEntity : patientEntity.getAddresses()) {
+            org.hl7.fhir.dstu3.model.Address address = new org.hl7.fhir.dstu3.model.Address();
+            patient.getAddress().add(address);
+
+            for (String line : addressEntity.getLines()) {
+                address.addLine(line);
+            }
+            if (addressEntity.getCity()!=null) address.setCity(addressEntity.getCity());
+            if (addressEntity.getCounty()!=null) address.setDistrict(addressEntity.getCounty());
+            if (addressEntity.getPostcode()!=null) address.setPostalCode(addressEntity.getPostcode());
+            if (addressEntity.getUse()!=null) address.setUse(addressEntity.getUse());
         }
 
 
