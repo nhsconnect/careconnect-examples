@@ -36,6 +36,7 @@
         <module>hapi-fhirDocument-create</module>
         <module>hapi-patient-find-example-one</module>
         <module>hapi-patient-find-example-two</module>
+        <module>hapi-patient-find-example-three</module>
         <module>UHSDiagnosticReports</module>
         <module>ccri-nosql-fhirStarter</module>
     </modules>
