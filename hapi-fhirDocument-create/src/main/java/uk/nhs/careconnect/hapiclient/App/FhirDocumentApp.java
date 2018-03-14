@@ -17,7 +17,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.xhtmlrenderer.pdf.ITextRenderer;
-import uk.org.hl7.fhir.core.Stu3.CareConnectSystem;
+
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -314,7 +314,7 @@ public class FhirDocumentApp implements CommandLineRunner {
         ArrayList<Condition>  conditions = new ArrayList<>();
 
         section.getCode().addCoding()
-                .setSystem(CareConnectSystem.SNOMEDCT)
+                .setSystem("http://snomed.info/sct")
                 .setCode("887151000000100")
                 .setDisplay("Problems and issues");
         section.setTitle("Problems and issues");
@@ -340,7 +340,7 @@ public class FhirDocumentApp implements CommandLineRunner {
         ArrayList<MedicationStatement>  medicationStatements = new ArrayList<>();
 
         section.getCode().addCoding()
-                .setSystem(CareConnectSystem.SNOMEDCT)
+                .setSystem("http://snomed.info/sct")
                 .setCode("933361000000108")
                 .setDisplay("Medications and medical devices");
         section.setTitle("Medications and medical devices");
@@ -367,7 +367,7 @@ public class FhirDocumentApp implements CommandLineRunner {
         ArrayList<AllergyIntolerance>  allergyIntolerances = new ArrayList<>();
 
         section.getCode().addCoding()
-                .setSystem(CareConnectSystem.SNOMEDCT)
+                .setSystem("http://snomed.info/sct")
                 .setCode("886921000000105")
                 .setDisplay("Allergies and adverse reactions");
         section.setTitle("Allergies and adverse reactions");
@@ -394,7 +394,7 @@ public class FhirDocumentApp implements CommandLineRunner {
         ArrayList<Encounter>  encounters = new ArrayList<>();
 
         section.getCode().addCoding()
-                .setSystem(CareConnectSystem.SNOMEDCT)
+                .setSystem("http://snomed.info/sct")
                 .setCode("713511000000103")
                 .setDisplay("Encounter administration");
         section.setTitle("Encounters");
