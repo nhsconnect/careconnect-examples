@@ -131,22 +131,30 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
 
         Binary binary = new Binary();
         binary.setId(UUID.randomUUID().toString());
+        /*
         InputStream inputStream =
                 Thread.currentThread().getContextClassLoader().getResourceAsStream("image/3emotng15yvy.jpg");
         binary.setContent(IOUtils.toByteArray (inputStream));
         binary.setContentType("image/jpeg");
+        */
+        InputStream inputStream =
+                Thread.currentThread().getContextClassLoader().getResourceAsStream("image/DischargeSummary.pdf");
+        binary.setContent(IOUtils.toByteArray (inputStream));
+        binary.setContentType("application/pdf");
         fhirDocument.addEntry().setResource(binary).setFullUrl(uuidtag + binary.getId());
+        documentReference.addContent()
+                .getAttachment()
+                .setUrl(uuidtag+binary.getId())
+                .setContentType(binary.getContentType());
 
+        /*
         // Short test stub
         IGenericClient  iGenericClient = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8181/STU3/");
         iGenericClient.setEncoding(EncodingEnum.XML);
         iGenericClient.create().resource(binary).execute();
+*/
 
 
-        documentReference.addContent()
-                .getAttachment()
-                    .setUrl(binary.getId())
-                    .setContentType(binary.getContentType());
 
         Patient patient = null;
         Practitioner gp = null;

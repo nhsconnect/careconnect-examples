@@ -94,6 +94,9 @@ public class FhirDocumentApp implements CommandLineRunner {
         String htmlFilename = "/Temp/"+df.format(date)+"+patient-"+patientId+".html";
         performTransform(xmlResult,htmlFilename,"XML/DocumentToHTML.xslt");
         outputPDF(htmlFilename, "/Temp/"+df.format(date)+"+patient-"+patientId+".pdf");
+
+        IGenericClient clientTest = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8080/careconnect-gateway/STU3/");
+        clientTest.create().resource(careRecord).execute();
     }
 
     private void outputPDF(String processedHtml, String outputFileName ) throws Exception {
