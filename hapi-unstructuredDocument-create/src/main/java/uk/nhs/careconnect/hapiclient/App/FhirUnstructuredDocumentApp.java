@@ -71,13 +71,14 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
 
         client.setEncoding(EncodingEnum.XML);
 
-        outputDocument("1098");
+        outputDocument("1098",1);
+        outputDocument("1098",2);
     }
 
-    private void outputDocument(String patientId) throws Exception {
+    private void outputDocument(String patientId, Integer docExample) throws Exception {
         Date date = new Date();
 
-        Bundle unstructDocBundle = getUnstructuredBundle(patientId);
+        Bundle unstructDocBundle = getUnstructuredBundle(patientId,docExample);
         String xmlResult = ctxFHIR.newXmlParser().setPrettyPrint(true).encodeResourceToString(unstructDocBundle);
 
         Files.write(Paths.get("/Temp/"+df.format(date)+"+patient-"+patientId+".xml"),xmlResult.getBytes());
@@ -86,7 +87,7 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
        // Files.write(Paths.get("/Temp/"+df.format(date)+"+patient-"+patientId+".json"),ctxFHIR.newJsonParser().setPrettyPrint(true).encodeResourceToString(careRecord).getBytes());
     }
 
-    private Bundle getUnstructuredBundle(String patientId) throws Exception {
+    private Bundle getUnstructuredBundle(String patientId, Integer docExample) throws Exception {
         // Create Bundle of type Document
         Bundle fhirDocument = new Bundle()
                 .setType(Bundle.BundleType.COLLECTION);
@@ -131,16 +132,19 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
 
         Binary binary = new Binary();
         binary.setId(UUID.randomUUID().toString());
-        /*
-        InputStream inputStream =
-                Thread.currentThread().getContextClassLoader().getResourceAsStream("image/3emotng15yvy.jpg");
-        binary.setContent(IOUtils.toByteArray (inputStream));
-        binary.setContentType("image/jpeg");
-        */
-        InputStream inputStream =
-                Thread.currentThread().getContextClassLoader().getResourceAsStream("image/DischargeSummary.pdf");
-        binary.setContent(IOUtils.toByteArray (inputStream));
-        binary.setContentType("application/pdf");
+
+        if (docExample == 1) {
+
+            InputStream inputStream =
+                    Thread.currentThread().getContextClassLoader().getResourceAsStream("image/3emotng15yvy.jpg");
+            binary.setContent(IOUtils.toByteArray(inputStream));
+            binary.setContentType("image/jpeg");
+        } else if (docExample == 2) {
+            InputStream inputStream =
+                    Thread.currentThread().getContextClassLoader().getResourceAsStream("image/DischargeSummary.pdf");
+            binary.setContent(IOUtils.toByteArray(inputStream));
+            binary.setContentType("application/pdf");
+        }
         fhirDocument.addEntry().setResource(binary).setFullUrl(uuidtag + binary.getId());
         documentReference.addContent()
                 .getAttachment()
