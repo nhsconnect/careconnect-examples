@@ -28,12 +28,9 @@ import java.util.*;
 @SpringBootApplication
 public class FhirUnstructuredDocumentApp implements CommandLineRunner {
 
-    @Autowired
-    private TemplateEngine templateEngine;
-
     private static final Logger log = LoggerFactory.getLogger(FhirUnstructuredDocumentApp.class);
 
-    Context ctxThymeleaf = new Context();
+    final String uuidtag = "urn:uuid:";
 
     private XhtmlParser xhtmlParser = new XhtmlParser();
 
@@ -46,16 +43,11 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
 		SpringApplication.run(FhirUnstructuredDocumentApp.class, args).close();
 	}
 
-
     FhirContext ctxFHIR = FhirContext.forDstu3();
 
     IGenericClient client = null;
 
-    Map<String,String> referenceMap = new HashMap<>();
-
     DateFormat df = new SimpleDateFormat("HHmm_dd_MM_yyyy");
-
-    final String uuidtag = "urn:uuid:";
 
 
     @Override
@@ -83,35 +75,34 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
 
         Files.write(Paths.get("/Temp/"+df.format(date)+"+patient-"+patientId+".xml"),xmlResult.getBytes());
 
-        client.create().resource(unstructDocBundle).execute();
-       // Files.write(Paths.get("/Temp/"+df.format(date)+"+patient-"+patientId+".json"),ctxFHIR.newJsonParser().setPrettyPrint(true).encodeResourceToString(careRecord).getBytes());
+//        client.create().resource(unstructDocBundle).execute();
+
     }
 
     private Bundle getUnstructuredBundle(String patientId, Integer docExample) throws Exception {
         // Create Bundle of type Document
-        Bundle fhirDocument = new Bundle()
-                .setType(Bundle.BundleType.COLLECTION);
 
-        fhirDocument.getIdentifier().setValue(UUID.randomUUID().toString()).setSystem("https://tools.ietf.org/html/rfc4122");
+        FhirBundleUtil fhirBundle = new FhirBundleUtil(Bundle.BundleType.COLLECTION);
 
+        Bundle bundle = new Bundle();
         // Main resource of a FHIR Bundle is a DocumentReference
         DocumentReference documentReference = new DocumentReference();
         documentReference.setId(UUID.randomUUID().toString());
-        fhirDocument.addEntry().setResource(documentReference).setFullUrl(uuidtag + documentReference.getId());
+        bundle.addEntry().setResource(documentReference);
 
 
         documentReference.setCreated(new Date());
         documentReference.setStatus(Enumerations.DocumentReferenceStatus.CURRENT);
 
         Organization leedsTH = getOrganization("RR8");
-        leedsTH.setId(getNewReferenceUri(leedsTH));
-        fhirDocument.addEntry().setResource(leedsTH).setFullUrl(uuidtag + leedsTH.getId());
-        documentReference.setCustodian(new Reference(uuidtag+leedsTH.getId()));
+
+        bundle.addEntry().setResource(leedsTH);
+        documentReference.setCustodian(new Reference(leedsTH.getId()));
 
         Practitioner consultant = getPractitioner("C2381390");
-        consultant.setId(getNewReferenceUri(consultant));
-        fhirDocument.addEntry().setResource(consultant).setFullUrl(uuidtag + consultant.getId());
-        documentReference.addAuthor(new Reference(uuidtag+consultant.getId()));
+
+        bundle.addEntry().setResource(consultant);
+        documentReference.addAuthor(new Reference(consultant.getId()));
 
 
         documentReference.getType().addCoding()
@@ -145,64 +136,25 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
             binary.setContent(IOUtils.toByteArray(inputStream));
             binary.setContentType("application/pdf");
         }
-        fhirDocument.addEntry().setResource(binary).setFullUrl(uuidtag + binary.getId());
+        bundle.addEntry().setResource(binary).setFullUrl(binary.getId());
         documentReference.addContent()
                 .getAttachment()
-                .setUrl(uuidtag+binary.getId())
+                .setUrl("Binary/"+binary.getId())
                 .setContentType(binary.getContentType());
 
-        /*
-        // Short test stub
-        IGenericClient  iGenericClient = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8181/STU3/");
-        iGenericClient.setEncoding(EncodingEnum.XML);
-        iGenericClient.create().resource(binary).execute();
-*/
-
-
-
-        Patient patient = null;
-        Practitioner gp = null;
-        Organization practice = null;
 
         // This is a synthea patient
+
+        fhirBundle.processBundleResources(bundle);
         Bundle patientBundle = getPatientBundle(patientId);
+        fhirBundle.processBundleResources(patientBundle);
 
-        for (Bundle.BundleEntryComponent entry : patientBundle.getEntry()) {
-            if (entry.getResource() instanceof Patient) {
-                patient = (Patient) entry.getResource();
+        if (fhirBundle.getPatient() == null) throw new Exception("404 Patient not found");
+        documentReference.setSubject(new Reference(fhirBundle.getPatient().getId()));
 
-                patientId = patient.getId();
+        fhirBundle.processReferences();
 
-                patient.setId(getNewReferenceUri(patient));
-
-                documentReference.setSubject(new Reference(uuidtag+patient.getId()));
-                fhirDocument.addEntry().setResource(patient).setFullUrl(uuidtag + patient.getId());;
-            }
-            if (entry.getResource() instanceof Practitioner) {
-                gp = (Practitioner) entry.getResource();
-
-                gp.setId(getNewReferenceUri(gp));
-                if (patient != null && patient.getGeneralPractitioner().size()>0) {
-                    patient.getGeneralPractitioner().get(0).setReference(uuidtag + gp.getId());
-                    fhirDocument.addEntry().setResource(gp).setFullUrl(uuidtag + gp.getId());
-                }
-
-            }
-            if (entry.getResource() instanceof Organization) {
-                practice = (Organization) entry.getResource();
-
-                practice.setId(getNewReferenceUri(practice));
-                if (patient != null ) {
-                    patient.setManagingOrganization(new Reference(uuidtag + practice.getId()));
-                }
-                fhirDocument.addEntry().setResource(practice).setFullUrl(uuidtag + practice.getId());
-            }
-        }
-        if (patient == null) throw new Exception("404 Patient not found");
-
-       // log.debug(ctxFHIR.newJsonParser().setPrettyPrint(true).encodeResourceToString(fhirDocument));
-
-        return fhirDocument;
+        return fhirBundle.getFhirDocument();
     }
 
     private Bundle getPatientBundle(String patientId) {
@@ -247,17 +199,6 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
         return organization;
     }
 
-    private String getNewReferenceUri(Resource resource) {
-        return getNewReferenceUri(resource.getResourceType().toString()+"/"+resource.getId());
-    }
-
-    private String getNewReferenceUri(String reference) {
-        String newReference = referenceMap.get(reference);
-        if (newReference != null ) return newReference;
-        newReference = UUID.randomUUID().toString();
-        referenceMap.put(reference,newReference);
-        return newReference;
-    }
 
 
 
