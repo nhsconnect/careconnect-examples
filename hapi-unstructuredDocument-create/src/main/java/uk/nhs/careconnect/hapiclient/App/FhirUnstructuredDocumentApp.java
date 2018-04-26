@@ -10,13 +10,10 @@ import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.utilities.xhtml.XhtmlParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.Context;
-
 
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -63,8 +60,8 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
 
         client.setEncoding(EncodingEnum.XML);
 
-        outputDocument("1098",1);
-        outputDocument("1098",2);
+        outputDocument("1",1);
+        outputDocument("1",2);
     }
 
     private void outputDocument(String patientId, Integer docExample) throws Exception {
@@ -73,7 +70,7 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
         Bundle unstructDocBundle = getUnstructuredBundle(patientId,docExample);
         String xmlResult = ctxFHIR.newXmlParser().setPrettyPrint(true).encodeResourceToString(unstructDocBundle);
 
-        Files.write(Paths.get("/Temp/"+df.format(date)+"+patient-"+patientId+".xml"),xmlResult.getBytes());
+        Files.write(Paths.get("/Temp/"+df.format(date)+"+patient-"+patientId+"-doc-"+docExample+".xml"),xmlResult.getBytes());
 
 //        client.create().resource(unstructDocBundle).execute();
 
@@ -87,7 +84,7 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
         Bundle bundle = new Bundle();
         // Main resource of a FHIR Bundle is a DocumentReference
         DocumentReference documentReference = new DocumentReference();
-        documentReference.setId(UUID.randomUUID().toString());
+        documentReference.setId(fhirBundle.getNewId(documentReference));
         bundle.addEntry().setResource(documentReference);
 
 
@@ -97,12 +94,14 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
         Organization leedsTH = getOrganization("RR8");
 
         bundle.addEntry().setResource(leedsTH);
-        documentReference.setCustodian(new Reference(leedsTH.getId()));
+
+        documentReference.setCustodian(new Reference("Organization/"+leedsTH.getIdElement().getIdPart()));
+       // log.info("Custodian docRef"+documentReference.getCustodian().getReference());
 
         Practitioner consultant = getPractitioner("C2381390");
 
         bundle.addEntry().setResource(consultant);
-        documentReference.addAuthor(new Reference(consultant.getId()));
+        documentReference.addAuthor(new Reference("Practitioner/"+consultant.getIdElement().getIdPart()));
 
 
         documentReference.getType().addCoding()
@@ -122,7 +121,7 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
 
 
         Binary binary = new Binary();
-        binary.setId(UUID.randomUUID().toString());
+        binary.setId(fhirBundle.getNewId(binary));
 
         if (docExample == 1) {
 
@@ -150,15 +149,14 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
         fhirBundle.processBundleResources(patientBundle);
 
         if (fhirBundle.getPatient() == null) throw new Exception("404 Patient not found");
-        documentReference.setSubject(new Reference(fhirBundle.getPatient().getId()));
-
+        documentReference.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
         fhirBundle.processReferences();
 
         return fhirBundle.getFhirDocument();
     }
 
     private Bundle getPatientBundle(String patientId) {
-        return client
+        Bundle bundle = client
                 .search()
                 .forResource(Patient.class)
                 .where(Patient.RES_ID.exactly().code(patientId))
@@ -166,6 +164,7 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
                 .include(Patient.INCLUDE_ORGANIZATION)
                 .returnBundle(Bundle.class)
                 .execute();
+        return bundle;
     }
 
     private Practitioner getPractitioner(String sdsCode) {
@@ -179,6 +178,7 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
         if (bundle.getEntry().size()>0) {
             if (bundle.getEntry().get(0).getResource() instanceof Practitioner)
                 practitioner = (Practitioner) bundle.getEntry().get(0).getResource();
+
         }
         return practitioner;
     }
@@ -195,6 +195,7 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
         if (bundle.getEntry().size()>0) {
             if (bundle.getEntry().get(0).getResource() instanceof Organization)
             organization = (Organization) bundle.getEntry().get(0).getResource();
+
         }
         return organization;
     }

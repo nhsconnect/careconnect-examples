@@ -54,12 +54,12 @@ public class FhirBundleUtil {
 
             if (entry.getResource() instanceof AllergyIntolerance) {
                 AllergyIntolerance allergyIntolerance = (AllergyIntolerance) entry.getResource();
-                allergyIntolerance.setPatient(new Reference(uuidtag+patient.getId()));
+                allergyIntolerance.setPatient(getUUIDReference(allergyIntolerance.getPatient()));
             }
 
             if (entry.getResource() instanceof Condition) {
                 Condition condition = (Condition) entry.getResource();
-                condition.setSubject(new Reference(uuidtag+patient.getId()));
+                condition.setSubject(getUUIDReference(condition.getSubject()));
                 if (condition.hasContext()) {
                     condition.setContext(getUUIDReference(condition.getContext()));
                 }
@@ -68,23 +68,30 @@ public class FhirBundleUtil {
             if (entry.getResource() instanceof Composition) {
                 Composition composition = (Composition) entry.getResource();
 
-                if (composition.hasSubject()) composition.setSubject(new Reference(uuidtag+composition.getSubject().getReference()));
+                if (composition.hasSubject()) composition.setSubject(getUUIDReference(composition.getSubject()));
                 for (Composition.CompositionAttesterComponent attester : composition.getAttester()) {
                     if (attester.hasParty()) {
                         attester.setParty(getUUIDReference(attester.getParty()));
                     }
                 }
+                for (Reference reference : composition.getAuthor()) {
+                    reference.setReference(getUUIDReference(reference).getReference());
+                }
             }
             if (entry.getResource() instanceof DocumentReference) {
                 DocumentReference documentReference = (DocumentReference) entry.getResource();
+                if (documentReference.hasSubject()) {
+                    documentReference.setSubject(getUUIDReference(documentReference.getSubject()));
+                }
                 if (documentReference.hasContent()) {
                     for (DocumentReference.DocumentReferenceContentComponent content : documentReference.getContent())
                     if (content.hasAttachment()) {
-                        log.info("Attachment url = "+content.getAttachment().getUrl());
-                        content.getAttachment().setUrl(getNewReferenceUri(content.getAttachment().getUrl()));
+                        log.debug("Attachment url = "+content.getAttachment().getUrl());
+                        content.getAttachment().setUrl(uuidtag+getNewReferenceUri(content.getAttachment().getUrl()));
                     }
                 }
                 if (documentReference.hasCustodian()) {
+                   // log.info("Bundle Custodian Ref = "+documentReference.getCustodian().getReference());
                     documentReference.setCustodian(getUUIDReference(documentReference.getCustodian()));
                 }
                 for (Reference reference : documentReference.getAuthor()) {
@@ -101,8 +108,10 @@ public class FhirBundleUtil {
             if (entry.getResource() instanceof Encounter) {
                 Encounter encounter = (Encounter) entry.getResource();
                 encounter.setSubject(new Reference(uuidtag+patient.getId()));
-                if (encounter.hasServiceProvider()) {
+                if (encounter.hasServiceProvider() && encounter.getServiceProvider().getReference()!=null) {
                     encounter.setServiceProvider(getUUIDReference(encounter.getServiceProvider()));
+                } else {
+                    encounter.setServiceProvider(null);
                 }
             }
 
@@ -145,7 +154,9 @@ public class FhirBundleUtil {
             if (entry.getResource() instanceof Patient) {
                 Patient patient = (Patient) entry.getResource();
 
-                patient.setManagingOrganization(new Reference(uuidtag + getNewReferenceUri(patient.getManagingOrganization().getReference())));
+                if (patient.hasManagingOrganization()) {
+                    patient.setManagingOrganization(new Reference(uuidtag + getNewReferenceUri(patient.getManagingOrganization().getReference())));
+                }
                 for (Reference reference : patient.getGeneralPractitioner()) {
                     patient.getGeneralPractitioner().get(0).setReference(uuidtag + getNewReferenceUri(reference.getReference()));
                 }
@@ -171,7 +182,7 @@ public class FhirBundleUtil {
         Organization practice = null;
         for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
             Resource resource = entry.getResource();
-            resource.setId(getNewReferenceUri(resource));
+            resource.setId(getNewId(resource));
             fhirDocument.addEntry().setResource(entry.getResource()).setFullUrl(uuidtag + resource.getId());
             if (entry.getResource() instanceof Patient) {
                 patient = (Patient) entry.getResource();
@@ -181,23 +192,49 @@ public class FhirBundleUtil {
 
     private Reference getUUIDReference(Reference reference) {
         if (referenceMap.get(reference.getReference()) == null) {
-            log.info("Missing refernce "+reference.getReference());
+            log.error("Missing reference "+reference.getReference());
         }
-        if (reference.getReference().equals(getNewReferenceUri(getNewReferenceUri(reference.getReference())))) {
+        if (reference.getReference().equals(getNewReferenceUri(reference.getReference()))) {
             return reference;
         } else {
-            return new Reference(uuidtag + getNewReferenceUri(getNewReferenceUri(reference.getReference())));
+            return new Reference(uuidtag + getNewReferenceUri(reference.getReference()));
         }
     }
     private String getNewReferenceUri(Resource resource) {
         return getNewReferenceUri(resource.getResourceType().toString()+"/"+resource.getId());
     }
 
+    public String getNewId(Resource resource) {
+        String reference = resource.getId();
+        String newReference = null;
+        if (reference!=null) {
+            newReference = referenceMap.get(reference);
+            if (newReference != null) return newReference;
+        }
+        newReference = UUID.randomUUID().toString();
+        if (reference == null) {
+            reference = newReference;
+            referenceMap.put(resource.getClass().getSimpleName()+"/"+reference,newReference);
+        } else {
+            log.info(resource.getClass().getSimpleName()+"/"+resource.getIdElement().getIdPart()+" [-] "+newReference);
+            referenceMap.put(resource.getClass().getSimpleName()+"/"+resource.getIdElement().getIdPart(),newReference);
+        }
+        log.info(reference +" [-] "+newReference);
+        referenceMap.put(reference,newReference);
+        referenceMap.put(newReference,newReference); // Add in self
+        referenceMap.put(uuidtag + newReference,newReference); // Add in self
+
+        return newReference;
+    }
     private String getNewReferenceUri(String reference) {
+        if (reference.contains(uuidtag)) {
+            return reference.replace(uuidtag,"");
+        }
         String newReference = referenceMap.get(reference);
         if (newReference != null ) return newReference;
-        newReference = UUID.randomUUID().toString();
-        referenceMap.put(reference,newReference);
+
+        log.info("Missing newReference for "+reference);
+
         return newReference;
     }
 

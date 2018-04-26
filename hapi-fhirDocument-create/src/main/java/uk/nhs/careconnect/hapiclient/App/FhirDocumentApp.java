@@ -151,7 +151,7 @@ public class FhirDocumentApp implements CommandLineRunner {
         compositionBundle.addEntry().setResource(leedsTH);
 
         composition.addAttester()
-                .setParty(new Reference(leedsTH.getId()))
+                .setParty(new Reference("Organization/"+leedsTH.getIdElement().getIdPart()))
                 .addMode(Composition.CompositionAttestationMode.OFFICIAL);
 
 
@@ -161,10 +161,10 @@ public class FhirDocumentApp implements CommandLineRunner {
                 .setSystem("http://snomed.info/sct")
                 .setCode("58153004")
                 .setDisplay("Android");
-        device.setOwner(new Reference(leedsTH.getId()));
+        device.setOwner(new Reference("Organization/"+leedsTH.getIdElement().getIdPart()));
         compositionBundle.addEntry().setResource(device);
 
-        composition.addAuthor(new Reference(device.getId()));
+        composition.addAuthor(new Reference("Device/"+device.getIdElement().getIdPart()));
 
         composition.getType().addCoding()
                 .setCode("371531000")
@@ -197,7 +197,7 @@ public class FhirDocumentApp implements CommandLineRunner {
             fhirBundleUtil.processBundleResources(patientBundle);
 
             if (fhirBundleUtil.getPatient() == null) throw new Exception("404 Patient not found");
-            composition.setSubject(new Reference(fhirBundleUtil.getPatient().getId()));
+            composition.setSubject(new Reference("Patient/"+patientId));
             patientId = fhirBundleUtil.getPatient().getId();
         }
 
@@ -260,11 +260,11 @@ public class FhirDocumentApp implements CommandLineRunner {
                 .setSystem("http://snomed.info/sct")
                 .setCode("58153004")
                 .setDisplay("Android");
-        device.setOwner(new Reference(leedsTH.getId()));
+        device.setOwner(new Reference("Organization/"+leedsTH.getIdElement().getIdPart()));
 
         compositionBundle.addEntry().setResource(device);
 
-        composition.addAuthor(new Reference(device.getId()));
+        composition.addAuthor(new Reference("Device/"+device.getIdElement().getIdPart()));
 
         fhirBundleUtil.processBundleResources(compositionBundle);
         fhirBundleUtil.processReferences();
@@ -274,7 +274,7 @@ public class FhirDocumentApp implements CommandLineRunner {
         fhirBundleUtil.processBundleResources(patientBundle);
 
         if (fhirBundleUtil.getPatient() == null) throw new Exception("404 Patient not found");
-        composition.setSubject(new Reference(fhirBundleUtil.getPatient().getId()));
+        composition.setSubject(new Reference("Patient/"+patientId));
 
         FhirDocUtil fhirDoc = new FhirDocUtil(templateEngine);
 
