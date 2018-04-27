@@ -329,12 +329,12 @@ public class FhirDocumentApp implements CommandLineRunner {
     }
 
 
-    private Bundle getEncounterBundleRev(IGenericClient client, String encouterId) {
+    private Bundle getEncounterBundleRev(IGenericClient client, String encounterId) {
 
         Bundle bundle = client
                 .search()
                 .forResource(Encounter.class)
-                .where(Patient.RES_ID.exactly().code(encouterId))
+                .where(Patient.RES_ID.exactly().code(encounterId))
                 .revInclude(new Include("*"))
                 .count(100) // be careful of this TODO
                 .returnBundle(Bundle.class)
