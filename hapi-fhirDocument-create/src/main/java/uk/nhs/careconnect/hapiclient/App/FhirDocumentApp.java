@@ -336,6 +336,7 @@ public class FhirDocumentApp implements CommandLineRunner {
                 .forResource(Encounter.class)
                 .where(Patient.RES_ID.exactly().code(encounterId))
                 .revInclude(new Include("*"))
+                .include(new Include("*"))
                 .count(100) // be careful of this TODO
                 .returnBundle(Bundle.class)
                 .execute();

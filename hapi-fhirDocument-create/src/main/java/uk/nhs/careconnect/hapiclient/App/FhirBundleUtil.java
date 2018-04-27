@@ -4,9 +4,7 @@ import org.hl7.fhir.dstu3.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class FhirBundleUtil {
 
@@ -113,6 +111,19 @@ public class FhirBundleUtil {
                 } else {
                     encounter.setServiceProvider(null);
                 }
+                List<Reference> newReferences = new ArrayList<>();
+                for (Reference reference : encounter.getEpisodeOfCare()) {
+                    Reference newReference =getUUIDReference(reference);
+                    if (newReference != null) { newReferences.add(newReference); }
+                }
+                encounter.setEpisodeOfCare(newReferences);
+
+                for (Encounter.EncounterLocationComponent locationComponent : encounter.getLocation()) {
+                    locationComponent.setLocation(getUUIDReference(locationComponent.getLocation()));
+                }
+                for (Encounter.EncounterParticipantComponent participantComponent : encounter.getParticipant()) {
+                    if (participantComponent.hasIndividual()) participantComponent.setIndividual(getUUIDReference(participantComponent.getIndividual()));
+                }
             }
 
             if (entry.getResource() instanceof Observation) {
@@ -130,6 +141,12 @@ public class FhirBundleUtil {
                     medicationRequest.setContext(getUUIDReference(medicationRequest.getContext()));
                 }
                 medicationRequest.setSubject(new Reference(uuidtag+patient.getId()));
+                if (medicationRequest.hasRecorder()) medicationRequest.setRecorder(getUUIDReference(medicationRequest.getRecorder()));
+                try {
+                    if (medicationRequest.hasMedicationReference())
+                    medicationRequest.setMedication(getUUIDReference(medicationRequest.getMedicationReference()));
+                } catch (Exception ex) {};
+
             }
 
             if (entry.getResource() instanceof MedicationStatement) {
@@ -197,7 +214,10 @@ public class FhirBundleUtil {
         if (reference.getReference().equals(getNewReferenceUri(reference.getReference()))) {
             return reference;
         } else {
-            return new Reference(uuidtag + getNewReferenceUri(reference.getReference()));
+            String UUIDReference = getNewReferenceUri(reference.getReference());
+            if (UUIDReference!=null) {
+                return new Reference(uuidtag + UUIDReference);
+            } else { return null; }
         }
     }
     private String getNewReferenceUri(Resource resource) {
