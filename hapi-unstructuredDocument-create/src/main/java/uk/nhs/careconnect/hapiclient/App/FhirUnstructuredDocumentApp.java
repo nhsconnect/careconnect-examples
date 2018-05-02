@@ -55,13 +55,15 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
         }
 
 
-        //client = ctxFHIR.newRestfulGenericClient("http://purple.testlab.nhs.uk/careconnect-ri/STU3/");
-        client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8080/careconnect-gateway/STU3/");
+        client = ctxFHIR.newRestfulGenericClient("http://purple.testlab.nhs.uk/careconnect-ri/STU3/");
+        //client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8080/careconnect-gateway/STU3/");
 
         client.setEncoding(EncodingEnum.XML);
 
         outputDocument("1",1);
         outputDocument("1",2);
+        outputDocument("1",3);
+        outputDocument("1002",4);
     }
 
     private void outputDocument(String patientId, Integer docExample) throws Exception {
@@ -104,20 +106,6 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
         documentReference.addAuthor(new Reference("Practitioner/"+consultant.getIdElement().getIdPart()));
 
 
-        documentReference.getType().addCoding()
-                .setSystem("http://snomed.info/sct")
-                .setCode("820291000000107")
-                .setDisplay("Infectious disease notification");
-
-        documentReference.getContext().getPracticeSetting().addCoding()
-                .setSystem("http://snomed.info/sct")
-                .setCode("394582007")
-                .setDisplay("Dermatology");
-
-        documentReference.getContext().getFacilityType().addCoding()
-                .setSystem("http://snomed.info/sct")
-                .setCode("700241009")
-                .setDisplay("Dermatology service");
 
 
         Binary binary = new Binary();
@@ -125,16 +113,94 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
 
         if (docExample == 1) {
 
+            documentReference.getType().addCoding()
+                    .setSystem("http://snomed.info/sct")
+                    .setCode("820291000000107")
+                    .setDisplay("Infectious disease notification");
+
+            documentReference.getContext().getPracticeSetting().addCoding()
+                    .setSystem("http://snomed.info/sct")
+                    .setCode("394582007")
+                    .setDisplay("Dermatology");
+
+            documentReference.getContext().getFacilityType().addCoding()
+                    .setSystem("http://snomed.info/sct")
+                    .setCode("700241009")
+                    .setDisplay("Dermatology service");
+
             InputStream inputStream =
                     Thread.currentThread().getContextClassLoader().getResourceAsStream("image/3emotng15yvy.jpg");
             binary.setContent(IOUtils.toByteArray(inputStream));
             binary.setContentType("image/jpeg");
+
         } else if (docExample == 2) {
+            documentReference.getType().addCoding()
+                    .setSystem("http://snomed.info/sct")
+                    .setCode("820291000000107")
+                    .setDisplay("Infectious disease notification");
+
+            documentReference.getContext().getPracticeSetting().addCoding()
+                    .setSystem("http://snomed.info/sct")
+                    .setCode("394582007")
+                    .setDisplay("Dermatology");
+
+            documentReference.getContext().getFacilityType().addCoding()
+                    .setSystem("http://snomed.info/sct")
+                    .setCode("700241009")
+                    .setDisplay("Dermatology service");
+
             InputStream inputStream =
                     Thread.currentThread().getContextClassLoader().getResourceAsStream("image/DischargeSummary.pdf");
             binary.setContent(IOUtils.toByteArray(inputStream));
             binary.setContentType("application/pdf");
         }
+        else if (docExample == 3) {
+            documentReference.getType().addCoding()
+                    .setSystem("http://snomed.info/sct")
+                    .setCode("422735006")
+                    .setDisplay("Summary clinical document");
+
+            documentReference.getContext().getPracticeSetting().addCoding()
+                    .setSystem("http://snomed.info/sct")
+                    .setCode("394802001")
+                    .setDisplay("General medicine");
+
+            documentReference.getContext().getFacilityType().addCoding()
+                    .setSystem("http://snomed.info/sct")
+                    .setCode("409971007")
+                    .setDisplay("Emergency medical services");
+
+
+
+            InputStream inputStream =
+                    Thread.currentThread().getContextClassLoader().getResourceAsStream("image/hospital-scanned.jpg");
+            binary.setContent(IOUtils.toByteArray(inputStream));
+            binary.setContentType("image/jpeg");
+        } else if (docExample == 4) {
+            documentReference.getType().addCoding()
+                    .setSystem("http://snomed.info/sct")
+                    .setCode("823571000000103")
+                    .setDisplay("Scored assessment record (record artifact)");
+
+            documentReference.getContext().getPracticeSetting().addCoding()
+                    .setSystem("http://snomed.info/sct")
+                    .setCode("394802001")
+                    .setDisplay("General medicine");
+
+            documentReference.getContext().getFacilityType().addCoding()
+                    .setSystem("http://snomed.info/sct")
+                    .setCode("700232004")
+                    .setDisplay("General medical service");
+
+
+
+            InputStream inputStream =
+                    Thread.currentThread().getContextClassLoader().getResourceAsStream("image/VitalSigns.pdf");
+            binary.setContent(IOUtils.toByteArray(inputStream));
+            binary.setContentType("application/pdf");
+        }
+
+
         bundle.addEntry().setResource(binary).setFullUrl(binary.getId());
         documentReference.addContent()
                 .getAttachment()
