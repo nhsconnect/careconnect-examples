@@ -74,7 +74,9 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
 
         Files.write(Paths.get("/Temp/"+df.format(date)+"+patient-"+patientId+"-doc-"+docExample+".xml"),xmlResult.getBytes());
 
-//        client.create().resource(unstructDocBundle).execute();
+        // Uncomment to send to purple
+        //
+        // client.create().resource(unstructDocBundle).execute();
 
     }
 
