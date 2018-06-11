@@ -61,9 +61,11 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
         client.setEncoding(EncodingEnum.XML);
 
         outputDocument("1",1);
-        outputDocument("1",2);
+     ///   outputDocument("1",2);
         outputDocument("1",3);
         outputDocument("1002",4);
+        outputDocument("2",5);
+        outputDocument("3",6);
     }
 
     private void outputDocument(String patientId, Integer docExample) throws Exception {
@@ -198,6 +200,51 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
 
             InputStream inputStream =
                     Thread.currentThread().getContextClassLoader().getResourceAsStream("image/VitalSigns.pdf");
+            binary.setContent(IOUtils.toByteArray(inputStream));
+            binary.setContentType("application/pdf");
+        }
+        else if (docExample == 5) {
+            documentReference.getType().addCoding()
+                    .setSystem("http://snomed.info/sct")
+                    .setCode("718347000")
+                    .setDisplay("Mental health care plan ");
+
+            documentReference.getContext().getPracticeSetting().addCoding()
+                    .setSystem("http://snomed.info/sct")
+                    .setCode("722162001")
+                    .setDisplay("Psychology");
+
+            documentReference.getContext().getFacilityType().addCoding()
+                    .setSystem("http://snomed.info/sct")
+                    .setCode("708168004")
+                    .setDisplay("Mental health service");
+
+
+
+            InputStream inputStream =
+                    Thread.currentThread().getContextClassLoader().getResourceAsStream("pdf/1_STAYING WELL PLAN CMHT.pdf");
+            binary.setContent(IOUtils.toByteArray(inputStream));
+            binary.setContentType("application/pdf");
+        } else if (docExample == 6) {
+            documentReference.getType().addCoding()
+                    .setSystem("http://snomed.info/sct")
+                    .setCode("718347000")
+                    .setDisplay("Mental health care plan ");
+
+            documentReference.getContext().getPracticeSetting().addCoding()
+                    .setSystem("http://snomed.info/sct")
+                    .setCode("722162001")
+                    .setDisplay("Psychology");
+
+            documentReference.getContext().getFacilityType().addCoding()
+                    .setSystem("http://snomed.info/sct")
+                    .setCode("708168004")
+                    .setDisplay("Mental health service");
+
+
+
+            InputStream inputStream =
+                    Thread.currentThread().getContextClassLoader().getResourceAsStream("pdf/crisis and contingency questionnaire screen shot.pdf");
             binary.setContent(IOUtils.toByteArray(inputStream));
             binary.setContentType("application/pdf");
         }
