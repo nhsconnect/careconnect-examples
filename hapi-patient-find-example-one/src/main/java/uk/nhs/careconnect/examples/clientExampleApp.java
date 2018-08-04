@@ -5,10 +5,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
 
 import ca.uhn.fhir.rest.client.api.IGenericClient;
-import org.hl7.fhir.dstu3.model.Bundle;
-import org.hl7.fhir.dstu3.model.Organization;
-import org.hl7.fhir.dstu3.model.Patient;
-import org.hl7.fhir.dstu3.model.Practitioner;
+import org.hl7.fhir.dstu3.model.*;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -37,9 +34,9 @@ public class clientExampleApp implements CommandLineRunner {
         IParser parser = ctx.newXmlParser();
 
         // Create a client and post the transaction to the server
-        IGenericClient client = ctx.newRestfulGenericClient("http://yellow.testlab.nhs.uk/careconnect-ri/STU3/");
+        IGenericClient client = ctx.newRestfulGenericClient("https://yellow.testlab.nhs.uk/ccri-fhir/STU3/");
 
-        System.out.println("GET http://yellow.testlab.nhs.uk/careconnect-ri/STU3/Patient?identifier=https://fhir.nhs.uk/Id/nhs-number|9876543210");
+        System.out.println("GET https://yellow.testlab.nhs.uk/ccri-fhir/STU3/Patient?identifier=https://fhir.nhs.uk/Id/nhs-number|9876543210");
         Bundle results = client
                 .search()
                 .forResource(Patient.class)
@@ -72,6 +69,26 @@ public class clientExampleApp implements CommandLineRunner {
                             .execute();
                     System.out.println(parser.setPrettyPrint(true).encodeResourceToString(gp));
                 }
+
+
+                Bundle bundle = new Bundle();
+
+                patient.setId("#1");
+                Appointment appointment = new Appointment();
+                appointment.addParticipant().setActor(new Reference("#1"));
+                bundle.addEntry().setResource(appointment);
+
+                bundle.addEntry().setResource(patient);
+
+                System.out.println(parser.setPrettyPrint(true).encodeResourceToString(bundle));
+
+                appointment = new Appointment();
+                appointment.setId("1");
+                appointment.addParticipant().setActor(new Reference("Patient/1"));
+
+                System.out.println(parser.setPrettyPrint(true).encodeResourceToString(appointment));
+
+
             }
 
         }
