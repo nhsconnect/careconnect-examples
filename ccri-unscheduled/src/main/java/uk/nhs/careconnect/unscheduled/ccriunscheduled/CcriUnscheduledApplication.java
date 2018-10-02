@@ -18,7 +18,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
     private static final Logger log = LoggerFactory.getLogger(CcriUnscheduledApplication.class);
 
-    private static String yasIdentifier = "https://fhir.yas.nhs.uk/Encounter/Identifier";
+    private static String yasEncounterIdentifier = "https://fhir.yas.nhs.uk/Encounter/Identifier";
 
     private static String yasLocationIdentifier = "https://fhir.yas.nhs.uk/Location/Identifier";
 
@@ -47,8 +47,8 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
         client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8183/ccri-fhir/STU3/");
         client.setEncoding(EncodingEnum.XML);
 
-        Integer idno = 1;
-        Integer locno = 1;
+        Integer idno = 650;
+        Integer locno = 730;
 
         FhirBundleUtil fhirBundle = new FhirBundleUtil(Bundle.BundleType.COLLECTION);
 
@@ -80,7 +80,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
                 .setSystem(ContactPoint.ContactPointSystem.PHONE)
                 .setValue("0113 12341234")
                 .setUse(ContactPoint.ContactPointUse.MOBILE);
-        patientLoc.addIdentifier().setSystem(yasIdentifier).setValue(idno.toString());
+        patientLoc.addIdentifier().setSystem(yasLocationIdentifier).setValue(locno.toString());
         patientLoc.getPhysicalType().addCoding()
                 .setSystem( "http://hl7.org/fhir/location-physical-type")
                 .setCode("bu")
@@ -106,7 +106,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
                 .setSystem(ContactPoint.ContactPointSystem.PHONE)
                 .setValue("airwave-27051940")
                 .setUse(ContactPoint.ContactPointUse.MOBILE);
-        jimmy.addIdentifier().setSystem(yasIdentifier).setValue(idno.toString());
+        jimmy.addIdentifier().setSystem(yasLocationIdentifier).setValue(locno.toString());
         jimmy.getPhysicalType().addCoding()
                 .setSystem( "http://hl7.org/fhir/location-physical-type")
                 .setCode("bu")
@@ -132,7 +132,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
                 .setSystem(ContactPoint.ContactPointSystem.PHONE)
                 .setValue("airwave-542329")
                 .setUse(ContactPoint.ContactPointUse.MOBILE);
-        ambulanceVech.addIdentifier().setSystem(yasIdentifier).setValue(idno.toString());
+        ambulanceVech.addIdentifier().setSystem(yasLocationIdentifier).setValue(locno.toString());
         ambulanceVech.getPhysicalType().addCoding()
                 .setSystem( "http://hl7.org/fhir/location-physical-type")
                 .setCode("ve")
@@ -151,7 +151,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
         encounter.setId(fhirBundle.getNewId(encounter));
         encounter.setSubject(new Reference(uuidtag+fhirBundle.getPatient().getId()));
         encounter.setStatus(Encounter.EncounterStatus.INPROGRESS);
-        encounter.addIdentifier().setSystem(yasIdentifier).setValue(idno.toString());
+        encounter.addIdentifier().setSystem(yasEncounterIdentifier).setValue(idno.toString());
         encounter.setServiceProvider(new Reference(uuidtag+yas.getIdElement().getIdPart()));
         encounter.getClass_().setCode("EMER").setSystem("http://hl7.org/fhir/v3/ActCode").setDisplay("emergency");
         encounter.addType().addCoding()
@@ -166,7 +166,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
         triage.setId(fhirBundle.getNewId(triage));
         triage.setSubject(new Reference(uuidtag+fhirBundle.getPatient().getId()));
         triage.setStatus(Encounter.EncounterStatus.FINISHED);
-        triage.addIdentifier().setSystem(yasIdentifier).setValue(idno.toString());
+        triage.addIdentifier().setSystem(yasEncounterIdentifier).setValue(idno.toString());
         triage.setServiceProvider(new Reference(uuidtag+yas.getIdElement().getIdPart()));
         triage.getClass_().setCode("EMER").setSystem("http://hl7.org/fhir/v3/ActCode").setDisplay("emergency");
         triage.addType().addCoding()
@@ -183,7 +183,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
         ambulance.setId(fhirBundle.getNewId(ambulance));
         ambulance.setSubject(new Reference(uuidtag+fhirBundle.getPatient().getId()));
         ambulance.setStatus(Encounter.EncounterStatus.INPROGRESS);
-        ambulance.addIdentifier().setSystem(yasIdentifier).setValue(idno.toString());
+        ambulance.addIdentifier().setSystem(yasEncounterIdentifier).setValue(idno.toString());
         ambulance.setServiceProvider(new Reference(uuidtag+yas.getIdElement().getIdPart()));
         ambulance.addType().addCoding()
                 .setSystem("http://snomed.info/sct")
