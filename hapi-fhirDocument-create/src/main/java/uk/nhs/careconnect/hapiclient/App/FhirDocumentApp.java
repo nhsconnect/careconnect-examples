@@ -2,8 +2,10 @@ package uk.nhs.careconnect.hapiclient.App;
 
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.rest.api.EncodingEnum;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
+import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.utilities.xhtml.XhtmlDocument;
 import org.hl7.fhir.utilities.xhtml.XhtmlNode;
@@ -39,10 +41,6 @@ public class FhirDocumentApp implements CommandLineRunner {
 
     private static final Logger log = LoggerFactory.getLogger(FhirDocumentApp.class);
 
-    Context ctxThymeleaf = new Context();
-
-    private XhtmlParser xhtmlParser = new XhtmlParser();
-
     private ClassLoader getContextClassLoader() {
         return Thread.currentThread().getContextClassLoader();
     }
@@ -57,12 +55,14 @@ public class FhirDocumentApp implements CommandLineRunner {
 
     IGenericClient client = null;
 
-    Map<String,String> referenceMap = new HashMap<>();
+    public static final String SNOMEDCT = "http://snomed.info/sct";
+
 
     DateFormat df = new SimpleDateFormat("HHmm_dd_MM_yyyy");
 
-    final String uuidtag = "urn:uuid:";
+    Composition composition = null;
 
+    private FhirBundleUtil fhirBundleUtil;
 
     @Override
 	public void run(String... args) throws Exception {
@@ -77,23 +77,34 @@ public class FhirDocumentApp implements CommandLineRunner {
         client.setEncoding(EncodingEnum.XML);
 
         outputCareRecord("1098");
-        outputCareRecord("1177");
+      //  outputCareRecord("1177");
 
+        Bundle encounterBundle = buildEncounterDocument(client, new IdType().setValue("1700"));
+        Date date = new Date();
+        String xmlResult = ctxFHIR.newXmlParser().setPrettyPrint(true).encodeResourceToString(encounterBundle);
 
-
+        Files.write(Paths.get("/Temp/"+df.format(date)+"+encounter-"+"1700"+"-document.xml"),xmlResult.getBytes());
     }
+
+
+
+
     private void outputCareRecord(String patientId) throws Exception {
         Date date = new Date();
 
         Bundle careRecord = getCareRecord(patientId);
         String xmlResult = ctxFHIR.newXmlParser().setPrettyPrint(true).encodeResourceToString(careRecord);
 
-        Files.write(Paths.get("/Temp/"+df.format(date)+"+patient-"+patientId+".xml"),xmlResult.getBytes());
-        Files.write(Paths.get("/Temp/"+df.format(date)+"+patient-"+patientId+".json"),ctxFHIR.newJsonParser().setPrettyPrint(true).encodeResourceToString(careRecord).getBytes());
-
+        Files.write(Paths.get("/Temp/"+df.format(date)+"+patientCareRecord-"+patientId+".xml"),xmlResult.getBytes());
+        Files.write(Paths.get("/Temp/"+df.format(date)+"+patientCareRecord-"+patientId+".json"),ctxFHIR.newJsonParser().setPrettyPrint(true).encodeResourceToString(careRecord).getBytes());
+/*
         String htmlFilename = "/Temp/"+df.format(date)+"+patient-"+patientId+".html";
         performTransform(xmlResult,htmlFilename,"XML/DocumentToHTML.xslt");
         outputPDF(htmlFilename, "/Temp/"+df.format(date)+"+patient-"+patientId+".pdf");
+
+        IGenericClient clientTest = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8080/careconnect-gateway/STU3/");
+        clientTest.create().resource(careRecord).execute();
+        */
     }
 
     private void outputPDF(String processedHtml, String outputFileName ) throws Exception {
@@ -120,29 +131,27 @@ public class FhirDocumentApp implements CommandLineRunner {
         }
     }
 
+    public Bundle buildEncounterDocument(IGenericClient client, IdType encounterId) throws Exception {
 
-    private Bundle getCareRecord(String patientId) throws Exception {
-        // Create Bundle of type Document
-        Bundle fhirDocument = new Bundle()
-                .setType(Bundle.BundleType.DOCUMENT);
 
-        fhirDocument.getIdentifier().setValue(UUID.randomUUID().toString()).setSystem("https://tools.ietf.org/html/rfc4122");
+        fhirBundleUtil = new FhirBundleUtil(Bundle.BundleType.DOCUMENT);
+        Bundle compositionBundle = new Bundle();
 
         // Main resource of a FHIR Bundle is a Composition
-        Composition composition = new Composition();
+        composition = new Composition();
         composition.setId(UUID.randomUUID().toString());
-        fhirDocument.addEntry().setResource(composition).setFullUrl(uuidtag + composition.getId());
+        compositionBundle.addEntry().setResource(composition);
 
-        composition.setTitle("Patient Summary Care Record");
+        // composition.getMeta().addProfile(CareConnectProfile.Composition_1);
+        composition.setTitle("Encounter Document");
         composition.setDate(new Date());
         composition.setStatus(Composition.CompositionStatus.FINAL);
 
-        Organization leedsTH = getOrganization("RR8");
-        leedsTH.setId(getNewReferenceUri(leedsTH));
-        fhirDocument.addEntry().setResource(leedsTH).setFullUrl(uuidtag + leedsTH.getId());
+        Organization leedsTH = getOrganization(client,"RR8");
+        compositionBundle.addEntry().setResource(leedsTH);
 
         composition.addAttester()
-                .setParty(new Reference(uuidtag+leedsTH.getId()))
+                .setParty(new Reference("Organization/"+leedsTH.getIdElement().getIdPart()))
                 .addMode(Composition.CompositionAttestationMode.OFFICIAL);
 
 
@@ -152,123 +161,162 @@ public class FhirDocumentApp implements CommandLineRunner {
                 .setSystem("http://snomed.info/sct")
                 .setCode("58153004")
                 .setDisplay("Android");
-        device.setOwner(new Reference(uuidtag+leedsTH.getId()));
-        fhirDocument.addEntry().setResource(device).setFullUrl(uuidtag +device.getId());
+        device.setOwner(new Reference("Organization/"+leedsTH.getIdElement().getIdPart()));
+        compositionBundle.addEntry().setResource(device);
 
-        composition.addAuthor(new Reference(uuidtag+device.getId()));
+        composition.addAuthor(new Reference("Device/"+device.getIdElement().getIdPart()));
+
+        composition.getType().addCoding()
+                .setCode("371531000")
+                .setDisplay("Report of clinical encounter")
+                .setSystem(SNOMEDCT);
+
+        fhirBundleUtil.processBundleResources(compositionBundle);
+        fhirBundleUtil.processReferences();
 
 
-        Patient patient = null;
-        Practitioner gp = null;
-        Organization practice = null;
-
-
-        // This is a synthea patient
-        Bundle patientBundle = getPatientBundle(patientId);
-
-        for (Bundle.BundleEntryComponent entry : patientBundle.getEntry()) {
-            if (entry.getResource() instanceof Patient) {
-                patient = (Patient) entry.getResource();
-
-                patientId = patient.getId();
-
-                patient.setId(getNewReferenceUri(patient));
-
-                composition.setSubject(new Reference(uuidtag+patient.getId()));
-                fhirDocument.addEntry().setResource(patient).setFullUrl(uuidtag + patient.getId());;
-            }
-            if (entry.getResource() instanceof Practitioner) {
-                gp = (Practitioner) entry.getResource();
-
-                gp.setId(getNewReferenceUri(gp));
-                if (patient != null && patient.getGeneralPractitioner().size()>0) {
-                    patient.getGeneralPractitioner().get(0).setReference(uuidtag + gp.getId());
-                    fhirDocument.addEntry().setResource(gp).setFullUrl(uuidtag + gp.getId());
-                }
-
-            }
-            if (entry.getResource() instanceof Organization) {
-                practice = (Organization) entry.getResource();
-
-                practice.setId(getNewReferenceUri(practice));
-                if (patient != null ) {
-                    patient.setManagingOrganization(new Reference(uuidtag + practice.getId()));
-                }
-                fhirDocument.addEntry().setResource(practice).setFullUrl(uuidtag + practice.getId());
+        Bundle encounterBundle = getEncounterBundleRev(client, encounterId.getIdPart());
+        Encounter encounter = null;
+        for(Bundle.BundleEntryComponent entry : encounterBundle.getEntry()) {
+            Resource resource =  entry.getResource();
+            if (encounter == null && entry.getResource() instanceof Encounter) {
+                encounter = (Encounter) entry.getResource();
             }
         }
-        if (patient == null) throw new Exception("404 Patient not found");
+        String patientId = null;
 
-        generatePatientHtml(patient,patientBundle);
+        if (encounter!=null) {
+
+            patientId = encounter.getSubject().getReferenceElement().getIdPart();
+            log.debug(encounter.getSubject().getReferenceElement().getIdPart());
+
+
+            // This is a synthea patient
+            Bundle patientBundle = getPatientBundle(client, patientId);
+
+            fhirBundleUtil.processBundleResources(patientBundle);
+
+            if (fhirBundleUtil.getPatient() == null) throw new Exception("404 Patient not found");
+            composition.setSubject(new Reference("Patient/"+patientId));
+            patientId = fhirBundleUtil.getPatient().getId();
+        }
+
+        if (fhirBundleUtil.getPatient() == null) throw new UnprocessableEntityException();
+
+        fhirBundleUtil.processBundleResources(encounterBundle);
+
+        fhirBundleUtil.processReferences();
+
+        FhirDocUtil fhirDoc = new FhirDocUtil(templateEngine);
+
+        composition.addSection(fhirDoc.getEncounterSection(fhirBundleUtil.getFhirDocument()));
+
+        Composition.SectionComponent section = fhirDoc.getConditionSection(fhirBundleUtil.getFhirDocument());
+        if (section.getEntry().size()>0) composition.addSection(section);
+
+        section = fhirDoc.getMedicationStatementSection(fhirBundleUtil.getFhirDocument());
+        if (section.getEntry().size()>0) composition.addSection(section);
+
+        section = fhirDoc.getMedicationRequestSection(fhirBundleUtil.getFhirDocument());
+        if (section.getEntry().size()>0) composition.addSection(section);
+
+        section = fhirDoc.getAllergySection(fhirBundleUtil.getFhirDocument());
+        if (section.getEntry().size()>0) composition.addSection(section);
+
+        section = fhirDoc.getObservationSection(fhirBundleUtil.getFhirDocument());
+        if (section.getEntry().size()>0) composition.addSection(section);
+
+        section = fhirDoc.getProcedureSection(fhirBundleUtil.getFhirDocument());
+        if (section.getEntry().size()>0) composition.addSection(section);
+
+        return fhirBundleUtil.getFhirDocument();
+    }
+
+    private Bundle getCareRecord(String patientId) throws Exception {
+        // Create Bundle of type Document
+        fhirBundleUtil = new FhirBundleUtil(Bundle.BundleType.DOCUMENT);
+        // Main resource of a FHIR Bundle is a Composition
+
+        Bundle compositionBundle = new Bundle();
+
+        composition = new Composition();
+        composition.setId(UUID.randomUUID().toString());
+        compositionBundle.addEntry().setResource(composition);
+
+        composition.setTitle("Patient Summary Care Record");
+        composition.setDate(new Date());
+        composition.setStatus(Composition.CompositionStatus.FINAL);
+
+        Organization leedsTH = getOrganization(client,"RR8");
+        compositionBundle.addEntry().setResource(leedsTH);
+
+        composition.addAttester()
+                .setParty(new Reference(leedsTH.getId()))
+                .addMode(Composition.CompositionAttestationMode.OFFICIAL);
+
+        Device device = new Device();
+        device.setId(UUID.randomUUID().toString());
+        device.getType().addCoding()
+                .setSystem("http://snomed.info/sct")
+                .setCode("58153004")
+                .setDisplay("Android");
+        device.setOwner(new Reference("Organization/"+leedsTH.getIdElement().getIdPart()));
+
+        compositionBundle.addEntry().setResource(device);
+
+        composition.addAuthor(new Reference("Device/"+device.getIdElement().getIdPart()));
+
+        fhirBundleUtil.processBundleResources(compositionBundle);
+        fhirBundleUtil.processReferences();
+
+        // This is a synthea patient
+        Bundle patientBundle = getPatientBundle(client, patientId);
+        fhirBundleUtil.processBundleResources(patientBundle);
+
+        if (fhirBundleUtil.getPatient() == null) throw new Exception("404 Patient not found");
+        composition.setSubject(new Reference("Patient/"+patientId));
+
+        FhirDocUtil fhirDoc = new FhirDocUtil(templateEngine);
+
+        patientId = fhirBundleUtil.getPatient().getId();
+        fhirDoc.generatePatientHtml(fhirBundleUtil.getPatient(),patientBundle);
 
         /* CONDITION */
 
         Bundle conditionBundle = getConditionBundle(patientId);
-
-        for (Bundle.BundleEntryComponent entry : conditionBundle.getEntry()) {
-            if (entry.getResource() instanceof Condition) {
-                Condition condition = (Condition) entry.getResource();
-
-                condition.setId(getNewReferenceUri(condition));
-                condition.setSubject(new Reference(uuidtag+patient.getId()));
-                fhirDocument.addEntry().setResource(entry.getResource()).setFullUrl(uuidtag + condition.getId());
-            }
-        }
-        composition.addSection(getConditionSection(conditionBundle));
+        fhirBundleUtil.processBundleResources(conditionBundle);
+        composition.addSection(fhirDoc.getConditionSection(conditionBundle));
 
         /* MEDICATION STATEMENT */
 
         Bundle medicationStatementBundle = getMedicationStatementBundle(patientId);
-
-        for (Bundle.BundleEntryComponent entry : medicationStatementBundle.getEntry()) {
-            if (entry.getResource() instanceof MedicationStatement) {
-                MedicationStatement medicationStatement = (MedicationStatement) entry.getResource();
-
-                medicationStatement.setId(getNewReferenceUri(medicationStatement));
-                medicationStatement.setSubject(new Reference(uuidtag+patient.getId()));
-                fhirDocument.addEntry().setResource(entry.getResource()).setFullUrl(uuidtag + medicationStatement.getId());
-                //Date date = medicationStatement.getEffectiveDateTimeType().getValue()
-            }
-        }
-        composition.addSection(getMedicationStatementSection(medicationStatementBundle));
+        fhirBundleUtil.processBundleResources(medicationStatementBundle);
+        composition.addSection(fhirDoc.getMedicationStatementSection(medicationStatementBundle));
 
 
         /* ALLERGY INTOLERANCE */
 
         Bundle allergyBundle = getAllergyBundle(patientId);
-        for (Bundle.BundleEntryComponent entry : allergyBundle.getEntry()) {
-            if (entry.getResource() instanceof AllergyIntolerance) {
-                AllergyIntolerance allergyIntolerance = (AllergyIntolerance) entry.getResource();
-
-                allergyIntolerance.setId(getNewReferenceUri(allergyIntolerance));
-                allergyIntolerance.setPatient(new Reference(uuidtag+patient.getId()));
-                fhirDocument.addEntry().setResource(entry.getResource()).setFullUrl(uuidtag + allergyIntolerance.getId());
-            }
-        }
-        composition.addSection(getAllergySection(allergyBundle));
+        fhirBundleUtil.processBundleResources(allergyBundle);
+        composition.addSection(fhirDoc.getAllergySection(allergyBundle));
 
         /* ENCOUNTER */
 
         Bundle encounterBundle = getEncounterBundle(patientId);
-        for (Bundle.BundleEntryComponent entry : encounterBundle.getEntry()) {
-            if (entry.getResource() instanceof Encounter) {
-                Encounter encounter = (Encounter) entry.getResource();
-                encounter.setId(getNewReferenceUri(encounter));
-                encounter.setSubject(new Reference(uuidtag+patient.getId()));
-                fhirDocument.addEntry().setResource(entry.getResource()).setFullUrl(uuidtag + encounter.getId());
-            }
-        }
-        composition.addSection(getEncounterSection(encounterBundle));
+        fhirBundleUtil.processBundleResources(encounterBundle);
+        composition.addSection(fhirDoc.getEncounterSection(encounterBundle));
 
+        fhirBundleUtil.processReferences();
+        log.debug(ctxFHIR.newJsonParser().setPrettyPrint(true).encodeResourceToString(fhirBundleUtil.getFhirDocument()));
 
-        log.debug(ctxFHIR.newJsonParser().setPrettyPrint(true).encodeResourceToString(fhirDocument));
-
-        return fhirDocument;
+        return fhirBundleUtil.getFhirDocument();
     }
 
-    private Bundle getPatientBundle(String patientId) {
 
-        return client
+    private Bundle getPatientBundle(IGenericClient client, String patientId) {
+
+
+        Bundle patientBundle = client
                 .search()
                 .forResource(Patient.class)
                 .where(Patient.RES_ID.exactly().code(patientId))
@@ -276,144 +324,24 @@ public class FhirDocumentApp implements CommandLineRunner {
                 .include(Patient.INCLUDE_ORGANIZATION)
                 .returnBundle(Bundle.class)
                 .execute();
-    }
-    private Patient generatePatientHtml(Patient patient, Bundle fhirDocument) {
-        if (!patient.hasText()) {
 
-            ctxThymeleaf.clearVariables();
-            ctxThymeleaf.setVariable("patient", patient);
-            for (Bundle.BundleEntryComponent entry : fhirDocument.getEntry()) {
-                if (entry.getResource() instanceof Practitioner) ctxThymeleaf.setVariable("gp", entry.getResource());
-                if (entry.getResource() instanceof Organization) ctxThymeleaf.setVariable("practice", entry.getResource());
-                Practitioner practice;
-
-            }
-
-            patient.getText().setDiv(getDiv("patient")).setStatus(Narrative.NarrativeStatus.GENERATED);
-            log.debug(patient.getText().getDiv().getValueAsString());
-        }
-        return patient;
+        return patientBundle;
     }
 
-    private XhtmlNode getDiv(String template) {
-        XhtmlNode xhtmlNode = null;
-        String processedHtml = templateEngine.process(template, ctxThymeleaf);
-        try {
-            XhtmlDocument parsed = xhtmlParser.parse(processedHtml, null);
-            xhtmlNode = parsed.getDocumentElement();
-            log.debug(processedHtml);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return xhtmlNode;
+
+    private Bundle getEncounterBundleRev(IGenericClient client, String encounterId) {
+
+        Bundle bundle = client
+                .search()
+                .forResource(Encounter.class)
+                .where(Patient.RES_ID.exactly().code(encounterId))
+                .revInclude(new Include("*"))
+                .include(new Include("*"))
+                .count(100) // be careful of this TODO
+                .returnBundle(Bundle.class)
+                .execute();
+        return bundle;
     }
-
-    private Composition.SectionComponent getConditionSection(Bundle bundle) {
-        Composition.SectionComponent section = new Composition.SectionComponent();
-
-        ArrayList<Condition>  conditions = new ArrayList<>();
-
-        section.getCode().addCoding()
-                .setSystem("http://snomed.info/sct")
-                .setCode("887151000000100")
-                .setDisplay("Problems and issues");
-        section.setTitle("Problems and issues");
-
-        for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
-            if (entry.getResource() instanceof Condition) {
-                Condition condition = (Condition) entry.getResource();
-                section.getEntry().add(new Reference("urn:uuid:"+condition.getId()));
-                conditions.add(condition);
-            }
-        }
-        ctxThymeleaf.clearVariables();
-        ctxThymeleaf.setVariable("conditions", conditions);
-
-        section.getText().setDiv(getDiv("condition")).setStatus(Narrative.NarrativeStatus.GENERATED);
-
-        return section;
-    }
-
-    private Composition.SectionComponent getMedicationStatementSection(Bundle bundle) {
-        Composition.SectionComponent section = new Composition.SectionComponent();
-
-        ArrayList<MedicationStatement>  medicationStatements = new ArrayList<>();
-
-        section.getCode().addCoding()
-                .setSystem("http://snomed.info/sct")
-                .setCode("933361000000108")
-                .setDisplay("Medications and medical devices");
-        section.setTitle("Medications and medical devices");
-
-        for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
-            if (entry.getResource() instanceof MedicationStatement) {
-                MedicationStatement medicationStatement = (MedicationStatement) entry.getResource();
-                section.getEntry().add(new Reference("urn:uuid:"+medicationStatement.getId()));
-                medicationStatements.add(medicationStatement);
-
-            }
-        }
-        ctxThymeleaf.clearVariables();
-        ctxThymeleaf.setVariable("medicationStatements", medicationStatements);
-
-        section.getText().setDiv(getDiv("medicationStatement")).setStatus(Narrative.NarrativeStatus.GENERATED);
-
-        return section;
-    }
-
-    private Composition.SectionComponent getAllergySection(Bundle bundle) {
-        Composition.SectionComponent section = new Composition.SectionComponent();
-
-        ArrayList<AllergyIntolerance>  allergyIntolerances = new ArrayList<>();
-
-        section.getCode().addCoding()
-                .setSystem("http://snomed.info/sct")
-                .setCode("886921000000105")
-                .setDisplay("Allergies and adverse reactions");
-        section.setTitle("Allergies and adverse reactions");
-
-        for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
-            if (entry.getResource() instanceof AllergyIntolerance) {
-                AllergyIntolerance allergyIntolerance = (AllergyIntolerance) entry.getResource();
-                section.getEntry().add(new Reference("urn:uuid:"+allergyIntolerance.getId()));
-                allergyIntolerances.add(allergyIntolerance);
-            }
-        }
-        ctxThymeleaf.clearVariables();
-
-        ctxThymeleaf.setVariable("allergies", allergyIntolerances);
-
-        section.getText().setDiv(getDiv("allergy")).setStatus(Narrative.NarrativeStatus.GENERATED);
-
-        return section;
-    }
-
-    private Composition.SectionComponent getEncounterSection(Bundle bundle) {
-        Composition.SectionComponent section = new Composition.SectionComponent();
-        // TODO Get Correct code.
-        ArrayList<Encounter>  encounters = new ArrayList<>();
-
-        section.getCode().addCoding()
-                .setSystem("http://snomed.info/sct")
-                .setCode("713511000000103")
-                .setDisplay("Encounter administration");
-        section.setTitle("Encounters");
-
-        for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
-            if (entry.getResource() instanceof Encounter) {
-                Encounter encounter = (Encounter) entry.getResource();
-                section.getEntry().add(new Reference("urn:uuid:"+encounter.getId()));
-                encounters.add(encounter);
-            }
-        }
-        ctxThymeleaf.clearVariables();
-        ctxThymeleaf.setVariable("encounters", encounters);
-
-        section.getText().setDiv(getDiv("encounter")).setStatus(Narrative.NarrativeStatus.GENERATED);
-
-        return section;
-    }
-
     private Bundle getConditionBundle(String patientId) {
 
         return client
@@ -435,7 +363,7 @@ public class FhirDocumentApp implements CommandLineRunner {
                 .execute();
     }
 
-    private Organization getOrganization(String sdsCode) {
+    private Organization getOrganization(IGenericClient client,String sdsCode) {
         Organization organization = null;
         Bundle bundle =  client
                 .search()
@@ -461,6 +389,17 @@ public class FhirDocumentApp implements CommandLineRunner {
                 .execute();
     }
 
+    private Bundle getMedicationRequestBundle(IGenericClient client,String patientId) {
+
+        return client
+                .search()
+                .forResource(MedicationStatement.class)
+                .where(MedicationRequest.PATIENT.hasId(patientId))
+                .and(MedicationRequest.STATUS.exactly().code("active"))
+                .returnBundle(Bundle.class)
+                .execute();
+    }
+
     private Bundle getAllergyBundle(String patientId) {
 
         return client
@@ -471,16 +410,7 @@ public class FhirDocumentApp implements CommandLineRunner {
                 .execute();
     }
 
-    private String getNewReferenceUri(Resource resource) {
-        return getNewReferenceUri(resource.getResourceType().toString()+"/"+resource.getId());
-    }
-    private String getNewReferenceUri(String reference) {
-        String newReference = referenceMap.get(reference);
-        if (newReference != null ) return newReference;
-        newReference = UUID.randomUUID().toString();
-        referenceMap.put(reference,newReference);
-        return newReference;
-    }
+
 
     private void performTransform(String xmlInput, String htmlOutput, String styleSheet) {
 
