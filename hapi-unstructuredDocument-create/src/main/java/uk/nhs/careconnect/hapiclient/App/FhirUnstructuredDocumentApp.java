@@ -55,7 +55,7 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
         }
 
 
-        client = ctxFHIR.newRestfulGenericClient("http://purple.testlab.nhs.uk/careconnect-ri/STU3/");
+        client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
         //client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8080/careconnect-gateway/STU3/");
 
         client.setEncoding(EncodingEnum.XML);
