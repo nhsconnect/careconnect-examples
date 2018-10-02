@@ -5,7 +5,7 @@
 
 	<groupId>uk.nhs.careconnect.examples</groupId>
 	<artifactId>hapi-fhirDocument-convert2PdfOrHtml</artifactId>
-	<version>3.5.1-SNAPSHOT</version>
+	<version>3.7.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>hapi-fhirDocument-convert2PdfOrHtml</name>

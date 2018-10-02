@@ -6,12 +6,12 @@
 
 
     <artifactId>hapi-fhirDocument-create</artifactId>
-    <version>3.5.1-SNAPSHOT</version>
+    <version>3.7.0-SNAPSHOT</version>
 
     <parent>
         <groupId>uk.nhs.careconnect.examples</groupId>
         <artifactId>careconnect-java-examples</artifactId>
-        <version>3.5.1-SNAPSHOT</version>
+        <version>3.7.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 

@@ -72,7 +72,7 @@ public class FhirDocumentApp implements CommandLineRunner {
         }
 
 
-        client = ctxFHIR.newRestfulGenericClient("http://purple.testlab.nhs.uk/careconnect-ri/STU3/");
+        client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
 
         client.setEncoding(EncodingEnum.XML);
 
