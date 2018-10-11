@@ -5,6 +5,7 @@ import ca.uhn.fhir.rest.api.EncodingEnum;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 
+import org.apache.commons.io.IOUtils;
 import org.hl7.fhir.dstu3.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +14,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -29,6 +31,8 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
     private static String yasLocationIdentifier = "https://fhir.yas.nhs.uk/Location/Identifier";
 
+    private static String yasConditionIdentifier = "https://fhir.yas.nhs.uk/Location/Identifier";
+
     final String uuidtag = "urn:uuid:";
 
     Organization yas;
@@ -41,6 +45,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
     Integer idno = 650;
     Integer locno = 730;
+    Integer conno = 12730;
 
 
     public static void main(String[] args) {
@@ -72,13 +77,13 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
 
 
-        postPatient("9476719931", "LS15 8FS",true, "Danzig", "LS14 6UH",-1,0);
+        postPatient("9476719931", "LS15 8FS",true, "Danzig", "LS14 6UH",-1,0,"217082002","Accidental fall");
 
-        postPatient("9476719974", "LS25 1NT",false, null, null,-1,-15);
+        postPatient("9476719974", "LS25 1NT",false, null, null,-1,-15, "217133004","Fall into quarry");
 
-        postPatient("9476719966", "LS25 2HF",false, "Elbe", "LS26 8PU" ,0,-15);
+        postPatient("9476719966", "LS25 2HF",false, "Elbe", "LS26 8PU" ,0,-15, "410429000","Cardiac arrest");
 
-        postPatient("9476719958", "LS15 8ZB", false, null, null,0,-20);
+        postPatient("9476719958", "LS15 8ZB", false, null, null,0,-5,"418399005","Motor vehicle accident");
 
        // postPatient("9000000068");
 
@@ -132,7 +137,8 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
     }
 
-    public void postPatient(String nhsNumber, String encounterPostcode, Boolean ambulanceReq, String ambulanceName, String ambulancePostcode, Integer hoursDiff, Integer minsDiff ) {
+    public void postPatient(String nhsNumber, String encounterPostcode, Boolean ambulanceReq, String ambulanceName, String ambulancePostcode,
+                            Integer hoursDiff, Integer minsDiff ,String code, String display ) {
 
         Calendar cal = Calendar.getInstance();
 
@@ -140,7 +146,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
         cal.add(Calendar.MINUTE,minsDiff);
 
         Date oneHourBack = cal.getTime();
-        fhirBundle = new FhirBundleUtil(Bundle.BundleType.MESSAGE);
+        fhirBundle = new FhirBundleUtil(Bundle.BundleType.COLLECTION);
 
         doSetUp();
 
@@ -151,9 +157,6 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
 
         Bundle bundle = new Bundle();
-
-
-
 
 
             bundle.addEntry().setResource(yas);
@@ -187,7 +190,19 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
             bundle.addEntry().setResource(this.jimmy);
 
-
+            Condition condition = new Condition();
+            condition.setId(fhirBundle.getNewId(condition));
+            condition.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
+            condition.setClinicalStatus(Condition.ConditionClinicalStatus.ACTIVE);
+            condition.setAsserter(new Reference(uuidtag + fhirBundle.getPatient().getId()));
+            condition.addIdentifier().setSystem(yasConditionIdentifier).setValue(conno.toString());
+            condition.setAssertedDate(cal.getTime());
+            condition.getCode().addCoding()
+                    .setSystem("http://snomed.info/sct")
+                    .setDisplay(display)
+                    .setCode(code);
+            conno++;
+            bundle.addEntry().setResource(condition);
 
             Encounter encounter = new Encounter();
             encounter.setId(fhirBundle.getNewId(encounter));
@@ -201,6 +216,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
                     .setCode("409971007")
                     .setDisplay("Emergency medical services");
             encounter.getPeriod().setStart(cal.getTime());
+            encounter.addDiagnosis().setCondition(new Reference(uuidtag + condition.getIdElement().getIdPart()));
             idno++;
             bundle.addEntry().setResource(encounter);
 
@@ -289,6 +305,9 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
                 bundle.addEntry().setResource(ambulance);
             }
 
+            getUnstructuredBundle(nhsNumber);
+
+
             // System.out.println(ctxFHIR.newJsonParser().setPrettyPrint(true).encodeResourceToString(bundle));
 
             fhirBundle.processBundleResources(bundle);
@@ -332,6 +351,236 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
             }
         }
         return bundle;
+    }
+
+    private Bundle getUnstructuredBundle(String nhsNumber) {
+        Bundle bundle = null;
+        try {
+            switch (nhsNumber) {
+                case "9476719931":
+                    getUnstructuredBundle(nhsNumber, 1);
+
+                    getUnstructuredBundle(nhsNumber, 5);
+
+                    break;
+                case "9476719974":
+                    getUnstructuredBundle(nhsNumber, 2);
+
+                    break;
+                case "9476719966":
+                    getUnstructuredBundle(nhsNumber, 3);
+
+                    break;
+                case "9476719958":
+                    getUnstructuredBundle(nhsNumber, 4);
+
+                    break;
+            }
+        } catch (Exception ex) {
+
+        }
+        return bundle;
+    }
+
+    private Bundle getUnstructuredBundle(String patientId, Integer docExample) throws Exception {
+        // Create Bundle of type Document
+
+
+
+        Bundle bundle = new Bundle();
+        // Main resource of a FHIR Bundle is a DocumentReference
+        DocumentReference documentReference = new DocumentReference();
+        documentReference.setId(fhirBundle.getNewId(documentReference));
+        bundle.addEntry().setResource(documentReference);
+
+
+        documentReference.setCreated(new Date());
+        documentReference.setStatus(Enumerations.DocumentReferenceStatus.CURRENT);
+
+
+        bundle.addEntry().setResource(lth);
+
+        documentReference.setCustodian(new Reference("Organization/"+lth.getIdElement().getIdPart()));
+        // log.info("Custodian docRef"+documentReference.getCustodian().getReference());
+
+        Practitioner consultant = getPractitioner("C2381390");
+
+        bundle.addEntry().setResource(consultant);
+        documentReference.addAuthor(new Reference("Practitioner/"+consultant.getIdElement().getIdPart()));
+
+
+
+
+        Binary binary = new Binary();
+        binary.setId(fhirBundle.getNewId(binary));
+
+        if (docExample == 1) {
+
+            documentReference.getType().addCoding()
+                    .setSystem("http://snomed.info/sct")
+                    .setCode("820291000000107")
+                    .setDisplay("Infectious disease notification");
+
+            documentReference.getContext().getPracticeSetting().addCoding()
+                    .setSystem("http://snomed.info/sct")
+                    .setCode("394582007")
+                    .setDisplay("Dermatology");
+
+            documentReference.getContext().getFacilityType().addCoding()
+                    .setSystem("http://snomed.info/sct")
+                    .setCode("700241009")
+                    .setDisplay("Dermatology service");
+
+            InputStream inputStream =
+                    Thread.currentThread().getContextClassLoader().getResourceAsStream("image/3emotng15yvy.jpg");
+            binary.setContent(IOUtils.toByteArray(inputStream));
+            binary.setContentType("image/jpeg");
+
+        } else if (docExample == 2) {
+            documentReference.getType().addCoding()
+                    .setSystem("http://snomed.info/sct")
+                    .setCode("820291000000107")
+                    .setDisplay("Infectious disease notification");
+
+            documentReference.getContext().getPracticeSetting().addCoding()
+                    .setSystem("http://snomed.info/sct")
+                    .setCode("394582007")
+                    .setDisplay("Dermatology");
+
+            documentReference.getContext().getFacilityType().addCoding()
+                    .setSystem("http://snomed.info/sct")
+                    .setCode("700241009")
+                    .setDisplay("Dermatology service");
+
+            InputStream inputStream =
+                    Thread.currentThread().getContextClassLoader().getResourceAsStream("image/DischargeSummary.pdf");
+            binary.setContent(IOUtils.toByteArray(inputStream));
+            binary.setContentType("application/pdf");
+        }
+        else if (docExample == 3) {
+            documentReference.getType().addCoding()
+                    .setSystem("http://snomed.info/sct")
+                    .setCode("422735006")
+                    .setDisplay("Summary clinical document");
+
+            documentReference.getContext().getPracticeSetting().addCoding()
+                    .setSystem("http://snomed.info/sct")
+                    .setCode("394802001")
+                    .setDisplay("General medicine");
+
+            documentReference.getContext().getFacilityType().addCoding()
+                    .setSystem("http://snomed.info/sct")
+                    .setCode("409971007")
+                    .setDisplay("Emergency medical services");
+
+
+
+            InputStream inputStream =
+                    Thread.currentThread().getContextClassLoader().getResourceAsStream("image/hospital-scanned.jpg");
+            binary.setContent(IOUtils.toByteArray(inputStream));
+            binary.setContentType("image/jpeg");
+        } else if (docExample == 4) {
+            documentReference.getType().addCoding()
+                    .setSystem("http://snomed.info/sct")
+                    .setCode("823571000000103")
+                    .setDisplay("Scored assessment record (record artifact)");
+
+            documentReference.getContext().getPracticeSetting().addCoding()
+                    .setSystem("http://snomed.info/sct")
+                    .setCode("394802001")
+                    .setDisplay("General medicine");
+
+            documentReference.getContext().getFacilityType().addCoding()
+                    .setSystem("http://snomed.info/sct")
+                    .setCode("700232004")
+                    .setDisplay("General medical service");
+
+
+
+            InputStream inputStream =
+                    Thread.currentThread().getContextClassLoader().getResourceAsStream("image/VitalSigns.pdf");
+            binary.setContent(IOUtils.toByteArray(inputStream));
+            binary.setContentType("application/pdf");
+        }
+        else if (docExample == 5) {
+            documentReference.getType().addCoding()
+                    .setSystem("http://snomed.info/sct")
+                    .setCode("718347000")
+                    .setDisplay("Mental health care plan ");
+
+            documentReference.getContext().getPracticeSetting().addCoding()
+                    .setSystem("http://snomed.info/sct")
+                    .setCode("722162001")
+                    .setDisplay("Psychology");
+
+            documentReference.getContext().getFacilityType().addCoding()
+                    .setSystem("http://snomed.info/sct")
+                    .setCode("708168004")
+                    .setDisplay("Mental health service");
+
+
+
+            InputStream inputStream =
+                    Thread.currentThread().getContextClassLoader().getResourceAsStream("pdf/1_STAYING WELL PLAN CMHT.pdf");
+            binary.setContent(IOUtils.toByteArray(inputStream));
+            binary.setContentType("application/pdf");
+        } else if (docExample == 6) {
+            documentReference.getType().addCoding()
+                    .setSystem("http://snomed.info/sct")
+                    .setCode("718347000")
+                    .setDisplay("Mental health care plan ");
+
+            documentReference.getContext().getPracticeSetting().addCoding()
+                    .setSystem("http://snomed.info/sct")
+                    .setCode("722162001")
+                    .setDisplay("Psychology");
+
+            documentReference.getContext().getFacilityType().addCoding()
+                    .setSystem("http://snomed.info/sct")
+                    .setCode("708168004")
+                    .setDisplay("Mental health service");
+
+
+
+            InputStream inputStream =
+                    Thread.currentThread().getContextClassLoader().getResourceAsStream("pdf/crisis and contingency questionnaire screen shot.pdf");
+            binary.setContent(IOUtils.toByteArray(inputStream));
+            binary.setContentType("application/pdf");
+        }
+
+
+        bundle.addEntry().setResource(binary).setFullUrl(binary.getId());
+        documentReference.addContent()
+                .getAttachment()
+                .setUrl("Binary/"+binary.getId())
+                .setContentType(binary.getContentType());
+
+
+        // This is a synthea patient
+
+        fhirBundle.processBundleResources(bundle);
+
+        if (fhirBundle.getPatient() == null) throw new Exception("404 Patient not found");
+        documentReference.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
+        fhirBundle.processReferences();
+
+        return fhirBundle.getFhirDocument();
+    }
+
+    private Practitioner getPractitioner(String sdsCode) {
+        Practitioner practitioner = null;
+        Bundle bundle =  client
+                .search()
+                .forResource(Practitioner.class)
+                .where(Practitioner.IDENTIFIER.exactly().code(sdsCode))
+                .returnBundle(Bundle.class)
+                .execute();
+        if (bundle.getEntry().size()>0) {
+            if (bundle.getEntry().get(0).getResource() instanceof Practitioner)
+                practitioner = (Practitioner) bundle.getEntry().get(0).getResource();
+
+        }
+        return practitioner;
     }
 
     private Organization getOrganization(String sdsCode) {
