@@ -23,9 +23,17 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
     private static String yasEncounterIdentifier = "https://fhir.yas.nhs.uk/Encounter/Identifier";
 
+    private static String yasEpisodeIdentifier = "https://fhir.yas.nhs.uk/EpisodeOfCare/Identifier";
+
     private static String yasLocationIdentifier = "https://fhir.yas.nhs.uk/Location/Identifier";
 
     final String uuidtag = "urn:uuid:";
+
+    Organization yas;
+
+    Organization lth;
+
+    Location jimmy;
 
     FhirContext ctxFHIR = FhirContext.forDstu3();
 
@@ -60,17 +68,17 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
         clientGPC = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8187/ccri/camel/fhir/gpc/");
         clientGPC.setEncoding(EncodingEnum.XML);
 
-        getCoords(new Location(),"LS15 8FR");
 
-        postPatient("9476719931");
 
-        postPatient("9476719974");
+        postPatient("9476719931", "LS15 8FS",true, "Danzig");
 
-        postPatient("9476719966");
+        postPatient("9476719974", "LS25 1NT",false, null);
 
-        postPatient("9476719958");
+        postPatient("9476719966", "LS25 2HF",false, "Elbe");
 
-        postPatient("9000000068");
+        postPatient("9476719958", "LS15 8ZB", false, null);
+
+       // postPatient("9000000068");
 
 
     }
@@ -78,15 +86,55 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
     public Location getCoords(Location location, String postCode) {
         RestTemplate restTemplate = new RestTemplate();
         String url = "https://api.postcodes.io/postcodes/"+postCode;
-        System.out.println(url);
+        //System.out.println(url);
         PostCode postCodeLongLat = restTemplate.getForObject(url,PostCode.class);
-        System.out.println(postCodeLongLat.getResult().getLongitude().toString());
+        //System.out.println(postCodeLongLat.getResult().getLongitude().toString());
+        location.getPosition().setLatitude(postCodeLongLat.getResult().getLatitude());
+        location.getPosition().setLongitude(postCodeLongLat.getResult().getLongitude());
         return location;
     }
 
-    public void postPatient(String nhsNumber) {
+
+    public void doSetUp() {
+
+        yas = getOrganization("RX8");
+        yas.setId(fhirBundle.getNewId(yas));
+
+        lth = getOrganization("RR8");
+        lth.setId(fhirBundle.getNewId(lth));
+
+        jimmy = new Location();
+        jimmy.setId(fhirBundle.getNewId(jimmy));
+        jimmy.setStatus(Location.LocationStatus.ACTIVE);
+        jimmy.setName("St James's University Hospital: Emergency Department");
+        jimmy.setDescription("St James's University Hospital: Emergency Department");
+        jimmy.getType().addCoding()
+                .setSystem("http://hl7.org/fhir/v3/RoleCode")
+                .setCode("ETU")
+                .setDisplay("Emergency Trauma Unit");
+        jimmy.addTelecom()
+                .setSystem(ContactPoint.ContactPointSystem.PHONE)
+                .setValue("airwave-27051940")
+                .setUse(ContactPoint.ContactPointUse.MOBILE);
+        jimmy.addIdentifier().setSystem(yasLocationIdentifier).setValue("RR8-ED");
+        jimmy.getPhysicalType().addCoding()
+                .setSystem("http://hl7.org/fhir/location-physical-type")
+                .setCode("bu")
+                .setDisplay("Building");
+        jimmy.getPosition()
+                .setAltitude(0)
+                .setLatitude(53.80634615690993)
+                .setLongitude(-1.5230420347013478);
+        jimmy.setManagingOrganization(new Reference(uuidtag + lth.getIdElement().getIdPart()));
+
+
+    }
+
+    public void postPatient(String nhsNumber, String encounterPostcode, Boolean ambulanceReq, String ambulanceName) {
 
         fhirBundle = new FhirBundleUtil(Bundle.BundleType.MESSAGE);
+
+        doSetUp();
 
         Bundle patientBundle = getPatientBundle(nhsNumber);
 
@@ -96,13 +144,9 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
         Bundle bundle = new Bundle();
 
-        Organization yas = getOrganization("RX8");
-        yas.setId(fhirBundle.getNewId(yas));
 
-        Organization lth = getOrganization("RR8");
-        lth.setId(fhirBundle.getNewId(lth));
 
-        if (nhsNumber.equals("9476719958")) {
+
 
             bundle.addEntry().setResource(yas);
             bundle.addEntry().setResource(lth);
@@ -126,71 +170,22 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
                     .setSystem("http://hl7.org/fhir/location-physical-type")
                     .setCode("bu")
                     .setDisplay("Building");
-            patientLoc.getPosition()
-                    .setAltitude(0)
-                    .setLatitude(53.796284092469236)
-                    .setLongitude(-1.5508230590282892);
+            getCoords(patientLoc,encounterPostcode);
+
             locno++;
             bundle.addEntry().setResource(patientLoc);
 
 
-            Location jimmy = new Location();
-            jimmy.setId(fhirBundle.getNewId(jimmy));
-            jimmy.setStatus(Location.LocationStatus.ACTIVE);
-            jimmy.setName("St James's University Hospital: Emergency Department");
-            jimmy.setDescription("St James's University Hospital: Emergency Department");
-            jimmy.getType().addCoding()
-                    .setSystem("http://hl7.org/fhir/v3/RoleCode")
-                    .setCode("ETU")
-                    .setDisplay("Emergency Trauma Unit");
-            jimmy.addTelecom()
-                    .setSystem(ContactPoint.ContactPointSystem.PHONE)
-                    .setValue("airwave-27051940")
-                    .setUse(ContactPoint.ContactPointUse.MOBILE);
-            jimmy.addIdentifier().setSystem(yasLocationIdentifier).setValue(locno.toString());
-            jimmy.getPhysicalType().addCoding()
-                    .setSystem("http://hl7.org/fhir/location-physical-type")
-                    .setCode("bu")
-                    .setDisplay("Building");
-            jimmy.getPosition()
-                    .setAltitude(0)
-                    .setLatitude(53.80634615690993)
-                    .setLongitude(-1.5230420347013478);
-            jimmy.setManagingOrganization(new Reference(uuidtag + lth.getIdElement().getIdPart()));
-            locno++;
-            bundle.addEntry().setResource(jimmy);
 
-            Location ambulanceVech = new Location();
-            ambulanceVech.setId(fhirBundle.getNewId(ambulanceVech));
-            ambulanceVech.setStatus(Location.LocationStatus.ACTIVE);
-            ambulanceVech.setName("Danzig");
-            ambulanceVech.setDescription("Box Body Ambulance");
-            ambulanceVech.getType().addCoding()
-                    .setSystem("http://hl7.org/fhir/v3/RoleCode")
-                    .setCode("AMB")
-                    .setDisplay("Ambulance");
-            ambulanceVech.addTelecom()
-                    .setSystem(ContactPoint.ContactPointSystem.PHONE)
-                    .setValue("airwave-542329")
-                    .setUse(ContactPoint.ContactPointUse.MOBILE);
-            ambulanceVech.addIdentifier().setSystem(yasLocationIdentifier).setValue(locno.toString());
-            ambulanceVech.getPhysicalType().addCoding()
-                    .setSystem("http://hl7.org/fhir/location-physical-type")
-                    .setCode("ve")
-                    .setDisplay("Vehicle");
-            ambulanceVech.getPosition()
-                    .setAltitude(0)
-                    .setLatitude(53.795387709017916)
-                    .setLongitude(-1.5295702591538431);
-            ambulanceVech.setManagingOrganization(new Reference(uuidtag + yas.getIdElement().getIdPart()));
-            locno++;
-            bundle.addEntry().setResource(ambulanceVech);
+            bundle.addEntry().setResource(this.jimmy);
+
+
 
             Encounter encounter = new Encounter();
             encounter.setId(fhirBundle.getNewId(encounter));
             encounter.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
             encounter.setStatus(Encounter.EncounterStatus.INPROGRESS);
-            encounter.addIdentifier().setSystem(yasEncounterIdentifier).setValue(idno.toString());
+            encounter.addIdentifier().setSystem(yasEpisodeIdentifier).setValue(idno.toString());
             encounter.setServiceProvider(new Reference(uuidtag + yas.getIdElement().getIdPart()));
             encounter.getClass_().setCode("EMER").setSystem("http://hl7.org/fhir/v3/ActCode").setDisplay("emergency");
             encounter.addType().addCoding()
@@ -218,36 +213,67 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
             bundle.addEntry().setResource(triage);
 
 
-            Encounter ambulance = new Encounter();
-            ambulance.setId(fhirBundle.getNewId(ambulance));
-            ambulance.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
-            ambulance.setStatus(Encounter.EncounterStatus.INPROGRESS);
-            ambulance.addIdentifier().setSystem(yasEncounterIdentifier).setValue(idno.toString());
-            ambulance.setServiceProvider(new Reference(uuidtag + yas.getIdElement().getIdPart()));
-            ambulance.addType().addCoding()
-                    .setSystem("http://snomed.info/sct")
-                    .setCode("11424001")
-                    .setDisplay("Ambulance-based care");
-            ambulance.setPartOf(new Reference(uuidtag + encounter.getId()));
-            ambulance.addLocation()
-                    .setLocation(new Reference(uuidtag + ambulanceVech.getId()))
-                    .setStatus(Encounter.EncounterLocationStatus.ACTIVE);
 
-            ambulance.addLocation()
-                    .setLocation(new Reference(uuidtag + patientLoc.getId()))
-                    .setStatus(Encounter.EncounterLocationStatus.COMPLETED);
 
-            ambulance.addLocation()
-                    .setLocation(new Reference(uuidtag + jimmy.getId()))
-                    .setStatus(Encounter.EncounterLocationStatus.PLANNED);
-            idno++;
-            bundle.addEntry().setResource(ambulance);
 
+            if (ambulanceReq) {
+
+                Location ambulanceVech = new Location();
+                ambulanceVech.setId(fhirBundle.getNewId(ambulanceVech));
+                ambulanceVech.setStatus(Location.LocationStatus.ACTIVE);
+                ambulanceVech.setName(ambulanceName);
+                ambulanceVech.setDescription("Box Body Ambulance");
+                ambulanceVech.getType().addCoding()
+                        .setSystem("http://hl7.org/fhir/v3/RoleCode")
+                        .setCode("AMB")
+                        .setDisplay("Ambulance");
+                ambulanceVech.addTelecom()
+                        .setSystem(ContactPoint.ContactPointSystem.PHONE)
+                        .setValue("airwave-542329")
+                        .setUse(ContactPoint.ContactPointUse.MOBILE);
+                ambulanceVech.addIdentifier().setSystem(yasLocationIdentifier).setValue(ambulanceName.toUpperCase());
+                ambulanceVech.getPhysicalType().addCoding()
+                        .setSystem("http://hl7.org/fhir/location-physical-type")
+                        .setCode("ve")
+                        .setDisplay("Vehicle");
+                ambulanceVech.getPosition()
+                        .setAltitude(0)
+                        .setLatitude(53.795387709017916)
+                        .setLongitude(-1.5295702591538431);
+                ambulanceVech.setManagingOrganization(new Reference(uuidtag + yas.getIdElement().getIdPart()));
+                bundle.addEntry().setResource(ambulanceVech);
+
+
+                Encounter ambulance = new Encounter();
+                ambulance.setId(fhirBundle.getNewId(ambulance));
+                ambulance.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
+                ambulance.setStatus(Encounter.EncounterStatus.INPROGRESS);
+                ambulance.addIdentifier().setSystem(yasEncounterIdentifier).setValue(idno.toString());
+                ambulance.setServiceProvider(new Reference(uuidtag + yas.getIdElement().getIdPart()));
+                ambulance.addType().addCoding()
+                        .setSystem("http://snomed.info/sct")
+                        .setCode("11424001")
+                        .setDisplay("Ambulance-based care");
+                ambulance.setPartOf(new Reference(uuidtag + encounter.getId()));
+                ambulance.addLocation()
+                        .setLocation(new Reference(uuidtag + ambulanceVech.getId()))
+                        .setStatus(Encounter.EncounterLocationStatus.ACTIVE);
+
+                ambulance.addLocation()
+                        .setLocation(new Reference(uuidtag + patientLoc.getId()))
+                        .setStatus(Encounter.EncounterLocationStatus.COMPLETED);
+
+                ambulance.addLocation()
+                        .setLocation(new Reference(uuidtag + jimmy.getId()))
+                        .setStatus(Encounter.EncounterLocationStatus.PLANNED);
+                idno++;
+                bundle.addEntry().setResource(ambulance);
+            }
 
             // System.out.println(ctxFHIR.newJsonParser().setPrettyPrint(true).encodeResourceToString(bundle));
 
             fhirBundle.processBundleResources(bundle);
-        }
+
 
         System.out.println(ctxFHIR.newJsonParser().setPrettyPrint(true).encodeResourceToString(fhirBundle.getFhirDocument()));
 
