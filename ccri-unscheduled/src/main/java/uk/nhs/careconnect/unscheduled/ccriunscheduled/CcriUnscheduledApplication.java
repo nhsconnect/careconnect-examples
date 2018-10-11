@@ -15,6 +15,8 @@ import org.springframework.web.client.RestTemplate;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 @SpringBootApplication
 public class CcriUnscheduledApplication implements CommandLineRunner {
@@ -70,13 +72,13 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
 
 
-        postPatient("9476719931", "LS15 8FS",true, "Danzig");
+        postPatient("9476719931", "LS15 8FS",true, "Danzig", "LS14 6UH",-1,0);
 
-        postPatient("9476719974", "LS25 1NT",false, null);
+        postPatient("9476719974", "LS25 1NT",false, null, null,-1,-15);
 
-        postPatient("9476719966", "LS25 2HF",false, "Elbe");
+        postPatient("9476719966", "LS25 2HF",false, "Elbe", "LS26 8PU" ,0,-15);
 
-        postPatient("9476719958", "LS15 8ZB", false, null);
+        postPatient("9476719958", "LS15 8ZB", false, null, null,0,-20);
 
        // postPatient("9000000068");
 
@@ -130,8 +132,14 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
     }
 
-    public void postPatient(String nhsNumber, String encounterPostcode, Boolean ambulanceReq, String ambulanceName) {
+    public void postPatient(String nhsNumber, String encounterPostcode, Boolean ambulanceReq, String ambulanceName, String ambulancePostcode, Integer hoursDiff, Integer minsDiff ) {
 
+        Calendar cal = Calendar.getInstance();
+
+        cal.add(Calendar.HOUR, hoursDiff);
+        cal.add(Calendar.MINUTE,minsDiff);
+
+        Date oneHourBack = cal.getTime();
         fhirBundle = new FhirBundleUtil(Bundle.BundleType.MESSAGE);
 
         doSetUp();
@@ -192,6 +200,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
                     .setSystem("http://snomed.info/sct")
                     .setCode("409971007")
                     .setDisplay("Emergency medical services");
+            encounter.getPeriod().setStart(cal.getTime());
             idno++;
             bundle.addEntry().setResource(encounter);
 
@@ -199,7 +208,11 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
             Encounter triage = new Encounter();
             triage.setId(fhirBundle.getNewId(triage));
             triage.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
-            triage.setStatus(Encounter.EncounterStatus.FINISHED);
+            if (ambulanceReq ) {
+                triage.setStatus(Encounter.EncounterStatus.FINISHED);
+            } else {
+                triage.setStatus(Encounter.EncounterStatus.INPROGRESS);
+            }
             triage.addIdentifier().setSystem(yasEncounterIdentifier).setValue(idno.toString());
             triage.setServiceProvider(new Reference(uuidtag + yas.getIdElement().getIdPart()));
             triage.getClass_().setCode("EMER").setSystem("http://hl7.org/fhir/v3/ActCode").setDisplay("emergency");
@@ -209,6 +222,11 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
                     .setDisplay("Emergency examination for triage");
             triage.addLocation().setLocation(new Reference(uuidtag + patientLoc.getId()));
             triage.setPartOf(new Reference(uuidtag + encounter.getId()));
+            triage.getPeriod().setStart(cal.getTime());
+            if (ambulanceReq) {
+                cal.add(Calendar.MINUTE,5);
+                triage.getPeriod().setEnd(cal.getTime());
+            }
             idno++;
             bundle.addEntry().setResource(triage);
 
@@ -236,10 +254,8 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
                         .setSystem("http://hl7.org/fhir/location-physical-type")
                         .setCode("ve")
                         .setDisplay("Vehicle");
-                ambulanceVech.getPosition()
-                        .setAltitude(0)
-                        .setLatitude(53.795387709017916)
-                        .setLongitude(-1.5295702591538431);
+                getCoords(ambulanceVech,ambulancePostcode);
+
                 ambulanceVech.setManagingOrganization(new Reference(uuidtag + yas.getIdElement().getIdPart()));
                 bundle.addEntry().setResource(ambulanceVech);
 
@@ -266,7 +282,10 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
                 ambulance.addLocation()
                         .setLocation(new Reference(uuidtag + jimmy.getId()))
                         .setStatus(Encounter.EncounterLocationStatus.PLANNED);
-                idno++;
+                cal.add(Calendar.MINUTE,5);
+                ambulance.getPeriod().setStart(cal.getTime());
+
+            idno++;
                 bundle.addEntry().setResource(ambulance);
             }
 
@@ -285,7 +304,9 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
     }
 
     private Bundle getPatientBundle(String NHSNumber) {
-        Bundle bundle = clientGPC
+
+        IGenericClient callclient = client;
+        Bundle bundle = callclient
                 .search()
                 .forResource(Patient.class)
                 .where(Patient.IDENTIFIER.exactly().systemAndCode("https://fhir.nhs.uk/Id/nhs-number",NHSNumber))
@@ -297,14 +318,14 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
             Patient patient = (Patient) bundle.getEntry().get(0).getResource();
             if (patient.hasManagingOrganization()) {
 
-                Organization organization = clientGPC.read().resource(Organization.class).withId(patient.getManagingOrganization().getReference()).execute();
+                Organization organization = callclient.read().resource(Organization.class).withId(patient.getManagingOrganization().getReference()).execute();
                 organization.setId(fhirBundle.getNewId(organization));
                 patient.setManagingOrganization(new Reference(uuidtag+organization.getId()));
                 bundle.addEntry().setResource(organization);
             }
             if (patient.hasGeneralPractitioner()) {
 
-                Practitioner practitioner = clientGPC.read().resource(Practitioner.class).withId(patient.getGeneralPractitioner().get(0).getReference()).execute();
+                Practitioner practitioner = callclient.read().resource(Practitioner.class).withId(patient.getGeneralPractitioner().get(0).getReference()).execute();
                 practitioner.setId(fhirBundle.getNewId(practitioner));
                 patient.getGeneralPractitioner().get(0).setReference(uuidtag+practitioner.getId());
                 bundle.addEntry().setResource(practitioner);
