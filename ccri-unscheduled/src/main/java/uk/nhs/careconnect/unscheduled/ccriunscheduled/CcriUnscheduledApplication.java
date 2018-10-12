@@ -72,7 +72,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
             throw new Exception();
         }
 
-        client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
+        client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
         //client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8183/ccri-fhir/STU3/");
         client.setEncoding(EncodingEnum.XML);
 
@@ -86,7 +86,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
         postPatient("9476719974", "LS25 1NT",false, null, null,-1,-15, "217133004","Fall into quarry");
 
-        postPatient("9476719966", "LS25 2HF",false, "Elbe", "LS26 8PU" ,0,-15, "410429000","Cardiac arrest");
+        postPatient("9476719966", "LS25 2HF",true, "Elbe", "LS26 8PU" ,0,-15, "410429000","Cardiac arrest");
 
         postPatient("9476719958", "LS15 8ZB", false, null, null,0,-5,"418399005","Motor vehicle accident");
 
@@ -212,7 +212,11 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
             Encounter encounter = new Encounter();
             encounter.setId(fhirBundle.getNewId(encounter));
             encounter.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
-            encounter.setStatus(Encounter.EncounterStatus.INPROGRESS);
+            if (ambulanceReq) {
+                encounter.setStatus(Encounter.EncounterStatus.INPROGRESS);
+            } else {
+                encounter.setStatus(Encounter.EncounterStatus.TRIAGED);
+            }
             encounter.addIdentifier().setSystem(yasEpisodeIdentifier).setValue(idno.toString());
             encounter.setServiceProvider(new Reference(uuidtag + yas.getIdElement().getIdPart()));
             encounter.getClass_().setCode("EMER").setSystem("http://hl7.org/fhir/v3/ActCode").setDisplay("emergency");
@@ -241,12 +245,17 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
                     .setSystem("http://snomed.info/sct")
                     .setCode("245581009")
                     .setDisplay("Emergency examination for triage");
-            triage.addLocation().setLocation(new Reference(uuidtag + patientLoc.getId()));
+
             triage.setPartOf(new Reference(uuidtag + encounter.getId()));
             triage.getPeriod().setStart(cal.getTime());
             if (ambulanceReq) {
                 cal.add(Calendar.MINUTE,5);
                 triage.getPeriod().setEnd(cal.getTime());
+                triage.addLocation().setLocation(new Reference(uuidtag + patientLoc.getId()))
+                        .setStatus(Encounter.EncounterLocationStatus.COMPLETED);
+            } else {
+                triage.addLocation().setLocation(new Reference(uuidtag + patientLoc.getId()))
+                        .setStatus(Encounter.EncounterLocationStatus.ACTIVE);
             }
             idno++;
             bundle.addEntry().setResource(triage);
@@ -293,13 +302,11 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
                         .setDisplay("Ambulance-based care");
                 ambulance.setPartOf(new Reference(uuidtag + encounter.getId()));
                 ambulance.addLocation()
-                        .setLocation(new Reference(uuidtag + ambulanceVech.getId()))
-                        .setStatus(Encounter.EncounterLocationStatus.ACTIVE);
-
-                ambulance.addLocation()
                         .setLocation(new Reference(uuidtag + patientLoc.getId()))
                         .setStatus(Encounter.EncounterLocationStatus.COMPLETED);
-
+                ambulance.addLocation()
+                        .setLocation(new Reference(uuidtag + ambulanceVech.getId()))
+                        .setStatus(Encounter.EncounterLocationStatus.ACTIVE);
                 ambulance.addLocation()
                         .setLocation(new Reference(uuidtag + jimmy.getId()))
                         .setStatus(Encounter.EncounterLocationStatus.PLANNED);
@@ -360,6 +367,45 @@ Inspired Oxygen
                     news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
 
                     obs = createObservationCoded("248234008", "Mentally alert",  "Mental alertness - finding","365933000",ambulance);
+                    bundle.addEntry().setResource(obs);
+                    news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
+                    // Conscious
+
+                    bundle.addEntry().setResource(news);
+
+                }
+                if (nhsNumber=="9476719966") {
+//CARDIAC
+                    Observation news = createObservation("8", "score", "National early warning score","859261000000108", ambulance);
+
+                    Observation obs = createObservation("15", "/min",  "Respiratory rate","86290005",ambulance);
+                    bundle.addEntry().setResource(obs);
+                    news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
+
+                    obs = createObservation("50", "/min",  "Heart rate","364075005",ambulance);
+                    bundle.addEntry().setResource(obs);
+                    news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
+
+                    obs = createObservation("80", "%",  "SpO2 - saturation of peripheral oxygen","431314004",ambulance);
+                    bundle.addEntry().setResource(obs);
+                    news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
+
+                    obs = createObservation("34.5", "Cel",  "Core body temperature","276885007",ambulance);
+                    bundle.addEntry().setResource(obs);
+                    news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
+
+                    obs = createObservationBP("90", "50",  "Blood pressure","75367002",ambulance);
+                    bundle.addEntry().setResource(obs);
+                    news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
+
+                    // obs = createObservationCoded("722742002", "Breathing room air",  "Observation of breathing","301282008",ambulance);
+                    // bundle.addEntry().setResource(obs);
+
+                    obs = createObservationCoded("371825009", "Patient on oxygen",  "Observation of breathing","301282008",ambulance);
+                    bundle.addEntry().setResource(obs);
+                    news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
+
+                    obs = createObservationCoded("130987000", "Acute confusion",  "Mental alertness - finding","365933000",ambulance);
                     bundle.addEntry().setResource(obs);
                     news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
                     // Conscious
