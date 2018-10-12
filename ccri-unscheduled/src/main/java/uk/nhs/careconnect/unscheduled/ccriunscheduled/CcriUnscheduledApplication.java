@@ -15,6 +15,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -33,6 +34,8 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
     private static String yasConditionIdentifier = "https://fhir.yas.nhs.uk/Location/Identifier";
 
+    private static String yasObservationIdentifier = "https://fhir.yas.nhs.uk/Observation/Identifier";
+
     final String uuidtag = "urn:uuid:";
 
     Organization yas;
@@ -46,6 +49,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
     Integer idno = 650;
     Integer locno = 730;
     Integer conno = 12730;
+    Integer obsNo = 500;
 
 
     public static void main(String[] args) {
@@ -68,8 +72,8 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
             throw new Exception();
         }
 
-        client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
-        //client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8183/ccri-fhir/STU3/");
+        //client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
+        client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8183/ccri-fhir/STU3/");
         client.setEncoding(EncodingEnum.XML);
 
         clientGPC = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
@@ -302,11 +306,70 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
                 cal.add(Calendar.MINUTE,5);
                 ambulance.getPeriod().setStart(cal.getTime());
 
-            idno++;
+                idno++;
                 bundle.addEntry().setResource(ambulance);
+
+                  /*
+
+Respiration rate 86290005 '/min'
+Sys 72313002 mmHg Dia 271650006 mmHg
+Pulse 364075005 /min
+Alertness
+ACPVU scale Level 2:
+    Alert : 248234008|Mentally alert (finding)|
+    Voice:300202002|Responds to voice (finding)|
+    Pain:450847001|Responds to pain (finding)|
+    Unresponsive:3 :422768004|Unresponsive (finding)|
+    New confusion :130987000|Acute confusion (finding)| : value set
+Temperature 276885007 'Cel'
+Inspired Oxygen
+    722742002 Breathing room air
+    371825009 patient on oxygen
+
+     */
+
+                if (nhsNumber=="9476719931") {
+
+                    Observation news = createObservation("6", "score", "National early warning score","859261000000108", ambulance);
+
+                    Observation obs = createObservation("21", "/min",  "Respiratory rate","86290005",ambulance);
+                    bundle.addEntry().setResource(obs);
+                    news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
+
+                    obs = createObservation("95", "/min",  "Heart rate","364075005",ambulance);
+                    bundle.addEntry().setResource(obs);
+                    news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
+
+                    obs = createObservation("93", "%",  "SpO2 - saturation of peripheral oxygen","431314004",ambulance);
+                    bundle.addEntry().setResource(obs);
+                    news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
+
+                    obs = createObservation("38.5", "Cel",  "Core body temperature","276885007",ambulance);
+                    bundle.addEntry().setResource(obs);
+                    news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
+
+                    obs = createObservationBP("120", "80",  "Blood pressure","75367002",ambulance);
+                    bundle.addEntry().setResource(obs);
+                    news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
+
+                   // obs = createObservationCoded("722742002", "Breathing room air",  "Observation of breathing","301282008",ambulance);
+                   // bundle.addEntry().setResource(obs);
+
+                    obs = createObservationCoded("371825009", "Patient on oxygen",  "Observation of breathing","301282008",ambulance);
+                    bundle.addEntry().setResource(obs);
+                    news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
+
+                    obs = createObservationCoded("248234008", "Mentally alert",  "Mental alertness - finding","365933000",ambulance);
+                    bundle.addEntry().setResource(obs);
+                    news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
+                    // Conscious
+
+                    bundle.addEntry().setResource(news);
+
+                }
             }
 
-            getUnstructuredBundle(nhsNumber);
+            // TODO TODO TODO put me back getUnstructuredDocumentBundle(nhsNumber);
 
 
             // System.out.println(ctxFHIR.newJsonParser().setPrettyPrint(true).encodeResourceToString(bundle));
@@ -322,6 +385,104 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
        // System.out.println(ctxFHIR.newJsonParser().setPrettyPrint(true).encodeResourceToString(outcome.getOperationOutcome()));
 
     }
+
+
+    private Observation createObservationCoded(String valueCode, String valueDescription, String display, String code, Encounter encounter) {
+        Observation observation = createObservation(null, null, display, code, encounter);
+
+        CodeableConcept concept = new CodeableConcept();
+        concept.addCoding()
+                .setSystem("http://snomed.info/sct")
+                .setCode(valueCode)
+                .setDisplay(valueDescription);
+
+        observation.setValue(concept);
+
+        return observation;
+    }
+
+    private Observation createObservationBP(String sys, String dia, String display, String code, Encounter encounter) {
+        Observation observation = createObservation(null, null, display, code, encounter);
+
+        Observation.ObservationComponentComponent sysComp = observation.addComponent();
+        sysComp.getCode().addCoding()
+                .setCode("72313002")
+                .setDisplay("Systolic blood pressure")
+                .setSystem("http://snomed.info/sct");
+        sysComp.setValue(
+                new Quantity()
+                        .setValue(new BigDecimal(sys))
+                        .setUnit("mmHg")
+                        .setSystem("http://unitsofmeasure.org")
+                        .setCode("mmHg"));
+
+        Observation.ObservationComponentComponent diaComp = observation.addComponent();
+        diaComp.getCode().addCoding()
+                .setCode("271650006")
+                .setDisplay("Diastolic blood pressure")
+                .setSystem("http://snomed.info/sct");
+        diaComp.setValue(
+                new Quantity()
+                        .setValue(new BigDecimal(dia))
+                        .setUnit("mmHg")
+                        .setSystem("http://unitsofmeasure.org")
+                        .setCode("mmHg"));
+
+        return observation;
+    }
+
+    private Observation createObservation(String value, String valueUnits, String display, String code, Encounter encounter) {
+        Observation observation = new Observation();
+
+        observation.setId(fhirBundle.getNewId(observation));
+        //observation.setMeta(new Meta().addProfile(CareConnectProfile.Observation_1));
+
+
+        observation.addIdentifier()
+                .setSystem(yasObservationIdentifier)
+                .setValue(obsNo.toString());
+        obsNo++;
+
+        observation.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
+
+        observation.setStatus(Observation.ObservationStatus.FINAL);
+
+        observation.setContext(new Reference((uuidtag+encounter.getId())));
+        observation.getCode().addCoding()
+                .setDisplay(display)
+                .setSystem("http://snomed.info/sct")
+                .setCode(code);
+
+        // Not converted unit and code correctly.
+
+        observation.addCategory().addCoding()
+                .setSystem("http://hl7.org/fhir/observation-category")
+                .setCode("vital-signs")
+                .setDisplay("Vital Signs");
+
+        try {
+            Calendar cal = Calendar.getInstance();
+
+            observation.setEffective(new DateTimeType(cal.getTime()));
+
+        } catch (Exception e1) {
+            // TODO Auto-generated catch block
+        }
+
+        if (value != null) {
+            observation.setValue(
+                    new Quantity()
+                            .setValue(new BigDecimal(value))
+                            .setUnit(valueUnits)
+                            .setSystem("http://unitsofmeasure.org")
+                            .setCode(valueUnits));
+
+        }
+
+        return observation;
+    }
+
+
 
     private Bundle getPatientBundle(String NHSNumber) {
 
@@ -354,26 +515,26 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
         return bundle;
     }
 
-    private Bundle getUnstructuredBundle(String nhsNumber) {
+    private Bundle getUnstructuredDocumentBundle(String nhsNumber) {
         Bundle bundle = null;
         try {
             switch (nhsNumber) {
                 case "9476719931":
-                    getUnstructuredBundle(nhsNumber, 1);
+                    getUnstructuredDocumentBundle(nhsNumber, 1);
 
-                    getUnstructuredBundle(nhsNumber, 5);
+                    getUnstructuredDocumentBundle(nhsNumber, 5);
 
                     break;
                 case "9476719974":
-                    getUnstructuredBundle(nhsNumber, 2);
+                    getUnstructuredDocumentBundle(nhsNumber, 2);
 
                     break;
                 case "9476719966":
-                    getUnstructuredBundle(nhsNumber, 3);
+                    getUnstructuredDocumentBundle(nhsNumber, 3);
 
                     break;
                 case "9476719958":
-                    getUnstructuredBundle(nhsNumber, 4);
+                    getUnstructuredDocumentBundle(nhsNumber, 4);
 
                     break;
             }
@@ -383,7 +544,10 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
         return bundle;
     }
 
-    private Bundle getUnstructuredBundle(String patientId, Integer docExample) throws Exception {
+
+
+
+    private Bundle getUnstructuredDocumentBundle(String patientId, Integer docExample) throws Exception {
         // Create Bundle of type Document
 
 
