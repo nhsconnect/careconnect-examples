@@ -72,8 +72,8 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
             throw new Exception();
         }
 
-        client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
-        //client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8183/ccri-fhir/STU3/");
+        //client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
+        client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8183/ccri-fhir/STU3/");
         client.setEncoding(EncodingEnum.XML);
 
         clientGPC = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
@@ -199,6 +199,11 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
             condition.setId(fhirBundle.getNewId(condition));
             condition.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
             condition.setClinicalStatus(Condition.ConditionClinicalStatus.ACTIVE);
+            if (!ambulanceReq) {
+            condition.setVerificationStatus(Condition.ConditionVerificationStatus.PROVISIONAL); }
+            else {
+                condition.setVerificationStatus(Condition.ConditionVerificationStatus.CONFIRMED);
+            }
             condition.setAsserter(new Reference(uuidtag + fhirBundle.getPatient().getId()));
             condition.addIdentifier().setSystem(yasConditionIdentifier).setValue(conno.toString());
             condition.setAssertedDate(cal.getTime());
