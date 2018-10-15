@@ -72,25 +72,24 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
             throw new Exception();
         }
 
-        //client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
-        client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8183/ccri-fhir/STU3/");
+        client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
+       // client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8183/ccri-fhir/STU3/");
         client.setEncoding(EncodingEnum.XML);
 
-        clientGPC = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
-        //clientGPC = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8187/ccri/camel/fhir/gpc/");
+        //clientGPC = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri/camel/fhir/gpc/");
+       // clientGPC = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
+        clientGPC = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8187/ccri/camel/fhir/gpc/");
         clientGPC.setEncoding(EncodingEnum.XML);
 
+        postPatient("9658218997","LS25 2AQ", Encounter.EncounterLocationStatus.ACTIVE, "Manstein", "LS15 9JA",0,-5,"54635001","Scalding Injury",false);
 
+        postPatient("9658220223", "LS15 8FS",Encounter.EncounterLocationStatus.ACTIVE, "Danzig", "LS14 6UH",-1,0,"217082002","Accidental fall",true);
 
-        postPatient("9476719931", "LS15 8FS",true, "Danzig", "LS14 6UH",-1,0,"217082002","Accidental fall");
+        postPatient("9658218873", "LS25 1NT",Encounter.EncounterLocationStatus.PLANNED, "Dynamo", "LS14 1PW",-1,-15, "217133004","Fall into quarry",false);
 
-        postPatient("9476719974", "LS25 1NT",false, null, null,-1,-15, "217133004","Fall into quarry");
+        postPatient("9658220142", "LS25 2HF",Encounter.EncounterLocationStatus.PLANNED, "Elbe", "LS26 8PU" ,0,-15, "410429000","Cardiac arrest",true);
 
-        postPatient("9476719966", "LS25 2HF",true, "Elbe", "LS26 8PU" ,0,-15, "410429000","Cardiac arrest");
-
-        postPatient("9476719958", "LS15 8ZB", false, null, null,0,-5,"418399005","Motor vehicle accident");
-
-       // postPatient("9000000068");
+        postPatient("9658220169", "LS15 8ZB", null, null, null,0,-5,"418399005","Motor vehicle accident",false);
 
 
     }
@@ -142,8 +141,11 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
     }
 
-    public void postPatient(String nhsNumber, String encounterPostcode, Boolean ambulanceReq, String ambulanceName, String ambulancePostcode,
-                            Integer hoursDiff, Integer minsDiff ,String code, String display ) {
+    public void postPatient(String nhsNumber, String encounterPostcode, Encounter.EncounterLocationStatus ambulanceStatus, String ambulanceName, String ambulancePostcode,
+                            Integer hoursDiff, Integer minsDiff ,String code, String display , Boolean hospital) {
+
+
+        System.out.println("Posting Patient NHS Number "+nhsNumber);
 
         Calendar cal = Calendar.getInstance();
 
@@ -199,7 +201,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
             condition.setId(fhirBundle.getNewId(condition));
             condition.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
             condition.setClinicalStatus(Condition.ConditionClinicalStatus.ACTIVE);
-            if (!ambulanceReq) {
+            if (ambulanceStatus == null) {
             condition.setVerificationStatus(Condition.ConditionVerificationStatus.PROVISIONAL); }
             else {
                 condition.setVerificationStatus(Condition.ConditionVerificationStatus.CONFIRMED);
@@ -217,7 +219,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
             Encounter encounter = new Encounter();
             encounter.setId(fhirBundle.getNewId(encounter));
             encounter.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
-            if (ambulanceReq) {
+            if (ambulanceStatus != null) {
                 encounter.setStatus(Encounter.EncounterStatus.INPROGRESS);
             } else {
                 encounter.setStatus(Encounter.EncounterStatus.TRIAGED);
@@ -238,7 +240,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
             Encounter triage = new Encounter();
             triage.setId(fhirBundle.getNewId(triage));
             triage.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
-            if (ambulanceReq ) {
+            if (ambulanceStatus != null ) {
                 triage.setStatus(Encounter.EncounterStatus.FINISHED);
             } else {
                 triage.setStatus(Encounter.EncounterStatus.INPROGRESS);
@@ -253,7 +255,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
             triage.setPartOf(new Reference(uuidtag + encounter.getId()));
             triage.getPeriod().setStart(cal.getTime());
-            if (ambulanceReq) {
+            if (ambulanceStatus != null) {
                 cal.add(Calendar.MINUTE,5);
                 triage.getPeriod().setEnd(cal.getTime());
                 triage.addLocation().setLocation(new Reference(uuidtag + patientLoc.getId()))
@@ -269,7 +271,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
 
 
-            if (ambulanceReq) {
+            if (ambulanceStatus != null) {
 
                 Location ambulanceVech = new Location();
                 ambulanceVech.setId(fhirBundle.getNewId(ambulanceVech));
@@ -306,15 +308,23 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
                         .setCode("11424001")
                         .setDisplay("Ambulance-based care");
                 ambulance.setPartOf(new Reference(uuidtag + encounter.getId()));
-                ambulance.addLocation()
-                        .setLocation(new Reference(uuidtag + patientLoc.getId()))
-                        .setStatus(Encounter.EncounterLocationStatus.COMPLETED);
+                if (!hospital) {
+                    ambulance.addLocation()
+                            .setLocation(new Reference(uuidtag + patientLoc.getId()))
+                            .setStatus(ambulanceStatus);
+                } else {
+                    ambulance.addLocation()
+                            .setLocation(new Reference(uuidtag + patientLoc.getId()))
+                            .setStatus(Encounter.EncounterLocationStatus.COMPLETED);
+                }
                 ambulance.addLocation()
                         .setLocation(new Reference(uuidtag + ambulanceVech.getId()))
                         .setStatus(Encounter.EncounterLocationStatus.ACTIVE);
-                ambulance.addLocation()
+                if (hospital) {
+                    ambulance.addLocation()
                         .setLocation(new Reference(uuidtag + jimmy.getId()))
-                        .setStatus(Encounter.EncounterLocationStatus.PLANNED);
+                        .setStatus(ambulanceStatus); }
+
                 cal.add(Calendar.MINUTE,5);
                 ambulance.getPeriod().setStart(cal.getTime());
 
@@ -340,7 +350,7 @@ Inspired Oxygen
 
      */
 
-                if (nhsNumber=="9476719931") {
+                if (nhsNumber=="9658218997") {
 
                     Observation news = createObservation("6", "score", "National early warning score","859261000000108", ambulance);
 
@@ -379,7 +389,7 @@ Inspired Oxygen
                     bundle.addEntry().setResource(news);
 
                 }
-                if (nhsNumber=="9476719966") {
+                if (nhsNumber=="9658220223") {
 //CARDIAC
                     Observation news = createObservation("8", "score", "National early warning score","859261000000108", ambulance);
 
@@ -420,8 +430,11 @@ Inspired Oxygen
                 }
             }
 
-            // TODO TODO TODO put me back getUnstructuredDocumentBundle(nhsNumber);
+            // TODO TODO TODO put me back
 
+            // getUnstructuredDocumentBundle(nhsNumber);
+
+            // TODO
 
             // System.out.println(ctxFHIR.newJsonParser().setPrettyPrint(true).encodeResourceToString(bundle));
 
@@ -570,22 +583,23 @@ Inspired Oxygen
         Bundle bundle = null;
         try {
             switch (nhsNumber) {
-                case "9476719931":
+                case "9658218873":
                     getUnstructuredDocumentBundle(nhsNumber, 1);
-
-                    getUnstructuredDocumentBundle(nhsNumber, 5);
-
                     break;
-                case "9476719974":
+                case "9658218997":
                     getUnstructuredDocumentBundle(nhsNumber, 2);
 
                     break;
-                case "9476719966":
+                case "9658220142":
                     getUnstructuredDocumentBundle(nhsNumber, 3);
 
                     break;
-                case "9476719958":
+                case "9658220223":
                     getUnstructuredDocumentBundle(nhsNumber, 4);
+
+                    break;
+                case "9658220169":
+                    getUnstructuredDocumentBundle(nhsNumber, 5);
 
                     break;
             }
