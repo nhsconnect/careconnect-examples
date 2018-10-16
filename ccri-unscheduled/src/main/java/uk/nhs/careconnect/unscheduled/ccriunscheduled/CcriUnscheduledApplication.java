@@ -352,6 +352,45 @@ Inspired Oxygen
 
      */
 
+                if (nhsNumber=="9658220223") {
+                    Observation news = createObservation("2", "score", "National early warning score","859261000000108", ambulance);
+
+                    Observation obs = createObservation("14", "/min",  "Respiratory rate","86290005",ambulance);
+                    bundle.addEntry().setResource(obs);
+                    news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
+
+                    obs = createObservation("70", "/min",  "Heart rate","364075005",ambulance);
+                    bundle.addEntry().setResource(obs);
+                    news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
+
+                    obs = createObservation("96", "%",  "SpO2 - saturation of peripheral oxygen","431314004",ambulance);
+                    bundle.addEntry().setResource(obs);
+                    news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
+
+                    obs = createObservation("38.5", "Cel",  "Core body temperature","276885007",ambulance);
+                    bundle.addEntry().setResource(obs);
+                    news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
+
+                    obs = createObservationBP("80", "120",  "Blood pressure","75367002",ambulance);
+                    bundle.addEntry().setResource(obs);
+                    news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
+
+                    // obs = createObservationCoded("722742002", "Breathing room air",  "Observation of breathing","301282008",ambulance);
+                    // bundle.addEntry().setResource(obs);
+
+                    obs = createObservationCoded("722742002", "Breathing room air",  "Observation of breathing","301282008",ambulance);
+                    bundle.addEntry().setResource(obs);
+                    news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
+
+                    obs = createObservationCoded("248234008", "Mentally alert",  "Mental alertness - finding","365933000",ambulance);
+                    bundle.addEntry().setResource(obs);
+                    news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
+                    // Conscious
+
+                    bundle.addEntry().setResource(news);
+
+                }
+
                 if (nhsNumber=="9658218997") {
 
                     Observation news = createObservation("6", "score", "National early warning score","859261000000108", ambulance);
@@ -372,7 +411,7 @@ Inspired Oxygen
                     bundle.addEntry().setResource(obs);
                     news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
 
-                    obs = createObservationBP("120", "80",  "Blood pressure","75367002",ambulance);
+                    obs = createObservationBP("132", "78",  "Blood pressure","75367002",ambulance);
                     bundle.addEntry().setResource(obs);
                     news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
 
@@ -391,7 +430,7 @@ Inspired Oxygen
                     bundle.addEntry().setResource(news);
 
                 }
-                if (nhsNumber=="9658220223") {
+                if (nhsNumber=="9658220142") {
 //CARDIAC
                     Observation news = createObservation("8", "score", "National early warning score","859261000000108", ambulance);
 
