@@ -367,7 +367,7 @@ Inspired Oxygen
                     bundle.addEntry().setResource(obs);
                     news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
 
-                    obs = createObservation("38.5", "Cel",  "Core body temperature","276885007",ambulance);
+                    obs = createObservation("36.5", "Cel",  "Core body temperature","276885007",ambulance);
                     bundle.addEntry().setResource(obs);
                     news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
 
