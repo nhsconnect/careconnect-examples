@@ -36,6 +36,8 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
     private static String yasObservationIdentifier = "https://fhir.yas.nhs.uk/Observation/Identifier";
 
+    private static String yasDocumentIdentifier = "https://fhir.yas.nhs.uk/DocumentReference/Identifier";
+
     final String uuidtag = "urn:uuid:";
 
     Organization yas;
@@ -430,11 +432,11 @@ Inspired Oxygen
                 }
             }
 
-            // TODO TODO TODO put me back
 
-            // getUnstructuredDocumentBundle(nhsNumber);
 
-            // TODO
+            getUnstructuredDocumentBundle(nhsNumber);
+
+
 
             // System.out.println(ctxFHIR.newJsonParser().setPrettyPrint(true).encodeResourceToString(bundle));
 
@@ -623,6 +625,9 @@ Inspired Oxygen
         documentReference.setId(fhirBundle.getNewId(documentReference));
         bundle.addEntry().setResource(documentReference);
 
+        documentReference.addIdentifier()
+                .setValue(docExample.toString())
+                .setSystem(yasDocumentIdentifier);
 
         documentReference.setCreated(new Date());
         documentReference.setStatus(Enumerations.DocumentReferenceStatus.CURRENT);
@@ -648,21 +653,21 @@ Inspired Oxygen
 
             documentReference.getType().addCoding()
                     .setSystem("http://snomed.info/sct")
-                    .setCode("820291000000107")
-                    .setDisplay("Infectious disease notification");
+                    .setCode("736373009")
+                    .setDisplay("End Of Life Care Plan");
 
             documentReference.getContext().getPracticeSetting().addCoding()
                     .setSystem("http://snomed.info/sct")
-                    .setCode("394582007")
-                    .setDisplay("Dermatology");
+                    .setCode("103735009")
+                    .setDisplay("Palliative care");
 
             documentReference.getContext().getFacilityType().addCoding()
                     .setSystem("http://snomed.info/sct")
-                    .setCode("700241009")
+                    .setCode("Palliative medicine service")
                     .setDisplay("Dermatology service");
 
             InputStream inputStream =
-                    Thread.currentThread().getContextClassLoader().getResourceAsStream("image/3emotng15yvy.jpg");
+                    Thread.currentThread().getContextClassLoader().getResourceAsStream("image/EOLCCheshire.jpg");
             binary.setContent(IOUtils.toByteArray(inputStream));
             binary.setContentType("image/jpeg");
 
