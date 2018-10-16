@@ -27,6 +27,8 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
     private static String yasEncounterIdentifier = "https://fhir.yas.nhs.uk/Encounter/Identifier";
 
+    private static String yasDocumentIdentifier = "https://fhir.yas.nhs.uk/DocumentReference/Identifier";
+
     private static String yasEpisodeIdentifier = "https://fhir.yas.nhs.uk/EpisodeOfCare/Identifier";
 
     private static String yasLocationIdentifier = "https://fhir.yas.nhs.uk/Location/Identifier";
@@ -68,7 +70,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
             throw new Exception();
         }
 
-        client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
+        client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
         //client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8183/ccri-fhir/STU3/");
         client.setEncoding(EncodingEnum.XML);
 
@@ -359,8 +361,6 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
         try {
             switch (nhsNumber) {
                 case "9476719931":
-                    getUnstructuredBundle(nhsNumber, 1);
-
                     getUnstructuredBundle(nhsNumber, 5);
 
                     break;
@@ -370,12 +370,13 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
                     break;
                 case "9476719966":
                     getUnstructuredBundle(nhsNumber, 3);
-
+                    getUnstructuredBundle(nhsNumber, 1);
                     break;
                 case "9476719958":
                     getUnstructuredBundle(nhsNumber, 4);
 
                     break;
+
             }
         } catch (Exception ex) {
 
@@ -394,6 +395,9 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
         documentReference.setId(fhirBundle.getNewId(documentReference));
         bundle.addEntry().setResource(documentReference);
 
+        documentReference.addIdentifier()
+                .setSystem(yasDocumentIdentifier)
+                .setValue(docExample.toString());
 
         documentReference.setCreated(new Date());
         documentReference.setStatus(Enumerations.DocumentReferenceStatus.CURRENT);
@@ -419,21 +423,21 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
             documentReference.getType().addCoding()
                     .setSystem("http://snomed.info/sct")
-                    .setCode("820291000000107")
-                    .setDisplay("Infectious disease notification");
+                    .setCode("736373009")
+                    .setDisplay("End of life care plan");
 
             documentReference.getContext().getPracticeSetting().addCoding()
                     .setSystem("http://snomed.info/sct")
-                    .setCode("394582007")
-                    .setDisplay("Dermatology");
+                    .setCode("103735009")
+                    .setDisplay("Palliative care");
 
             documentReference.getContext().getFacilityType().addCoding()
                     .setSystem("http://snomed.info/sct")
-                    .setCode("700241009")
-                    .setDisplay("Dermatology service");
+                    .setCode("3531000175102")
+                    .setDisplay("Geriatric service");
 
             InputStream inputStream =
-                    Thread.currentThread().getContextClassLoader().getResourceAsStream("image/3emotng15yvy.jpg");
+                    Thread.currentThread().getContextClassLoader().getResourceAsStream("image/EOLCCheshire.jpg");
             binary.setContent(IOUtils.toByteArray(inputStream));
             binary.setContentType("image/jpeg");
 
