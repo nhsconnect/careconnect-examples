@@ -371,7 +371,7 @@ Inspired Oxygen
                     bundle.addEntry().setResource(obs);
                     news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
 
-                    obs = createObservationBP("80", "120",  "Blood pressure","75367002",ambulance);
+                    obs = createObservationBP("120", "80",  "Blood pressure","75367002",ambulance);
                     bundle.addEntry().setResource(obs);
                     news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
 
