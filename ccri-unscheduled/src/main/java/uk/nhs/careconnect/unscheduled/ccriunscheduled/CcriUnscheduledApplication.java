@@ -14,12 +14,16 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.client.RestTemplate;
 
+import javax.print.Doc;
+import javax.swing.text.Document;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 @SpringBootApplication
 public class CcriUnscheduledApplication implements CommandLineRunner {
@@ -43,8 +47,10 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
     Organization yas;
 
     Organization lth;
+    Organization midyorks;
 
     Location jimmy;
+    Location pinderfields;
 
     FhirContext ctxFHIR = FhirContext.forDstu3();
 
@@ -60,6 +66,8 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
     IGenericClient client = null;
     IGenericClient clientGPC = null;
+    IGenericClient clientODS = null;
+    IGenericClient clientNRLS = null;
 
     FhirBundleUtil fhirBundle;
 
@@ -74,28 +82,84 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
             throw new Exception();
         }
 
-        client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
+       client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
        // client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8183/ccri-fhir/STU3/");
         client.setEncoding(EncodingEnum.XML);
 
-        //clientGPC = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri/camel/fhir/gpc/");
+        clientGPC = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri/camel/fhir/gpc/");
        // clientGPC = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
-        clientGPC = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8187/ccri/camel/fhir/gpc/");
+       // clientGPC = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8187/ccri/camel/fhir/gpc/");
         clientGPC.setEncoding(EncodingEnum.XML);
 
-        postPatient("9658218997","LS25 2AQ", Encounter.EncounterLocationStatus.ACTIVE, "Manstein", "LS15 9JA",0,-5,"54635001","Scalding Injury",false);
+        clientNRLS = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/nrls-ri/");
+        SSPInterceptor sspInterceptor = new SSPInterceptor();
+        clientNRLS.registerInterceptor(sspInterceptor);
+        clientNRLS.setEncoding(EncodingEnum.XML);
 
-        postPatient("9658220223", "LS15 8FS",Encounter.EncounterLocationStatus.ACTIVE, "Danzig", "LS14 6UH",-1,0,"217082002","Accidental fall",true);
+        clientODS = ctxFHIR.newRestfulGenericClient("https://directory.spineservices.nhs.uk/STU3/");
+        clientODS.setEncoding(EncodingEnum.XML);
 
-        postPatient("9658218873", "LS25 1NT",Encounter.EncounterLocationStatus.PLANNED, "Dynamo", "LS14 1PW",-1,-15, "217133004","Fall into quarry",false);
+       postPatient("9658218997","LS25 2AQ", Encounter.EncounterLocationStatus.ACTIVE, "Manstein", "LS15 9JA",0,-5,"54635001","Scalding Injury",false);
 
-        postPatient("9658220142", "LS25 2HF",Encounter.EncounterLocationStatus.PLANNED, "Elbe", "LS26 8PU" ,0,-15, "410429000","Cardiac arrest",true);
+       postPatient("9658220223", "LS15 8FS",Encounter.EncounterLocationStatus.ACTIVE, "Danzig", "LS14 6UH",-1,0,"217082002","Accidental fall",true);
 
-        postPatient("9658220169", "LS15 8ZB", null, null, null,0,-5,"418399005","Motor vehicle accident",false);
+       postPatient("9658218873", "LS25 1NT",Encounter.EncounterLocationStatus.PLANNED, "Dynamo", "LS14 1PW",-1,-15, "217133004","Fall into quarry",false);
 
+       postPatient("9658220142", "LS25 2HF",Encounter.EncounterLocationStatus.PLANNED, "Elbe", "LS26 8PU" ,0,-15, "410429000","Cardiac arrest",true);
+
+       postPatient("9658220169", "LS15 8ZB", null, null, null,0,-5,"418399005","Motor vehicle accident",false);
+
+
+      /// TODO once we get metadata call working updateNRLS();
 
     }
 
+    public void updateNRLS() {
+        Bundle bundle =  client
+                .search()
+                .forResource(DocumentReference.class)
+                .where(DocumentReference.TYPE.exactly().code("736253002"))
+
+                .returnBundle(Bundle.class)
+                .execute();
+        if (bundle.getEntry().size()>0) {
+            if (bundle.getEntry().get(0).getResource() instanceof DocumentReference) {
+
+
+                DocumentReference documentReference = (DocumentReference) bundle.getEntry().get(0).getResource();
+                System.out.print(documentReference.getId());
+                System.out.print(documentReference.getSubject().getReference());
+               // String patientID =
+
+                Patient patient = client.read().resource(Patient.class).withId(new IdType(documentReference.getSubject().getReference())).execute();
+
+                if (patient != null) {
+                    for (Identifier identifier : patient.getIdentifier()) {
+                        if (identifier.getSystem().equals("https://fhir.nhs.uk/Id/nhs-number")) {
+                            System.out.println(identifier.getValue());
+                            documentReference.setId("");
+                            documentReference.setSubject(new Reference("https://demographics.spineservices.nhs.uk/STU3/Patient/"+identifier.getValue()));
+                            documentReference.setIndexed(documentReference.getCreated());
+                            List<Reference> author = new ArrayList<>();
+                            author.add(new Reference("https://directory.spineservices.nhs.uk/STU3/Organization/MHT01"));
+                            documentReference.setAuthor(author);
+                            documentReference.setCustodian(new Reference("https://directory.spineservices.nhs.uk/STU3/Organization/MHT01"));
+
+                            System.out.println(ctxFHIR.newJsonParser().setPrettyPrint(true).encodeResourceToString(documentReference));
+
+
+                            Bundle nrls = clientNRLS.search().forResource(DocumentReference.class)
+                                    .where(DocumentReference.SUBJECT.hasId(documentReference.getSubject().getReference()))
+                                    .returnBundle(Bundle.class)
+                                    .execute();;
+                        }
+
+
+                    }
+                }
+            }
+        }
+    }
     public Location getCoords(Location location, String postCode) {
         RestTemplate restTemplate = new RestTemplate();
         String url = "https://api.postcodes.io/postcodes/"+postCode;
@@ -115,6 +179,9 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
         lth = getOrganization("RR8");
         lth.setId(fhirBundle.getNewId(lth));
+
+        midyorks = getOrganization("RXF");
+        midyorks.setId(fhirBundle.getNewId(midyorks));
 
         jimmy = new Location();
         jimmy.setId(fhirBundle.getNewId(jimmy));
@@ -139,6 +206,28 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
                 .setLatitude(53.80634615690993)
                 .setLongitude(-1.5230420347013478);
         jimmy.setManagingOrganization(new Reference(uuidtag + lth.getIdElement().getIdPart()));
+
+
+        pinderfields = new Location();
+        pinderfields.setId(fhirBundle.getNewId(pinderfields));
+        pinderfields.setStatus(Location.LocationStatus.ACTIVE);
+        pinderfields.setName("Pinderfields: Emergency Department");
+        pinderfields.setDescription("Pinderfields: Emergency Department");
+        pinderfields.getType().addCoding()
+                .setSystem("http://hl7.org/fhir/v3/RoleCode")
+                .setCode("ETU")
+                .setDisplay("Emergency Trauma Unit");
+        pinderfields.addTelecom()
+                .setSystem(ContactPoint.ContactPointSystem.PHONE)
+                .setValue("airwave-87351940")
+                .setUse(ContactPoint.ContactPointUse.MOBILE);
+        pinderfields.addIdentifier().setSystem(yasLocationIdentifier).setValue("RXF-EDP");
+        pinderfields.getPhysicalType().addCoding()
+                .setSystem("http://hl7.org/fhir/location-physical-type")
+                .setCode("bu")
+                .setDisplay("Building");
+        pinderfields = getCoords(pinderfields,"WF1 4DG");
+        pinderfields.setManagingOrganization(new Reference(uuidtag + midyorks.getIdElement().getIdPart()));
 
 
     }
@@ -170,6 +259,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
             bundle.addEntry().setResource(yas);
             bundle.addEntry().setResource(lth);
+            bundle.addEntry().setResource(midyorks);
 
 
             Location patientLoc = new Location();
@@ -198,6 +288,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
 
             bundle.addEntry().setResource(this.jimmy);
+            bundle.addEntry().setResource(this.pinderfields);
 
             Condition condition = new Condition();
             condition.setId(fhirBundle.getNewId(condition));
@@ -323,9 +414,18 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
                         .setLocation(new Reference(uuidtag + ambulanceVech.getId()))
                         .setStatus(Encounter.EncounterLocationStatus.ACTIVE);
                 if (hospital) {
-                    ambulance.addLocation()
-                        .setLocation(new Reference(uuidtag + jimmy.getId()))
-                        .setStatus(ambulanceStatus); }
+                    if (!ambulanceName.equals("Elbe")) {
+                        ambulance.addLocation()
+                                .setLocation(new Reference(uuidtag + jimmy.getId()))
+                                .setStatus(ambulanceStatus);
+                    } else {
+
+                        ambulance.addLocation()
+                                .setLocation(new Reference(uuidtag + pinderfields.getId()))
+                                .setStatus(ambulanceStatus);
+
+                    }
+                }
 
                 cal.add(Calendar.MINUTE,5);
                 ambulance.getPeriod().setStart(cal.getTime());
@@ -482,7 +582,7 @@ Inspired Oxygen
             fhirBundle.processBundleResources(bundle);
 
 
-        System.out.println(ctxFHIR.newJsonParser().setPrettyPrint(true).encodeResourceToString(fhirBundle.getFhirDocument()));
+        //System.out.println(ctxFHIR.newJsonParser().setPrettyPrint(true).encodeResourceToString(fhirBundle.getFhirDocument()));
 
         MethodOutcome outcome = client.create().resource(fhirBundle.getFhirDocument()).execute();
 
@@ -779,8 +879,8 @@ Inspired Oxygen
         else if (docExample == 5) {
             documentReference.getType().addCoding()
                     .setSystem("http://snomed.info/sct")
-                    .setCode("718347000")
-                    .setDisplay("Mental health care plan ");
+                    .setCode("736253002")
+                    .setDisplay("Mental health Crisis plan ");
 
             documentReference.getContext().getPracticeSetting().addCoding()
                     .setSystem("http://snomed.info/sct")
@@ -801,8 +901,8 @@ Inspired Oxygen
         } else if (docExample == 6) {
             documentReference.getType().addCoding()
                     .setSystem("http://snomed.info/sct")
-                    .setCode("718347000")
-                    .setDisplay("Mental health care plan ");
+                    .setCode("736253002")
+                    .setDisplay("Mental health Crisis plan ");
 
             documentReference.getContext().getPracticeSetting().addCoding()
                     .setSystem("http://snomed.info/sct")
@@ -861,7 +961,7 @@ Inspired Oxygen
 
 
         Organization organization = null;
-        Bundle bundle =  client
+        Bundle bundle =  clientODS
                 .search()
                 .forResource(Organization.class)
                 .where(Organization.IDENTIFIER.exactly().code(sdsCode))
