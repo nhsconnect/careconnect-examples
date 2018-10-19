@@ -899,7 +899,7 @@ Inspired Oxygen
 
 
             InputStream inputStream =
-                    Thread.currentThread().getContextClassLoader().getResourceAsStream("pdf/1_STAYING WELL PLAN CMHT.pdf");
+                    Thread.currentThread().getContextClassLoader().getResourceAsStream("pdf/SLaM.pdf");
             binary.setContent(IOUtils.toByteArray(inputStream));
             binary.setContentType("application/pdf");
         } else if (docExample == 6) {
