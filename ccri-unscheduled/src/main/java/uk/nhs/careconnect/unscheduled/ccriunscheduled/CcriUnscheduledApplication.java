@@ -82,7 +82,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
             throw new Exception();
         }
 
-       client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
+       client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
        // client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8183/ccri-fhir/STU3/");
         client.setEncoding(EncodingEnum.XML);
 
@@ -141,6 +141,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
                             documentReference.setId("");
                             documentReference.setSubject(new Reference("https://demographics.spineservices.nhs.uk/STU3/Patient/"+identifier.getValue()));
                             documentReference.setIndexed(documentReference.getCreated());
+                            documentReference.setStatus(Enumerations.DocumentReferenceStatus.CURRENT);
                             List<Reference> author = new ArrayList<>();
                             author.add(new Reference("https://directory.spineservices.nhs.uk/STU3/Organization/MHT01"));
                             documentReference.setAuthor(author);
