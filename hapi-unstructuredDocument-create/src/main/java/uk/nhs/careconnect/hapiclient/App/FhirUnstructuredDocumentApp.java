@@ -206,7 +206,7 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
         else if (docExample == 5) {
             documentReference.getType().addCoding()
                     .setSystem("http://snomed.info/sct")
-                    .setCode("718347000")
+                    .setCode("73625300")
                     .setDisplay("Mental health care plan ");
 
             documentReference.getContext().getPracticeSetting().addCoding()
@@ -248,6 +248,30 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
             binary.setContent(IOUtils.toByteArray(inputStream));
             binary.setContentType("application/pdf");
         }
+        else if (docExample == 7) {
+            documentReference.getType().addCoding()
+                    .setSystem("http://snomed.info/sct")
+                    .setCode("718347000")
+                    .setDisplay("Mental health care plan ");
+
+            documentReference.getContext().getPracticeSetting().addCoding()
+                    .setSystem("http://snomed.info/sct")
+                    .setCode("722162001")
+                    .setDisplay("Psychology");
+
+            documentReference.getContext().getFacilityType().addCoding()
+                    .setSystem("http://snomed.info/sct")
+                    .setCode("708168004")
+                    .setDisplay("Mental health service");
+
+
+
+            InputStream inputStream =
+                    Thread.currentThread().getContextClassLoader().getResourceAsStream("pdf/crisis and contingency questionnaire screen shot.pdf");
+            binary.setContent(IOUtils.toByteArray(inputStream));
+            binary.setContentType("application/pdf");
+        }
+
 
 
         bundle.addEntry().setResource(binary).setFullUrl(binary.getId());
