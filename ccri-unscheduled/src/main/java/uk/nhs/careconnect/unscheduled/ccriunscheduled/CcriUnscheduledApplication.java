@@ -5,6 +5,7 @@ import ca.uhn.fhir.rest.api.EncodingEnum;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 
+import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import org.apache.commons.io.IOUtils;
 import org.hl7.fhir.dstu3.model.*;
 import org.slf4j.Logger;
@@ -16,7 +17,10 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.print.Doc;
 import javax.swing.text.Document;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -40,7 +44,11 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
     private static String yasObservationIdentifier = "https://fhir.yas.nhs.uk/Observation/Identifier";
 
+    private static String midYorksFlagIdentifier = "https://fhir.midyorks.nhs.uk/Flag/Identifier";
+
     private static String yasDocumentIdentifier = "https://fhir.yas.nhs.uk/DocumentReference/Identifier";
+
+    private static String yasBundleIdentifier = "https://fhir.yas.nhs.uk/Bundle/Identifier";
 
     final String uuidtag = "urn:uuid:";
 
@@ -83,7 +91,8 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
         }
 
        client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
-       // client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8183/ccri-fhir/STU3/");
+        //client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8183/ccri-fhir/STU3/");
+      //   client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
         client.setEncoding(EncodingEnum.XML);
 
         clientGPC = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri/camel/fhir/gpc/");
@@ -99,6 +108,8 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
         clientODS = ctxFHIR.newRestfulGenericClient("https://directory.spineservices.nhs.uk/STU3/");
         clientODS.setEncoding(EncodingEnum.XML);
 
+
+
        postPatient("9658218997","LS25 2AQ", Encounter.EncounterLocationStatus.ACTIVE, "Manstein", "LS15 9JA",0,-5,"54635001","Scalding Injury",false);
 
        postPatient("9658220223", "LS15 8FS",Encounter.EncounterLocationStatus.ACTIVE, "Danzig", "LS14 6UH",-1,0,"217082002","Accidental fall",true);
@@ -110,8 +121,31 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
        postPatient("9658220169", "LS15 8ZB", null, null, null,0,-5,"418399005","Motor vehicle accident",false);
 
 
+       loadTOC("edischarge_full_payload_example-01-9658218873.xml");
+       loadTOC("margaret_walker_outpatient_letter_example-01-9658218997.xml");
+
       /// TODO once we get metadata call working
         updateNRLS();
+
+    }
+
+    public void loadTOC(String filename) {
+        InputStream inputStream =
+                Thread.currentThread().getContextClassLoader().getResourceAsStream("toc/"+filename);
+        Reader reader = new InputStreamReader(inputStream);
+        Bundle bundle = (Bundle) ctxFHIR.newXmlParser().parseResource(reader);
+
+       // bundle.getIdentifier().setSystem(yasBundleIdentifier).setValue(filename);
+
+        try {
+            MethodOutcome outcome = client.create().resource(bundle).execute();
+        } catch (UnprocessableEntityException ex) {
+            System.out.println(ctxFHIR.newXmlParser().encodeResourceToString(ex.getOperationOutcome()));
+            if (ex.getStatusCode()==422) {
+                MethodOutcome outcome = client.update().resource(bundle).conditionalByUrl("Bundle?identifier="+bundle.getIdentifier().getSystem()+"|"+bundle.getIdentifier().getValue()).execute();
+            }
+        }
+
 
     }
 
@@ -147,7 +181,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
                             documentReference.setAuthor(author);
                             documentReference.setCustodian(new Reference("https://directory.spineservices.nhs.uk/STU3/Organization/MHT01"));
 
-                            System.out.println(ctxFHIR.newJsonParser().setPrettyPrint(true).encodeResourceToString(documentReference));
+       //                     System.out.println(ctxFHIR.newJsonParser().setPrettyPrint(true).encodeResourceToString(documentReference));
 
 
                             Bundle nrls = clientNRLS.search().forResource(DocumentReference.class)
@@ -187,6 +221,8 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
         midyorks = getOrganization("RXF");
         midyorks.setId(fhirBundle.getNewId(midyorks));
+
+
 
         jimmy = new Location();
         jimmy.setId(fhirBundle.getNewId(jimmy));
@@ -365,6 +401,23 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
             idno++;
             bundle.addEntry().setResource(triage);
 
+            if (nhsNumber == "9658218873") {
+                Flag flag = new Flag();
+                flag.setId(fhirBundle.getNewId(flag));
+                flag.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
+                flag.addIdentifier().setSystem(midYorksFlagIdentifier).setValue("unusmy8");
+                flag.getCode().addCoding()
+                        .setCode("450475007")
+                        .setSystem("http://snomed.info/sct")
+                        .setDisplay("For cardiopulmonary resuscitation (finding)");
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                try {
+                    flag.getPeriod().setStart(sdf.parse("2018-08-01"));
+                } catch (Exception ex) {}
+
+                flag.setAuthor(new Reference(uuidtag + midyorks.getIdElement().getIdPart()));
+                bundle.addEntry().setResource(flag);
+            }
 
 
 
