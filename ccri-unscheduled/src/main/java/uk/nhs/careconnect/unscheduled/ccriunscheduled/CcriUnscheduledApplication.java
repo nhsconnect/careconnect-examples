@@ -83,19 +83,18 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
         }
 
        client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
-       // client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
        // client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8183/ccri-fhir/STU3/");
         client.setEncoding(EncodingEnum.XML);
 
         clientGPC = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri/camel/fhir/gpc/");
        // clientGPC = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
        // clientGPC = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8187/ccri/camel/fhir/gpc/");
-        clientGPC.setEncoding(EncodingEnum.XML);
+       // clientGPC.setEncoding(EncodingEnum.XML);
 
         clientNRLS = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/nrls-ri/");
         SSPInterceptor sspInterceptor = new SSPInterceptor();
         clientNRLS.registerInterceptor(sspInterceptor);
-        clientNRLS.setEncoding(EncodingEnum.XML);
+        //clientNRLS.setEncoding(EncodingEnum.XML);
 
         clientODS = ctxFHIR.newRestfulGenericClient("https://directory.spineservices.nhs.uk/STU3/");
         clientODS.setEncoding(EncodingEnum.XML);
@@ -111,7 +110,8 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
        postPatient("9658220169", "LS15 8ZB", null, null, null,0,-5,"418399005","Motor vehicle accident",false);
 
 
-      /// TODO once we get metadata call working updateNRLS();
+      /// TODO once we get metadata call working
+        updateNRLS();
 
     }
 
@@ -141,6 +141,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
                             documentReference.setId("");
                             documentReference.setSubject(new Reference("https://demographics.spineservices.nhs.uk/STU3/Patient/"+identifier.getValue()));
                             documentReference.setIndexed(documentReference.getCreated());
+                            documentReference.setStatus(Enumerations.DocumentReferenceStatus.CURRENT);
                             List<Reference> author = new ArrayList<>();
                             author.add(new Reference("https://directory.spineservices.nhs.uk/STU3/Organization/MHT01"));
                             documentReference.setAuthor(author);
@@ -152,7 +153,10 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
                             Bundle nrls = clientNRLS.search().forResource(DocumentReference.class)
                                     .where(DocumentReference.SUBJECT.hasId(documentReference.getSubject().getReference()))
                                     .returnBundle(Bundle.class)
-                                    .execute();;
+                                    .execute();
+                            if (!nrls.hasEntry() || nrls.getEntry().size() == 0) {
+                                clientNRLS.create().resource(documentReference).execute();
+                            }
                         }
 
 
@@ -896,7 +900,7 @@ Inspired Oxygen
 
 
             InputStream inputStream =
-                    Thread.currentThread().getContextClassLoader().getResourceAsStream("pdf/1_STAYING WELL PLAN CMHT.pdf");
+                    Thread.currentThread().getContextClassLoader().getResourceAsStream("pdf/SLaM.pdf");
             binary.setContent(IOUtils.toByteArray(inputStream));
             binary.setContentType("application/pdf");
         } else if (docExample == 6) {
