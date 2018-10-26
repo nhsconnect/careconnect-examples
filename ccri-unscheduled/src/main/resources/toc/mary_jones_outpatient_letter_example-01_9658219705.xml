@@ -1,0 +1,1901 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bundle xmlns="http://hl7.org/fhir">
+<id value="7b94b505-c7c4-485f-9831-a6004872e8cd"/>
+<meta>
+<lastUpdated value="2017-05-01T18:42:00+00:00"/>
+<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/ITK-Document-Bundle-1"/>
+</meta>
+<identifier>
+<system value="https://tools.ietf.org/html/rfc4122"/>
+<value value="2bff5fa9-9d77-42ec-bc7b-eb3a2006031e"/>
+</identifier>
+<type value="document"/>
+<!--Outpatient Letter Composition-->
+<entry>
+<fullUrl value="urn:uuid:2deee69e-70a3-4e90-b923-92ee86a15399"/>
+<resource>
+<Composition>
+<id value="e8831217-3ca6-4a69-b15d-6b8336131403"/>
+<meta>
+<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-ITK-OPL-Composition-1"/>
+</meta>
+<!-- Extension to carry details of the Correspondence Care Setting Type. -->
+<extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-CareSettingType-1">
+<valueCodeableConcept>
+<coding>
+<system value="http://snomed.info/sct"/>
+<code value="829981000000108"/>
+<display value="Community child health service"/>
+</coding>
+</valueCodeableConcept>
+</extension>
+<identifier>
+<system value="https://tools.ietf.org/html/rfc4122"/>
+<value value="098cd31a-54ce-40b7-a871-7a8b5aec80ae"/>
+</identifier>
+<status value="final"/>
+<type>
+<!--Outpatient letter -->
+<coding>
+<system value="http://snomed.info/sct"/>
+<code value="823681000000100"/>
+<display value="Outpatient letter"/>
+</coding>
+</type>
+<subject>
+<reference value="urn:uuid:6c66c32f-655a-4b9c-9bb7-5ae31fc93010"/>
+</subject>
+<!--Reference to the clinical encounter or type of care this documentation is associated with.-->
+<encounter>
+<reference value="urn:uuid:4f36b35a-ad18-4ea9-a3fb-c893f709e88a"/>
+</encounter>
+<!--The composition editing time, when the composition was last logically changed by the author.-->
+<date value="2017-05-01T16:42:00+00:00"/>
+<!--Identifies who is responsible for the information in the composition, 
+not necessarily who typed it in-->
+<author>
+<reference value="urn:uuid:7ed1b03c-47f9-43c8-8dd2-675819cd8aee"/>
+</author>
+<title value="Community Child Health Service Outpatient Letter"/>
+<!--Identifies the organization responsible for ongoing maintenance of and 
+access to the composition/document information.-->
+<custodian>
+<reference value="urn:uuid:f725c91c-e4c2-43f2-b92e-0cba8deb9687"/>
+</custodian>
+<!--Allergies and adverse reactions-->
+<section>
+<title value="Allergies and adverse reactions"/>
+<code>
+<coding>
+<system value="http://snomed.info/sct"/>
+<code value="886921000000105"/>
+<display value="Allergies and adverse reactions"/>
+</coding>
+</code>
+<text>
+<status value="generated"/>
+<div xmlns="http://www.w3.org/1999/xhtml">
+<table width="100%">
+<tbody>
+<tr>
+<th>Causative agent</th>
+<td>No known allergy</td>
+</tr>
+</tbody>
+</table>
+</div>
+</text>
+<!--Reference to the allergy list-->
+<entry>
+<reference value="urn:uuid:fffe7d77-70d0-41a7-8f48-185a58854dc2"/>
+</entry>
+</section>
+<!--Attendance details section-->
+<section>
+<title value="Attendance details"/>
+<code>
+<coding>
+<system value="http://snomed.info/sct"/>
+<code value="1077881000000105"/>
+<display value="Attendance details"/>
+</coding>
+</code>
+<text>
+<status value="additional"/>
+<div xmlns="http://www.w3.org/1999/xhtml">
+<table width="100%">
+<tbody>
+<tr>
+<td colspan="2" style="width:100%">Dear Dr. O'Reilly, <br/>I had the pleasure of 
+seeing Zelma and her mother Sally in my outpatient clinic today.<br/>
+</td>
+</tr>
+<tr>
+<th>Date and time of contact</th>
+<td>01-May-2017 10:00</td>
+</tr>
+<tr>
+<th>Contact type</th>
+<td>Follow-up attendance face to face</td>
+</tr>
+<tr>
+<th>Consultation method</th>
+<td>Face-to-face</td>
+</tr>
+<tr>
+<th>Responsible healthcare professional</th>
+<td>Dr. Arnold Rimmer (Community paediatrician)</td>
+</tr>
+<tr>
+<th>Specialty</th>
+<td>Paediatric speciality</td>
+</tr>
+<tr>
+<th>Service</th>
+<td>Community child health service</td>
+</tr>
+<tr>
+<th>Seen by</th>
+<td>
+<p>Prefix: Dr</p>
+<p>Given Name: Arnold</p>
+<p>Family Name: Rimmer</p>
+<p>Role: Community paediatrician</p>
+<p>Tel: 01234 564563 (Work) Email: cpc@nhs.uk (Work)</p>
+</td>
+</tr>
+<tr>
+<th>Care professionals present</th>
+</tr>
+<tr>
+<td>
+<p>Prefix: Mrs</p>
+<p>Given Name: Jenny</p>
+<p>Family Name: White</p>
+<p>Role: Occupational Therapist</p>
+</td>
+</tr>
+<tr>
+<td>
+<p>Prefix: Mrs</p>
+<p>Given Name: Sarah</p>
+<p>Family Name: Hall</p>
+<p>Role: Healthcare Assistant</p>
+</td>
+</tr>
+<tr>
+<th>Person accompanying patient</th>
+<td>Sally Jones, patient's mother<p>Mobile: 077 1234 7777</p>
+<p>Email: sally@jones.net</p>
+</td>
+</tr>
+<tr>
+<th>Outcome of outpatient attendance</th>
+<td>Appointment to be made at a later date</td>
+</tr>
+</tbody>
+</table>
+</div>
+</text>
+<!--Reference to the Encounter resource-->
+<entry>
+<reference value="urn:uuid:4f36b35a-ad18-4ea9-a3fb-c893f709e88a"/>
+</entry>
+</section>
+<!-- Clinical review of systems-->
+<section>
+<title value="Clinical review of systems"/>
+<code>
+<coding>
+<system value="http://snomed.info/sct"/>
+<code value="887121000000105"/>
+<display value="Review of systems"/>
+</coding>
+</code>
+<text>
+<status value="additional"/>
+<div xmlns="http://www.w3.org/1999/xhtml">
+<table width="100%">
+<tbody>
+<tr>
+<th>Clinical review of systems</th>
+</tr>
+<tr>
+<td>
+<p style="text-decoration:underline">Neurodevelopmental assessment</p>
+<p>Zelma can now sit unsupported for about 30 seconds. When lying prone she can draw 
+her knees up underneath her but does not make any attempts to move. 
+In clinic she was able to complete the circle and square form board but cannot do them 
+reversed. She can say 10 words with meaning and her mother feels she can understand far more. 
+She is able to finger feed and will drink from a cup if it is held for her. She is becoming more 
+sociable and has a lovely smile.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</text>
+</section>
+<!--Clinical summary-->
+<section>
+<title value="Clinical summary"/>
+<code>
+<coding>
+<system value="http://snomed.info/sct"/>
+<code value="887181000000106"/>
+<display value="Clinical summary"/>
+</coding>
+</code>
+<text>
+<status value="additional"/>
+<div xmlns="http://www.w3.org/1999/xhtml">
+<table width="100%">
+<tbody>
+<tr>
+<th>Clinical summary</th>
+</tr>
+<tr>
+<td>
+<p>Zelma attended today for a scheduled review of tonic-clonic seizures and gastro-oesophageal reflux.</p>
+<p>Zelma has been well. However she is now having on average four tonic-clonic seizures a day. 
+Her mother has had to give her rectal diazepam on two occasions but she has not 
+needed to go to hospital. She had a PEG inserted in April 2017 and her reflux has reduced 
+considerably since then. She has increasing spasticity of right hip and more frequent tonic-clonic convulsions.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</text>
+</section>
+<!--Diagnoses-->
+<section>
+<title value="Diagnoses"/>
+<code>
+<coding>
+<system value="http://snomed.info/sct"/>
+<code value="887161000000102"/>
+<display value="Diagnoses"/>
+</coding>
+</code>
+<text>
+<status value="generated"/>
+<div xmlns="http://www.w3.org/1999/xhtml">
+<table width="100%">
+<tbody>
+<tr>
+<th>Diagnosis name</th>
+<td>Tonic-clonic seizure</td>
+</tr>
+</tbody>
+</table>
+<table width="100%">
+<tbody>
+<tr>
+<th>Diagnosis name</th>
+<td>Gastro-oesophageal reflux</td>
+</tr>
+</tbody>
+</table>
+<table width="100%">
+<tbody>
+<tr>
+<th>Diagnosis name</th>
+<td>Spastic quadriplegia</td>
+</tr>
+<tr>
+<th>Comment</th>
+<td>Secondary to birth asphyxia</td>
+</tr>
+</tbody>
+</table>
+<table width="100%">
+<tbody>
+<tr>
+<th>Diagnosis name</th>
+<td>Cortical visual impairment</td>
+</tr>
+</tbody>
+</table>
+<table width="100%">
+<tbody>
+<tr>
+<th>Diagnosis name</th>
+<td>Convergent squint</td>
+</tr>
+<tr>
+<th>Comment</th>
+<td>Bilateral convergent squint</td>
+</tr>
+</tbody>
+</table>
+<table width="100%">
+<tbody>
+<tr>
+<th>Diagnosis name</th>
+<td>Learning difficulties</td>
+</tr>
+</tbody>
+</table>
+</div>
+</text>
+<!--Reference to the Condition List resource-->
+<entry>
+<reference value="urn:uuid:37c0854e-bba0-4785-908d-a18ec13bdd2e"/>
+</entry>
+</section>
+<!--Distribution list-->
+<section>
+<title value="Distribution list"/>
+<code>
+<coding>
+<system value="http://snomed.info/sct"/>
+<code value="887261000000109"/>
+<display value="Distribution list"/>
+</coding>
+</code>
+<text>
+<status value="additional"/>
+<div xmlns="http://www.w3.org/1999/xhtml">
+<table width="100%">
+<tbody>
+<tr>
+<th>Name</th>
+<td>
+<p>Prefix: Mrs</p>
+<p>Given Name: Sally</p>
+<p>Family Name: Jones</p>
+</td>
+</tr>
+<tr>
+<th>Relationship to subject</th>
+<td>Patient's mother</td>
+</tr>
+</tbody>
+</table>
+<table width="100%">
+<tbody>
+<tr>
+<th>Name</th>
+<td>
+<p>Prefix: Mr</p>
+<p>Given Name: Ian</p>
+<p>Family Name: Jones</p>
+</td>
+</tr>
+<tr>
+<th>Relationship to subject</th>
+<td>Patient's father</td>
+</tr>
+</tbody>
+</table>
+<table width="100%">
+<tbody>
+<tr>
+<th>Name</th>
+<td>
+<p>Prefix: Dr</p>
+<p>Given Name: C</p>
+<p>Family Name: O'Reilly</p>
+</td>
+</tr>
+<tr>
+<th>Role</th>
+<td>General Medical Practitioner</td>
+</tr>
+<tr>
+<th>Organisation name</th>
+<td>Canvas Health Centre</td>
+</tr>
+</tbody>
+</table>
+<table width="100%">
+<tbody>
+<tr>
+<th>Name</th>
+<td>
+<p>Prefix: Dr</p>
+<p>Given Name: Charlotte</p>
+<p>Family Name: Worth</p>
+</td>
+</tr>
+<tr>
+<th>Role</th>
+<td>Consultant Orthopaedic physician</td>
+</tr>
+<tr>
+<th>Organisation name</th>
+<td>St. Crispin's Hospital</td>
+</tr>
+</tbody>
+</table>
+<table width="100%">
+<tbody>
+<tr>
+<th>Name</th>
+<td>
+<p>Prefix: Mr</p>
+<p>Given Name: Philip</p>
+<p>Family Name: Brown</p>
+</td>
+</tr>
+<tr>
+<th>Role</th>
+<td>Epilepsy nurse</td>
+</tr>
+<tr>
+<th>Organisation name</th>
+<td>St. Crispin's Hospital</td>
+</tr>
+</tbody>
+</table>
+</div>
+</text>
+<!--Reference to the practitioner entries as recipients of information-->
+<entry>
+<reference value="urn:uuid:598a5239-fc65-46ed-94b2-9357ae08f6ef"/>
+</entry>
+<entry>
+<reference value="urn:uuid:4e42a3ef-6ba8-4fc4-954b-792e21539d32"/>
+</entry>
+<entry>
+<reference value="urn:uuid:9ef45ff1-d75c-4595-8812-1be366210688"/>
+</entry>
+<!--Reference to the related person entries as recipients of information-->
+<entry>
+<reference value="urn:uuid:2e1a0589-6c62-4592-84f2-8f845049d378"/>
+</entry>
+<entry>
+<reference value="urn:uuid:b6e1c220-5c50-4b9a-aec1-8a96927b44d9"/>
+</entry>
+</section>
+<!--Examination findings-->
+<section>
+<title value="Examination finding"/>
+<code>
+<coding>
+<system value="http://snomed.info/sct"/>
+<code value="715851000000102"/>
+<display value="Examination findings"/>
+</coding>
+</code>
+<text>
+<status value="additional"/>
+<div xmlns="http://www.w3.org/1999/xhtml">
+<table width="100%">
+<tbody>
+<tr>
+<th>Examination</th>
+<td>Musculosketal system and nervous system</td>
+</tr>
+<tr>
+<th>Examination findings</th>
+<td>Zelma's ankles both dorsiflex to 90 degrees. Her hips are very tight; the right hip only 
+abducts to 30 degrees and the left hip to 45 degrees. The right hip has deteriorated.</td>
+</tr>
+</tbody>
+</table>
+<table width="100%">
+<tbody>
+<tr>
+<th>Examination</th>
+<td>Dental</td>
+</tr>
+<tr>
+<th>Examination findings</th>
+<td>No evidence of dental caries.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</text>
+</section>
+<!-- GP Practice-->
+<section>
+<title value="GP practice"/>
+<code>
+<coding>
+<system value="http://snomed.info/sct"/>
+<code value="886711000000101"/>
+<display value="GP practice"/>
+</coding>
+</code>
+<text>
+<status value="additional"/>
+<div xmlns="http://www.w3.org/1999/xhtml">
+<table width="100%">
+<tbody>
+<tr>
+<th>GP name</th>
+<td>
+<p>Prefix: Dr</p>
+<p>Given Name: C</p>
+<p>Family Name: O'Reilly</p>
+</td>
+</tr>
+<tr>
+<th>GP practice details</th>
+<td>
+<p>Name: Canvas Health Centre</p>
+<p>Address:</p>
+<p>Address Line: 27, Acacia Road</p>
+<p>Post Code: BM9 6PM</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</text>
+<!--Reference to the Organisation entry as the source of information for this section-->
+<entry>
+<reference value="urn:uuid:48feca8e-92e9-45c1-afcf-1b4aabe72d0b"/>
+</entry>
+</section>
+<!--Medication and medical devices-->
+<section>
+<title value="Medications and medical devices"/>
+<code>
+<coding>
+<system value="http://snomed.info/sct"/>
+<code value="933361000000108"/>
+<display value="Medications and medical devices"/>
+</coding>
+</code>
+<text>
+<status value="additional"/>
+<div xmlns="http://www.w3.org/1999/xhtml">
+<table width="100%">
+<tbody>
+<tr>
+<td style="width:100%">(only changes to medications and medical devices as a result of the 
+outpatient encounter are included)</td>
+</tr>
+</tbody>
+</table>
+<table width="100%">
+<tbody>
+<tr>
+<th>Medication name</th>
+<td>Lamotrigine 5mg dispersible tablets sugar free (A A H Pharmaceuticals Ltd)</td>
+</tr>
+<tr>
+<th>Form</th>
+<td>Dispersible tablet</td>
+</tr>
+<tr>
+<th>Route</th>
+<td>Gastroenteral</td>
+</tr>
+<tr>
+<th>Dose directions description</th>
+<td>Twice a day</td>
+</tr>
+<tr>
+<th>Dose amount description</th>
+<td>10mg</td>
+</tr>
+<tr>
+<th>Comment/recommendation</th>
+<td>14-day prescription provided, please provide a new prescription on parent's request.</td>
+</tr>
+<tr>
+<th>Status</th>
+<td>Amended</td>
+</tr>
+<tr>
+<th>Indication</th>
+<td>Increasing tonic-clonic convulsions</td>
+</tr>
+<tr>
+<th>Date of latest change</th>
+<td>01/05/2017</td>
+</tr>
+<tr>
+<th>Description of amendment</th>
+<td>Increase to 10mg twice daily. Total dose daily quantity: 20mg</td>
+</tr>
+</tbody>
+</table>
+</div>
+</text>
+<!--Reference to Medication list-->
+<entry>
+<reference value="urn:uuid:fed28a5f-233b-4800-ac0a-0929f1b5d3be"/>
+</entry>
+</section>
+<!-- Patient demographics-->
+<section>
+<title value="Patient demographics"/>
+<code>
+<coding>
+<system value="http://snomed.info/sct"/>
+<code value="886731000000109"/>
+<display value="Patient demographics"/>
+</coding>
+</code>
+<text>
+<status value="additional"/>
+<div xmlns="http://www.w3.org/1999/xhtml">
+<table width="100%">
+<tbody>
+<tr>
+<th>Patient name</th>
+<td>
+<p>Prefix: Miss</p>
+<p>Given Name: Zelma</p>
+<p>Family Name: Dimek</p>
+</td>
+</tr>
+<tr>
+<th>Date of birth</th>
+<td>1 February 2013</td>
+</tr>
+<tr>
+<th>Gender</th>
+<td>Female</td>
+</tr>
+<tr>
+<th>NHS number</th>
+<td>1243523190</td>
+</tr>
+<tr>
+<th>Other identifier</th>
+<td>TL56945</td>
+</tr>
+<tr>
+<th>Patient address</th>
+<td>
+<p>Address Line: 31, Acacia Road</p>
+<p>Post Code: BM9 6PL</p>
+</td>
+</tr>
+<tr>
+<th>Relevant contacts</th>
+<td>Sally and Ian Jones (parents) Email: sally@jones.net Tel: 077 1234 7777</td>
+</tr>
+<tr>
+<th>Educational establishment</th>
+<td>Greenacre School, Donaldstown DO5 6AA</td>
+</tr>
+</tbody>
+</table>
+</div>
+</text>
+<!--reference to further information carried in the patient resource-->
+<entry>
+<reference value="urn:uuid:6c66c32f-655a-4b9c-9bb7-5ae31fc93010"/>
+</entry>
+</section>
+<!--Person completing record section-->
+<section>
+<title value="Person completing record"/>
+<code>
+<coding>
+<system value="http://snomed.info/sct"/>
+<code value="887231000000104"/>
+<display value="Person completing record"/>
+</coding>
+</code>
+<text>
+<status value="additional"/>
+<div xmlns="http://www.w3.org/1999/xhtml">
+<table width="100%">
+<tbody>
+<tr>
+<th>Name</th>
+<td>
+<p>Prefix: Dr</p>
+<p>Given Name: Arnold</p>
+<p>Family Name: Rimmer</p>
+</td>
+</tr>
+<tr>
+<th>Role</th>
+<td>Community paediatrician</td>
+</tr>
+<tr>
+<th>Specialty</th>
+<td>Paediatric speciality</td>
+</tr>
+<tr>
+<th>Professional identifier</th>
+<td>GMC: 6775556</td>
+</tr>
+<tr>
+<th>Date and time completed</th>
+<td>01 May 2017 16:42</td>
+</tr>
+<tr>
+<th>Contact details</th>
+<td>Tel: 01234 564563</td>
+</tr>
+</tbody>
+</table>
+</div>
+</text>
+<!--reference to practitioner entry-->
+<entry>
+<reference value="urn:uuid:7ed1b03c-47f9-43c8-8dd2-675819cd8aee"/>
+</entry>
+</section>
+<!--Plan and requested actions-->
+<section>
+<title value="Plan and requested actions"/>
+<code>
+<coding>
+<system value="http://snomed.info/sct"/>
+<code value="887201000000105"/>
+<display value="Plan and requested actions"/>
+</coding>
+</code>
+<text>
+<status value="additional"/>
+<div xmlns="http://www.w3.org/1999/xhtml">
+<table width="100%">
+<tbody>
+<tr>
+<th>Actions for healthcare professionals</th>
+<td>
+<p>Request to orthopaedics for early appointment for advice on deteriorating right hip</p>
+<p>Person responsible: Dr. Arnold Rimmer, Community paediatrician 01/05/17</p>
+<p>Status: Requested</p>
+<br/>
+<p>Letter of support to education regarding school transport</p>
+<p>Person responsible: Dr. Arnold Rimmer, Community paediatrician 01/05/17</p>
+<p>Status: Requested</p>
+<br/>
+<p>Review medication with Sally's mother by telephone in two weeks.</p>
+<p>Person responsible: Phil Brown, Epilepsy nurse</p>
+<p>Status: Planned</p>
+<br/>
+</td>
+</tr>
+<tr>
+<th>Actions for patient or their carer</th>
+<td>Mrs. Jones to contact epilepsy nurse on 01226 730000 if she has any concerns 
+regarding convulsions and medical change.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</text>
+</section>
+<!--Problems and issues-->
+<section>
+<title value="Problems and issues"/>
+<code>
+<coding>
+<system value="http://snomed.info/sct"/>
+<code value="887151000000100"/>
+<display value="Problems and issues"/>
+</coding>
+</code>
+<text>
+<status value="additional"/>
+<div xmlns="http://www.w3.org/1999/xhtml">
+<table width="100%">
+<tbody>
+<tr>
+<th>Problems and issues</th>
+<td>
+<p>Increased tonic-clonic convulsions</p>
+<p>Problems with transport to school</p>
+<p>Increasingly tight right hip</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</text>
+</section>
+<!--Referrer details-->
+<section>
+<title value="Referrer details"/>
+<code>
+<coding>
+<system value="http://snomed.info/sct"/>
+<code value="1052891000000108"/>
+<display value="Referrer details"/>
+</coding>
+</code>
+<text>
+<status value="generated"/>
+<div xmlns="http://www.w3.org/1999/xhtml">
+<table width="100%">
+<tbody>
+<tr>
+<th>Referrer Name</th>
+<td>
+<p>Prefix: Dr</p>
+<p>Given Name: C</p>
+<p>Family Name: O'Reilly</p>
+<p>Role: General Medical Practitioner</p>
+<p>Tel: 01234 956412</p>
+<p>Organisation Name: Canvas Health Centre</p>
+<p>Address Line: 27 Acacia Road</p>
+<p>Post Code: BM9 6PM</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</text>
+<!--Reference to the practitioner resource-->
+<entry>
+<reference value="urn:uuid:598a5239-fc65-46ed-94b2-9357ae08f6ef"/>
+</entry>
+<!--Reference to the organisation resource-->
+<entry>
+<reference value="urn:uuid:48feca8e-92e9-45c1-afcf-1b4aabe72d0b"/>
+</entry>
+</section>
+<!--Social context-->
+<section>
+<title value="Social context"/>
+<code>
+<coding>
+<system value="http://snomed.info/sct"/>
+<code value="887051000000101"/>
+<display value="Social context"/>
+</coding>
+</code>
+<text>
+<status value="additional"/>
+<div xmlns="http://www.w3.org/1999/xhtml">
+<table width="100%">
+<tbody>
+<tr>
+<th>Educational history</th>
+</tr>
+<tr>
+<td>Zelma started at Greenacre School in September. She enjoys it and the teachers are 
+pleased with her progress. Her mother has been bringing her to school by car but this is becoming 
+an increasing problem as due to recent changes at work she now has to start at 8:30 AM. 
+Unfortunately Zelma is not eligible for free school transport until she is five years old. 
+The home-school liaison teacher is trying to come to an agreement with the local authority to 
+enable Zelma to use school transport. The teacher for visual impairment has seen her in school 
+and recommended that she use large print books and a magnifying glass.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</text>
+</section>
+</Composition>
+</resource>
+</entry>
+<!--Encounter Example 1-->
+<entry>
+<fullUrl value="urn:uuid:4f36b35a-ad18-4ea9-a3fb-c893f709e88a"/>
+<resource>
+<Encounter>
+<id value="4f36b35a-ad18-4ea9-a3fb-c893f709e88a"/>
+<meta>
+<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-ITK-Encounter-1"/>
+</meta>
+<extension url="https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-OutcomeOfAttendance-1">
+<valueCodeableConcept>
+<coding>
+<system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-OutcomeOfAttendance-1"/>
+<code value="3"/>
+<display value="Appointment to be made at a later date"/>
+</coding>
+</valueCodeableConcept>
+</extension>
+<identifier>
+<system value="https://tools.ietf.org/html/rfc4122"/>
+<value value="870d9007-94a0-4cbb-b5d7-3228423bd64f"/>
+</identifier>
+<status value="finished"/>
+<class>
+<system value="http://hl7.org/fhir/v3/ActCode"/>
+<code value="AMB"/>
+<display value="ambulatory"/>
+</class>
+<!--Specific type of encounter-->
+<type>
+<coding>
+<system value="https://www.datadictionary.nhs.uk"/>
+<code value="2"/>
+<display value="Follow-up attendance face to face"/>
+</coding>
+</type>
+<subject>
+<reference value="urn:uuid:6c66c32f-655a-4b9c-9bb7-5ae31fc93010"/>
+</subject>
+<!--Reference to the participants present during the encounter-->
+<participant>
+<type>
+<coding>
+<system value="http://hl7.org/fhir/v3/ParticipationType"/>
+<code value="ATND"/>
+<display value="attender"/>
+</coding>
+</type>
+<individual>
+<reference value="urn:uuid:7ed1b03c-47f9-43c8-8dd2-675819cd8aee"/>
+</individual>
+</participant>
+<participant>
+<type>
+<coding>
+<system value="http://hl7.org/fhir/v3/ParticipationType"/>
+<code value="PART"/>
+<display value="Participation"/>
+</coding>
+</type>
+<individual>
+<reference value="urn:uuid:2e1a0589-6c62-4592-84f2-8f845049d378"/>
+</individual>
+</participant>
+<participant>
+<type>
+<coding>
+<system value="http://hl7.org/fhir/v3/ParticipationType"/>
+<code value="PART"/>
+<display value="Participation"/>
+</coding>
+</type>
+<individual>
+<reference value="urn:uuid:49da7682-5117-424a-8e68-bd0e1d0aeefc"/>
+</individual>
+</participant>
+<participant>
+<type>
+<coding>
+<system value="http://hl7.org/fhir/v3/ParticipationType"/>
+<code value="PART"/>
+<display value="Participation"/>
+</coding>
+</type>
+<individual>
+<reference value="urn:uuid:59177b7e-1b06-4081-910a-108880d8c1cc"/>
+</individual>
+</participant>
+<period>
+<start value="2017-05-01T10:00:00+00:00"/>
+<end value="2017-05-01T11:00:00+00:00"/>
+</period>
+</Encounter>
+</resource>
+</entry>
+<entry>
+<fullUrl value="urn:uuid:fffe7d77-70d0-41a7-8f48-185a58854dc2"/>
+<resource>
+<List>
+<id value="fffe7d77-70d0-41a7-8f48-185a58854dc2"/>
+<meta>
+<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-ITK-Allergy-List-1"/>
+</meta>
+<identifier>
+<system value="https://tools.ietf.org/html/rfc4122"/>
+<value value="887bb253-ff4b-43b5-bf8e-4d28ac13ece4"/>
+</identifier>
+<status value="current"/>
+<mode value="snapshot"/>
+<code>
+<coding>
+<system value="http://snomed.info/sct"/>
+<code value="886921000000105"/>
+<display value="Allergies and adverse reactions"/>
+</coding>
+</code>
+<subject>
+<reference value="urn:uuid:6c66c32f-655a-4b9c-9bb7-5ae31fc93010"/>
+</subject>
+<encounter>
+<reference value="urn:uuid:4f36b35a-ad18-4ea9-a3fb-c893f709e88a"/>
+</encounter>
+<source>
+<reference value="urn:uuid:7ed1b03c-47f9-43c8-8dd2-675819cd8aee"/>
+</source>
+<entry>
+<item>
+<reference value="urn:uuid:b828d561-893f-4d30-9848-231ad18234dd"/>
+</item>
+</entry>
+</List>
+</resource>
+</entry>
+<entry>
+<fullUrl value="urn:uuid:b828d561-893f-4d30-9848-231ad18234dd"/>
+<resource>
+<AllergyIntolerance>
+<id value="b828d561-893f-4d30-9848-231ad18234dd"/>
+<meta>
+<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-ITK-AllergyIntolerance-1"/>
+</meta>
+<identifier>
+<system value="https://tools.ietf.org/html/rfc4122"/>
+<value value="4a54b0d4-7ca1-420d-bfa4-d151145cf414"/>
+</identifier>
+<clinicalStatus value="active"/>
+<verificationStatus value="confirmed"/>
+<code>
+<coding>
+<system value="http://snomed.info/sct"/>
+<code value="716186003"/>
+<display value="No known allergy"/>
+</coding>
+</code>
+<patient>
+<reference value="urn:uuid:6c66c32f-655a-4b9c-9bb7-5ae31fc93010"/>
+</patient>
+</AllergyIntolerance>
+</resource>
+</entry>
+<!--Condition list-->
+<entry>
+<fullUrl value="urn:uuid:37c0854e-bba0-4785-908d-a18ec13bdd2e"/>
+<resource>
+<List>
+<id value="37c0854e-bba0-4785-908d-a18ec13bdd2e"/>
+<meta>
+<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-ITK-Condition-List-1"/>
+</meta>
+<identifier>
+<system value="https://tools.ietf.org/html/rfc4122"/>
+<value value="f284edb9-71e0-499a-bdc0-98f80b5dd5d3"/>
+</identifier>
+<status value="current"/>
+<mode value="snapshot"/>
+<code>
+<coding>
+<system value="http://snomed.info/sct"/>
+<code value="887161000000102"/>
+<display value="Diagnoses"/>
+</coding>
+</code>
+<subject>
+<reference value="urn:uuid:6c66c32f-655a-4b9c-9bb7-5ae31fc93010"/>
+</subject>
+<encounter>
+<reference value="urn:uuid:4f36b35a-ad18-4ea9-a3fb-c893f709e88a"/>
+</encounter>
+<source>
+<reference value="urn:uuid:7ed1b03c-47f9-43c8-8dd2-675819cd8aee"/>
+</source>
+<entry>
+<item>
+<reference value="urn:uuid:8de990a9-8df5-492d-9e32-6516dccd8b07"/>
+</item>
+</entry>
+<entry>
+<item>
+<reference value="urn:uuid:5678ec88-8bd0-4d8c-ae79-e0e1df2959a1"/>
+</item>
+</entry>
+<entry>
+<item>
+<reference value="urn:uuid:8e602fc5-561b-4e67-ba72-7fd3a3cbd616"/>
+</item>
+</entry>
+<entry>
+<item>
+<reference value="urn:uuid:2fd326cf-8aad-4590-aaf9-a2c1fcf9b1d0"/>
+</item>
+</entry>
+<entry>
+<item>
+<reference value="urn:uuid:f0fcca33-d0b9-452c-bd3c-267454b05e8e"/>
+</item>
+</entry>
+<entry>
+<item>
+<reference value="urn:uuid:5792a482-4718-46d6-9bc1-40475851a04f"/>
+</item>
+</entry>
+</List>
+</resource>
+</entry>
+<!--Diagnosis 1-->
+<entry>
+<fullUrl value="urn:uuid:8de990a9-8df5-492d-9e32-6516dccd8b07"/>
+<resource>
+<Condition>
+<id value="8de990a9-8df5-492d-9e32-6516dccd8b07"/>
+<meta>
+<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-ITK-Condition-1"/>
+</meta>
+<identifier>
+<system value="https://tools.ietf.org/html/rfc4122"/>
+<value value="bea031fb-0b94-4068-90fc-1af169901b9b"/>
+</identifier>
+<clinicalStatus value="active"/>
+<category>
+<coding>
+<system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-ConditionCategory-1"/>
+<code value="encounter-diagnosis"/>
+<display value="Encounter Diagnosis"/>
+</coding>
+</category>
+<code>
+<coding>
+<system value="http://snomed.info/sct"/>
+<code value="54200006"/>
+<display value="Tonic-clonic seizure"/>
+</coding>
+</code>
+<subject>
+<reference value="urn:uuid:6c66c32f-655a-4b9c-9bb7-5ae31fc93010"/>
+</subject>
+<context>
+<reference value="urn:uuid:4f36b35a-ad18-4ea9-a3fb-c893f709e88a"/>
+</context>
+</Condition>
+</resource>
+</entry>
+<!--Diagnosis 2-->
+<entry>
+<fullUrl value="urn:uuid:5678ec88-8bd0-4d8c-ae79-e0e1df2959a1"/>
+<resource>
+<Condition>
+<id value="5678ec88-8bd0-4d8c-ae79-e0e1df2959a1"/>
+<meta>
+<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-ITK-Condition-1"/>
+</meta>
+<identifier>
+<system value="https://tools.ietf.org/html/rfc4122"/>
+<value value="fe191b91-6a46-4199-9ac5-14dfa00be429"/>
+</identifier>
+<clinicalStatus value="active"/>
+<category>
+<coding>
+<system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-ConditionCategory-1"/>
+<code value="encounter-diagnosis"/>
+<display value="Encounter Diagnosis"/>
+</coding>
+</category>
+<code>
+<coding>
+<system value="http://snomed.info/sct"/>
+<code value="235595009"/>
+<display value="Gastro-oesophageal reflux"/>
+</coding>
+</code>
+<subject>
+<reference value="urn:uuid:6c66c32f-655a-4b9c-9bb7-5ae31fc93010"/>
+</subject>
+<context>
+<reference value="urn:uuid:4f36b35a-ad18-4ea9-a3fb-c893f709e88a"/>
+</context>
+</Condition>
+</resource>
+</entry>
+<!--Diagnosis 3-->
+<entry>
+<fullUrl value="urn:uuid:8e602fc5-561b-4e67-ba72-7fd3a3cbd616"/>
+<resource>
+<Condition>
+<id value="8e602fc5-561b-4e67-ba72-7fd3a3cbd616"/>
+<meta>
+<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-ITK-Condition-1"/>
+</meta>
+<identifier>
+<system value="https://tools.ietf.org/html/rfc4122"/>
+<value value="3ae3a72b-9d65-4032-84ae-e598c814600e"/>
+</identifier>
+<clinicalStatus value="active"/>
+<category>
+<coding>
+<system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-ConditionCategory-1"/>
+<code value="encounter-diagnosis"/>
+<display value="Encounter Diagnosis"/>
+</coding>
+</category>
+<code>
+<coding>
+<system value="http://snomed.info/sct"/>
+<code value="192965001"/>
+<display value="Spastic quadriplegia"/>
+</coding>
+</code>
+<subject>
+<reference value="urn:uuid:6c66c32f-655a-4b9c-9bb7-5ae31fc93010"/>
+</subject>
+<context>
+<reference value="urn:uuid:4f36b35a-ad18-4ea9-a3fb-c893f709e88a"/>
+</context>
+</Condition>
+</resource>
+</entry>
+<!--Diagnosis 4-->
+<entry>
+<fullUrl value="urn:uuid:2fd326cf-8aad-4590-aaf9-a2c1fcf9b1d0"/>
+<resource>
+<Condition>
+<id value="2fd326cf-8aad-4590-aaf9-a2c1fcf9b1d0"/>
+<meta>
+<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-ITK-Condition-1"/>
+</meta>
+<identifier>
+<system value="https://tools.ietf.org/html/rfc4122"/>
+<value value="d24811cc-c5bd-4608-b5f1-879ba836ceb0"/>
+</identifier>
+<clinicalStatus value="active"/>
+<category>
+<coding>
+<system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-ConditionCategory-1"/>
+<code value="encounter-diagnosis"/>
+<display value="Encounter Diagnosis"/>
+</coding>
+</category>
+<code>
+<coding>
+<system value="http://snomed.info/sct"/>
+<code value="413924001"/>
+<display value="Cortical visual impairment"/>
+</coding>
+</code>
+<subject>
+<reference value="urn:uuid:6c66c32f-655a-4b9c-9bb7-5ae31fc93010"/>
+</subject>
+<context>
+<reference value="urn:uuid:4f36b35a-ad18-4ea9-a3fb-c893f709e88a"/>
+</context>
+</Condition>
+</resource>
+</entry>
+<!--Diagnosis 5-->
+<entry>
+<fullUrl value="urn:uuid:f0fcca33-d0b9-452c-bd3c-267454b05e8e"/>
+<resource>
+<Condition>
+<id value="f0fcca33-d0b9-452c-bd3c-267454b05e8e"/>
+<meta>
+<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-ITK-Condition-1"/>
+</meta>
+<identifier>
+<system value="https://tools.ietf.org/html/rfc4122"/>
+<value value="459e6c31-86cc-43fa-8d82-d813cb7f75af"/>
+</identifier>
+<clinicalStatus value="active"/>
+<category>
+<coding>
+<system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-ConditionCategory-1"/>
+<code value="encounter-diagnosis"/>
+<display value="Encounter Diagnosis"/>
+</coding>
+</category>
+<code>
+<coding>
+<system value="http://snomed.info/sct"/>
+<code value="16596007"/>
+<display value="Convergent squint"/>
+</coding>
+</code>
+<subject>
+<reference value="urn:uuid:6c66c32f-655a-4b9c-9bb7-5ae31fc93010"/>
+</subject>
+<context>
+<reference value="urn:uuid:4f36b35a-ad18-4ea9-a3fb-c893f709e88a"/>
+</context>
+</Condition>
+</resource>
+</entry>
+<!--Diagnosis 6-->
+<entry>
+<fullUrl value="urn:uuid:5792a482-4718-46d6-9bc1-40475851a04f"/>
+<resource>
+<Condition>
+<id value="5792a482-4718-46d6-9bc1-40475851a04f"/>
+<meta>
+<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-ITK-Condition-1"/>
+</meta>
+<identifier>
+<system value="https://tools.ietf.org/html/rfc4122"/>
+<value value="fa0d972b-46d0-4dda-b720-e93ffb3d4e94"/>
+</identifier>
+<clinicalStatus value="active"/>
+<category>
+<coding>
+<system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-ConditionCategory-1"/>
+<code value="encounter-diagnosis"/>
+<display value="Encounter Diagnosis"/>
+</coding>
+</category>
+<code>
+<coding>
+<system value="http://snomed.info/sct"/>
+<code value="161129001"/>
+<display value="Learning difficulties"/>
+</coding>
+</code>
+<subject>
+<reference value="urn:uuid:6c66c32f-655a-4b9c-9bb7-5ae31fc93010"/>
+</subject>
+<context>
+<reference value="urn:uuid:4f36b35a-ad18-4ea9-a3fb-c893f709e88a"/>
+</context>
+</Condition>
+</resource>
+</entry>
+<!--Medication List Example 1-->
+<entry>
+<fullUrl value="urn:uuid:fed28a5f-233b-4800-ac0a-0929f1b5d3be"/>
+<resource>
+<List>
+<id value="fed28a5f-233b-4800-ac0a-0929f1b5d3be"/>
+<meta>
+<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-ITK-Medication-List-1"/>
+</meta>
+<identifier>
+<system value="https://tools.ietf.org/html/rfc4122"/>
+<value value="c97d8398-f75c-4720-a644-807e023f988c"/>
+</identifier>
+<status value="current"/>
+<mode value="snapshot"/>
+<code>
+<coding>
+<system value="http://snomed.info/sct"/>
+<code value="1102411000000102"/>
+<display value="Active medications"/>
+</coding>
+</code>
+<subject>
+<reference value="urn:uuid:6c66c32f-655a-4b9c-9bb7-5ae31fc93010"/>
+</subject>
+<encounter>
+<reference value="urn:uuid:4f36b35a-ad18-4ea9-a3fb-c893f709e88a"/>
+</encounter>
+<source>
+<reference value="urn:uuid:7ed1b03c-47f9-43c8-8dd2-675819cd8aee"/>
+</source>
+<entry>
+<item>
+<reference value="urn:uuid:d112c28e-f106-4d68-bcbc-141b0872fbf4"/>
+</item>
+</entry>
+</List>
+</resource>
+</entry>
+<!--Medication Statement Example 1-->
+<entry>
+<fullUrl value="urn:uuid:d112c28e-f106-4d68-bcbc-141b0872fbf4"/>
+<resource>
+<MedicationStatement>
+<id value="d112c28e-f106-4d68-bcbc-141b0872fbf4"/>
+<meta>
+<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-ITK-MedicationStatement-1"/>
+</meta>
+<extension url="https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-MedicationChangeSummary-1">
+<extension url="status">
+<valueCode value="Amended"/>
+</extension>
+<extension url="indicationForChange">
+<valueCodeableConcept>
+<text value="Increasing tonic-clonic convulsions"/>
+</valueCodeableConcept>
+</extension>
+<extension url="dateChanged">
+<valueDateTime value="2017-05-01"/>
+</extension>
+<extension url="detailsOfAmendment">
+<valueString value="Increase to 10mg twice daily. Total dose daily quantity: 20mg"/>
+</extension>
+</extension>
+<status value="active"/>
+<medicationReference>
+<reference value="urn:uuid:153229fd-4e32-4351-87c0-293253e5c4ea"/>
+</medicationReference>
+<subject>
+<reference value="urn:uuid:6c66c32f-655a-4b9c-9bb7-5ae31fc93010"/>
+</subject>
+<taken value="y"/>
+<dosage>
+<text value="10mg twice a day."/>
+<route>
+<coding>
+<system value="http://snomed.info/sct"/>
+<code value="372454008"/>
+<display value="Gastroenteral"/>
+</coding>
+</route>
+</dosage>
+</MedicationStatement>
+</resource>
+</entry>
+<!--Medication Example 1-->
+<entry>
+<fullUrl value="urn:uuid:153229fd-4e32-4351-87c0-293253e5c4ea"/>
+<resource>
+<Medication>
+<id value="153229fd-4e32-4351-87c0-293253e5c4ea"/>
+<meta>
+<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-ITK-Medication-1"/>
+</meta>
+<code>
+<coding>
+<system value="http://snomed.info/sct"/>
+<code value="9458411000001102"/>
+<display value="Lamotrigine 5mg dispersible tablets sugar free (A A H Pharmaceuticals Ltd)"/>
+</coding>
+</code>
+<form>
+<coding>
+<system value="http://snomed.info/sct"/>
+<code value="421366001"/>
+<display value="Dispersible tablet"/>
+</coding>
+</form>
+</Medication>
+</resource>
+</entry>
+<!--Patient-Example-1-->
+<entry>
+<fullUrl value="urn:uuid:6c66c32f-655a-4b9c-9bb7-5ae31fc93010"/>
+<resource>
+<Patient>
+<id value="6c66c32f-655a-4b9c-9bb7-5ae31fc93010"/>
+<meta>
+<profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Patient-1"/>
+</meta>
+<identifier>
+<extension url="https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-NHSNumberVerificationStatus-1">
+<valueCodeableConcept>
+<coding>
+<system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-NHSNumberVerificationStatus-1"/>
+<code value="01"/>
+<display value="Number present and verified"/>
+</coding>
+</valueCodeableConcept>
+</extension>
+<system value="https://fhir.nhs.uk/Id/nhs-number"/>
+<value value="9658219705"/>
+</identifier>
+<identifier>
+<system value="https://fhir.bradfordhospitals.uk/Id/cerner-no"/>
+<value value="j8son"/>
+</identifier>
+<active value="true"/>
+<name>
+<use value="official"/>
+<family value="Dimeck"/>
+<given value="Zelma"/>
+<prefix value="Miss"/>
+</name>
+<gender value="female"/>
+<birthDate value="2013-02-01"/>
+<address>
+<use value="home"/>
+<line value="64 Zoo Lane"/>
+<postalCode value="BM9 6PL"/>
+</address>
+</Patient>
+</resource>
+</entry>
+<!--Related person - patient's mother-->
+<entry>
+<fullUrl value="urn:uuid:2e1a0589-6c62-4592-84f2-8f845049d378"/>
+<resource>
+<RelatedPerson>
+<id value="2e1a0589-6c62-4592-84f2-8f845049d378"/>
+<meta>
+<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/ITK-RelatedPerson-1"/>
+</meta>
+<patient>
+<reference value="urn:uuid:6c66c32f-655a-4b9c-9bb7-5ae31fc93010"/>
+</patient>
+<relationship>
+<coding>
+<system value="http://hl7.org/fhir/v3/RoleCode"/>
+<code value="MTH"/>
+<display value="mother"/>
+</coding>
+</relationship>
+<name>
+<use value="official"/>
+<family value="Jones"/>
+<given value="Sally"/>
+</name>
+<telecom>
+<system value="phone"/>
+<value value="077 1234 7777"/>
+<use value="mobile"/>
+</telecom>
+<telecom>
+<system value="email"/>
+<value value="sally@jones.net"/>
+</telecom>
+</RelatedPerson>
+</resource>
+</entry>
+<!--Related person - patient's father-->
+<entry>
+<fullUrl value="urn:uuid:b6e1c220-5c50-4b9a-aec1-8a96927b44d9"/>
+<resource>
+<RelatedPerson>
+<id value="b6e1c220-5c50-4b9a-aec1-8a96927b44d9"/>
+<meta>
+<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/ITK-RelatedPerson-1"/>
+</meta>
+<patient>
+<reference value="urn:uuid:6c66c32f-655a-4b9c-9bb7-5ae31fc93010"/>
+</patient>
+<relationship>
+<coding>
+<system value="http://hl7.org/fhir/v3/RoleCode"/>
+<code value="FTH"/>
+<display value="father"/>
+</coding>
+</relationship>
+<name>
+<use value="official"/>
+<family value="Jones"/>
+<given value="Ian"/>
+</name>
+<telecom>
+<system value="phone"/>
+<value value="077 1234 7777"/>
+<use value="mobile"/>
+</telecom>
+<telecom>
+<system value="email"/>
+<value value="sally@jones.net"/>
+</telecom>
+</RelatedPerson>
+</resource>
+</entry>
+<!--Practitioner-Example-1-->
+<entry>
+<fullUrl value="urn:uuid:7ed1b03c-47f9-43c8-8dd2-675819cd8aee"/>
+<resource>
+<Practitioner>
+<id value="7ed1b03c-47f9-43c8-8dd2-675819cd8aee"/>
+<meta>
+<profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Practitioner-1"/>
+</meta>
+<identifier>
+<system value="https://fhir.hl7.org.uk/Id/gmc-number"/>
+<value value="6775556"/>
+</identifier>
+<name>
+<family value="Arnold"/>
+<given value="Rimmer"/>
+<prefix value="Dr"/>
+</name>
+<telecom>
+<system value="phone"/>
+<value value="01234 564563"/>
+<use value="work"/>
+</telecom>
+<telecom>
+<system value="email"/>
+<value value="cpc@nhs.uk"/>
+<use value="work"/>
+</telecom>
+<address>
+<use value="work"/>
+<line value="Community Paediatric Clinic, Adobe Health Centre"/>
+<city value="Donaldstown"/>
+<postalCode value="DO1 4XP"/>
+</address>
+</Practitioner>
+</resource>
+</entry>
+<!--Practitioner-Example-2-->
+<entry>
+<fullUrl value="urn:uuid:598a5239-fc65-46ed-94b2-9357ae08f6ef"/>
+<resource>
+<Practitioner>
+<id value="598a5239-fc65-46ed-94b2-9357ae08f6ef"/>
+<meta>
+<profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Practitioner-1"/>
+</meta>
+<identifier>
+<system value="https://fhir.nhs.uk/Id/local-practitioner-identifier"/>
+<value value="8122472"/>
+</identifier>
+<name>
+<family value="O'Reilly"/>
+<given value="C"/>
+<prefix value="Dr"/>
+</name>
+<telecom>
+<system value="phone"/>
+<value value="01234 956412"/>
+<use value="work"/>
+</telecom>
+</Practitioner>
+</resource>
+</entry>
+<!--Practitioner-Example-3-->
+<entry>
+<fullUrl value="urn:uuid:4e42a3ef-6ba8-4fc4-954b-792e21539d32"/>
+<resource>
+<Practitioner>
+<id value="4e42a3ef-6ba8-4fc4-954b-792e21539d32"/>
+<meta>
+<profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Practitioner-1"/>
+</meta>
+<identifier>
+<system value="https://fhir.nhs.uk/Id/local-practitioner-identifier"/>
+<value value="3122472"/>
+</identifier>
+<name>
+<family value="Charlotte"/>
+<given value="Worth"/>
+<prefix value="Dr"/>
+</name>
+</Practitioner>
+</resource>
+</entry>
+<!--Practitioner-Example-4-->
+<entry>
+<fullUrl value="urn:uuid:9ef45ff1-d75c-4595-8812-1be366210688"/>
+<resource>
+<Practitioner>
+<id value="9ef45ff1-d75c-4595-8812-1be366210688"/>
+<meta>
+<profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Practitioner-1"/>
+</meta>
+<identifier>
+<system value="https://fhir.nhs.uk/Id/sds-user-id"/>
+<value value="033345750526"/>
+</identifier>
+<name>
+<family value="Brown"/>
+<given value="Philip"/>
+<prefix value="Mr"/>
+</name>
+</Practitioner>
+</resource>
+</entry>
+<!--Practitioner-Example-5-->
+<entry>
+<fullUrl value="urn:uuid:49da7682-5117-424a-8e68-bd0e1d0aeefc"/>
+<resource>
+<Practitioner>
+<id value="49da7682-5117-424a-8e68-bd0e1d0aeefc"/>
+<meta>
+<profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Practitioner-1"/>
+</meta>
+<name>
+<family value="White"/>
+<given value="Jenny"/>
+<prefix value="Mrs"/>
+</name>
+</Practitioner>
+</resource>
+</entry>
+<!--Practitioner-Example-6-->
+<entry>
+<fullUrl value="urn:uuid:59177b7e-1b06-4081-910a-108880d8c1cc"/>
+<resource>
+<Practitioner>
+<id value="59177b7e-1b06-4081-910a-108880d8c1cc"/>
+<meta>
+<profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Practitioner-1"/>
+</meta>
+<name>
+<family value="Hall"/>
+<given value="Sarah"/>
+<prefix value="Mrs"/>
+</name>
+</Practitioner>
+</resource>
+</entry>
+<!--Practitioner roles-->
+<entry>
+<fullUrl value="urn:uuid:1d84c93b-df78-4443-9181-a400ad31200a"/>
+<resource>
+<PractitionerRole>
+<id value="1d84c93b-df78-4443-9181-a400ad31200a"/>
+<meta>
+<profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-PractitionerRole-1"/>
+</meta>
+<practitioner>
+<reference value="urn:uuid:7ed1b03c-47f9-43c8-8dd2-675819cd8aee"/>
+</practitioner>
+<organization>
+<reference value="urn:uuid:f725c91c-e4c2-43f2-b92e-0cba8deb9687"/>
+</organization>
+<code>
+<coding>
+<system value="http://snomed.info/sct"/>
+<code value="309329001"/>
+<display value="Community paediatrician"/>
+</coding>
+</code>
+<specialty>
+<coding>
+<system value="http://snomed.info/sct"/>
+<code value="394537008"/>
+<display value="Paediatric speciality"/>
+</coding>
+</specialty>
+</PractitionerRole>
+</resource>
+</entry>
+<entry>
+<fullUrl value="urn:uuid:e7847e37-1f84-4741-8257-eeafdb90d053"/>
+<resource>
+<PractitionerRole>
+<id value="e7847e37-1f84-4741-8257-eeafdb90d053"/>
+<meta>
+<profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-PractitionerRole-1"/>
+</meta>
+<practitioner>
+<reference value="urn:uuid:598a5239-fc65-46ed-94b2-9357ae08f6ef"/>
+</practitioner>
+<organization>
+<reference value="urn:uuid:48feca8e-92e9-45c1-afcf-1b4aabe72d0b"/>
+</organization>
+<code>
+<coding>
+<system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-SDSJobRoleName-1"/>
+<code value="R0260"/>
+<display value="General Medical Practitioner"/>
+</coding>
+</code>
+</PractitionerRole>
+</resource>
+</entry>
+<entry>
+<fullUrl value="urn:uuid:18314133-a39e-47ae-8984-8710993f0b1d"/>
+<resource>
+<PractitionerRole>
+<id value="18314133-a39e-47ae-8984-8710993f0b1d"/>
+<meta>
+<profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-PractitionerRole-1"/>
+</meta>
+<practitioner>
+<reference value="urn:uuid:4e42a3ef-6ba8-4fc4-954b-792e21539d32"/>
+</practitioner>
+<organization>
+<reference value="urn:uuid:f8d005f7-3b9d-4fad-a33e-8e87a4897433"/>
+</organization>
+<code>
+<coding>
+<system value="https://fhir.nhs.uk/STU3/CodeSystem/CareConnect-SDSJobRoleName-1"/>
+<code value="R0050"/>
+<display value="Consultant"/>
+</coding>
+</code>
+<specialty>
+<coding>
+<system value="http://snomed.info/sct"/>
+<code value="394801008"/>
+<display value="Trauma &amp;orthopaedics"/>
+</coding>
+</specialty>
+</PractitionerRole>
+</resource>
+</entry>
+<entry>
+<fullUrl value="urn:uuid:13b7fffc-308d-4df2-aa9d-3998ab75eee8"/>
+<resource>
+<PractitionerRole>
+<id value="13b7fffc-308d-4df2-aa9d-3998ab75eee8"/>
+<meta>
+<profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-PractitionerRole-1"/>
+</meta>
+<practitioner>
+<reference value="urn:uuid:9ef45ff1-d75c-4595-8812-1be366210688"/>
+</practitioner>
+<organization>
+<reference value="urn:uuid:f8d005f7-3b9d-4fad-a33e-8e87a4897433"/>
+</organization>
+</PractitionerRole>
+</resource>
+</entry>
+<entry>
+<fullUrl value="urn:uuid:46cfafd3-92dd-4412-825b-4ae36303aff9"/>
+<resource>
+<PractitionerRole>
+<id value="46cfafd3-92dd-4412-825b-4ae36303aff9"/>
+<meta>
+<profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-PractitionerRole-1"/>
+</meta>
+<practitioner>
+<reference value="urn:uuid:49da7682-5117-424a-8e68-bd0e1d0aeefc"/>
+</practitioner>
+<code>
+<coding>
+<system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-SDSJobRoleName-1"/>
+<code value="R0950"/>
+<display value="Occupational Therapist"/>
+</coding>
+</code>
+</PractitionerRole>
+</resource>
+</entry>
+<entry>
+<fullUrl value="urn:uuid:8957f3e0-dd1b-45bc-8a20-b4eee02db4d3"/>
+<resource>
+<PractitionerRole>
+<id value="8957f3e0-dd1b-45bc-8a20-b4eee02db4d3"/>
+<meta>
+<profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-PractitionerRole-1"/>
+</meta>
+<practitioner>
+<reference value="urn:uuid:59177b7e-1b06-4081-910a-108880d8c1cc"/>
+</practitioner>
+<code>
+<coding>
+<system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-SDSJobRoleName-1"/>
+<code value="R1480"/>
+<display value="Healthcare Assistant"/>
+</coding>
+</code>
+</PractitionerRole>
+</resource>
+</entry>
+<!--Organization-Example-1-->
+<entry>
+<fullUrl value="urn:uuid:48feca8e-92e9-45c1-afcf-1b4aabe72d0b"/>
+<resource>
+<Organization>
+<id value="48feca8e-92e9-45c1-afcf-1b4aabe72d0b"/>
+<meta>
+<profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Organization-1"/>
+</meta>
+<identifier>
+<system value="https://fhir.nhs.uk/Id/ods-organization-code"/>
+<value value="A111111"/>
+</identifier>
+<name value="Canvas Health Centre"/>
+<telecom>
+<system value="phone"/>
+<value value="01234 956412"/>
+<use value="work"/>
+</telecom>
+<address>
+<use value="work"/>
+<line value="27 Acacia Road"/>
+<line value="BM9 6PM "/>
+</address>
+</Organization>
+</resource>
+</entry>
+<!--Organization-Example-2-->
+<entry>
+<fullUrl value="urn:uuid:f725c91c-e4c2-43f2-b92e-0cba8deb9687"/>
+<resource>
+<Organization>
+<id value="f725c91c-e4c2-43f2-b92e-0cba8deb9687"/>
+<meta>
+<profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Organization-1"/>
+</meta>
+<name value="Community Paediatrics Department"/>
+<telecom>
+<system value="phone"/>
+<value value="01234 567890"/>
+<use value="work"/>
+</telecom>
+<telecom>
+<system value="email"/>
+<value value="cpc@nhs.uk"/>
+<use value="work"/>
+</telecom>
+<address>
+<use value="work"/>
+<line value="Adobe Health Centre"/>
+<city value="Donaldstown"/>
+<postalCode value="DO1 4XP"/>
+</address>
+</Organization>
+</resource>
+</entry>
+<!--Organization-Example-3-->
+<entry>
+<fullUrl value="urn:uuid:f8d005f7-3b9d-4fad-a33e-8e87a4897433"/>
+<resource>
+<Organization>
+<id value="f8d005f7-3b9d-4fad-a33e-8e87a4897433"/>
+<meta>
+<profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Organization-1"/>
+</meta>
+<identifier>
+<system value="https://fhir.nhs.uk/Id/ods-organization-code"/>
+<value value="RX0000"/>
+</identifier>
+<name value="St Crispin's Hospital"/>
+<address>
+<city value="Donaldstown"/>
+<postalCode value="DO5 7TP"/>
+</address>
+</Organization>
+</resource>
+</entry>
+</Bundle>

@@ -1,0 +1,401 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bundle xmlns="http://hl7.org/fhir">
+	<id value="06c3a440-4883-11e8-842f-0ed5f89f718b"/>
+	<meta>
+		<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/DCH-Bundle-1"/>
+	</meta>
+	<type value="message"/>
+	<entry>
+		<fullUrl value="urn:uuid:9d2e2cd9-ffe1-49c7-be43-f36e30564d3f"/>
+		<resource>
+			<MessageHeader>
+				<id value="9d2e2cd9-ffe1-49c7-be43-f36e30564d3f"/>
+				<meta>
+					<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/DCH-MessageHeader-1"/>
+				</meta>
+				<extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-DCH-MessageEventType-1">
+					<valueCodeableConcept>
+						<coding>
+							<system value="https://fhir.nhs.uk/STU3/CodeSystem/DCH-MessageEventType-1"/>
+							<code value="new"/>
+							<display value="New event message"/>
+						</coding>
+					</valueCodeableConcept>
+				</extension>
+				<event>
+					<system value="https://fhir.nhs.uk/STU3/CodeSystem/DCH-ChildHealthEventType-1"/>
+					<code value="CH024"/>
+					<display value="Physical Examination"/>
+				</event>
+				<destination>
+					<endpoint value="urn:nhs:addressing:asid:477121000325"/>
+				</destination>	
+				<timestamp value="2017-11-01T15:00:00+00:00"/>
+				<source>
+					<endpoint value="urn:nhs:addressing:asid:300000000161"/>
+				</source>
+				<responsible>
+					<reference value="urn:uuid:33a33b58-648a-4453-b981-e21ea9ebc6ea"/>
+					<display value="UNIVERSITY HOSPITAL OF NORTH DURHAM"/>
+				</responsible>
+				<focus>
+					<reference value="urn:uuid:b1edfe28-b59e-42d5-a336-c11975d78c3a"/>
+				</focus>
+			</MessageHeader>
+		</resource>
+	</entry>
+	<!--Responsible for message content-->
+	<entry>
+		<fullUrl value="urn:uuid:33a33b58-648a-4453-b981-e21ea9ebc6ea"/>
+		<resource>
+			<Organization>
+				<id value="33a33b58-648a-4453-b981-e21ea9ebc6ea"/>
+				<meta>
+					<profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Organization-1"/>
+				</meta>
+				<identifier>
+					<system value="https://fhir.nhs.uk/Id/ods-organization-code"/>
+					<value value="RX3EP"/>
+				</identifier>
+				<name value="UNIVERSITY HOSPITAL OF NORTH DURHAM"/>
+				<address>
+					<line value="NORTH ROAD"/>
+					<city value="DURHAM"/>
+					<district value="COUNTY DURHAM"/>
+					<postalCode value="DH1 5TW"/>
+				</address>
+			</Organization>
+		</resource>
+	</entry>
+	<!--Healthcare service used e.g GP, trust, etc..-->
+	<entry>
+		<fullUrl value="urn:uuid:5a293df7-b22f-41b6-8bf1-44248ea59edb"/>
+		<resource>
+			<HealthcareService>
+				<id value="5a293df7-b22f-41b6-8bf1-44248ea59edb"/>
+				<meta>
+					<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/DCH-HealthcareService-1"/>
+				</meta>
+				<providedBy>
+					<reference value="urn:uuid:33a33b58-648a-4453-b981-e21ea9ebc6ea"/>
+					<display value="UNIVERSITY HOSPITAL OF DURHAM "/>
+				</providedBy>
+				<type>
+					<coding>
+						<system value="http://snomed.info/sct"/>
+						<code value="714088003"/>
+						<display value="Midwifery Service"/>
+					</coding>
+				</type>
+				<location>
+					<reference value="urn:uuid:02692f55-56cf-4dda-8ef5-e9ec13f6bd99"/>
+				</location>
+				<telecom>
+					<system value="phone"/>
+					<value value="0191 1231234"/>
+				</telecom>
+			</HealthcareService>
+		</resource>
+	</entry>
+	<!--Child Details (Jack Dawkins)-->
+	<entry>
+		<fullUrl value="urn:uuid:5d5845f3-398f-474b-af59-14882fc7b0ca"/>
+		<resource>
+			<Patient>
+				<id value="5d5845f3-398f-474b-af59-14882fc7b0ca"/>
+				<meta>
+					<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-DCH-Patient-1"/>
+				</meta>
+				<identifier>
+					<extension url="https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-NHSNumberVerificationStatus-1">
+						<valueCodeableConcept>
+							<coding>
+								<system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-NHSNumberVerificationStatus-1"/>
+								<code value="01"/>
+								<display value="Number present and verified"/>
+							</coding>
+						</valueCodeableConcept>
+					</extension>
+					<system value="https://fhir.nhs.uk/Id/nhs-number"/>
+					<value value="9912003888"/>
+				</identifier>
+				<name>
+					<use value="official"/>
+					<family value="DAWKINS"/>
+					<given value="Jack"/>
+				</name>
+				<gender value="male"/>
+				<birthDate value="2013-10-12">
+					<extension url="http://hl7.org/fhir/StructureDefinition/patient-birthTime">
+						<valueDateTime value="2017-10-02T12:00:00+00:00"/>
+					</extension>
+				</birthDate>
+				<address>
+					<use value="home"/>
+					<line value="4 Sandmoor Drive"/>
+					<city value="DURHAM"/>
+					<postalCode value="DH1 2TF"/>
+				</address>
+			</Patient>
+		</resource>
+	</entry>
+	<!--Examination Hips-->
+	<entry>
+		<fullUrl value="urn:uuid:c55d58e2-9fcd-4f12-ad8c-21b1eb0afbf6"/>
+		<resource>
+			<Procedure>
+				<id value="c55d58e2-9fcd-4f12-ad8c-21b1eb0afbf6"/>
+				<meta>
+					<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-DCH-PhysicalExaminationHips-Procedure-1"/>
+				</meta>
+				<identifier>
+					<system value="https://tools.ietf.org/html/rfc4122"/>
+					<value value="8154d55f-2966-4f0c-947a-41aee802cf2c"/>
+				</identifier>
+				<status value="completed"/>
+				<code>
+					<coding>
+						<system value="http://snomed.info/sct"/>
+						<code value="985531000000102"/>
+						<display value="Newborn and Infant Physical Examination Screening Programme, hip examination"/>
+					</coding>
+				</code>
+				<subject>
+					<reference value="urn:uuid:5d5845f3-398f-474b-af59-14882fc7b0ca"/>
+				</subject>
+				<context>
+					<reference value="urn:uuid:b1edfe28-b59e-42d5-a336-c11975d78c3a"/>
+				</context>
+				<performedDateTime value="2018-02-01"/>
+				<performer>
+					<actor>
+						<reference value="urn:uuid:9a53ead6-ffbb-4914-b877-5026f947cfaa"/>
+					</actor>
+				</performer>
+				<outcome>
+					<coding>
+						<system value="http://snomed.info/sct"/>
+						<code value="985891000000104"/>
+						<display value="Newborn and Infant Physical Examination Screening Programme, hip examination done, right abnormality suspected with risk factor"/>
+					</coding>
+				</outcome>
+			</Procedure>
+		</resource>
+	</entry>
+	<!--Examination Eyes-->
+	<entry>
+		<fullUrl value="urn:uuid:8230198b-5fe3-48e2-935b-c2c3d929fe69"/>
+		<resource>
+			<Procedure>
+				<id value="8230198b-5fe3-48e2-935b-c2c3d929fe69"/>
+				<meta>
+					<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-DCH-PhysicalExaminationEyes-Procedure-1"/>
+				</meta>
+				<identifier>
+					<system value="https://tools.ietf.org/html/rfc4122"/>
+					<value value="8154d55f-2966-4f0c-947a-41aee802cf2c"/>
+				</identifier>
+				<status value="completed"/>
+				<code>
+					<coding>
+						<system value="http://snomed.info/sct"/>
+						<code value="988361000000105"/>
+						<display value="Newborn and Infant Physical Examination Screening Programme, eye examination"/>
+					</coding>
+				</code>
+				<subject>
+					<reference value="urn:uuid:5d5845f3-398f-474b-af59-14882fc7b0ca"/>
+				</subject>
+				<context>
+					<reference value="urn:uuid:b1edfe28-b59e-42d5-a336-c11975d78c3a"/>
+				</context>
+				<performedDateTime value="2018-02-01"/>
+				<performer>
+					<actor>
+						<reference value="urn:uuid:9a53ead6-ffbb-4914-b877-5026f947cfaa"/>
+					</actor>
+				</performer>
+				<outcome>
+					<coding>
+						<system value="http://snomed.info/sct"/>
+						<code value="989071000000108"/>
+						<display value="Newborn and Infant Physical Examination Screening Programme, eye examination done, no abnormality and no risk factor"/>
+					</coding>
+				</outcome>
+			</Procedure>
+		</resource>
+	</entry>
+	<!--Examination Testes-->
+	<entry>
+		<fullUrl value="urn:uuid:48a23756-7314-4898-9892-fc5b561c8093"/>
+		<resource>
+			<Procedure>
+				<id value="48a23756-7314-4898-9892-fc5b561c8093"/>
+				<meta>
+					<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-DCH-PhysicalExaminationTestes-Procedure-1"/>
+				</meta>
+				<identifier>
+					<system value="https://tools.ietf.org/html/rfc4122"/>
+					<value value="8154d55f-2966-4f0c-947a-41aee802cf2c"/>
+				</identifier>
+				<status value="completed"/>
+				<code>
+					<coding>
+						<system value="http://snomed.info/sct"/>
+						<code value="988371000000103"/>
+						<display value="Newborn and Infant Physical Examination Screening Programme, testis examination"/>
+					</coding>
+				</code>
+				<subject>
+					<reference value="urn:uuid:5d5845f3-398f-474b-af59-14882fc7b0ca"/>
+				</subject>
+				<context>
+					<reference value="urn:uuid:b1edfe28-b59e-42d5-a336-c11975d78c3a"/>
+				</context>
+				<performedDateTime value="2018-02-01"/>
+				<performer>
+					<actor>
+						<reference value="urn:uuid:9a53ead6-ffbb-4914-b877-5026f947cfaa"/>
+					</actor>
+				</performer>
+				<outcome>
+					<coding>
+						<system value="http://snomed.info/sct"/>
+						<code value="988931000000101"/>
+						<display value="Newborn and Infant Physical Examination Screening Programme, testis examination done, no abnormality"/>
+					</coding>
+				</outcome>
+			</Procedure>
+		</resource>
+	</entry>
+	<!--Examination Heart-->
+	<entry>
+		<fullUrl value="urn:uuid:d42360ec-22d8-4ba2-b176-d0cc899f1c1d"/>
+		<resource>
+			<Procedure>
+				<id value="d42360ec-22d8-4ba2-b176-d0cc899f1c1d"/>
+				<meta>
+					<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-DCH-PhysicalExaminationHeart-Procedure-1"/>
+				</meta>
+				<identifier>
+					<system value="https://tools.ietf.org/html/rfc4122"/>
+					<value value="8154d55f-2966-4f0c-947a-41aee802cf2c"/>
+				</identifier>
+				<status value="completed"/>
+				<code>
+					<coding>
+						<system value="http://snomed.info/sct"/>
+						<code value="988371000000103"/>
+						<display value="Newborn and Infant Physical Examination Screening Programme, heart examination"/>
+					</coding>
+				</code>
+				<subject>
+					<reference value="urn:uuid:5d5845f3-398f-474b-af59-14882fc7b0ca"/>
+				</subject>
+				<context>
+					<reference value="urn:uuid:b1edfe28-b59e-42d5-a336-c11975d78c3a"/>
+				</context>
+				<performedDateTime value="2018-02-01"/>
+				<performer>
+					<actor>
+						<reference value="urn:uuid:9a53ead6-ffbb-4914-b877-5026f947cfaa"/>
+					</actor>
+				</performer>
+				<outcome>
+					<coding>
+						<system value="http://snomed.info/sct"/>
+						<code value="988511000000100"/>
+						<display value="Newborn and Infant Physical Examination Screening Programme, heart examination done, no abnormality and no risk factor"/>
+					</coding>
+				</outcome>
+			</Procedure>
+		</resource>
+	</entry>
+	<!--Birth Encounter details-->
+	<entry>
+		<fullUrl value="urn:uuid:b1edfe28-b59e-42d5-a336-c11975d78c3a"/>
+		<resource>
+			<Encounter>
+				<id value="b1edfe28-b59e-42d5-a336-c11975d78c3a"/>
+				<meta>
+					<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-DCH-Encounter-1"/>
+				</meta>
+				<status value="finished"/>
+				<subject>
+					<reference value="urn:uuid:5d5845f3-398f-474b-af59-14882fc7b0ca"/>
+					<display value="DAWKINS, Jack"/>
+				</subject>
+				<period>
+					<start value="2018-01-29"/>
+				</period>
+				<location>
+					<location>
+						<reference value="urn:uuid:02692f55-56cf-4dda-8ef5-e9ec13f6bd99"/>
+					</location>
+				</location>
+				<serviceProvider>
+					<reference value="urn:uuid:5a293df7-b22f-41b6-8bf1-44248ea59edb"/>
+				</serviceProvider>
+			</Encounter>
+		</resource>
+	</entry>
+	<!--Practitioner-->
+	<entry>
+		<fullUrl value="urn:uuid:9a53ead6-ffbb-4914-b877-5026f947cfaa"/>
+		<resource>
+			<Practitioner>
+				<id value="9a53ead6-ffbb-4914-b877-5026f947cfaa"/>
+				<meta>
+					<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-DCH-Practitioner-1"/>
+				</meta>
+				<identifier>
+					<system value="https://fhir.nhs.uk/Id/sds-role-profile-id"/>
+					<value value="PT2469"/>
+				</identifier>
+				<name>
+					<family value="Bashir"/>
+					<given value="Julian"/>
+					<prefix value="Dr."/>
+				</name>
+			</Practitioner>
+		</resource>
+	</entry>
+	<!--Practitioner Role-->
+	<entry>
+		<fullUrl value="urn:uuid:b7e3cc3a-9120-49fe-801c-2793b80ca922"/>
+		<resource>
+			<PractitionerRole>
+				<id value="b7e3cc3a-9120-49fe-801c-2793b80ca922"/>
+				<meta>
+					<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-DCH-PractitionerRole-1"/>
+				</meta>
+				<identifier>
+					<system value="https://fhir.nhs.uk/Id/sds-role-profile-id"/>
+					<value value="PT2468"/>
+				</identifier>
+				<practitioner>
+					<reference value="urn:uuid:9a53ead6-ffbb-4914-b877-5026f947cfaa"/>
+				</practitioner>
+				<organization>
+					<reference value="urn:uuid:33a33b58-648a-4453-b981-e21ea9ebc6ea"/>
+				</organization>
+			</PractitionerRole>
+		</resource>
+	</entry>
+	<!--Location where event took place (Maternity Site)-->
+	<entry>
+		<fullUrl value="urn:uuid:02692f55-56cf-4dda-8ef5-e9ec13f6bd99"/>
+		<resource>
+			<Location>
+				<id value="02692f55-56cf-4dda-8ef5-e9ec13f6bd99"/>
+				<meta>
+					<profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Location-1"/>
+				</meta>
+				<identifier>
+					<system value="https://fhir.nhs.uk/Id/ods-site-code"/>
+					<value value="RX3EP"/>
+				</identifier>
+			</Location>
+		</resource>
+	</entry>
+</Bundle>

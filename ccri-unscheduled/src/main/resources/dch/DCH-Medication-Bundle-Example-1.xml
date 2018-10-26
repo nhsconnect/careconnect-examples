@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bundle xmlns="http://hl7.org/fhir">
+	<id value="981dbc45-9ff9-4570-836c-eb3e93763189"/>
+	<meta>
+		<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/DCH-Bundle-1"/>
+	</meta>
+	<type value="message"/>
+	<!--Message Header-->
+	<entry>
+		<fullUrl value="urn:uuid:85c8a1c5-a8a1-41c9-bb99-20956fa66218"/>
+		<resource>
+			<MessageHeader>
+				<id value="85c8a1c5-a8a1-41c9-bb99-20956fa66218"/>
+				<meta>
+					<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/DCH-MessageHeader-1"/>
+				</meta>
+				<extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-DCH-MessageEventType-1">
+					<valueCodeableConcept>
+						<coding>
+							<system value="https://fhir.nhs.uk/STU3/CodeSystem/DCH-MessageEventType-1"/>
+							<code value="new"/>
+							<display value="New event message"/>
+						</coding>
+					</valueCodeableConcept>
+				</extension>
+				<event>
+					<system value="https://fhir.nhs.uk/STU3/CodeSystem/DCH-ChildHealthEventType-1"/>
+					<code value="CH019"/>
+					<display value="Medication"/>
+				</event>
+				<destination>
+					<endpoint value="urn:nhs:addressing:asid:477121000325"/>
+				</destination>	
+				<timestamp value="2017-11-01T15:00:00+00:00"/>
+				<source>
+					<endpoint value="urn:nhs:addressing:asid:300000000161"/>
+				</source>
+				<responsible>
+					<reference value="urn:uuid:3ff6d789-af64-4d9c-aa1d-0087d29e9e1c"/>
+					<display value="SILVERDALE FAMILY PRACTICE"/>
+				</responsible>
+				<focus>
+					<reference value="urn:uuid:f4150431-e2cb-4e0f-8405-36a31fd6b913"/>
+				</focus>
+			</MessageHeader>
+		</resource>
+	</entry>
+	<!--Responsible Org (MessageHeader.responsible)-->
+	<entry>
+		<fullUrl value="urn:uuid:3ff6d789-af64-4d9c-aa1d-0087d29e9e1c"/>
+		<resource>
+			<Organization>
+				<id value="3ff6d789-af64-4d9c-aa1d-0087d29e9e1c"/>
+				<meta>
+					<profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Organization-1"/>
+				</meta>
+				<identifier>
+					<system value="https://fhir.nhs.uk/Id/ods-organization-code"/>
+					<value value="A83627"/>
+				</identifier>
+				<name value="SILVERDALE FAMILY PRACTICE"/>
+				<address>
+					<line value="FRONT STREET"/>
+					<line value="SOUTH HETTON"/>
+					<city value="DURHAM"/>
+					<district value="COUNTY DURHAM"/>
+					<postalCode value="DH6 2TH"/>
+				</address>
+			</Organization>
+		</resource>
+	</entry>
+	<!--Healthcare service used e.g GP, trust, etc..-->
+	<entry>
+		<fullUrl value="urn:uuid:5a293df7-b22f-41b6-8bf1-44248ea59edb"/>
+		<resource>
+			<HealthcareService>
+				<id value="5a293df7-b22f-41b6-8bf1-44248ea59edb"/>
+				<meta>
+					<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/DCH-HealthcareService-1"/>
+				</meta>
+				<providedBy>
+					<reference value="urn:uuid:3ff6d789-af64-4d9c-aa1d-0087d29e9e1c"/>
+					<display value="SILVERDALE FAMILY PRACTICE"/>
+				</providedBy>
+				<type>
+					<coding>
+						<system value="http://snomed.info/sct"/>
+						<code value="1060971000000108"/>
+						<display value="General practice service"/>
+					</coding>
+				</type>
+				<location>
+					<reference value="urn:uuid:e3177167-40fc-4f1a-80f2-a2f17f18fde7"/>
+				</location>
+				<telecom>
+					<system value="phone"/>
+					<value value="0191 1231234"/>
+				</telecom>
+			</HealthcareService>
+		</resource>
+	</entry>
+	<!--Child Details (Jack Dawkins)-->
+	<entry>
+		<fullUrl value="urn:uuid:5d5845f3-398f-474b-af59-14882fc7b0ca"/>
+		<resource>
+			<Patient>
+				<id value="5d5845f3-398f-474b-af59-14882fc7b0ca"/>
+				<meta>
+					<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-DCH-Patient-1"/>
+				</meta>
+				<identifier>
+					<extension url="https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-NHSNumberVerificationStatus-1">
+						<valueCodeableConcept>
+							<coding>
+								<system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-NHSNumberVerificationStatus-1"/>
+								<code value="01"/>
+								<display value="Number present and verified"/>
+							</coding>
+						</valueCodeableConcept>
+					</extension>
+					<system value="https://fhir.nhs.uk/Id/nhs-number"/>
+					<value value="9912003888"/>
+				</identifier>
+				<name>
+					<use value="official"/>
+					<family value="DAWKINS"/>
+				</name>
+				<gender value="male"/>
+				<birthDate value="2013-10-12">
+					<extension url="http://hl7.org/fhir/StructureDefinition/patient-birthTime">
+						<valueDateTime value="2017-10-02T12:00:00+00:00"/>
+					</extension>
+				</birthDate>
+				<address>
+					<use value="home"/>
+					<line value="4 Sandmoor Drive"/>
+					<city value="DURHAM"/>
+					<postalCode value="DH1 2TF"/>
+				</address>
+			</Patient>
+		</resource>
+	</entry>
+	<!--Medication Administration-->
+	<entry>
+		<fullUrl value="urn:uuid:849e013b-8a4c-4ea1-a8ba-0a28c8785eb2"/>
+		<resource>
+			<MedicationAdministration>
+				<id value="849e013b-8a4c-4ea1-a8ba-0a28c8785eb2"/>
+				<meta>
+					<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/DCH-MedicationAdministration-1"/>
+				</meta>
+				<status value="completed"/>
+				<medicationReference>
+					<reference value="urn:uuid:1d401368-54fb-4280-809a-a375fd70a48b"/>
+				</medicationReference>
+				<subject>
+					<reference value="urn:uuid:5d5845f3-398f-474b-af59-14882fc7b0ca"/>
+				</subject>
+				<context>
+					<reference value="urn:uuid:f4150431-e2cb-4e0f-8405-36a31fd6b913"/>
+				</context>
+				<effectiveDateTime value="2018-02-01"/>
+				<performer>
+					<actor>
+						<reference value="urn:uuid:50eb4757-15cf-421d-8d46-29fc35eea45d"/>
+					</actor>
+				</performer>
+				<dosage>
+					<route>
+						<coding>
+							<system value="http://snomed.info/sct"/>
+							<code value="26643006"/>
+							<display value="Oral route"/>
+						</coding>
+					</route>
+					<rateRatio>
+						<numerator>
+							<value value="50"/>
+							<unit value="microgram"/>
+							<system value="http://unitsofmeasure.org"/>
+							<code value="ug"/>
+						</numerator>
+						<denominator>
+							<value value="1"/>
+							<unit value="day"/>
+							<system value="http://unitsofmeasure.org"/>
+							<code value="day"/>
+						</denominator>
+					</rateRatio>
+				</dosage>
+			</MedicationAdministration>
+		</resource>
+	</entry>
+	<!--Medication-->
+	<entry>
+		<fullUrl value="urn:uuid:1d401368-54fb-4280-809a-a375fd70a48b"/>
+		<resource>
+			<Medication>
+				<id value="1d401368-54fb-4280-809a-a375fd70a48b"/>
+				<meta>
+					<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-DCH-Medication-1"/>
+				</meta>
+				<code>
+					<coding>
+						<system value="http://snomed.info/sct"/>
+						<code value="34875311000001105"/>
+						<display value="Generic D3 Drops with K2 oral drops sugar free"/>
+					</coding>
+				</code>
+				<form>
+					<coding>
+						<system value="http://snomed.info/sct"/>
+						<code value="385018001"/>
+						<display value="Oral drops"/>
+					</coding>
+				</form>
+			</Medication>
+		</resource>
+	</entry>
+	<!--Medication Encounter details-->
+	<entry>
+		<fullUrl value="urn:uuid:f4150431-e2cb-4e0f-8405-36a31fd6b913"/>
+		<resource>
+			<Encounter>
+				<id value="f4150431-e2cb-4e0f-8405-36a31fd6b913"/>
+				<meta>
+					<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-DCH-Encounter-1"/>
+				</meta>
+				<status value="finished"/>
+				<type>
+					<coding>
+						<system value="https://fhir.nhs.uk/STU3/CodeSystem/DCH-ChildHealthEncounterType-1"/>
+						<code value="0028"/>
+						<display value="GP Appointment"/>
+					</coding>
+				</type>
+				<subject>
+					<reference value="urn:uuid:5d5845f3-398f-474b-af59-14882fc7b0ca"/>
+					<display value="DAWKINS, Jack"/>
+				</subject>
+				<period>
+					<start value="2012-01-29"/>
+				</period>
+				<location>
+					<location>
+						<reference value="urn:uuid:e3177167-40fc-4f1a-80f2-a2f17f18fde7"/>
+						<display value="SILVERDALE FAMILY PRACTICE"/>
+					</location>
+				</location>
+				<serviceProvider>
+					<reference value="urn:uuid:e3177167-40fc-4f1a-80f2-a2f17f18fde7"/>
+					<display value="SILVERDALE FAMILY PRACTICE"/>
+				</serviceProvider>
+			</Encounter>
+		</resource>
+	</entry>
+	<!--Practitioner-->
+	<entry>
+		<fullUrl value="urn:uuid:50eb4757-15cf-421d-8d46-29fc35eea45d"/>
+		<resource>
+			<Practitioner>
+				<id value="50eb4757-15cf-421d-8d46-29fc35eea45d"/>
+				<meta>
+					<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-DCH-Practitioner-1"/>
+				</meta>
+				<identifier>
+					<system value="https://fhir.nhs.uk/Id/sds-role-profile-id"/>
+					<value value="PT2468"/>
+				</identifier>
+				<name>
+					<family value="Strange"/>
+					<given value="Stephen"/>
+					<prefix value="Dr."/>
+				</name>
+			</Practitioner>
+		</resource>
+	</entry>
+	<!--Practitioner Role-->
+	<entry>
+		<fullUrl value="urn:uuid:b7e3cc3a-9120-49fe-801c-2793b80ca922"/>
+		<resource>
+			<PractitionerRole>
+				<id value="b7e3cc3a-9120-49fe-801c-2793b80ca922"/>
+				<meta>
+					<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-DCH-PractitionerRole-1"/>
+				</meta>
+				<identifier>
+					<system value="https://fhir.nhs.uk/Id/sds-role-profile-id"/>
+					<value value="PT2468"/>
+				</identifier>
+				<practitioner>
+					<reference value="urn:uuid:50eb4757-15cf-421d-8d46-29fc35eea45d"/>
+				</practitioner>
+				<organization>
+					<reference value="urn:uuid:e3177167-40fc-4f1a-80f2-a2f17f18fde7"/>
+				</organization>
+			</PractitionerRole>
+		</resource>
+	</entry>
+	<!--Location where event took place-->
+	<entry>
+		<fullUrl value="urn:uuid:e3177167-40fc-4f1a-80f2-a2f17f18fde7"/>
+		<resource>
+			<Location>
+				<id value="e3177167-40fc-4f1a-80f2-a2f17f18fde7"/>
+				<meta>
+					<profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Location-1"/>
+				</meta>
+				<identifier>
+					<system value="https://fhir.nhs.uk/Id/ods-site-code"/>
+					<value value="A83627"/>
+				</identifier>
+				<name value="SILVERDALE FAMILY PRACTICE"/>
+			</Location>
+		</resource>
+	</entry>
+</Bundle>

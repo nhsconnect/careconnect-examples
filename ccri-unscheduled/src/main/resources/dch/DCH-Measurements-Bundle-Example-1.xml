@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bundle xmlns="http://hl7.org/fhir">
+	<id value="06c3a224-4883-11e8-842f-0ed5f89f718b"/>
+	<meta>
+		<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/DCH-Bundle-1"/>
+	</meta>
+	<type value="message"/>
+	<entry>
+		<fullUrl value="urn:uuid:9d2e2cd9-ffe1-49c7-be43-f36e30564d3f"/>
+		<resource>
+			<MessageHeader>
+				<id value="9d2e2cd9-ffe1-49c7-be43-f36e30564d3f"/>
+				<meta>
+					<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/DCH-MessageHeader-1"/>
+				</meta>
+				<extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-DCH-MessageEventType-1">
+					<valueCodeableConcept>
+						<coding>
+							<system value="https://fhir.nhs.uk/STU3/CodeSystem/DCH-MessageEventType-1"/>
+							<code value="new"/>
+							<display value="New event message"/>
+						</coding>
+					</valueCodeableConcept>
+				</extension>
+				<event>
+					<system value="https://fhir.nhs.uk/STU3/CodeSystem/DCH-ChildHealthEventType-1"/>
+					<code value="CH018"/>
+					<display value="Measurements"/>
+				</event>
+				<destination>
+					<endpoint value="urn:nhs:addressing:asid:477121000325"/>
+				</destination>	
+				<timestamp value="2017-11-01T15:00:00+00:00"/>
+				<source>
+					<endpoint value="urn:nhs:addressing:asid:300000000161"/>
+				</source>
+				<responsible>
+					<reference value="urn:uuid:33a33b58-648a-4453-b981-e21ea9ebc6ea"/>
+					<display value="UNIVERSITY HOSPITAL OF NORTH DURHAM"/>
+				</responsible>
+				<focus>
+					<reference value="urn:uuid:4e70bfed-7bd5-4f45-8d00-7f6b013fa601"/>
+				</focus>
+			</MessageHeader>
+		</resource>
+	</entry>
+	<!--Responsible for message content (Measurements)-->
+	<entry>
+		<fullUrl value="urn:uuid:33a33b58-648a-4453-b981-e21ea9ebc6ea"/>
+		<resource>
+			<Organization>
+				<id value="33a33b58-648a-4453-b981-e21ea9ebc6ea"/>
+				<meta>
+					<profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Organization-1"/>
+				</meta>
+				<identifier>
+					<system value="https://fhir.nhs.uk/Id/ods-organization-code"/>
+					<value value="RX3EP"/>
+				</identifier>
+				<name value="UNIVERSITY HOSPITAL OF NORTH DURHAM"/>
+				<address>
+					<line value="NORTH ROAD"/>
+					<city value="DURHAM"/>
+					<district value="COUNTY DURHAM"/>
+					<postalCode value="DH1 5TW"/>
+				</address>
+			</Organization>
+		</resource>
+	</entry>
+	<!--Healthcare service used e.g GP, trust, etc..-->
+	<entry>
+		<fullUrl value="urn:uuid:5a293df7-b22f-41b6-8bf1-44248ea59edb"/>
+		<resource>
+			<HealthcareService>
+				<id value="5a293df7-b22f-41b6-8bf1-44248ea59edb"/>
+				<meta>
+					<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/DCH-HealthcareService-1"/>
+				</meta>
+				<providedBy>
+					<reference value="urn:uuid:33a33b58-648a-4453-b981-e21ea9ebc6ea"/>
+					<display value="UNIVERSITY HOSPITAL OF DURHAM"/>
+				</providedBy>
+				<type>
+					<coding>
+						<system value="http://snomed.info/sct"/>
+						<code value="1060971000000108"/>
+						<display value="General practice service"/>
+					</coding>
+				</type>
+				<location>
+					<reference value="urn:uuid:c30f1fdd-0247-4e38-ba12-0d26c5555ea3"/>
+				</location>
+				<telecom>
+					<system value="phone"/>
+					<value value="0191 1231234"/>
+				</telecom>
+			</HealthcareService>
+		</resource>
+	</entry>
+	<!--Child Details (Jack Dawkins)-->
+	<entry>
+		<fullUrl value="urn:uuid:5d5845f3-398f-474b-af59-14882fc7b0ca"/>
+		<resource>
+			<Patient>
+				<id value="5d5845f3-398f-474b-af59-14882fc7b0ca"/>
+				<meta>
+					<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-DCH-Patient-1"/>
+				</meta>
+				<identifier>
+					<extension url="https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-NHSNumberVerificationStatus-1">
+						<valueCodeableConcept>
+							<coding>
+								<system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-NHSNumberVerificationStatus-1"/>
+								<code value="01"/>
+								<display value="Number present and verified"/>
+							</coding>
+						</valueCodeableConcept>
+					</extension>
+					<system value="https://fhir.nhs.uk/Id/nhs-number"/>
+					<value value="9912003888"/>
+				</identifier>
+				<name>
+					<use value="official"/>
+					<family value="DAWKINS"/>
+					<given value="Jack"/>
+				</name>
+				<gender value="male"/>
+				<birthDate value="2013-10-12">
+					<extension url="http://hl7.org/fhir/StructureDefinition/patient-birthTime">
+						<valueDateTime value="2017-10-02T12:00:00+00:00"/>
+					</extension>
+				</birthDate>
+				<address>
+					<use value="home"/>
+					<line value="4 Sandmoor Drive"/>
+					<city value="DURHAM"/>
+					<postalCode value="DH1 2TF"/>
+				</address>
+			</Patient>
+		</resource>
+	</entry>
+	<!--Measurements Birth Weight Observation-->
+	<entry>
+		<fullUrl value="urn:uuid:095c5818-4984-48a2-a47f-230b75c93936"/>
+		<resource>
+			<Observation>
+				<id value="095c5818-4984-48a2-a47f-230b75c93936"/>
+				<meta>
+					<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-DCH-Weight-Observation-1"/>
+				</meta>
+				<status value="final"/>
+				<category>
+					<coding>
+						<system value="http://hl7.org/fhir/observation-category"/>
+						<code value="vital-signs"/>
+					</coding>
+				</category>
+				<code>
+					<coding>
+						<system value="http://snomed.info/sct"/>
+						<code value="364589006"/>
+						<display value="Birth weight"/>
+					</coding>
+				</code>
+				<subject>
+					<reference value="urn:uuid:5d5845f3-398f-474b-af59-14882fc7b0ca"/>
+				</subject>
+				<context>
+					<reference value="urn:uuid:a3bec8bd-56af-4ca9-9eb9-889f3f9adecb"/>
+				</context>
+				<performer>
+					<reference value="urn:uuid:4e70bfed-7bd5-4f45-8d00-7f6b013fa601"/>
+				</performer>
+				<valueQuantity>
+					<value value="4"/>
+					<unit value="kilogram"/>
+					<system value="http://unitsofmeasure.org"/>
+					<code value="kg"/>
+				</valueQuantity>
+			</Observation>
+		</resource>
+	</entry>
+	<!--Measurements Encounter details-->
+	<entry>
+		<fullUrl value="urn:uuid:a3bec8bd-56af-4ca9-9eb9-889f3f9adecb"/>
+		<resource>
+			<Encounter>
+				<id value="a3bec8bd-56af-4ca9-9eb9-889f3f9adecb"/>
+				<meta>
+					<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-DCH-Encounter-1"/>
+				</meta>
+				<status value="finished"/>
+				<type>
+					<coding>
+						<system value="https://fhir.nhs.uk/STU3/CodeSystem/DCH-ChildHealthEncounterType-1"/>
+						<code value="003"/>
+						<display value="Birth"/>
+					</coding>
+				</type>
+				<subject>
+					<reference value="urn:uuid:5d5845f3-398f-474b-af59-14882fc7b0ca"/>
+					<display value="DAWKINS, Jack"/>
+				</subject>
+				<period>
+					<start value="2013-10-12"/>
+				</period>
+				<location>
+					<location>
+						<reference value="urn:uuid:c30f1fdd-0247-4e38-ba12-0d26c5555ea3"/>
+						<display value="UNIVERSITY HOSPITAL OF DURHAM"/>
+					</location>
+				</location>
+				<serviceProvider>
+					<reference value="urn:uuid:5a293df7-b22f-41b6-8bf1-44248ea59edb"/>
+					<display value="UNIVERSITY HOSPITAL OF DURHAM"/>
+				</serviceProvider>
+			</Encounter>
+		</resource>
+	</entry>
+	<!--Practitioner-->
+	<entry>
+		<fullUrl value="urn:uuid:4e70bfed-7bd5-4f45-8d00-7f6b013fa601"/>
+		<resource>
+			<Practitioner>
+				<id value="4e70bfed-7bd5-4f45-8d00-7f6b013fa601"/>
+				<meta>
+					<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-DCH-Practitioner-1"/>
+				</meta>
+				<identifier>
+					<system value="https://fhir.nhs.uk/Id/sds-role-profile-id"/>
+					<value value="PT2469"/>
+				</identifier>
+				<name>
+					<family value="Bashir"/>
+					<given value="Julian"/>
+					<prefix value="Dr."/>
+				</name>
+			</Practitioner>
+		</resource>
+	</entry>
+	<!--Practitioner Role-->
+	<entry>
+		<fullUrl value="urn:uuid:b7e3cc3a-9120-49fe-801c-2793b80ca922"/>
+		<resource>
+			<PractitionerRole>
+				<id value="b7e3cc3a-9120-49fe-801c-2793b80ca922"/>
+				<meta>
+					<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-DCH-PractitionerRole-1"/>
+				</meta>
+				<identifier>
+					<system value="https://fhir.nhs.uk/Id/sds-role-profile-id"/>
+					<value value="PT2468"/>
+				</identifier>
+				<practitioner>
+					<reference value="urn:uuid:4e70bfed-7bd5-4f45-8d00-7f6b013fa601"/>
+				</practitioner>
+				<organization>
+					<reference value="urn:uuid:33a33b58-648a-4453-b981-e21ea9ebc6ea"/>
+				</organization>
+			</PractitionerRole>
+		</resource>
+	</entry>
+	<!--Location where event took place-->
+	<entry>
+		<fullUrl value="urn:uuid:c30f1fdd-0247-4e38-ba12-0d26c5555ea3"/>
+		<resource>
+			<Location>
+				<id value="c30f1fdd-0247-4e38-ba12-0d26c5555ea3"/>
+				<meta>
+					<profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Location-1"/>
+				</meta>
+				<identifier>
+					<system value="https://fhir.nhs.uk/Id/ods-site-code"/>
+					<value value="RX3EP"/>
+				</identifier>
+			</Location>
+		</resource>
+	</entry>
+</Bundle>

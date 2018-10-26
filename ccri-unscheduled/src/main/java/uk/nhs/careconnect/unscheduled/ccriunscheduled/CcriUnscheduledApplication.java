@@ -90,9 +90,9 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
             throw new Exception();
         }
 
-       client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
-        //client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8183/ccri-fhir/STU3/");
-      //   client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
+       //client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
+        client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8183/ccri-fhir/STU3/");
+      //  client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
         client.setEncoding(EncodingEnum.XML);
 
         clientGPC = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri/camel/fhir/gpc/");
@@ -108,8 +108,6 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
         clientODS = ctxFHIR.newRestfulGenericClient("https://directory.spineservices.nhs.uk/STU3/");
         clientODS.setEncoding(EncodingEnum.XML);
 
-
-
        postPatient("9658218997","LS25 2AQ", Encounter.EncounterLocationStatus.ACTIVE, "Manstein", "LS15 9JA",0,-5,"54635001","Scalding Injury",false);
 
        postPatient("9658220223", "LS15 8FS",Encounter.EncounterLocationStatus.ACTIVE, "Danzig", "LS14 6UH",-1,0,"217082002","Accidental fall",true);
@@ -121,11 +119,31 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
        postPatient("9658220169", "LS15 8ZB", null, null, null,0,-5,"418399005","Motor vehicle accident",false);
 
 
-       loadTOC("edischarge_full_payload_example-01-9658218873.xml");
-       loadTOC("margaret_walker_outpatient_letter_example-01-9658218997.xml");
+       loadDCH("DCH-BirthDetails-Bundle-Example-1.xml");
+
+       loadDCH("DCH-NewbornHearing-Bundle-Example-1.xml");
+
+       loadDCH("DCH-Immunization-Bundle-Example-1.xml");
+
+        loadDCH("DCH-Measurements-Bundle-Example-1.xml");
+
+        loadDCH("DCH-PhysicalExamination-Bundle-Example-1.xml");
+
+        loadDCH("DCH-Medication-Bundle-Example-1.xml");
+
+        loadTOC("mh_eDischarge_elizabeth_black_full_payload_example-01_9658220169.xml");
+
+        loadTOC("EC_eDischarge_full_payload_example-01_9658218873.xml");
+
+        loadTOC("mary_jones_outpatient_letter_example-01_9658219705.xml");
+
+        loadTOC("edischarge_full_payload_example-01-9658218873.xml");
+
+        loadTOC("margaret_walker_outpatient_letter_example-01-9658218997.xml");
 
       /// TODO once we get metadata call working
         updateNRLS();
+
 
     }
 
@@ -140,10 +158,27 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
         try {
             MethodOutcome outcome = client.create().resource(bundle).execute();
         } catch (UnprocessableEntityException ex) {
+            System.out.println("ERROR - "+filename);
             System.out.println(ctxFHIR.newXmlParser().encodeResourceToString(ex.getOperationOutcome()));
             if (ex.getStatusCode()==422) {
                 MethodOutcome outcome = client.update().resource(bundle).conditionalByUrl("Bundle?identifier="+bundle.getIdentifier().getSystem()+"|"+bundle.getIdentifier().getValue()).execute();
             }
+        }
+
+
+    }
+
+    public void loadDCH(String filename) {
+        InputStream inputStream =
+                Thread.currentThread().getContextClassLoader().getResourceAsStream("dch/"+filename);
+        Reader reader = new InputStreamReader(inputStream);
+        Bundle bundle = (Bundle) ctxFHIR.newXmlParser().parseResource(reader);
+
+        try {
+            MethodOutcome outcome = client.create().resource(bundle).execute();
+        } catch (UnprocessableEntityException ex) {
+            System.out.println("ERROR - "+filename);
+            System.out.println(ctxFHIR.newXmlParser().encodeResourceToString(ex.getOperationOutcome()));
         }
 
 

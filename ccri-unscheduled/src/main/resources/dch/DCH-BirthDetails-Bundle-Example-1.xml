@@ -1,0 +1,355 @@
+<Bundle xmlns="http://hl7.org/fhir">
+    <id value="97be8432-5a9a-4c71-a083-b337323b8d6d"/>
+    <meta>
+        <profile value="https://fhir.nhs.uk/STU3/StructureDefinition/DCH-Bundle-1"/>
+    </meta>
+    <type value="message"/>
+    <entry>
+        <fullUrl value="urn:uuid:9d2e2cd9-ffe1-49c7-be43-f36e30564d3f"/>
+        <resource>
+            <MessageHeader>
+                <id value="9d2e2cd9-ffe1-49c7-be43-f36e30564d3f"/>
+                <meta>
+                    <profile value="https://fhir.nhs.uk/STU3/StructureDefinition/DCH-MessageHeader-1"/>
+                </meta>
+                <extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-DCH-MessageEventType-1">
+                    <valueCodeableConcept>
+                        <coding>
+                            <system value="https://fhir.nhs.uk/STU3/CodeSystem/DCH-MessageEventType-1"/>
+                            <code value="new"/>
+                            <display value="New event message"/>
+                        </coding>
+                    </valueCodeableConcept>
+                </extension>
+                <event>
+                    <system value="https://fhir.nhs.uk/STU3/CodeSystem/DCH-ChildHealthEventType-1"/>
+                    <code value="CH005"/>
+                    <display value="Birth Details"/>
+                </event>
+                <timestamp value="2017-11-01T15:00:00+00:00"/>
+                <source>
+                    <endpoint value="urn:nhs-uk:addressing:ods:RX3EP"/>
+                </source>
+                <responsible>
+                    <reference value="urn:uuid:33a33b58-648a-4453-b981-e21ea9ebc6ea"/>
+                    <display value="UNIVERSITY HOSPITAL OF NORTH DURHAM"/>
+                </responsible>
+                <focus>
+                    <reference value="urn:uuid:1bcb0151-4ddf-4084-9c06-e8a31fdcf25b"/>
+                </focus>
+            </MessageHeader>
+        </resource>
+    </entry>
+    <!--Responsible for message content (Birth)-->
+    <entry>
+        <fullUrl value="urn:uuid:33a33b58-648a-4453-b981-e21ea9ebc6ea"/>
+        <resource>
+            <Organization>
+                <id value="33a33b58-648a-4453-b981-e21ea9ebc6ea"/>
+                <meta>
+                    <profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Organization-1"/>
+                </meta>
+                <identifier>
+                    <system value="https://fhir.nhs.uk/Id/ods-organization-code"/>
+                    <value value="RX3EP"/>
+                </identifier>
+                <name value="UNIVERSITY HOSPITAL OF NORTH DURHAM"/>
+                <address>
+                    <line value="NORTH ROAD"/>
+                    <city value="DURHAM"/>
+                    <district value="COUNTY DURHAM"/>
+                    <postalCode value="DH1 5TW"/>
+                </address>
+            </Organization>
+        </resource>
+    </entry>
+    <!--Healthcare service used e.g GP, trust, etc..-->
+    <entry>
+        <fullUrl value="urn:uuid:5a293df7-b22f-41b6-8bf1-44248ea59edb"/>
+        <resource>
+            <HealthcareService>
+                <id value="5a293df7-b22f-41b6-8bf1-44248ea59edb"/>
+                <meta>
+                    <profile value="https://fhir.nhs.uk/STU3/StructureDefinition/DCH-HealthcareService-1"/>
+                </meta>
+                <providedBy>
+                    <reference value="urn:uuid:33a33b58-648a-4453-b981-e21ea9ebc6ea"/>
+                    <display value="UNIVERSITY HOSPITAL OF DURHAM "/>
+                </providedBy>
+                <type>
+                    <coding>
+                        <system value="http://snomed.info/sct"/>
+                        <code value="714088003"/>
+                        <display value="Midwifery Service"/>
+                    </coding>
+                </type>
+                <location>
+                    <reference value="urn:uuid:291ff33b-1904-4c0f-9c9b-33d7d0cec6a9"/>
+                </location>
+                <telecom>
+                    <system value="phone"/>
+                    <value value="0191 1231234"/>
+                </telecom>
+            </HealthcareService>
+        </resource>
+    </entry>
+    <!--Baby Patient-->
+    <entry>
+        <fullUrl value="urn:uuid:5d5845f3-398f-474b-af59-14882fc7b0ca"/>
+        <resource>
+            <Patient>
+                <id value="7368c5fe-bbb4-4e9c-a585-234e06b84e82"/>
+                <meta>
+                    <profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-DCH-Patient-1"/>
+                </meta>
+                <identifier>
+                    <extension url="https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-NHSNumberVerificationStatus-1">
+                        <valueCodeableConcept>
+                            <coding>
+                                <system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-NHSNumberVerificationStatus-1"/>
+                                <code value="01"/>
+                                <display value="Number present and verified"/>
+                            </coding>
+                        </valueCodeableConcept>
+                    </extension>
+                    <system value="https://fhir.nhs.uk/Id/nhs-number"/>
+                    <value value="9912003888"/>
+                </identifier>
+                <name>
+                    <use value="official"/>
+                    <family value="DAWKINS"/>
+                    <given value="Jack"/>
+                </name>
+                <gender value="male"/>
+                <birthDate value="2017-10-02">
+                    <extension url="http://hl7.org/fhir/StructureDefinition/patient-birthTime">
+                        <valueDateTime value="2017-10-02T20:12:00+00:00"/>
+                    </extension>
+                </birthDate>
+                <address>
+                    <use value="home"/>
+                    <line value="4 Sandmoor Drive"/>
+                    <city value="DURHAM"/>
+                    <postalCode value="DH1 2TF"/>
+                </address>
+                <multipleBirthInteger value="1"/>
+            </Patient>
+        </resource>
+    </entry>
+    <!--NumberofBirths Observation-->
+    <entry>
+        <fullUrl value="urn:uuid:4bec6095-3391-4e10-a906-d08803267c87"/>
+        <resource>
+            <Observation>
+                <meta>
+                    <profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-DCH-NumberOfBirths-Observation-1"/>
+                </meta>
+                <status value="final"/>
+                <code>
+                    <coding>
+                        <system value="http://snomed.info/sct"/>
+                        <code value="382341000000101"/>
+                        <display value="Total number of registerable births at delivery"/>
+                    </coding>
+                </code>
+                <context>
+                    <reference value="urn:uuid:1bcb0151-4ddf-4084-9c06-e8a31fdcf25b"/>
+                </context>
+                <valueQuantity>
+                    <value value="1"/>
+                </valueQuantity>
+            </Observation>
+        </resource>
+    </entry>
+    <!--LengthofGestation Observation-->
+    <entry>
+        <fullUrl value="urn:uuid:2c1aa48f-e96c-4294-b7eb-77b439b31967"/>
+        <resource>
+            <Observation>
+                <meta>
+                    <profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-DCH-LengthOfGestation-Observation-1"/>
+                </meta>
+                <status value="final"/>
+                <code>
+                    <coding>
+                        <system value="http://snomed.info/sct"/>
+                        <code value="412726003"/>
+                        <display value="Length of gestation at birth"/>
+                    </coding>
+                </code>
+                <subject>
+                    <reference value="urn:uuid:5d5845f3-398f-474b-af59-14882fc7b0ca"/>
+                </subject>
+                <context>
+                    <reference value="urn:uuid:1bcb0151-4ddf-4084-9c06-e8a31fdcf25b"/>
+                </context>
+                <component>
+                    <code>
+                        <coding>
+                            <system value="http://snomed.info/sct"/>
+                            <code value="258705008"/>
+                            <display value="weeks"/>
+                        </coding>
+                    </code>
+                    <valueQuantity>
+                        <value value="40"/>
+                    </valueQuantity>
+                </component>
+                <component>
+                    <code>
+                        <coding>
+                            <system value="http://snomed.info/sct"/>
+                            <code value="258703001"/>
+                            <display value="days"/>
+                        </coding>
+                    </code>
+                    <valueQuantity>
+                        <value value="3"/>
+                    </valueQuantity>
+                </component>
+            </Observation>
+        </resource>
+    </entry>
+    <!--APGAR Score 1 Observation-->
+    <entry>
+        <fullUrl value="urn:uuid:d75738b8-60c8-4d13-b3b6-5e4a606130ee"/>
+        <resource>
+            <Observation>
+                <meta>
+                    <profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-DCH-APGARScore-Observation-1"/>
+                </meta>
+                <status value="final"/>
+                <code>
+                    <coding>
+                        <system value="http://snomed.info/sct"/>
+                        <code value="169895004"/>
+                        <display value="Apgar score at 1 minute (observable entity)"/>
+                    </coding>
+                </code>
+                <subject>
+                    <reference value="urn:uuid:5d5845f3-398f-474b-af59-14882fc7b0ca"/>
+                </subject>
+                <context>
+                    <reference value="urn:uuid:1bcb0151-4ddf-4084-9c06-e8a31fdcf25b"/>
+                </context>
+                <valueQuantity>
+                    <value value="8"/>
+                </valueQuantity>
+            </Observation>
+        </resource>
+    </entry>
+    <!--APGAR Score 5 Observation-->
+    <entry>
+        <fullUrl value="urn:uuid:d8465c7e-92db-4bc4-9c5a-2db34b1b1742"/>
+        <resource>
+            <Observation>
+                <id value="d8465c7e-92db-4bc4-9c5a-2db34b1b1742"/>
+                <meta>
+                    <profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-DCH-APGARScore-Observation-1"/>
+                </meta>
+                <status value="final"/>
+                <code>
+                    <coding>
+                        <system value="http://snomed.info/sct"/>
+                        <code value="169909004"/>
+                        <display value="Apgar score at 5 minutes (observable entity)"/>
+                    </coding>
+                </code>
+                <subject>
+                    <reference value="urn:uuid:5d5845f3-398f-474b-af59-14882fc7b0ca"/>
+                </subject>
+                <context>
+                    <reference value="urn:uuid:1bcb0151-4ddf-4084-9c06-e8a31fdcf25b"/>
+                </context>
+                <valueQuantity>
+                    <value value="10"/>
+                </valueQuantity>
+            </Observation>
+        </resource>
+    </entry>
+    <!--FinalDeliveryType Procedure-->
+    <entry>
+        <fullUrl value="urn:uuid:6d129389-0872-4749-b221-e6b12d7e3c30"/>
+        <resource>
+            <Procedure>
+                <id value="6d129389-0872-4749-b221-e6b12d7e3c30"/>
+                <meta>
+                    <profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-DCH-FinalDeliveryType-Procedure-1"/>
+                </meta>
+                <status value="completed"/>
+                <code>
+                    <coding>
+                        <system value="http://snomed.info/sct"/>
+                        <code value="395683001"/>
+                        <display value="Born by normal vaginal delivery"/>
+                    </coding>
+                </code>
+                <subject>
+                    <reference value="urn:uuid:5d5845f3-398f-474b-af59-14882fc7b0ca"/>
+                    <display value="DAWKINS, Jack"/>
+                </subject>
+                <context>
+                    <reference value="urn:uuid:1bcb0151-4ddf-4084-9c06-e8a31fdcf25b"/>
+                </context>
+            </Procedure>
+        </resource>
+    </entry>
+    <!--Birth Encounter details-->
+    <entry>
+        <fullUrl value="urn:uuid:1bcb0151-4ddf-4084-9c06-e8a31fdcf25b"/>
+        <resource>
+            <Encounter>
+                <id value="1bcb0151-4ddf-4084-9c06-e8a31fdcf25b"/>
+                <meta>
+                    <profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-DCH-Encounter-1"/>
+                </meta>
+                <status value="finished"/>
+                <type>
+                    <coding>
+                        <system value="https://fhir.nhs.uk/STU3/CodeSystem/DCH-ChildHealthEncounterType-1"/>
+                        <code value="003"/>
+                        <display value="Birth"/>
+                    </coding>
+                </type>
+                <subject>
+                    <reference value="urn:uuid:5d5845f3-398f-474b-af59-14882fc7b0ca"/>
+                    <display value="DAWKINS, Jack"/>
+                </subject>
+                <period>
+                    <start value="2014-10-12"/>
+                </period>
+                <location>
+                    <location>
+                        <reference value="urn:uuid:291ff33b-1904-4c0f-9c9b-33d7d0cec6a9"/>
+                    </location>
+                </location>
+                <serviceProvider>
+                    <reference value="urn:uuid:5a293df7-b22f-41b6-8bf1-44248ea59edb"/>
+                </serviceProvider>
+            </Encounter>
+        </resource>
+    </entry>
+    <!--Location where event took place (Maternity Site)-->
+    <entry>
+        <fullUrl value="urn:uuid:291ff33b-1904-4c0f-9c9b-33d7d0cec6a9"/>
+        <resource>
+            <Location>
+                <id value="291ff33b-1904-4c0f-9c9b-33d7d0cec6a9"/>
+                <meta>
+                    <profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-DCH-Delivery-Location-1"/>
+                </meta>
+                <identifier>
+                    <system value="https://fhir.nhs.uk/Id/ods-site-code"/>
+                    <value value="RX3EP"/>
+                </identifier>
+                <type>
+                    <coding>
+                        <system value="https://fhir.nhs.uk/STU3/CodeSystem/DCH-DeliveryPlaceType-1"/>
+                        <code value="0"/>
+                        <display value="In NHS hospital - delivery facilities associated with midwife ward"/>
+                    </coding>
+                </type>
+            </Location>
+        </resource>
+    </entry>
+</Bundle>
