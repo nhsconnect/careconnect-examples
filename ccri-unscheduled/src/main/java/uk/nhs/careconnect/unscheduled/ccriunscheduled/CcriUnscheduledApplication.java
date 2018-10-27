@@ -90,9 +90,9 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
             throw new Exception();
         }
 
-       //client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
-        client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8183/ccri-fhir/STU3/");
-      //  client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
+       client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
+      //  client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8183/ccri-fhir/STU3/");
+     //   client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
         client.setEncoding(EncodingEnum.XML);
 
         clientGPC = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri/camel/fhir/gpc/");
@@ -117,6 +117,11 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
        postPatient("9658220142", "LS25 2HF",Encounter.EncounterLocationStatus.PLANNED, "Elbe", "LS26 8PU" ,0,-15, "410429000","Cardiac arrest",true);
 
        postPatient("9658220169", "LS15 8ZB", null, null, null,0,-5,"418399005","Motor vehicle accident",false);
+
+
+       loadPharm("Digital Medicines Emergency Supply Example.xml");
+
+       loadPharm("Digital Medicines Immunizations Example.xml");
 
 
        loadDCH("DCH-BirthDetails-Bundle-Example-1.xml");
@@ -171,6 +176,22 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
     public void loadDCH(String filename) {
         InputStream inputStream =
                 Thread.currentThread().getContextClassLoader().getResourceAsStream("dch/"+filename);
+        Reader reader = new InputStreamReader(inputStream);
+        Bundle bundle = (Bundle) ctxFHIR.newXmlParser().parseResource(reader);
+
+        try {
+            MethodOutcome outcome = client.create().resource(bundle).execute();
+        } catch (UnprocessableEntityException ex) {
+            System.out.println("ERROR - "+filename);
+            System.out.println(ctxFHIR.newXmlParser().encodeResourceToString(ex.getOperationOutcome()));
+        }
+
+
+    }
+
+    public void loadPharm(String filename) {
+        InputStream inputStream =
+                Thread.currentThread().getContextClassLoader().getResourceAsStream("pharm/"+filename);
         Reader reader = new InputStreamReader(inputStream);
         Bundle bundle = (Bundle) ctxFHIR.newXmlParser().parseResource(reader);
 
