@@ -110,7 +110,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
 
         getMichael();
-/*
+
        postPatient("9658218997","LS25 2AQ", Encounter.EncounterLocationStatus.ACTIVE, "Manstein", "LS15 9JA",0,-5,"54635001","Scalding Injury",false);
 
        postPatient("9658220223", "LS15 8FS",Encounter.EncounterLocationStatus.ACTIVE, "Danzig", "LS14 6UH",-1,0,"217082002","Accidental fall",true);
@@ -151,7 +151,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
       /// TODO once we get metadata call working
         updateNRLS();
-*/
+
 
     }
 
@@ -1116,7 +1116,7 @@ Inspired Oxygen
                 .setValue("9658220290");
 
         patient.addName()
-                .setFamily("Meakin")
+                .setFamily("Bisset")
                 .addGiven("Micheal")
                 .addPrefix("Mr")
                 .setUse(HumanName.NameUse.USUAL);
