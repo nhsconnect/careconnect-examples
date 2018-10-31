@@ -90,9 +90,9 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
             throw new Exception();
         }
 
-       client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
-      //  client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8183/ccri-fhir/STU3/");
-     //   client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
+      // client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
+        client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8183/ccri-fhir/STU3/");
+      // client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
         client.setEncoding(EncodingEnum.XML);
 
         clientGPC = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri/camel/fhir/gpc/");
@@ -108,6 +108,9 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
         clientODS = ctxFHIR.newRestfulGenericClient("https://directory.spineservices.nhs.uk/STU3/");
         clientODS.setEncoding(EncodingEnum.XML);
 
+
+        getMichael();
+/*
        postPatient("9658218997","LS25 2AQ", Encounter.EncounterLocationStatus.ACTIVE, "Manstein", "LS15 9JA",0,-5,"54635001","Scalding Injury",false);
 
        postPatient("9658220223", "LS15 8FS",Encounter.EncounterLocationStatus.ACTIVE, "Danzig", "LS14 6UH",-1,0,"217082002","Accidental fall",true);
@@ -148,7 +151,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
       /// TODO once we get metadata call working
         updateNRLS();
-
+*/
 
     }
 
@@ -457,7 +460,9 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
             idno++;
             bundle.addEntry().setResource(triage);
 
-            if (nhsNumber == "9658218873") {
+
+            // EOLC
+            if (nhsNumber == "9658220142") {
                 Flag flag = new Flag();
                 flag.setId(fhirBundle.getNewId(flag));
                 flag.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
@@ -1088,5 +1093,272 @@ Inspired Oxygen
 
         }
         return organization;
+    }
+
+
+    private void getMichael() {
+
+        fhirBundle = new FhirBundleUtil(Bundle.BundleType.COLLECTION);
+
+        doSetUp();
+
+
+
+
+        Bundle bundle = new Bundle();
+
+        Patient patient = new Patient();
+
+        patient.setId(fhirBundle.getNewId(patient));
+
+        patient.addIdentifier()
+                .setSystem("https://fhir.nhs.uk/Id/nhs-number")
+                .setValue("9658220290");
+
+        patient.addName()
+                .setFamily("Meakin")
+                .addGiven("Micheal")
+                .addPrefix("Mr")
+                .setUse(HumanName.NameUse.USUAL);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            patient.setBirthDate(sdf.parse("1960-08-01"));
+        } catch (Exception ex) {}
+
+        patient.setGender(Enumerations.AdministrativeGender.MALE);
+
+        patient.getMaritalStatus().addCoding().setSystem("http://hl7.org/fhir/v3/MaritalStatus").setCode("S");
+
+        patient.addAddress()
+                .addLine("7 Trinity Way")
+                .setCity("London")
+                .setPostalCode("W3 7JF")
+        .setUse(Address.AddressUse.HOME);
+
+        patient.addTelecom().setUse(ContactPoint.ContactPointUse.HOME).setValue("0208 412 8867").setSystem(ContactPoint.ContactPointSystem.PHONE);
+        patient.addTelecom().setUse(ContactPoint.ContactPointUse.MOBILE).setValue("07778 143 565").setSystem(ContactPoint.ContactPointSystem.PHONE);
+        patient.addTelecom().setUse(ContactPoint.ContactPointUse.HOME).setValue("michael@interopen.org").setSystem(ContactPoint.ContactPointSystem.EMAIL);
+
+        patient.setLanguage("English (en-GB)");
+
+
+        CodeableConcept verification = new CodeableConcept();
+        verification.addCoding()
+                .setSystem("https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-NHSNumberVerificationStatus-1")
+                .setDisplay("Number present and verified")
+                .setCode("01");
+
+        patient.addIdentifier()
+                .setValue("9658220290")
+                .setSystem("https://fhir.nhs.uk/Id/nhs-number")
+                .addExtension().setUrl("https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-NHSNumberVerificationStatus-1")
+                .setValue(verification);
+
+
+        // Add GP
+
+        bundle.addEntry().setResource(patient).setFullUrl(patient.getId());
+
+
+        Condition diabetes = new Condition();
+        diabetes.addIdentifier()
+                .setSystem(yasConditionIdentifier)
+                .setValue("con1");
+
+        diabetes.setId(fhirBundle.getNewId(diabetes));
+        diabetes.setSubject(new Reference(uuidtag + patient.getId()));
+        diabetes.getCode().addCoding()
+                .setCode("46635009")
+                .setSystem("http://snomed.info/sct")
+                .setDisplay("Type 1 diabetes mellitus");
+        CodeableConcept category = new CodeableConcept();
+        category.addCoding()
+                .setSystem("https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-ConditionCategory-1")
+                .setDisplay("problem-list-item")
+                .setCode("Problem list item");
+
+        diabetes.getCategory().add(
+                category);
+
+        CodeableConcept severity = new CodeableConcept();
+        severity.addCoding()
+                .setSystem("http://snomed.info/sct")
+                .setDisplay("Moderate")
+                .setCode("6736007");
+        diabetes.setSeverity(severity);
+        diabetes.addNote().setText("Taking insulin");
+        diabetes.setClinicalStatus(Condition.ConditionClinicalStatus.ACTIVE);
+        try {
+            diabetes.setOnset(new DateTimeType(sdf.parse("1964-08-01")));
+            diabetes.setAssertedDate(sdf.parse("1964-12-01"));
+        } catch (Exception ex) {}
+
+        bundle.addEntry().setResource(diabetes).setFullUrl(diabetes.getId());
+
+
+
+        Condition anxiety = new Condition();
+        anxiety.addIdentifier()
+                .setSystem(yasConditionIdentifier)
+                .setValue("con2");
+
+        anxiety.setId(fhirBundle.getNewId(anxiety));
+        anxiety.setSubject(new Reference(uuidtag + patient.getId()));
+        anxiety.getCode().addCoding()
+                .setCode("80583007")
+                .setSystem("http://snomed.info/sct")
+                .setDisplay("[Severe anxiety " +
+                        "(panic)");
+        category = new CodeableConcept();
+        category.addCoding()
+                .setSystem("https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-ConditionCategory-1")
+                .setDisplay("problem-list-item")
+                .setCode("Problem list item");
+
+        anxiety.getCategory().add(
+                category);
+
+        severity = new CodeableConcept();
+        severity.addCoding()
+                .setSystem("http://snomed.info/sct")
+                .setDisplay("Severe")
+                .setCode("24484000");
+
+        anxiety.setSeverity(severity);
+        anxiety.setClinicalStatus(Condition.ConditionClinicalStatus.ACTIVE);
+        anxiety.addNote().setText("Mistaken as aggression");
+        try {
+            anxiety.setOnset(new DateTimeType(sdf.parse("1978-01-13")));
+            anxiety.setAssertedDate(sdf.parse("1978-01-13"));
+        } catch (Exception ex) {}
+
+
+        bundle.addEntry().setResource(anxiety).setFullUrl(anxiety.getId());
+
+
+        Condition condition = new Condition();
+        condition.addIdentifier()
+                .setSystem(yasConditionIdentifier)
+                .setValue("con3");
+
+        condition.setId(fhirBundle.getNewId(condition));
+        condition.setSubject(new Reference(uuidtag + patient.getId()));
+        condition.getCode().addCoding()
+                .setCode("723926008")
+                .setSystem("http://snomed.info/sct")
+                .setDisplay("Perceptual " +
+                        "disturbances and seizures " +
+                        "co-occurrent and due to " +
+                        "alcohol withdrawal");
+        category = new CodeableConcept();
+        category.addCoding()
+                .setSystem("https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-ConditionCategory-1")
+                .setDisplay("encounter-diagnosis")
+                .setCode("Encounter diagnosis");
+
+        condition.getCategory().add(
+                category);
+
+        severity = new CodeableConcept();
+        severity.addCoding()
+                .setSystem("http://snomed.info/sct")
+                .setDisplay("Moderate")
+                .setCode("6736007");
+
+        condition.setSeverity(severity);
+        condition.setClinicalStatus(Condition.ConditionClinicalStatus.ACTIVE);
+       // condition.addNote().setText("Mistaken as aggression");
+        try {
+           // condition.setOnset(new DateTimeType(sdf.parse("1978-01-13")));
+          //  condition.setAssertedDate(sdf.parse("1978-01-13"));
+        } catch (Exception ex) {}
+        bundle.addEntry().setResource(condition).setFullUrl(condition.getId());
+
+
+        // con4
+
+        condition = new Condition();
+        condition.addIdentifier()
+                .setSystem(yasConditionIdentifier)
+                .setValue("con4");
+
+        condition.setId(fhirBundle.getNewId(condition));
+        condition.setSubject(new Reference(uuidtag + patient.getId()));
+        condition.getCode().addCoding()
+                .setCode("164881000119109")
+                .setSystem("http://snomed.info/sct")
+                .setDisplay("Foot " +
+                        "ulcer due to type 1 diabetes " +
+                        "mellitus");
+        category = new CodeableConcept();
+        category.addCoding()
+                .setSystem("https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-ConditionCategory-1")
+                .setDisplay("problem-list-item")
+                .setCode("Problem list item");
+
+
+        condition.getCategory().add(
+                category);
+
+        severity = new CodeableConcept();
+        severity.addCoding()
+                .setSystem("http://snomed.info/sct")
+                .setDisplay("Mild")
+                .setCode("255604002");
+
+        condition.setSeverity(severity);
+        condition.setClinicalStatus(Condition.ConditionClinicalStatus.ACTIVE);
+        // condition.addNote().setText("Mistaken as aggression");
+        try {
+            condition.setOnset(new DateTimeType(sdf.parse("2018-02-18")));
+            condition.setAssertedDate(sdf.parse("2018-02-18"));
+        } catch (Exception ex) {}
+        bundle.addEntry().setResource(condition).setFullUrl(condition.getId());
+
+        // con5
+
+        // con6
+
+        condition = new Condition();
+        condition.addIdentifier()
+                .setSystem(yasConditionIdentifier)
+                .setValue("con6");
+
+        condition.setId(fhirBundle.getNewId(condition));
+        condition.setSubject(new Reference(uuidtag + patient.getId()));
+        condition.getCode().addCoding()
+                .setCode("41309000")
+                .setSystem("http://snomed.info/sct")
+                .setDisplay("Alcoholic liver damage");
+        category = new CodeableConcept();
+        category.addCoding()
+                .setSystem("https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-ConditionCategory-1")
+                .setDisplay("encounter-diagnosis")
+                .setCode("Encounter diagnosis");
+        condition.getCategory().add(
+                category);
+
+        severity = new CodeableConcept();
+        severity.addCoding()
+                .setSystem("http://snomed.info/sct")
+                .setDisplay("Mild")
+                .setCode("255604002");
+
+        condition.setSeverity(severity);
+        condition.setClinicalStatus(Condition.ConditionClinicalStatus.ACTIVE);
+        // condition.addNote().setText("Mistaken as aggression");
+        try {
+           // condition.setOnset(new DateTimeType(sdf.parse("2018-02-18")));
+           // condition.setAssertedDate(sdf.parse("2018-02-18"));
+        } catch (Exception ex) {}
+        bundle.addEntry().setResource(condition).setFullUrl(condition.getId());
+
+        fhirBundle.processBundleResources(bundle);
+
+
+        System.out.println(ctxFHIR.newJsonParser().setPrettyPrint(true).encodeResourceToString(fhirBundle.getFhirDocument()));
+
+        MethodOutcome outcome = client.create().resource(fhirBundle.getFhirDocument()).execute();
     }
 }
