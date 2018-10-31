@@ -91,8 +91,8 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
         }
 
       // client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
-        client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8183/ccri-fhir/STU3/");
-      // client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
+       // client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8183/ccri-fhir/STU3/");
+       client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
         client.setEncoding(EncodingEnum.XML);
 
         clientGPC = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri/camel/fhir/gpc/");
@@ -468,10 +468,25 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
                 flag.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
                 flag.addIdentifier().setSystem(midYorksFlagIdentifier).setValue("unusmy8");
                 flag.getCode().addCoding()
-                        .setCode("450475007")
+                        .setCode("450476008")
                         .setSystem("http://snomed.info/sct")
-                        .setDisplay("For cardiopulmonary resuscitation (finding)");
+                        .setDisplay("Not for attempted cardiopulmonary resuscitation");
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                try {
+                    flag.getPeriod().setStart(sdf.parse("2018-08-01"));
+                } catch (Exception ex) {}
+
+                flag.setAuthor(new Reference(uuidtag + midyorks.getIdElement().getIdPart()));
+                bundle.addEntry().setResource(flag);
+
+                flag = new Flag();
+                flag.setId(fhirBundle.getNewId(flag));
+                flag.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
+                flag.addIdentifier().setSystem(midYorksFlagIdentifier).setValue("unusmy9");
+                flag.getCode().addCoding()
+                        .setCode("526631000000108")
+                        .setSystem("http://snomed.info/sct")
+                        .setDisplay("On end of life care register (finding)");
                 try {
                     flag.getPeriod().setStart(sdf.parse("2018-08-01"));
                 } catch (Exception ex) {}
