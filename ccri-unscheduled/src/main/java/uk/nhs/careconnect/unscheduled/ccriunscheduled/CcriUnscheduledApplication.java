@@ -79,6 +79,8 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
     FhirBundleUtil fhirBundle;
 
+
+
     public static final String SNOMEDCT = "http://snomed.info/sct";
 
 
@@ -91,12 +93,12 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
         }
 
       // client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
-       // client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8183/ccri-fhir/STU3/");
-       client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
+        client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8183/ccri-fhir/STU3/");
+      // client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
         client.setEncoding(EncodingEnum.XML);
 
-        clientGPC = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri/camel/fhir/gpc/");
-       // clientGPC = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
+       // clientGPC = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri/camel/fhir/gpc/");
+        clientGPC = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
        // clientGPC = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8187/ccri/camel/fhir/gpc/");
        // clientGPC.setEncoding(EncodingEnum.XML);
 
@@ -122,37 +124,77 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
        postPatient("9658220169", "LS15 8ZB", null, null, null,0,-5,"418399005","Motor vehicle accident",false);
 
 
-       loadPharm("Digital Medicines Emergency Supply Example.xml");
-
-       loadPharm("Digital Medicines Immunizations Example.xml");
 
 
-       loadDCH("DCH-BirthDetails-Bundle-Example-1.xml");
+        Boolean documents = false;
 
-       loadDCH("DCH-NewbornHearing-Bundle-Example-1.xml");
+        if (documents) {
 
-       loadDCH("DCH-Immunization-Bundle-Example-1.xml");
+            loadPharm("Digital Medicines Emergency Supply Example.xml");
 
-        loadDCH("DCH-Measurements-Bundle-Example-1.xml");
+            loadPharm("Digital Medicines Immunizations Example.xml");
 
-        loadDCH("DCH-PhysicalExamination-Bundle-Example-1.xml");
 
-        loadDCH("DCH-Medication-Bundle-Example-1.xml");
+            loadDCH("DCH-BirthDetails-Bundle-Example-1.xml");
 
-        loadTOC("mh_eDischarge_elizabeth_black_full_payload_example-01_9658220169.xml");
+            loadDCH("DCH-NewbornHearing-Bundle-Example-1.xml");
 
-        loadTOC("EC_eDischarge_full_payload_example-01_9658218873.xml");
+            loadDCH("DCH-Immunization-Bundle-Example-1.xml");
 
-        loadTOC("mary_jones_outpatient_letter_example-01_9658219705.xml");
+            loadDCH("DCH-Measurements-Bundle-Example-1.xml");
 
-        loadTOC("edischarge_full_payload_example-01-9658218873.xml");
+            loadDCH("DCH-PhysicalExamination-Bundle-Example-1.xml");
 
-        loadTOC("margaret_walker_outpatient_letter_example-01-9658218997.xml");
+            loadDCH("DCH-Medication-Bundle-Example-1.xml");
 
-      /// TODO once we get metadata call working
+            loadTOC("mh_eDischarge_elizabeth_black_full_payload_example-01_9658220169.xml");
+
+            loadTOC("EC_eDischarge_full_payload_example-01_9658218873.xml");
+
+            loadTOC("mary_jones_outpatient_letter_example-01_9658219705.xml");
+
+            loadTOC("edischarge_full_payload_example-01-9658218873.xml");
+
+            loadTOC("margaret_walker_outpatient_letter_example-01-9658218997.xml");
+        }
+
+
         updateNRLS();
 
 
+    }
+
+    public void loadEOLC(Bundle bundle) {
+        Flag flag = new Flag();
+        flag.setId(fhirBundle.getNewId(flag));
+        flag.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
+        flag.addIdentifier().setSystem(midYorksFlagIdentifier).setValue("unusmy8");
+        flag.getCode().addCoding()
+                .setCode("450476008")
+                .setSystem("http://snomed.info/sct")
+                .setDisplay("Not for attempted cardiopulmonary resuscitation");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            flag.getPeriod().setStart(sdf.parse("2018-08-01"));
+        } catch (Exception ex) {}
+
+        flag.setAuthor(new Reference(uuidtag + midyorks.getIdElement().getIdPart()));
+        bundle.addEntry().setResource(flag);
+
+        flag = new Flag();
+        flag.setId(fhirBundle.getNewId(flag));
+        flag.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
+        flag.addIdentifier().setSystem(midYorksFlagIdentifier).setValue("unusmy9");
+        flag.getCode().addCoding()
+                .setCode("526631000000108")
+                .setSystem("http://snomed.info/sct")
+                .setDisplay("On end of life care register (finding)");
+        try {
+            flag.getPeriod().setStart(sdf.parse("2018-08-01"));
+        } catch (Exception ex) {}
+
+        flag.setAuthor(new Reference(uuidtag + midyorks.getIdElement().getIdPart()));
+        bundle.addEntry().setResource(flag);
     }
 
     public void loadTOC(String filename) {
@@ -212,7 +254,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
         Bundle bundle =  client
                 .search()
                 .forResource(DocumentReference.class)
-                .where(DocumentReference.TYPE.exactly().code("736253002"))
+                .where(DocumentReference.TYPE.exactly().codes ("736253002", "736373009"))
 
                 .returnBundle(Bundle.class)
                 .execute();
@@ -239,6 +281,8 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
                             author.add(new Reference("https://directory.spineservices.nhs.uk/STU3/Organization/MHT01"));
                             documentReference.setAuthor(author);
                             documentReference.setCustodian(new Reference("https://directory.spineservices.nhs.uk/STU3/Organization/MHT01"));
+
+                            documentReference.getType().getCodingFirstRep().setCode("736253002").setDisplay("Mental health crisis plan");
 
        //                     System.out.println(ctxFHIR.newJsonParser().setPrettyPrint(true).encodeResourceToString(documentReference));
 
@@ -463,36 +507,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
             // EOLC
             if (nhsNumber == "9658220142") {
-                Flag flag = new Flag();
-                flag.setId(fhirBundle.getNewId(flag));
-                flag.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
-                flag.addIdentifier().setSystem(midYorksFlagIdentifier).setValue("unusmy8");
-                flag.getCode().addCoding()
-                        .setCode("450476008")
-                        .setSystem("http://snomed.info/sct")
-                        .setDisplay("Not for attempted cardiopulmonary resuscitation");
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                try {
-                    flag.getPeriod().setStart(sdf.parse("2018-08-01"));
-                } catch (Exception ex) {}
-
-                flag.setAuthor(new Reference(uuidtag + midyorks.getIdElement().getIdPart()));
-                bundle.addEntry().setResource(flag);
-
-                flag = new Flag();
-                flag.setId(fhirBundle.getNewId(flag));
-                flag.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
-                flag.addIdentifier().setSystem(midYorksFlagIdentifier).setValue("unusmy9");
-                flag.getCode().addCoding()
-                        .setCode("526631000000108")
-                        .setSystem("http://snomed.info/sct")
-                        .setDisplay("On end of life care register (finding)");
-                try {
-                    flag.getPeriod().setStart(sdf.parse("2018-08-01"));
-                } catch (Exception ex) {}
-
-                flag.setAuthor(new Reference(uuidtag + midyorks.getIdElement().getIdPart()));
-                bundle.addEntry().setResource(flag);
+                loadEOLC(bundle);
             }
 
 
