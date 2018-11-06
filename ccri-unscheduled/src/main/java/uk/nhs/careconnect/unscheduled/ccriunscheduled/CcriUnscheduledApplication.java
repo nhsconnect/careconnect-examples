@@ -15,9 +15,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.client.RestTemplate;
 
-import javax.print.Doc;
-import javax.swing.text.Document;
-import java.io.IOException;
+
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -98,9 +96,9 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
             throw new Exception();
         }
 
-      // client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
-      //  client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8183/ccri-fhir/STU3/");
-       client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
+     //  client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
+        client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8183/ccri-fhir/STU3/");
+       //client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
         client.setEncoding(EncodingEnum.XML);
 
        // clientGPC = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri/camel/fhir/gpc/");
@@ -730,7 +728,7 @@ Inspired Oxygen
      */
 
                 if (nhsNumber=="9658220223") {
-                    Observation news = createObservation("2", "score", "National early warning score","859261000000108", ambulance);
+                    Observation news = createObservation("2", "score", "Royal College of Physicians NEWS2 (National Early Warning Score 2) total score","1104051000000101", ambulance);
 
                     Observation obs = createObservation("14", "/min",  "Respiratory rate","86290005",ambulance);
                     bundle.addEntry().setResource(obs);
@@ -740,7 +738,7 @@ Inspired Oxygen
                     bundle.addEntry().setResource(obs);
                     news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
 
-                    obs = createObservation("96", "%",  "SpO2 - saturation of peripheral oxygen","431314004",ambulance);
+                    obs = createObservation("96", "%",  "Blood oxygen saturation","103228002",ambulance);
                     bundle.addEntry().setResource(obs);
                     news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
 
@@ -755,11 +753,11 @@ Inspired Oxygen
                     // obs = createObservationCoded("722742002", "Breathing room air",  "Observation of breathing","301282008",ambulance);
                     // bundle.addEntry().setResource(obs);
 
-                    obs = createObservationCoded("722742002", "Breathing room air",  "Observation of breathing","301282008",ambulance);
+                    obs = createObservationCoded(null, null,  "Breathing room air","722742002",ambulance);
                     bundle.addEntry().setResource(obs);
                     news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
 
-                    obs = createObservationCoded("248234008", "Mentally alert",  "Mental alertness - finding","365933000",ambulance);
+                    obs = createObservationCoded("248234008", "Mentally alert",  "ACVPU (Alert Confusion Voice Pain Unresponsive) scale score","1104441000000107",ambulance);
                     bundle.addEntry().setResource(obs);
                     news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
                     // Conscious
@@ -770,7 +768,7 @@ Inspired Oxygen
 
                 if (nhsNumber=="9658218997") {
 
-                    Observation news = createObservation("6", "score", "National early warning score","859261000000108", ambulance);
+                    Observation news = createObservation("6", "score", "Royal College of Physicians NEWS2 (National Early Warning Score 2) total score","1104051000000101", ambulance);
 
                     Observation obs = createObservation("21", "/min",  "Respiratory rate","86290005",ambulance);
                     bundle.addEntry().setResource(obs);
@@ -780,7 +778,7 @@ Inspired Oxygen
                     bundle.addEntry().setResource(obs);
                     news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
 
-                    obs = createObservation("93", "%",  "SpO2 - saturation of peripheral oxygen","431314004",ambulance);
+                    obs = createObservation("93", "%",  "Blood oxygen saturation","103228002",ambulance);
                     bundle.addEntry().setResource(obs);
                     news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
 
@@ -795,11 +793,11 @@ Inspired Oxygen
                    // obs = createObservationCoded("722742002", "Breathing room air",  "Observation of breathing","301282008",ambulance);
                    // bundle.addEntry().setResource(obs);
 
-                    obs = createObservationCoded("371825009", "Patient on oxygen",  "Observation of breathing","301282008",ambulance);
+                    obs = createObservationCoded(null, null,  "Patient on oxygen","371825009",ambulance);
                     bundle.addEntry().setResource(obs);
                     news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
 
-                    obs = createObservationCoded("248234008", "Mentally alert",  "Mental alertness - finding","365933000",ambulance);
+                    obs = createObservationCoded("248234008", "Mentally alert",  "ACVPU (Alert Confusion Voice Pain Unresponsive) scale score","1104441000000107",ambulance);
                     bundle.addEntry().setResource(obs);
                     news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
                     // Conscious
@@ -809,7 +807,7 @@ Inspired Oxygen
                 }
                 if (nhsNumber=="9658220142") {
 //CARDIAC
-                    Observation news = createObservation("8", "score", "National early warning score","859261000000108", ambulance);
+                    Observation news = createObservation("8", "score", "Royal College of Physicians NEWS2 (National Early Warning Score 2) total score","1104051000000101", ambulance);
 
                     Observation obs = createObservation("15", "/min",  "Respiratory rate","86290005",ambulance);
                     bundle.addEntry().setResource(obs);
@@ -819,7 +817,7 @@ Inspired Oxygen
                     bundle.addEntry().setResource(obs);
                     news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
 
-                    obs = createObservation("80", "%",  "SpO2 - saturation of peripheral oxygen","431314004",ambulance);
+                    obs = createObservation("80", "%",  "Blood oxygen saturation","103228002",ambulance);
                     bundle.addEntry().setResource(obs);
                     news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
 
@@ -834,11 +832,11 @@ Inspired Oxygen
                     // obs = createObservationCoded("722742002", "Breathing room air",  "Observation of breathing","301282008",ambulance);
                     // bundle.addEntry().setResource(obs);
 
-                    obs = createObservationCoded("371825009", "Patient on oxygen",  "Observation of breathing","301282008",ambulance);
+                    obs = createObservationCoded(null, null,  "Patient on oxygen","371825009",ambulance);
                     bundle.addEntry().setResource(obs);
                     news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
 
-                    obs = createObservationCoded("130987000", "Acute confusion",  "Mental alertness - finding","365933000",ambulance);
+                    obs = createObservationCoded("130987000", "Acute confusion",   "ACVPU (Alert Confusion Voice Pain Unresponsive) scale score","1104441000000107", ambulance);
                     bundle.addEntry().setResource(obs);
                     news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
                     // Conscious
@@ -872,13 +870,15 @@ Inspired Oxygen
     private Observation createObservationCoded(String valueCode, String valueDescription, String display, String code, Encounter encounter) {
         Observation observation = createObservation(null, null, display, code, encounter);
 
-        CodeableConcept concept = new CodeableConcept();
-        concept.addCoding()
-                .setSystem("http://snomed.info/sct")
-                .setCode(valueCode)
-                .setDisplay(valueDescription);
+        if (valueCode != null) {
+            CodeableConcept concept = new CodeableConcept();
+            concept.addCoding()
+                    .setSystem("http://snomed.info/sct")
+                    .setCode(valueCode)
+                    .setDisplay(valueDescription);
 
-        observation.setValue(concept);
+            observation.setValue(concept);
+        }
 
         return observation;
     }
@@ -886,29 +886,34 @@ Inspired Oxygen
     private Observation createObservationBP(String sys, String dia, String display, String code, Encounter encounter) {
         Observation observation = createObservation(null, null, display, code, encounter);
 
+        observation.addCategory().addCoding()
+                .setSystem("http://hl7.org/fhir/observation-category")
+                .setCode("vital-signs")
+                .setDisplay("Vital Signs");
+
         Observation.ObservationComponentComponent sysComp = observation.addComponent();
         sysComp.getCode().addCoding()
                 .setCode("72313002")
-                .setDisplay("Systolic blood pressure")
+                .setDisplay("Systolic arterial pressure")
                 .setSystem("http://snomed.info/sct");
         sysComp.setValue(
                 new Quantity()
                         .setValue(new BigDecimal(sys))
-                        .setUnit("mmHg")
+                        .setUnit("mm[Hg]")
                         .setSystem("http://unitsofmeasure.org")
-                        .setCode("mmHg"));
+                        .setCode("mm[Hg]"));
 
         Observation.ObservationComponentComponent diaComp = observation.addComponent();
         diaComp.getCode().addCoding()
-                .setCode("271650006")
-                .setDisplay("Diastolic blood pressure")
+                .setCode("1091811000000102")
+                .setDisplay("Diastolic arterial pressure")
                 .setSystem("http://snomed.info/sct");
         diaComp.setValue(
                 new Quantity()
                         .setValue(new BigDecimal(dia))
-                        .setUnit("mmHg")
+                        .setUnit("mm[Hg]")
                         .setSystem("http://unitsofmeasure.org")
-                        .setCode("mmHg"));
+                        .setCode("mm[Hg]"));
 
         return observation;
     }
@@ -937,10 +942,19 @@ Inspired Oxygen
 
         // Not converted unit and code correctly.
 
-        observation.addCategory().addCoding()
-                .setSystem("http://hl7.org/fhir/observation-category")
-                .setCode("vital-signs")
-                .setDisplay("Vital Signs");
+        if (value != null) {
+            if (!code.equals("1104051000000101")) {
+                observation.addCategory().addCoding()
+                        .setSystem("http://hl7.org/fhir/observation-category")
+                        .setCode("vital-signs")
+                        .setDisplay("Vital Signs");
+            } else {
+                observation.addCategory().addCoding()
+                        .setSystem("http://hl7.org/fhir/observation-category")
+                        .setCode("survey")
+                        .setDisplay("Survey");
+            }
+        }
 
         try {
             Calendar cal = Calendar.getInstance();
@@ -1312,6 +1326,8 @@ Inspired Oxygen
                 .setSystem("https://fhir.nhs.uk/Id/nhs-number")
                 .addExtension().setUrl("https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-NHSNumberVerificationStatus-1")
                 .setValue(verification);
+
+        patient.setManagingOrganization(new Reference(uuidtag + yas.getId()));
 
 
         // Add GP
