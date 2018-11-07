@@ -15,7 +15,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.client.RestTemplate;
 
-
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -96,9 +95,9 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
             throw new Exception();
         }
 
-     //  client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
+      // client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
         client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8183/ccri-fhir/STU3/");
-       //client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
+      // client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
         client.setEncoding(EncodingEnum.XML);
 
        // clientGPC = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri/camel/fhir/gpc/");
@@ -226,6 +225,34 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
         bundle.addEntry().setResource(condition);
 
+        QuestionnaireResponse formCPR = new QuestionnaireResponse();
+        formCPR.setId(fhirBundle.getNewId(formCPR));
+        formCPR.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
+        formCPR.getIdentifier().setSystem(midYorksQuestionnaireResponseIdentifier).setValue("rjm2");
+        formCPR.setAuthor(new Reference(uuidtag + consultant.getId()));
+        formCPR.setStatus(QuestionnaireResponse.QuestionnaireResponseStatus.COMPLETED);
+        try {
+            formCPR.setAuthored(sdf.parse("2018-08-01"));
+        } catch (Exception ex) {}
+        formCPR.addItem()
+                .setLinkId("reasonForCPRStatus")
+                .setText("Reason for CPR status")
+                .addAnswer()
+                .setValue(new StringType("At home with family"));
+        formCPR.addItem()
+                .setLinkId("professionalsInvolvedInDecision")
+                .setText("Professionals Involved In Decision")
+                .addAnswer()
+                .setValue(new Reference(uuidtag + consultant.getId()));
+        formCPR.addItem()
+                .setLinkId("professionalEndorsingStatus")
+                .setText("Professional Endorsing Status")
+                .addAnswer()
+                .setValue(new Reference(uuidtag + consultant.getId()));
+
+
+        bundle.addEntry().setResource(formCPR);
+
         QuestionnaireResponse form = new QuestionnaireResponse();
         form.setId(fhirBundle.getNewId(form));
         form.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
@@ -255,6 +282,8 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
         bundle.addEntry().setResource(form);
 
 
+
+
         CarePlan carePlan = new CarePlan();
         carePlan.setId(fhirBundle.getNewId(carePlan));
         carePlan.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
@@ -271,6 +300,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
             carePlan.getPeriod().setStart(sdf.parse("2018-08-01"));
         } catch (Exception ex) {}
         carePlan.addSupportingInfo(new Reference(uuidtag + form.getId()));
+        carePlan.addSupportingInfo(new Reference(uuidtag + formCPR.getId()));
         carePlan.addActivity()
                 .getDetail().setStatus(CarePlan.CarePlanActivityStatus.NOTSTARTED).setDescription("Nebulizer can be used to make patient more comfortable")
                 .getCode().addCoding().setCode("445141005").setSystem("http://snomed.info/sct").setDisplay("Nebuliser therapy using mask");
@@ -942,19 +972,10 @@ Inspired Oxygen
 
         // Not converted unit and code correctly.
 
-        if (value != null) {
-            if (!code.equals("1104051000000101")) {
-                observation.addCategory().addCoding()
-                        .setSystem("http://hl7.org/fhir/observation-category")
-                        .setCode("vital-signs")
-                        .setDisplay("Vital Signs");
-            } else {
-                observation.addCategory().addCoding()
-                        .setSystem("http://hl7.org/fhir/observation-category")
-                        .setCode("survey")
-                        .setDisplay("Survey");
-            }
-        }
+        observation.addCategory().addCoding()
+                .setSystem("http://hl7.org/fhir/observation-category")
+                .setCode("vital-signs")
+                .setDisplay("Vital Signs");
 
         try {
             Calendar cal = Calendar.getInstance();
