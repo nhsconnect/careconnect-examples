@@ -47,6 +47,8 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
     private static String midYorksQuestionnaireResponseIdentifier = "https://fhir.midyorks.nhs.uk/QuestionnaireResponse/Identifier";
 
+    private static String midYorksQuestionnaireIdentifier = "https://fhir.midyorks.nhs.uk/Questionnaire/Identifier";
+
     private static String midYorksConditionIdentifier = "https://fhir.midyorks.nhs.uk/Condition/Identifier";
 
     private static String yasDocumentIdentifier = "https://fhir.yas.nhs.uk/DocumentReference/Identifier";
@@ -95,8 +97,8 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
             throw new Exception();
         }
 
-      // client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
-        client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8183/ccri-fhir/STU3/");
+       client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
+      //  client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8183/ccri-fhir/STU3/");
       // client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
         client.setEncoding(EncodingEnum.XML);
 
@@ -225,11 +227,24 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
         bundle.addEntry().setResource(condition);
 
+        Questionnaire questionnaireCPR = new Questionnaire();
+        questionnaireCPR.setId(fhirBundle.getNewId(questionnaireCPR));
+        questionnaireCPR.addIdentifier().setSystem(midYorksQuestionnaireIdentifier).setValue("sr1");
+        questionnaireCPR.setName("EOL CPR Status");
+        bundle.addEntry().setResource(questionnaireCPR);
+
+        Questionnaire questionnaire = new Questionnaire();
+        questionnaire.setId(fhirBundle.getNewId(questionnaire));
+        questionnaire.addIdentifier().setSystem(midYorksQuestionnaireIdentifier).setValue("sr2");
+        questionnaire.setName("EOL Preferences");
+        bundle.addEntry().setResource(questionnaire);
+
         QuestionnaireResponse formCPR = new QuestionnaireResponse();
         formCPR.setId(fhirBundle.getNewId(formCPR));
         formCPR.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
         formCPR.getIdentifier().setSystem(midYorksQuestionnaireResponseIdentifier).setValue("rjm2");
         formCPR.setAuthor(new Reference(uuidtag + consultant.getId()));
+        formCPR.setQuestionnaire(new Reference(uuidtag + questionnaireCPR.getId()));
         formCPR.setStatus(QuestionnaireResponse.QuestionnaireResponseStatus.COMPLETED);
         try {
             formCPR.setAuthored(sdf.parse("2018-08-01"));
@@ -258,6 +273,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
         form.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
         form.getIdentifier().setSystem(midYorksQuestionnaireResponseIdentifier).setValue("rjm1");
         form.setAuthor(new Reference(uuidtag + consultant.getId()));
+        form.setQuestionnaire(new Reference(uuidtag + questionnaire.getId()));
         form.setStatus(QuestionnaireResponse.QuestionnaireResponseStatus.COMPLETED);
         try {
             form.setAuthored(sdf.parse("2018-08-01"));

@@ -292,7 +292,7 @@ to the composition/document information.-->
 										<th>Patient name</th>
 										<td>
 											<p>Prefix: Mr</p>
-											<p>Given Name: Dan</p>
+											<p>Given Name: Micheal</p>
 											<p>Family Name: Bisset</p>
 										</td>
 									</tr>
@@ -399,7 +399,7 @@ to the composition/document information.-->
 				<status value="finished"/>
 				<subject>
 					<reference value="urn:uuid:1e2b5223-1cd8-43ff-8a67-55dec3edb9b0"/>
-					<display value="BISSET, Dan (Mr)"/>
+					<display value="BISSET, Micheal (Mr)"/>
 				</subject>
 				<participant>
 					<type>
@@ -500,9 +500,9 @@ to the composition/document information.-->
 				</identifier>
 				<name>
 					<use value="official"/>
-					<text value="Mr Dan Bisset"/>
+					<text value="Mr Micheal Bisset"/>
 					<family value="Bisset"/>
-					<given value="Dan"/>
+					<given value="Micheal"/>
 					<prefix value="Mr"/>
 				</name>
 				<telecom>
@@ -634,7 +634,7 @@ to the composition/document information.-->
 				</code>
 				<subject>
 					<reference value="urn:uuid:1e2b5223-1cd8-43ff-8a67-55dec3edb9b0"/>
-					<display value="Bisset, Dan (Mr)"/>
+					<display value="Bisset, Micheal (Mr)"/>
 				</subject>
 				<encounter>
 					<reference value="urn:uuid:adb353f9-0953-4fb4-a4ab-f0ab04a44dbc"/>
@@ -663,7 +663,7 @@ to the composition/document information.-->
 				</medicationReference>
 				<subject>
 					<reference value="urn:uuid:1e2b5223-1cd8-43ff-8a67-55dec3edb9b0"/>
-					<display value="BISSET, Dan (Mr)"/>
+					<display value="BISSET, Micheal (Mr)"/>
 				</subject>
 				<context>
 					<reference value="urn:uuid:adb353f9-0953-4fb4-a4ab-f0ab04a44dbc"/>
