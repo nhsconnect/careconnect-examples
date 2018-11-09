@@ -14,6 +14,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.client.RestTemplate;
+import sun.awt.EmbeddedFrame;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -21,10 +22,7 @@ import java.io.Reader;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @SpringBootApplication
 public class CcriUnscheduledApplication implements CommandLineRunner {
@@ -32,6 +30,10 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
     private static final Logger log = LoggerFactory.getLogger(CcriUnscheduledApplication.class);
 
     private static String yasEncounterIdentifier = "https://fhir.yas.nhs.uk/Encounter/Identifier";
+
+    private static String interOpenEncounterIdentifier = "https://fhir.interopen.org/Encounter/Identifier";
+    private static String interOpenProcedureIdentifier = "https://fhir.interopen.org/Procedure/Identifier";
+    private static String interOpenPractitionerIdentifier = "https://fhir.interopen.org/Practitioner/Identifier";
 
     private static String yasEpisodeIdentifier = "https://fhir.yas.nhs.uk/EpisodeOfCare/Identifier";
 
@@ -61,6 +63,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
     Organization lth;
     Organization midyorks;
+    Organization rkh;
 
     Location jimmy;
     Location pinderfields;
@@ -97,8 +100,8 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
             throw new Exception();
         }
 
-       client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
-      //  client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8183/ccri-fhir/STU3/");
+      // client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
+        client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8183/ccri-fhir/STU3/");
       // client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
         client.setEncoding(EncodingEnum.XML);
 
@@ -363,9 +366,6 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
         bundle.addEntry().setResource(condition);
 
 
-
-
-        System.out.println(ctxFHIR.newJsonParser().setPrettyPrint(true).encodeResourceToString(bundle));
         return bundle;
     }
 
@@ -1307,6 +1307,8 @@ Inspired Oxygen
 
     private void getMichael() {
 
+
+        rkh = getOrganization("RVV");
         fhirBundle = new FhirBundleUtil(Bundle.BundleType.COLLECTION);
 
         doSetUp();
@@ -1315,6 +1317,9 @@ Inspired Oxygen
 
 
         Bundle bundle = new Bundle();
+
+
+
 
         Patient patient = new Patient();
 
@@ -1371,6 +1376,114 @@ Inspired Oxygen
 
         bundle.addEntry().setResource(patient).setFullUrl(patient.getId());
 
+        rkh.setId(fhirBundle.getNewId(rkh));
+        bundle.addEntry().setResource(rkh).setFullUrl(uuidtag + rkh.getId());
+
+        Practitioner practitioner = new Practitioner();
+        practitioner.setId(fhirBundle.getNewId(practitioner));
+        practitioner.addIdentifier().setSystem(interOpenPractitionerIdentifier).setValue("rkh1");
+
+        practitioner.addName().setFamily("Courday").addGiven("Elisabeth").addPrefix("Dr");
+        bundle.addEntry().setResource(practitioner).setFullUrl(uuidtag+ practitioner);
+
+        Practitioner erdoc = new Practitioner();
+        erdoc.setId(fhirBundle.getNewId(erdoc));
+        erdoc.addIdentifier().setSystem(interOpenPractitionerIdentifier).setValue("rkh2");
+        erdoc.addName().setFamily("Ross").addGiven("Doug").addPrefix("Dr");
+        bundle.addEntry().setResource(erdoc).setFullUrl(uuidtag+ erdoc);
+
+        Practitioner nurse = new Practitioner();
+        nurse.setId(fhirBundle.getNewId(nurse));
+        nurse.addIdentifier().setSystem(interOpenPractitionerIdentifier).setValue("rkh3");
+        nurse.addName().setFamily("Hathaway").addGiven("Carol").addPrefix("Ms");
+        bundle.addEntry().setResource(nurse).setFullUrl(uuidtag+ nurse);
+        // Encounter E8
+
+        Encounter encounter = getEncounter(patient,"E8", Encounter.EncounterStatus.FINISHED,rkh, "EMER",
+                "Emergency","2018-11-08", null ,"4525004","Emergency department patient visit");
+        encounter.addParticipant(new Encounter.EncounterParticipantComponent().setIndividual(new Reference(uuidtag + erdoc.getId())));
+        bundle.addEntry().setResource(encounter).setFullUrl(encounter.getId());
+
+        Condition condition = new Condition();
+        condition.addIdentifier()
+                .setSystem(yasConditionIdentifier)
+                .setValue("con3");
+
+        condition.setId(fhirBundle.getNewId(condition));
+        condition.setSubject(new Reference(uuidtag + patient.getId()));
+
+        condition.setContext(new Reference(uuidtag + encounter.getId()));
+        condition.setAsserter(new Reference(uuidtag + erdoc.getId()));
+        condition.getCode().addCoding()
+                .setCode("723926008")
+                .setSystem(SNOMEDCT)
+                .setDisplay("Perceptual " +
+                        "disturbances and seizures " +
+                        "co-occurrent and due to " +
+                        "alcohol withdrawal");
+        CodeableConcept category = new CodeableConcept();
+        category.addCoding()
+                .setSystem("https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-ConditionCategory-1")
+                .setDisplay("encounter-diagnosis")
+                .setCode("Encounter diagnosis");
+
+        condition.getCategory().add(
+                category);
+        try {
+            condition.setAssertedDate(sdf.parse("2018-11-08"));
+        } catch (Exception ex) {}
+
+        CodeableConcept severity = new CodeableConcept();
+        severity.addCoding()
+                .setSystem(SNOMEDCT)
+                .setDisplay("Moderate")
+                .setCode("6736007");
+
+        condition.setSeverity(severity);
+        condition.setClinicalStatus(Condition.ConditionClinicalStatus.ACTIVE);
+        // condition.addNote().setText("Mistaken as aggression");
+        try {
+            // condition.setOnset(new DateTimeType(sdf.parse("1978-01-13")));
+            //  condition.setAssertedDate(sdf.parse("1978-01-13"));
+        } catch (Exception ex) {}
+        bundle.addEntry().setResource(condition).setFullUrl(condition.getId());
+
+
+
+        // E9
+        encounter = getEncounter(patient,"E9", Encounter.EncounterStatus.FINISHED,rkh, "IMP",
+                "inpatient encounter","2018-11-09", null ,"86181006","Evaluation and management of inpatient");
+        encounter.addParticipant(new Encounter.EncounterParticipantComponent().setIndividual(new Reference(uuidtag + practitioner.getId())));
+        bundle.addEntry().setResource(encounter).setFullUrl(encounter.getId());
+
+        // E10
+        encounter = getEncounter(patient,"E10", Encounter.EncounterStatus.FINISHED,rkh, "IMP",
+                "inpatient encounter","2018-11-09", "2018-11-18" ,"53923005","Medical consultation on inpatient");
+        bundle.addEntry().setResource(encounter).setFullUrl(encounter.getId());
+
+        // E11
+        encounter = getEncounter(patient,"E11", Encounter.EncounterStatus.FINISHED,rkh, "IMP",
+                "inpatient encounter","2018-11-16", "2018-11-18" ,"53923005","Medical consultation on inpatient");
+        encounter.addParticipant(new Encounter.EncounterParticipantComponent().setIndividual(new Reference(uuidtag + nurse.getId())));
+        bundle.addEntry().setResource(encounter).setFullUrl(encounter.getId());
+
+        Procedure procedure = new Procedure();
+        procedure.setSubject(new Reference(uuidtag + patient.getId()));
+        try {
+            procedure.setPerformed(new Period().setStart(sdf.parse("2018-11-16")).setEnd(sdf.parse("2018-11-18")));
+        } catch (Exception ex) {}
+        procedure.setId(fhirBundle.getNewId(procedure));
+        procedure.addIdentifier().setSystem(interOpenProcedureIdentifier).setValue("proc1");
+        procedure.getCode().addCoding().setSystem(SNOMEDCT).setCode("386465007").setDisplay("Prescribed medication education");
+        procedure.setContext(new Reference(uuidtag+encounter.getId()));
+        procedure.setStatus(Procedure.ProcedureStatus.COMPLETED);
+        procedure.addPerformer(new Procedure.ProcedurePerformerComponent().setActor(new Reference(uuidtag + nurse.getId())));
+        bundle.addEntry().setResource(procedure).setFullUrl(procedure.getId());
+
+        // E12
+        encounter = getEncounter(patient,"E12", Encounter.EncounterStatus.FINISHED,rkh, "IMP",
+                "inpatient encounter","2018-11-18", "2018-11-18" ,"83362003","Final inpatient visit with instructions at discharge");
+        bundle.addEntry().setResource(encounter).setFullUrl(encounter.getId());
 
         Condition diabetes = new Condition();
         diabetes.addIdentifier()
@@ -1383,7 +1496,7 @@ Inspired Oxygen
                 .setCode("46635009")
                 .setSystem("http://snomed.info/sct")
                 .setDisplay("Type 1 diabetes mellitus");
-        CodeableConcept category = new CodeableConcept();
+        category = new CodeableConcept();
         category.addCoding()
                 .setSystem("https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-ConditionCategory-1")
                 .setDisplay("problem-list-item")
@@ -1392,7 +1505,7 @@ Inspired Oxygen
         diabetes.getCategory().add(
                 category);
 
-        CodeableConcept severity = new CodeableConcept();
+        severity = new CodeableConcept();
         severity.addCoding()
                 .setSystem("http://snomed.info/sct")
                 .setDisplay("Moderate")
@@ -1448,43 +1561,6 @@ Inspired Oxygen
         bundle.addEntry().setResource(anxiety).setFullUrl(anxiety.getId());
 
 
-        Condition condition = new Condition();
-        condition.addIdentifier()
-                .setSystem(yasConditionIdentifier)
-                .setValue("con3");
-
-        condition.setId(fhirBundle.getNewId(condition));
-        condition.setSubject(new Reference(uuidtag + patient.getId()));
-        condition.getCode().addCoding()
-                .setCode("723926008")
-                .setSystem("http://snomed.info/sct")
-                .setDisplay("Perceptual " +
-                        "disturbances and seizures " +
-                        "co-occurrent and due to " +
-                        "alcohol withdrawal");
-        category = new CodeableConcept();
-        category.addCoding()
-                .setSystem("https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-ConditionCategory-1")
-                .setDisplay("encounter-diagnosis")
-                .setCode("Encounter diagnosis");
-
-        condition.getCategory().add(
-                category);
-
-        severity = new CodeableConcept();
-        severity.addCoding()
-                .setSystem("http://snomed.info/sct")
-                .setDisplay("Moderate")
-                .setCode("6736007");
-
-        condition.setSeverity(severity);
-        condition.setClinicalStatus(Condition.ConditionClinicalStatus.ACTIVE);
-       // condition.addNote().setText("Mistaken as aggression");
-        try {
-           // condition.setOnset(new DateTimeType(sdf.parse("1978-01-13")));
-          //  condition.setAssertedDate(sdf.parse("1978-01-13"));
-        } catch (Exception ex) {}
-        bundle.addEntry().setResource(condition).setFullUrl(condition.getId());
 
 
         // con4
@@ -1571,5 +1647,38 @@ Inspired Oxygen
         System.out.println(ctxFHIR.newJsonParser().setPrettyPrint(true).encodeResourceToString(fhirBundle.getFhirDocument()));
 
         MethodOutcome outcome = client.create().resource(fhirBundle.getFhirDocument()).execute();
+    }
+
+    private Encounter getEncounter(Patient patient, String encounterId, Encounter.EncounterStatus status, Organization provider
+    , String classCode, String classDesc, String encStart, String encEnd,
+                                   String typeCode, String typeDesc) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Encounter encounter = new Encounter();
+
+        encounter.addIdentifier()
+                .setSystem(interOpenEncounterIdentifier)
+                .setValue(encounterId);
+
+        encounter.setId(fhirBundle.getNewId(encounter));
+        encounter.setSubject(new Reference(uuidtag + patient.getId()));
+        encounter.setStatus(status);
+        encounter.setServiceProvider(new Reference(uuidtag + provider.getId()));
+        encounter.getClass_()
+                .setCode(classCode)
+                .setSystem("http://hl7.org/fhir/v3/ActCode")
+                .setDisplay(classDesc);
+        try {
+            encounter.getPeriod().setStart(sdf.parse(encStart));
+        } catch (Exception ex) {}
+        if (encEnd != null) {
+            try {
+                encounter.getPeriod().setEnd(sdf.parse(encEnd));
+            } catch (Exception ex) {}
+        }
+        CodeableConcept type = new CodeableConcept();
+        type.addCoding().setSystem(SNOMEDCT).setDisplay(typeDesc).setCode(typeCode);
+        encounter.getType().add(type);
+
+        return encounter;
     }
 }
