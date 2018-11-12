@@ -32,6 +32,8 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
     private static String yasEncounterIdentifier = "https://fhir.yas.nhs.uk/Encounter/Identifier";
 
     private static String interOpenEncounterIdentifier = "https://fhir.interopen.org/Encounter/Identifier";
+    private static String interOpenEpisodeOfCareIdentifier = "https://fhir.interopen.org/EpisodeOfCare/Identifier";
+
     private static String interOpenProcedureIdentifier = "https://fhir.interopen.org/Procedure/Identifier";
     private static String interOpenPractitionerIdentifier = "https://fhir.interopen.org/Practitioner/Identifier";
 
@@ -100,8 +102,8 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
             throw new Exception();
         }
 
-       client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
-      //  client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8183/ccri-fhir/STU3/");
+      // client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
+        client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8183/ccri-fhir/STU3/");
       // client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
         client.setEncoding(EncodingEnum.XML);
 
@@ -1399,7 +1401,7 @@ Inspired Oxygen
         bundle.addEntry().setResource(nurse).setFullUrl(uuidtag+ nurse);
         // Encounter E8
 
-        Encounter encounter = getEncounter(patient,"E8", Encounter.EncounterStatus.FINISHED,rkh, "EMER",
+        Encounter encounter = getEncounter(patient, null,"E8", Encounter.EncounterStatus.FINISHED,rkh, "EMER",
                 "Emergency","2018-11-08", null ,"4525004","Emergency department patient visit");
         encounter.addParticipant(new Encounter.EncounterParticipantComponent().setIndividual(new Reference(uuidtag + erdoc.getId())));
         bundle.addEntry().setResource(encounter).setFullUrl(encounter.getId());
@@ -1448,21 +1450,40 @@ Inspired Oxygen
         } catch (Exception ex) {}
         bundle.addEntry().setResource(condition).setFullUrl(condition.getId());
 
+        EpisodeOfCare episode = new EpisodeOfCare();
+        episode.addIdentifier()
+                .setSystem(interOpenEpisodeOfCareIdentifier)
+                .setValue("EP1");
 
+        episode.setId(fhirBundle.getNewId(episode));
+        episode.setPatient(new Reference(uuidtag + patient.getId()));
+        episode.setManagingOrganization(new Reference(uuidtag + yas.getId()));
+        episode.setStatus(EpisodeOfCare.EpisodeOfCareStatus.FINISHED);
+        episode.addType().addCoding()
+                .setSystem(SNOMEDCT)
+                .setCode("394802001")
+                .setDisplay("General medicine");
+        try {
+        episode.getPeriod().setStart(sdf.parse("2018-11-08"));
+        episode.getPeriod().setEnd(sdf.parse("2018-11-18")); }
+        catch (Exception ex) {}
+
+
+        bundle.addEntry().setResource(episode).setFullUrl(episode.getId());
 
         // E9
-        encounter = getEncounter(patient,"E9", Encounter.EncounterStatus.FINISHED,rkh, "IMP",
-                "inpatient encounter","2018-11-09", null ,"86181006","Evaluation and management of inpatient");
+        encounter = getEncounter(patient, episode,"E9", Encounter.EncounterStatus.FINISHED,rkh, "IMP",
+                "inpatient encounter","2018-11-08", null ,"86181006","Evaluation and management of inpatient");
         encounter.addParticipant(new Encounter.EncounterParticipantComponent().setIndividual(new Reference(uuidtag + practitioner.getId())));
         bundle.addEntry().setResource(encounter).setFullUrl(encounter.getId());
 
         // E10
-        encounter = getEncounter(patient,"E10", Encounter.EncounterStatus.FINISHED,rkh, "IMP",
+        encounter = getEncounter(patient, episode,"E10", Encounter.EncounterStatus.FINISHED,rkh, "IMP",
                 "inpatient encounter","2018-11-09", "2018-11-18" ,"53923005","Medical consultation on inpatient");
         bundle.addEntry().setResource(encounter).setFullUrl(encounter.getId());
 
         // E11
-        encounter = getEncounter(patient,"E11", Encounter.EncounterStatus.FINISHED,rkh, "IMP",
+        encounter = getEncounter(patient,episode, "E11", Encounter.EncounterStatus.FINISHED,rkh, "IMP",
                 "inpatient encounter","2018-11-16", "2018-11-18" ,"53923005","Medical consultation on inpatient");
         encounter.addParticipant(new Encounter.EncounterParticipantComponent().setIndividual(new Reference(uuidtag + nurse.getId())));
         bundle.addEntry().setResource(encounter).setFullUrl(encounter.getId());
@@ -1481,7 +1502,7 @@ Inspired Oxygen
         bundle.addEntry().setResource(procedure).setFullUrl(procedure.getId());
 
         // E12
-        encounter = getEncounter(patient,"E12", Encounter.EncounterStatus.FINISHED,rkh, "IMP",
+        encounter = getEncounter(patient, episode,"E12", Encounter.EncounterStatus.FINISHED,rkh, "IMP",
                 "inpatient encounter","2018-11-18", "2018-11-18" ,"83362003","Final inpatient visit with instructions at discharge");
         bundle.addEntry().setResource(encounter).setFullUrl(encounter.getId());
 
@@ -1649,7 +1670,7 @@ Inspired Oxygen
         MethodOutcome outcome = client.create().resource(fhirBundle.getFhirDocument()).execute();
     }
 
-    private Encounter getEncounter(Patient patient, String encounterId, Encounter.EncounterStatus status, Organization provider
+    private Encounter getEncounter(Patient patient, EpisodeOfCare episode, String encounterId, Encounter.EncounterStatus status, Organization provider
     , String classCode, String classDesc, String encStart, String encEnd,
                                    String typeCode, String typeDesc) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -1662,6 +1683,9 @@ Inspired Oxygen
         encounter.setId(fhirBundle.getNewId(encounter));
         encounter.setSubject(new Reference(uuidtag + patient.getId()));
         encounter.setStatus(status);
+        if (episode != null) {
+            encounter.addEpisodeOfCare().setReference(uuidtag + episode.getId());
+        }
         encounter.setServiceProvider(new Reference(uuidtag + provider.getId()));
         encounter.getClass_()
                 .setCode(classCode)
