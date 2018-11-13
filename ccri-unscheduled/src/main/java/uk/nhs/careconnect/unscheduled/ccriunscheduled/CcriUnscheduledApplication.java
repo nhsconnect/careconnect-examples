@@ -990,12 +990,19 @@ Inspired Oxygen
                 .setCode(code);
 
         // Not converted unit and code correctly.
-
-        observation.addCategory().addCoding()
-                .setSystem("http://hl7.org/fhir/observation-category")
-                .setCode("vital-signs")
-                .setDisplay("Vital Signs");
-
+        if (value != null ) {
+            if (!code.equals("1104051000000101")) {
+                observation.addCategory().addCoding()
+                        .setSystem("http://hl7.org/fhir/observation-category")
+                        .setCode("vital-signs")
+                        .setDisplay("Vital Signs");
+            } else {
+                observation.addCategory().addCoding()
+                        .setSystem("http://hl7.org/fhir/observation-category")
+                        .setCode("survey")
+                        .setDisplay("Survey");
+            }
+        }
         try {
             Calendar cal = Calendar.getInstance();
 
