@@ -892,6 +892,7 @@ Inspired Oxygen
                     bundle.addEntry().setResource(news);
 
                 }
+
             }
 
 
@@ -1378,6 +1379,8 @@ Inspired Oxygen
 
         bundle.addEntry().setResource(patient).setFullUrl(patient.getId());
 
+        fhirBundle.processBundleResources(bundle);
+
         rkh.setId(fhirBundle.getNewId(rkh));
         bundle.addEntry().setResource(rkh).setFullUrl(uuidtag + rkh.getId());
 
@@ -1450,6 +1453,68 @@ Inspired Oxygen
         } catch (Exception ex) {}
         bundle.addEntry().setResource(condition).setFullUrl(condition.getId());
 
+
+        DateTimeType dateTime = new DateTimeType();
+        SimpleDateFormat sdt = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        try {
+            dateTime.setValue(sdf.parse("2018-09-07 18:35")); }
+        catch(Exception ex) {
+
+        }
+
+// Micheal
+            Observation news = createObservation("5", "score", "Royal College of Physicians NEWS2 (National Early Warning Score 2) total score","1104051000000101", encounter);
+            news.setEffective(dateTime);
+
+            Observation obs = createObservation("19", "/min",  "Respiratory rate","86290005",encounter);
+            obs.setEffective(dateTime);
+        obs.addPerformer(new Reference(uuidtag + erdoc.getId()));
+            bundle.addEntry().setResource(obs);
+            news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
+
+            obs = createObservation("116", "/min",  "Heart rate","364075005",encounter);
+        obs.setEffective(dateTime);
+        obs.addPerformer(new Reference(uuidtag + erdoc.getId()));
+            bundle.addEntry().setResource(obs);
+            news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
+
+            obs = createObservation("99", "%",  "Blood oxygen saturation","103228002",encounter);
+        obs.setEffective(dateTime);
+        obs.addPerformer(new Reference(uuidtag + erdoc.getId()));
+            bundle.addEntry().setResource(obs);
+            news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
+
+            obs = createObservation("37.0", "Cel",  "Core body temperature","276885007",encounter);
+        obs.setEffective(dateTime);
+        obs.addPerformer(new Reference(uuidtag + erdoc.getId()));
+            bundle.addEntry().setResource(obs);
+            news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
+
+            obs = createObservationBP("180", "120",  "Blood pressure","75367002",encounter);
+        obs.setEffective(dateTime);
+        obs.addPerformer(new Reference(uuidtag + erdoc.getId()));
+            bundle.addEntry().setResource(obs);
+            news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
+
+            // obs = createObservationCoded("722742002", "Breathing room air",  "Observation of breathing","301282008",ambulance);
+            // bundle.addEntry().setResource(obs);
+
+            obs = createObservationCoded(null, null,  "Patient on oxygen","371825009",encounter);
+        obs.setEffective(dateTime);
+        obs.addPerformer(new Reference(uuidtag + erdoc.getId()));
+            bundle.addEntry().setResource(obs);
+            news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
+
+            obs = createObservationCoded("422768004", "Unresponsive",   "ACVPU (Alert Confusion Voice Pain Unresponsive) scale score","1104441000000107", encounter);
+        obs.setEffective(dateTime);
+        obs.addPerformer(new Reference(uuidtag + erdoc.getId()));
+            bundle.addEntry().setResource(obs);
+            news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
+            // Conscious
+
+            bundle.addEntry().setResource(news);
+
+
         EpisodeOfCare episode = new EpisodeOfCare();
         episode.addIdentifier()
                 .setSystem(interOpenEpisodeOfCareIdentifier)
@@ -1464,9 +1529,9 @@ Inspired Oxygen
                 .setCode("394802001")
                 .setDisplay("General medicine");
         try {
-        episode.getPeriod().setStart(sdf.parse("2018-11-08"));
-        episode.getPeriod().setEnd(sdf.parse("2018-11-18")); }
-        catch (Exception ex) {}
+            episode.getPeriod().setStart(sdf.parse("2018-11-08"));
+            episode.getPeriod().setEnd(sdf.parse("2018-11-18"));
+        } catch (Exception ex) {}
 
 
         bundle.addEntry().setResource(episode).setFullUrl(episode.getId());
