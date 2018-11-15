@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Bundle xmlns="http://hl7.org/fhir">
- <id value="871a7526-fe72-4428-b9ae-48b9b9c1c272"/>
+ <id value="6cf57322-4167-40c9-9f20-4583235769a0"/>
  <meta>
  <lastUpdated value="2015-02-12T21:00:00+00:00"/>
  <profile value="https://fhir.nhs.uk/STU3/StructureDefinition/ITK-Document-Bundle-1"/>
  </meta>
  <identifier>
  <system value="https://tools.ietf.org/html/rfc4122"/>
- <value value="4ed84538-0616-43a5-a615-6286121bf78f"/>
+ <value value="6cf57322-4167-40c9-9f20-4583235769a0"/>
  </identifier>
  <type value="document"/>
  <!--Emergency Care Composition-->
@@ -32,7 +32,7 @@
  </extension>
  <identifier>
  <system value="https://tools.ietf.org/html/rfc4122"/>
- <value value="2d361270-039f-4a48-827b-ef255ff8b6c4"/>
+ <value value="cd6471a6-5aec-4d2c-9a0f-4b6d949aaeaf"/>
  </identifier>
  <!--The workflow/clinical status of this composition. 
  The status is a marker for the clinical standing of the document.-->
@@ -835,7 +835,9 @@ LUCs0.2x10*9/L&lt; 0.4
  <medicationReference>
  <reference value="urn:uuid:f4d39a59-b5e0-4d35-af9e-e2ae09a2b7fb"/>
  </medicationReference>
- <subject>
+  <effectiveDateTime value="2015-02-17 00:00"/>
+  <dateAsserted value="2015-02-17 00:00"/>
+  <subject>
  <reference value="urn:uuid:c8225cc8-8026-466f-80f8-fc2832a4b9d5"/>
  </subject>
  <taken value="y"/>

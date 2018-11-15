@@ -14,7 +14,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.client.RestTemplate;
-import sun.awt.EmbeddedFrame;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -102,9 +101,9 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
             throw new Exception();
         }
 
-      // client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
-        client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8183/ccri-fhir/STU3/");
-      // client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
+       client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
+     //   client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8183/ccri-fhir/STU3/");
+      ///  client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
         client.setEncoding(EncodingEnum.XML);
 
        // clientGPC = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri/camel/fhir/gpc/");
@@ -122,8 +121,11 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
         Boolean eolcOnly = false;
 
+        getMichael();
+
+
         if (!eolcOnly) {
-            getMichael();
+
 
             postPatient("9658218997", "LS25 2AQ", Encounter.EncounterLocationStatus.ACTIVE, "Manstein", "LS15 9JA", 0, -5, "54635001", "Scalding Injury", false);
 
@@ -814,6 +816,8 @@ Inspired Oxygen
 
                 }
 
+
+
                 if (nhsNumber=="9658218997") {
 
                     Observation news = createObservation("6", "score", "Royal College of Physicians NEWS2 (National Early Warning Score 2) total score","1104051000000101", ambulance);
@@ -853,6 +857,7 @@ Inspired Oxygen
                     bundle.addEntry().setResource(news);
 
                 }
+
                 if (nhsNumber=="9658220142") {
 //CARDIAC
                     Observation news = createObservation("8", "score", "Royal College of Physicians NEWS2 (National Early Warning Score 2) total score","1104051000000101", ambulance);
@@ -892,7 +897,45 @@ Inspired Oxygen
                     bundle.addEntry().setResource(news);
 
                 }
+                if (nhsNumber=="9658218873") {
 
+                    Observation news = createObservation("6", "score", "Royal College of Physicians NEWS2 (National Early Warning Score 2) total score","1104051000000101", ambulance);
+
+                    Observation obs = createObservation("22", "/min",  "Respiratory rate","86290005",ambulance);
+                    bundle.addEntry().setResource(obs);
+                    news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
+
+                    obs = createObservation("93", "/min",  "Heart rate","364075005",ambulance);
+                    bundle.addEntry().setResource(obs);
+                    news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
+
+                    obs = createObservation("98", "%",  "Blood oxygen saturation","103228002",ambulance);
+                    bundle.addEntry().setResource(obs);
+                    news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
+
+                    obs = createObservation("37.0", "Cel",  "Core body temperature","276885007",ambulance);
+                    bundle.addEntry().setResource(obs);
+                    news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
+
+                    obs = createObservationBP("140", "80",  "Blood pressure","75367002",ambulance);
+                    bundle.addEntry().setResource(obs);
+                    news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
+
+                    // obs = createObservationCoded("722742002", "Breathing room air",  "Observation of breathing","301282008",ambulance);
+                    // bundle.addEntry().setResource(obs);
+
+                    obs = createObservationCoded(null, null,  "Patient on oxygen","371825009",ambulance);
+                    bundle.addEntry().setResource(obs);
+                    news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
+
+                    obs = createObservationCoded("248234008", "Mentally alert",  "ACVPU (Alert Confusion Voice Pain Unresponsive) scale score","1104441000000107",ambulance);
+                    bundle.addEntry().setResource(obs);
+                    news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
+                    // Conscious
+
+                    bundle.addEntry().setResource(news);
+
+                }
             }
 
 
@@ -1329,18 +1372,23 @@ Inspired Oxygen
         Bundle bundle = new Bundle();
 
 
-
-
         Patient patient = new Patient();
 
         patient.setId(fhirBundle.getNewId(patient));
 
+        CodeableConcept verification = new CodeableConcept();
+        verification.addCoding()
+                .setSystem("https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-NHSNumberVerificationStatus-1")
+                .setDisplay("Number present and verified")
+                .setCode("01");
         patient.addIdentifier()
+                .setValue("9658218881")
                 .setSystem("https://fhir.nhs.uk/Id/nhs-number")
-                .setValue("9658220290");
+                .addExtension().setUrl("https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-NHSNumberVerificationStatus-1")
+                .setValue(verification);
 
         patient.addName()
-                .setFamily("Bisset")
+                .setFamily("Meakin")
                 .addGiven("Micheal")
                 .addPrefix("Mr")
                 .setUse(HumanName.NameUse.USUAL);
@@ -1367,17 +1415,6 @@ Inspired Oxygen
         patient.setLanguage("English (en-GB)");
 
 
-        CodeableConcept verification = new CodeableConcept();
-        verification.addCoding()
-                .setSystem("https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-NHSNumberVerificationStatus-1")
-                .setDisplay("Number present and verified")
-                .setCode("01");
-
-        patient.addIdentifier()
-                .setValue("9658220290")
-                .setSystem("https://fhir.nhs.uk/Id/nhs-number")
-                .addExtension().setUrl("https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-NHSNumberVerificationStatus-1")
-                .setValue(verification);
 
         patient.setManagingOrganization(new Reference(uuidtag + yas.getId()));
 
@@ -1735,7 +1772,6 @@ Inspired Oxygen
         bundle.addEntry().setResource(condition).setFullUrl(condition.getId());
 
         fhirBundle.processBundleResources(bundle);
-
 
         System.out.println(ctxFHIR.newJsonParser().setPrettyPrint(true).encodeResourceToString(fhirBundle.getFhirDocument()));
 
