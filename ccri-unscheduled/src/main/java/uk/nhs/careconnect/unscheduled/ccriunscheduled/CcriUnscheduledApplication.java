@@ -101,8 +101,8 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
             throw new Exception();
         }
 
-       client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
-     //   client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8183/ccri-fhir/STU3/");
+     //  client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
+        client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8183/ccri-fhir/STU3/");
       ///  client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
         client.setEncoding(EncodingEnum.XML);
 
@@ -1416,7 +1416,7 @@ Inspired Oxygen
 
 
 
-        patient.setManagingOrganization(new Reference(uuidtag + yas.getId()));
+        patient.setManagingOrganization(new Reference(uuidtag + rkh.getId()));
 
 
         // Add GP
@@ -1427,6 +1427,7 @@ Inspired Oxygen
 
         rkh.setId(fhirBundle.getNewId(rkh));
         bundle.addEntry().setResource(rkh).setFullUrl(uuidtag + rkh.getId());
+
 
         Practitioner practitioner = new Practitioner();
         practitioner.setId(fhirBundle.getNewId(practitioner));
@@ -1451,6 +1452,14 @@ Inspired Oxygen
         Encounter encounter = getEncounter(patient, null,"E8", Encounter.EncounterStatus.FINISHED,rkh, "EMER",
                 "Emergency","2018-11-08", null ,"4525004","Emergency department patient visit");
         encounter.addParticipant(new Encounter.EncounterParticipantComponent().setIndividual(new Reference(uuidtag + erdoc.getId())));
+        Extension serviceType = encounter.addExtension();
+        serviceType.setUrl("http://hl7.org/fhir/4.0/StructureDefinition/extension-Encounter.serviceType");
+        CodeableConcept type = new CodeableConcept();
+        type.addCoding()
+                .setSystem("https://fhir.nhs.uk/STU3/CodeSystem/DCH-Specialty-1")
+                .setCode("180")
+                .setDisplay("ACCIDENT & EMERGENCY");
+        serviceType.setValue(type);
         bundle.addEntry().setResource(encounter).setFullUrl(encounter.getId());
 
         Condition condition = new Condition();
