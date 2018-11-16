@@ -835,8 +835,8 @@ LUCs0.2x10*9/L&lt; 0.4
  <medicationReference>
  <reference value="urn:uuid:f4d39a59-b5e0-4d35-af9e-e2ae09a2b7fb"/>
  </medicationReference>
-  <effectiveDateTime value="2015-02-17 00:00"/>
-  <dateAsserted value="2015-02-17 00:00"/>
+  <effectiveDateTime value="2015-02-17"/>
+  <dateAsserted value="2015-02-17"/>
   <subject>
  <reference value="urn:uuid:c8225cc8-8026-466f-80f8-fc2832a4b9d5"/>
  </subject>

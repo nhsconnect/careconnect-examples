@@ -140,11 +140,11 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
         postPatient("9658220142", "LS25 2HF",Encounter.EncounterLocationStatus.PLANNED, "Elbe", "LS26 8PU" ,0,-15, "410429000","Cardiac arrest",true);
 
 
-        Boolean loadDocuments = false;
+        Boolean loadDocuments = true;
 
         if (loadDocuments) {
 
-            loadPharm("Digital Medicines Emergency Supply Example.xml");
+            loadPharm("Digital Medicines Emergency Supply Example_9658220290.xml");
 
             loadPharm("Digital Medicines Immunizations Example.xml");
 
@@ -387,6 +387,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
             System.out.println("ERROR - "+filename);
             System.out.println(ctxFHIR.newXmlParser().encodeResourceToString(ex.getOperationOutcome()));
             if (ex.getStatusCode()==422) {
+                System.out.println("Trying to update "+filename+ ": Bundle?identifier="+bundle.getIdentifier().getSystem()+"|"+bundle.getIdentifier().getValue());
                 MethodOutcome outcome = client.update().resource(bundle).conditionalByUrl("Bundle?identifier="+bundle.getIdentifier().getSystem()+"|"+bundle.getIdentifier().getValue()).execute();
             }
         }
@@ -405,6 +406,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
         } catch (UnprocessableEntityException ex) {
             System.out.println("ERROR - "+filename);
             System.out.println(ctxFHIR.newXmlParser().encodeResourceToString(ex.getOperationOutcome()));
+
         }
 
 
@@ -421,10 +423,16 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
         } catch (UnprocessableEntityException ex) {
             System.out.println("ERROR - "+filename);
             System.out.println(ctxFHIR.newXmlParser().encodeResourceToString(ex.getOperationOutcome()));
+            if (ex.getStatusCode()==422) {
+                System.out.println("Trying to update existing "+filename+ ": Bundle?identifier="+bundle.getIdentifier().getSystem()+"|"+bundle.getIdentifier().getValue());
+                MethodOutcome outcome = client.update().resource(bundle).conditionalByUrl("Bundle?identifier="+bundle.getIdentifier().getSystem()+"|"+bundle.getIdentifier().getValue()).execute();
+            }
         }
 
-
     }
+
+
+
 
     public void updateNRLS() {
         Bundle bundle =  client
@@ -1360,14 +1368,14 @@ Inspired Oxygen
 
     private void getMichael() {
 
-
-        rkh = getOrganization("RVV");
         fhirBundle = new FhirBundleUtil(Bundle.BundleType.COLLECTION);
 
+        rkh = getOrganization("RVV");
+        rkh.setId(fhirBundle.getNewId(rkh));
+
+
+
         doSetUp();
-
-
-
 
         Bundle bundle = new Bundle();
 
@@ -1425,7 +1433,7 @@ Inspired Oxygen
 
         fhirBundle.processBundleResources(bundle);
 
-        rkh.setId(fhirBundle.getNewId(rkh));
+
         bundle.addEntry().setResource(rkh).setFullUrl(uuidtag + rkh.getId());
 
 

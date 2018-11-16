@@ -239,7 +239,7 @@ public class FhirBundleUtil {
             log.info(resource.getClass().getSimpleName()+"/"+resource.getIdElement().getIdPart()+" [-] "+newReference);
             referenceMap.put(resource.getClass().getSimpleName()+"/"+resource.getIdElement().getIdPart(),newReference);
         }
-        log.info(reference +" [-] "+newReference);
+        log.debug(reference +" [-] "+newReference);
         referenceMap.put(reference,newReference);
         referenceMap.put(newReference,newReference); // Add in self
         referenceMap.put(uuidtag + newReference,newReference); // Add in self
