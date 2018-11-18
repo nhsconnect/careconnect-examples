@@ -101,9 +101,9 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
             throw new Exception();
         }
 
-     //  client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
+      // client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
         client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8183/ccri-fhir/STU3/");
-      ///  client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
+      // client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
         client.setEncoding(EncodingEnum.XML);
 
        // clientGPC = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri/camel/fhir/gpc/");
@@ -122,6 +122,8 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
         Boolean eolcOnly = false;
 
         getMichael();
+
+        loadADW("ADW-Message-Assessment-Notice-Bundle-1-Example-9658218881.xml");
 
 
         if (!eolcOnly) {
@@ -371,6 +373,28 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
 
         return bundle;
+    }
+
+    public void loadADW(String filename) {
+        InputStream inputStream =
+                Thread.currentThread().getContextClassLoader().getResourceAsStream("adw/"+filename);
+        Reader reader = new InputStreamReader(inputStream);
+        Bundle bundle = (Bundle) ctxFHIR.newXmlParser().parseResource(reader);
+
+        // bundle.getIdentifier().setSystem(yasBundleIdentifier).setValue(filename);
+
+        try {
+            MethodOutcome outcome = client.create().resource(bundle).execute();
+        } catch (UnprocessableEntityException ex) {
+            System.out.println("ERROR - "+filename);
+            System.out.println(ctxFHIR.newXmlParser().encodeResourceToString(ex.getOperationOutcome()));
+            if (ex.getStatusCode()==422) {
+                System.out.println("Trying to update "+filename+ ": Bundle?identifier="+bundle.getIdentifier().getSystem()+"|"+bundle.getIdentifier().getValue());
+                MethodOutcome outcome = client.update().resource(bundle).conditionalByUrl("Bundle?identifier="+bundle.getIdentifier().getSystem()+"|"+bundle.getIdentifier().getValue()).execute();
+            }
+        }
+
+
     }
 
     public void loadTOC(String filename) {

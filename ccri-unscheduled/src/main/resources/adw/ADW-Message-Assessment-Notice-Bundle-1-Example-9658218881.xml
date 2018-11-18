@@ -1,0 +1,409 @@
+<Bundle xmlns="http://hl7.org/fhir">
+    <id value="79aec4c6-e7d3-44ef-96ed-bda1b94f9d00" />
+    <meta>
+        <profile value="https://fhir.nhs.uk/StructureDefinition/ADW-Message-Bundle-1" />
+    </meta>
+    <identifier>
+        <system value="https://tools.ietf.org/html/rfc4122"/>
+        <value value="79aec4c6-e7d3-44ef-96ed-bda1b94f9d00"/>
+    </identifier>
+    <type value="message" />
+    <entry>
+        <fullUrl value="urn:uuid:5bfa2a2e-923b-440d-82d6-38e24b666be6" />
+        <resource>
+            <MessageHeader>
+                <id value="5bfa2a2e-923b-440d-82d6-38e24b666be6" />
+                <meta>
+                    <profile value="https://fhir.nhs.uk/StructureDefinition/ADW-AssessmentNotice-MessageHeader-1" />
+                </meta>
+
+                <event>
+                    <system value="http://snomed.info/sct" />
+                    <code value="975701000000106" />
+                </event>
+
+                <destination>
+                    <endpoint value="urn:nhs-uk:addressing:ods:V396BB" />
+                </destination>
+                <receiver>
+                    <reference value="urn:uuid:dab4b872-e000-42ec-bd4e-0d804fc3b92e" />
+                </receiver>
+                <timestamp value="2017-05-01T15:02:11+00:00" />
+                <author>
+                    <reference value="urn:uuid:5b5d3bab-c1bb-434a-ab0d-82c4860bb098" />
+                </author>
+                <source>
+                    <endpoint value="urn:nhs-uk:addressing:ods:RFM8C2" />
+                </source>
+                <responsible>
+                    <reference value="urn:uuid:88563c7f-b040-486a-9018-296bf9b94f32" />
+                </responsible>
+            </MessageHeader>
+        </resource>
+    </entry>
+    <entry>
+        <fullUrl value="urn:uuid:37c1099d-638c-4970-bcc6-539403f6ca8e" />
+        <resource>
+            <ReferralRequest>
+                <id value="37c1099d-638c-4970-bcc6-539403f6ca8e" />
+                <meta>
+                    <profile value="https://fhir.nhs.uk/StructureDefinition/ADW-ReferralRequest-1" />
+                </meta>
+                <identifier>
+                    <system value="https://fhir.interopen.org/ReferralRequest/Identifier"></system>
+                    <value value="R1"></value>
+                </identifier>
+                <status value="active" />
+                <intent value="order" />
+                <subject>
+                    <reference value="urn:uuid:bc3027a7-924c-44b5-8f1b-bfd5266c6905" />
+                </subject>
+                <context>
+                    <reference value="urn:uuid:fd60ffd5-3e41-4b68-aa62-37f5407d8c03" />
+                </context>
+                <requester>
+                    <agent>
+                    <reference value="urn:uuid:5b5d3bab-c1bb-434a-ab0d-82c4860bb098" />
+                    </agent>
+                </requester>
+                <recipient>
+                    <reference value="urn:uuid:dab4b872-e000-42ec-bd4e-0d804fc3b92e" />
+                </recipient>
+
+                <reasonCode>
+                    <coding>
+                        <system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-ConditionCategory-1"></system>
+                        <code value="encounter-diagnosis"></code>
+                        <display value="Encounter Diagnosis"></display>
+                    </coding>
+                </reasonCode>
+                <description value="The patient has a history of alcoholism and since reducing intake has been hallucinating." />
+                <supportingInfo>
+                    <reference value="urn:uuid:9c7eb664-d257-4250-aee2-20ad202919e8" />
+                </supportingInfo>
+            </ReferralRequest>
+        </resource>
+    </entry>
+    <entry>
+        <fullUrl value="urn:uuid:fd60ffd5-3e41-4b68-aa62-37f5407d8c03" />
+        <resource>
+            <Encounter>
+                <id value="fd60ffd5-3e41-4b68-aa62-37f5407d8c03" />
+                <meta>
+                    <profile value="https://fhir.nhs.uk/StructureDefinition/CareConnect-ADW-Encounter-1" />
+                </meta>
+                <identifier>
+                    <system value="https://fhir.interopen.org/Encounter/Identifier"></system>
+                    <value value="E13"></value>
+                </identifier>
+                <status value="in-progress" />
+                <class>
+                    <system value="http://hl7.org/fhir/v3/ActCode"></system>
+                    <code value="IMP"></code>
+                    <display value="inpatient encounter"></display>
+                </class>
+                <priority>
+                    <coding>
+                        <system value="http://hl7.org/fhir/v3/ActPriority" />
+                        <code value="EM" />
+                        <display value="Emergency" />
+                    </coding>
+                </priority>
+                <subject>
+                    <reference value="urn:uuid:bc3027a7-924c-44b5-8f1b-bfd5266c6905" />
+                </subject>
+                <period>
+                    <start value="2017-04-24" />
+                    <end value="2017-05-12" />
+                </period>
+                <diagnosis>
+                    <condition>
+                        <reference value="urn:uuid:af7ba23c-8ad3-11e6-ae22-56b6b6499611" />
+                    </condition>
+                </diagnosis>
+                <location>
+                    <location>
+                        <reference value="urn:uuid:ce114cdd-cfeb-4533-b3c4-3c0dd450b25c" />
+                    </location>
+                </location>
+                <serviceProvider>
+                    <reference value="urn:uuid:1ebc76fd-9612-4c72-81dd-de294a0e7287" />
+                </serviceProvider>
+            </Encounter>
+        </resource>
+    </entry>
+    <entry>
+        <fullUrl value="urn:uuid:bc3027a7-924c-44b5-8f1b-bfd5266c6905" />
+        <resource>
+            <Patient>
+                <id value="bc3027a7-924c-44b5-8f1b-bfd5266c6905" />
+                <meta>
+                    <profile value="https://fhir.hl7.org.uk/StructureDefinition/CareConnect-Patient-1" />
+                </meta>
+                <extension url="https://fhir.hl7.org.uk/StructureDefinition/Extension-CareConnect-NHSCommunication-1">
+                    <extension url="language">
+                        <valueCodeableConcept>
+                            <coding>
+                                <system value="https://fhir.hl7.org.uk/CareConnect-HumanLanguage-1" />
+                                <code value="cy" />
+                                <display value="Welsh" />
+                            </coding>
+                        </valueCodeableConcept>
+                    </extension>
+                    <extension url="preferred">
+                        <valueBoolean value="true" />
+                    </extension>
+                    <extension url="interpreterRequired">
+                        <valueBoolean value="false" />
+                    </extension>
+                </extension>
+                <identifier>
+                    <extension url="https://fhir.hl7.org.uk/StructureDefinition/Extension-CareConnect-NHSNumberVerificationStatus-1">
+                        <valueCodeableConcept>
+                            <coding>
+                                <system value="https://fhir.hl7.org.uk/CareConnect-NHSNumberVerificationStatus-1" />
+                                <code value="01" />
+                                <display value="Number present and verified" />
+                            </coding>
+                        </valueCodeableConcept>
+                    </extension>
+                    <system value="https://fhir.nhs.uk/Id/nhs-number" />
+                    <value value="9658218881" />
+                </identifier>
+                <identifier>
+                    <system value="https://fhir.rkh.nhs.uk/Id/local-patient-identifier" />
+                    <value value="A1234521" />
+                </identifier>
+                <name>
+                    <use value="usual" />
+                    <family value="Meakin" />
+                    <given value="Micheal" />
+                </name>
+                <telecom>
+                    <system value="email" />
+                    <value value="micheal.meakin@googlemail.com" />
+                </telecom>
+                <telecom>
+                    <system value="phone" />
+                    <value value="0113554466" />
+                </telecom>
+                <gender value="male"></gender>
+                <birthDate value="1960-08-01"></birthDate>
+                <address>
+                    <use value="home"></use>
+                    <line value="7 Trinity Way"></line>
+                    <city value="London"></city>
+                    <postalCode value="W3 7JF"></postalCode>
+                </address>
+                <maritalStatus>
+                    <coding>
+                        <system value="http://hl7.org/fhir/v3/MaritalStatus"></system>
+                        <code value="S"></code>
+                        <display value="Never Married"></display>
+                    </coding>
+                </maritalStatus>
+                <contact>
+                    <relationship>
+                        <coding>
+                            <system value="https://fhir.hl7.org.uk/CareConnect-PersonRelationshipType-1" />
+                            <code value="20" />
+                            <display value="Carer" />
+                        </coding>
+                    </relationship>
+                    <name>
+                        <use value="usual" />
+                        <family value="Bloom" />
+                        <given value="Sandra" />
+                    </name>
+                    <telecom>
+                        <system value="email" />
+                        <value value="Sbloom123@yahoo.com" />
+                    </telecom>
+                    <telecom>
+                        <system value="phone" />
+                        <value value="0113237656" />
+                    </telecom>
+                </contact>
+            </Patient>
+        </resource>
+    </entry>
+    <entry>
+        <fullUrl value="urn:uuid:5b5d3bab-c1bb-434a-ab0d-82c4860bb098" />
+        <resource>
+            <Practitioner>
+                <id value="5b5d3bab-c1bb-434a-ab0d-82c4860bb098" />
+                <meta>
+                    <profile value="https://fhir.hl7.org.uk/StructureDefinition/CareConnect-Practitioner-1" />
+                </meta>
+                <name>
+                    <family value="Gulliver" />
+                    <given value="Leticia" />
+                </name>
+                <telecom>
+                    <system value="email" />
+                    <value value="leticia.gulliver@nhs.net" />
+                </telecom>
+                <telecom>
+                    <system value="phone" />
+                    <value value="01911223344" />
+                </telecom>
+            </Practitioner>
+        </resource>
+    </entry>
+    <entry>
+        <fullUrl value="urn:uuid:88563c7f-b040-486a-9018-296bf9b94f32" />
+        <resource>
+            <Practitioner>
+                <id value="88563c7f-b040-486a-9018-296bf9b94f32" />
+                <meta>
+                    <profile value="https://fhir.hl7.org.uk/StructureDefinition/CareConnect-Practitioner-1" />
+                </meta>
+                <name>
+                    <family value="Stibbs" />
+                    <given value="Nigel" />
+                </name>
+            </Practitioner>
+        </resource>
+    </entry>
+    <entry>
+        <fullUrl value="urn:uuid:1ebc76fd-9612-4c72-81dd-de294a0e7287" />
+        <resource>
+            <Organization>
+                <id value="1ebc76fd-9612-4c72-81dd-de294a0e7287" />
+                <meta>
+                    <profile value="https://fhir.hl7.org.uk/StructureDefinition/CareConnect-Organization-1" />
+                </meta>
+                <identifier>
+                    <system value="https://fhir.nhs.uk/Id/ods-site-code" />
+                    <value value="RFM8C2" />
+                </identifier>
+                <type>
+                    <coding>
+                        <system value="http://hl7.org/fhir/organization-type" />
+                        <code value="prov" />
+                        <display value="Healthcare Provider" />
+                    </coding>
+                </type>
+                <name value="Hebburn Hospital" />
+            </Organization>
+        </resource>
+    </entry>
+    <entry>
+        <fullUrl value="urn:uuid:dab4b872-e000-42ec-bd4e-0d804fc3b92e" />
+        <resource>
+            <Organization>
+                <id value="dab4b872-e000-42ec-bd4e-0d804fc3b92e" />
+                <meta>
+                    <profile value="https://fhir.hl7.org.uk/StructureDefinition/CareConnect-Organization-1" />
+                </meta>
+                <identifier>
+                    <system value="https://fhir.nhs.uk/Id/ods-organization-code" />
+                    <value value="V396BB" />
+                </identifier>
+                <type>
+                    <coding>
+                        <system value="http://hl7.org/fhir/organization-type" />
+                        <code value="govt" />
+                        <display value="Government" />
+                    </coding>
+                </type>
+                <name value="Hebburn Council" />
+            </Organization>
+        </resource>
+    </entry>
+    <entry>
+        <fullUrl value="urn:uuid:ac831651ed4-4b25-97d9-2f204a51c182" />
+        <resource>
+            <Organization>
+                <id value="ac831651ed4-4b25-97d9-2f204a51c182" />
+                <meta>
+                    <profile value="https://fhir.hl7.org.uk/StructureDefinition/CareConnect-Organization-1" />
+                </meta>
+                <type>
+                    <coding>
+                        <system value="http://hl7.org/fhir/organization-type" />
+                        <code value="team" />
+                        <display value="Organizational team" />
+                    </coding>
+                </type>
+                <name value="Hebburn Social Services' Community Team" />
+                <partOf>
+                    <reference value="urn:uuid:dab4b872-e000-42ec-bd4e-0d804fc3b92e" />
+                </partOf>
+            </Organization>
+        </resource>
+    </entry>
+    <entry>
+        <fullUrl value="urn:uuid:ce114cdd-cfeb-4533-b3c4-3c0dd450b25c" />
+        <resource>
+            <Location>
+                <id value="ce114cdd-cfeb-4533-b3c4-3c0dd450b25c" />
+                <meta>
+                    <profile value="https://fhir.hl7.org.uk/StructureDefinition/CareConnect-Location-1" />
+                </meta>
+                <name value="Collier Ward" />
+                <managingOrganization>
+                    <reference value="urn:uuid:1ebc76fd-9612-4c72-81dd-de294a0e7287" />
+                </managingOrganization>
+            </Location>
+        </resource>
+    </entry>
+    <entry>
+        <fullUrl value="urn:uuid:9c7eb664-d257-4250-aee2-20ad202919e8" />
+        <resource>
+            <QuestionnaireResponse>
+                <id value="9c7eb664-d257-4250-aee2-20ad202919e8" />
+                <meta>
+                    <profile value="https://fhir.nhs.uk/StructureDefinition/ADW-QuestionnaireResponse-1" />
+                </meta>
+                <identifier>
+                    <system value="https://tools.ietf.org/html/rfc4122"/>
+                    <value value="fd60ffd5-3e41-4b68-aa62-37f5407d8c04" />
+                </identifier>
+                <status value="completed" />
+                <subject>
+                    <reference value="urn:uuid:bc3027a7-924c-44b5-8f1b-bfd5266c6905" />
+                </subject>
+                <context>
+                    <reference value="urn:uuid:fd60ffd5-3e41-4b68-aa62-37f5407d8c03" />
+                </context>
+                <author>
+                    <reference value="urn:uuid:5b5d3bab-c1bb-434a-ab0d-82c4860bb098" />
+                </author>
+
+
+            </QuestionnaireResponse>
+        </resource>
+    </entry>
+    <entry>
+        <fullUrl value="urn:uuid:af7ba23c-8ad3-11e6-ae22-56b6b6499611" />
+        <resource>
+            <Condition>
+                <id value="af7ba23c-8ad3-11e6-ae22-56b6b6499611" />
+                <meta>
+                    <profile value="https://fhir.nhs.uk/StructureDefinition/ADW-Condition-1" />
+                </meta>
+                <clinicalStatus value="active"></clinicalStatus>
+                <verificationStatus value="confirmed" />
+                <category>
+                    <coding>
+                        <system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-ConditionCategory-1"></system>
+                        <code value="encounter-diagnosis"></code>
+                        <display value="Encounter Diagnosis"></display>
+                    </coding>
+                </category>
+                <code>
+                    <coding>
+                        <system value="http://snomed.info/sct"></system>
+                        <code value="247740003"></code>
+                        <display value="Complex hallucinations"></display>
+                    </coding>
+                </code>
+                <subject>
+                    <reference value="urn:uuid:bc3027a7-924c-44b5-8f1b-bfd5266c6905" />
+                </subject>
+
+            </Condition>
+        </resource>
+    </entry>
+</Bundle>
