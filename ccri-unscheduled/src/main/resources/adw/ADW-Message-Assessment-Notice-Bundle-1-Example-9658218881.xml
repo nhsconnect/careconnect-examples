@@ -55,26 +55,36 @@
                 </identifier>
                 <status value="active" />
                 <intent value="order" />
+                <serviceRequested>
+                    <coding>
+                        <system value="http://snomed.info/sct"></system>
+                        <code value="720176005"></code>
+                        <display value="Alcohol relapse prevention program"></display>
+                    </coding>
+                </serviceRequested>
                 <subject>
                     <reference value="urn:uuid:bc3027a7-924c-44b5-8f1b-bfd5266c6905" />
                 </subject>
                 <context>
                     <reference value="urn:uuid:fd60ffd5-3e41-4b68-aa62-37f5407d8c03" />
                 </context>
+                <authoredOn value="2018-11-18"></authoredOn>
                 <requester>
                     <agent>
                     <reference value="urn:uuid:5b5d3bab-c1bb-434a-ab0d-82c4860bb098" />
                     </agent>
+                    <onBehalfOf>
+                         <reference value="urn:uuid:1ebc76fd-9612-4c72-81dd-de294a0e7287" />
+                    </onBehalfOf>
                 </requester>
                 <recipient>
                     <reference value="urn:uuid:dab4b872-e000-42ec-bd4e-0d804fc3b92e" />
                 </recipient>
-
                 <reasonCode>
                     <coding>
-                        <system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-ConditionCategory-1"></system>
-                        <code value="encounter-diagnosis"></code>
-                        <display value="Encounter Diagnosis"></display>
+                        <system value="http://snomed.info/sct"></system>
+                        <code value="723926008"></code>
+                        <display value="Perceptual disturbances and seizures co-occurrent and due to alcohol withdrawal"></display>
                     </coding>
                 </reasonCode>
                 <description value="The patient has a history of alcoholism and since reducing intake has been hallucinating." />
@@ -96,12 +106,19 @@
                     <system value="https://fhir.interopen.org/Encounter/Identifier"></system>
                     <value value="E13"></value>
                 </identifier>
-                <status value="in-progress" />
+                <status value="finished" />
                 <class>
                     <system value="http://hl7.org/fhir/v3/ActCode"></system>
                     <code value="IMP"></code>
                     <display value="inpatient encounter"></display>
                 </class>
+                <type>
+                    <coding>
+                        <system value="http://snomed.info/sct"></system>
+                        <code value="698314001"></code>
+                        <display value="Consultation for treatment"></display>
+                    </coding>
+                </type>
                 <priority>
                     <coding>
                         <system value="http://hl7.org/fhir/v3/ActPriority" />
@@ -113,8 +130,8 @@
                     <reference value="urn:uuid:bc3027a7-924c-44b5-8f1b-bfd5266c6905" />
                 </subject>
                 <period>
-                    <start value="2017-04-24" />
-                    <end value="2017-05-12" />
+                    <start value="2018-11-18" />
+                    <end value="2018-11-18" />
                 </period>
                 <diagnosis>
                     <condition>
@@ -235,6 +252,10 @@
                 <meta>
                     <profile value="https://fhir.hl7.org.uk/StructureDefinition/CareConnect-Practitioner-1" />
                 </meta>
+                <identifier>
+                    <system value="https://fhir.interopen.org/Practitioner/Identifier"></system>
+                    <value value="rkh5"></value>
+                </identifier>
                 <name>
                     <family value="Gulliver" />
                     <given value="Leticia" />
@@ -258,6 +279,10 @@
                 <meta>
                     <profile value="https://fhir.hl7.org.uk/StructureDefinition/CareConnect-Practitioner-1" />
                 </meta>
+                <identifier>
+                    <system value="https://fhir.interopen.org/Practitioner/Identifier"></system>
+                    <value value="rkh4"></value>
+                </identifier>
                 <name>
                     <family value="Stibbs" />
                     <given value="Nigel" />
@@ -275,7 +300,7 @@
                 </meta>
                 <identifier>
                     <system value="https://fhir.nhs.uk/Id/ods-site-code" />
-                    <value value="RFM8C2" />
+                    <value value="RVV" />
                 </identifier>
                 <type>
                     <coding>
@@ -284,7 +309,7 @@
                         <display value="Healthcare Provider" />
                     </coding>
                 </type>
-                <name value="Hebburn Hospital" />
+                <name value="EAST KENT HOSPITALS UNIVERSITY NHS FOUNDATION TRUST" />
             </Organization>
         </resource>
     </entry>
@@ -298,7 +323,7 @@
                 </meta>
                 <identifier>
                     <system value="https://fhir.nhs.uk/Id/ods-organization-code" />
-                    <value value="V396BB" />
+                    <value value="RXY" />
                 </identifier>
                 <type>
                     <coding>
@@ -307,7 +332,7 @@
                         <display value="Government" />
                     </coding>
                 </type>
-                <name value="Hebburn Council" />
+                <name value="Kent and Medway NHS and Social Care Trust" />
             </Organization>
         </resource>
     </entry>
@@ -383,6 +408,10 @@
                 <meta>
                     <profile value="https://fhir.nhs.uk/StructureDefinition/ADW-Condition-1" />
                 </meta>
+                <identifier>
+                    <system value="https://fhir.yas.nhs.uk/Condition/Identifier"></system>
+                    <value value="con3"></value>
+                </identifier>
                 <clinicalStatus value="active"></clinicalStatus>
                 <verificationStatus value="confirmed" />
                 <category>
@@ -392,11 +421,18 @@
                         <display value="Encounter Diagnosis"></display>
                     </coding>
                 </category>
+                <severity>
+                    <coding>
+                        <system value="http://snomed.info/sct"></system>
+                        <code value="6736007"></code>
+                        <display value="Moderate (severity modifier) (qualifier value)"></display>
+                    </coding>
+                </severity>
                 <code>
                     <coding>
                         <system value="http://snomed.info/sct"></system>
-                        <code value="247740003"></code>
-                        <display value="Complex hallucinations"></display>
+                        <code value="723926008"></code>
+                        <display value="Perceptual disturbances and seizures co-occurrent and due to alcohol withdrawal"></display>
                     </coding>
                 </code>
                 <subject>

@@ -119,14 +119,14 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
         clientODS = ctxFHIR.newRestfulGenericClient("https://directory.spineservices.nhs.uk/STU3/");
         clientODS.setEncoding(EncodingEnum.XML);
 
-        Boolean eolcOnly = false;
+        Boolean michealOnly = true;
 
         getMichael();
 
         loadADW("ADW-Message-Assessment-Notice-Bundle-1-Example-9658218881.xml");
 
 
-        if (!eolcOnly) {
+        if (!michealOnly) {
 
 
             postPatient("9658218997", "LS25 2AQ", Encounter.EncounterLocationStatus.ACTIVE, "Manstein", "LS15 9JA", 0, -5, "54635001", "Scalding Injury", false);
@@ -135,14 +135,12 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
             postPatient("9658218873", "LS25 1NT", Encounter.EncounterLocationStatus.PLANNED, "Dynamo", "LS14 1PW", -1, -15, "217133004", "Fall into quarry", false);
 
-
             postPatient("9658220169", "LS15 8ZB", null, null, null, 0, -5, "418399005", "Motor vehicle accident", false);
+
+            postPatient("9658220142", "LS25 2HF", Encounter.EncounterLocationStatus.PLANNED, "Elbe", "LS26 8PU", 0, -15, "410429000", "Cardiac arrest", true);
         }
 
-        postPatient("9658220142", "LS25 2HF",Encounter.EncounterLocationStatus.PLANNED, "Elbe", "LS26 8PU" ,0,-15, "410429000","Cardiac arrest",true);
-
-
-        Boolean loadDocuments = true;
+        Boolean loadDocuments = false;
 
         if (loadDocuments) {
 
