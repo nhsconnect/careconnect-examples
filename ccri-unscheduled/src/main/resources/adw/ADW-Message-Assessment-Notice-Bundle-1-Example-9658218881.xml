@@ -55,6 +55,13 @@
                 </identifier>
                 <status value="active" />
                 <intent value="order" />
+                <type>
+                    <coding>
+                        <system value="http://snomed.info/sct"></system>
+                        <code value="38670004"></code>
+                        <display value="Patient referral for alcoholism rehabilitation"></display>
+                    </coding>
+                </type>
                 <serviceRequested>
                     <coding>
                         <system value="http://snomed.info/sct"></system>
@@ -77,6 +84,13 @@
                          <reference value="urn:uuid:1ebc76fd-9612-4c72-81dd-de294a0e7287" />
                     </onBehalfOf>
                 </requester>
+                <specialty>
+                    <coding>
+                        <system value="https://fhir.nhs.uk/STU3/CodeSystem/DCH-Specialty-1"></system>
+                        <code value="710"></code>
+                        <display value="ADULT MENTAL ILLNESS"></display>
+                    </coding>
+                </specialty>
                 <recipient>
                     <reference value="urn:uuid:dab4b872-e000-42ec-bd4e-0d804fc3b92e" />
                 </recipient>
