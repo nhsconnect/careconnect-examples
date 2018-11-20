@@ -357,4 +357,70 @@
             </Location>
         </resource>
     </entry>
+    <entry>
+        <fullUrl value="urn:uuid:42ac049c-87ca-4e33-93ad-987167422b01"/>
+        <resource>
+            <MedicationAdministration>
+                <id value="42ac049c-87ca-4e33-93ad-987167422b01"/>
+                <meta>
+                    <profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-ITK-MedicationDispense-1"/>
+                </meta>
+                <status value="completed"/>
+                <medicationReference>
+                    <reference value="urn:uuid:9c7e61c3-5b92-4828-9ebc-21e74bcdbc96"/>
+                </medicationReference>
+                <subject>
+                    <reference value="urn:uuid:bc3027a7-924c-44b5-8f1b-bfd5266c6905"/>
+                </subject>
+                <context>
+                    <reference value="urn:uuid:29cc1a8e-707c-4c60-915b-c6c22da4b3db"/>
+                </context>
+                <effectiveDateTime value="2018-11-08T13:12:00"/>
+                <performer>
+                    <actor>
+                        <reference value="urn:uuid:5b5d3bab-c1bb-434a-ab0d-82c4860bb098"/>
+                    </actor>
+                    <onBehalfOf>
+                        <reference value="urn:uuid:dab4b872-e000-42ec-bd4e-0d804fc3b92e"/>
+                    </onBehalfOf>
+                </performer>
+                <reasonCode>
+                    <coding>
+                        <system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-MedicationSupplyType-1"/>
+                        <code value="emergency-supply"/>
+                        <display value="Emergency supply"/>
+                    </coding>
+                </reasonCode>
+                <dosage>
+                    <route>
+                        <coding>
+                            <system value="http://snomed.info/sct"/>
+                            <code value="738986003"/>
+                            <display value="Rectal"/>
+                        </coding>
+                    </route>
+                </dosage>
+            </MedicationAdministration>
+        </resource>
+    </entry>
+    <!--Medication prescribed-->
+    <entry>
+        <fullUrl value="urn:uuid:9c7e61c3-5b92-4828-9ebc-21e74bcdbc96"/>
+        <resource>
+            <Medication>
+                <id value="9c7e61c3-5b92-4828-9ebc-21e74bcdbc96"/>
+                <meta>
+                    <profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-ITK-Medication-1"/>
+                </meta>
+                <code>
+                    <coding>
+                        <system value="http://snomed.info/sct"/>
+                        <code value="26811000001102"/>
+                        <display value="Diazepam 10mg RecTubes (C P Pharmaceuticals Ltd) (product)"/>
+                    </coding>
+                </code>
+                <status value="active"/>
+            </Medication>
+        </resource>
+    </entry>
 </Bundle>

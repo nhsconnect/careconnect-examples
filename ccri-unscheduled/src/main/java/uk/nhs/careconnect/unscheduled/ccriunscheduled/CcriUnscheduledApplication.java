@@ -1679,7 +1679,7 @@ Inspired Oxygen
 
          */
         encounter = getEncounter(patient,episode, "E11", Encounter.EncounterStatus.FINISHED,rkh, "IMP",
-                "inpatient encounter","2018-11-16", "2018-11-18" ,"53923005","Medical consultation on inpatient");
+                "inpatient encounter","2018-11-16", "2018-11-18" ,"48550003","Medical consultation on nursing facility inpatient");
         encounter.addParticipant(new Encounter.EncounterParticipantComponent().setIndividual(new Reference(uuidtag + nurse.getId())));
         encounter.addLocation().setLocation(new Reference(uuidtag + ward.getId()));
         bundle.addEntry().setResource(encounter).setFullUrl(encounter.getId());
