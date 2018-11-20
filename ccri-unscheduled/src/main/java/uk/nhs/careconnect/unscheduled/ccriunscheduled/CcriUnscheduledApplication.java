@@ -31,6 +31,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
     private static String yasEncounterIdentifier = "https://fhir.yas.nhs.uk/Encounter/Identifier";
 
     private static String interOpenEncounterIdentifier = "https://fhir.interopen.org/Encounter/Identifier";
+    private static String interOpenLocationIdentifier = "https://fhir.interopen.org/Location/Identifier";
     private static String interOpenEpisodeOfCareIdentifier = "https://fhir.interopen.org/EpisodeOfCare/Identifier";
 
     private static String interOpenProcedureIdentifier = "https://fhir.interopen.org/Procedure/Identifier";
@@ -121,9 +122,13 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
         Boolean michealOnly = true;
 
-        getMichael();
+        // RAD contains base Resources referenced in the main getMicheal load.
 
-        loadADW("ADW-Message-Assessment-Notice-Bundle-1-Example-9658218881.xml");
+        loadRAD("OOH-To-Ambulance-Referral-Example-9658218881.xml");
+        loadRAD("Ambulance-To-Hospital-Handover-Example-9658218881.xml");
+        loadRAD("Hospital-To-MentalHealth-Referral-Example-9658218881.xml");
+
+        getMichael();
 
 
         if (!michealOnly) {
@@ -373,9 +378,9 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
         return bundle;
     }
 
-    public void loadADW(String filename) {
+    public void loadRAD(String filename) {
         InputStream inputStream =
-                Thread.currentThread().getContextClassLoader().getResourceAsStream("adw/"+filename);
+                Thread.currentThread().getContextClassLoader().getResourceAsStream("rad/" +filename);
         Reader reader = new InputStreamReader(inputStream);
         Bundle bundle = (Bundle) ctxFHIR.newXmlParser().parseResource(reader);
 
@@ -1424,6 +1429,7 @@ Inspired Oxygen
                 .setUse(HumanName.NameUse.USUAL);
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat sdt = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         try {
             patient.setBirthDate(sdf.parse("1960-08-01"));
         } catch (Exception ex) {}
@@ -1466,6 +1472,24 @@ Inspired Oxygen
         practitioner.addName().setFamily("Courday").addGiven("Elisabeth").addPrefix("Dr");
         bundle.addEntry().setResource(practitioner).setFullUrl(uuidtag+ practitioner);
 
+
+        Location ed = new Location();
+        ed.setId(fhirBundle.getNewId(ed));
+        ed.addIdentifier().setSystem(interOpenLocationIdentifier).setValue("ed1");
+        ed.setName("William Harvey Emergency Dept");
+
+        bundle.addEntry().setResource(ed).setFullUrl(uuidtag+ ed);
+
+
+        Location ward = new Location();
+        ward.setId(fhirBundle.getNewId(ward));
+        ward.addIdentifier().setSystem(interOpenLocationIdentifier).setValue("ward1");
+        ward.setName("Brisingamen Ward");
+
+        bundle.addEntry().setResource(ward).setFullUrl(uuidtag+ ward);
+
+
+
         Practitioner erdoc = new Practitioner();
         erdoc.setId(fhirBundle.getNewId(erdoc));
         erdoc.addIdentifier().setSystem(interOpenPractitionerIdentifier).setValue("rkh2");
@@ -1477,11 +1501,16 @@ Inspired Oxygen
         nurse.addIdentifier().setSystem(interOpenPractitionerIdentifier).setValue("rkh3");
         nurse.addName().setFamily("Hathaway").addGiven("Carol").addPrefix("Ms");
         bundle.addEntry().setResource(nurse).setFullUrl(uuidtag+ nurse);
+
+
         // Encounter E8
 
+        // Arrival at ED
+
         Encounter encounter = getEncounter(patient, null,"E8", Encounter.EncounterStatus.FINISHED,rkh, "EMER",
-                "Emergency","2018-11-08", null ,"4525004","Emergency department patient visit");
+                "Emergency","2018-11-08 13:35:00", "2018-11-08 13:45:00" ,"4525004","Emergency department patient visit");
         encounter.addParticipant(new Encounter.EncounterParticipantComponent().setIndividual(new Reference(uuidtag + erdoc.getId())));
+        encounter.addLocation().setLocation(new Reference(uuidtag + ed.getId()));
         Extension serviceType = encounter.addExtension();
         serviceType.setUrl("http://hl7.org/fhir/4.0/StructureDefinition/extension-Encounter.serviceType");
         CodeableConcept type = new CodeableConcept();
@@ -1518,7 +1547,7 @@ Inspired Oxygen
         condition.getCategory().add(
                 category);
         try {
-            condition.setAssertedDate(sdf.parse("2018-11-08"));
+            condition.setAssertedDate(sdt.parse("2018-11-08 13:35"));
         } catch (Exception ex) {}
 
         CodeableConcept severity = new CodeableConcept();
@@ -1538,11 +1567,11 @@ Inspired Oxygen
 
 
         DateTimeType dateTime = new DateTimeType();
-        SimpleDateFormat sdt = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        try {
-            dateTime.setValue(sdf.parse("2018-09-07 18:35")); }
-        catch(Exception ex) {
 
+        try {
+            dateTime.setValue(sdt.parse("2018-11-08 13:35")); }
+        catch(Exception ex) {
+            System.out.print("Date Time Exception!!!!");
         }
 
 // Micheal
@@ -1562,7 +1591,7 @@ Inspired Oxygen
             news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
 
             obs = createObservation("99", "%",  "Blood oxygen saturation","103228002",encounter);
-        obs.setEffective(dateTime);
+        obs.setEffective (dateTime);
         obs.addPerformer(new Reference(uuidtag + erdoc.getId()));
             bundle.addEntry().setResource(obs);
             news.addRelated().setTarget(new Reference(uuidtag + obs.getId())).setType(Observation.ObservationRelationshipType.DERIVEDFROM);
@@ -1620,20 +1649,39 @@ Inspired Oxygen
         bundle.addEntry().setResource(episode).setFullUrl(episode.getId());
 
         // E9
+
+        /// In patient admission
+
         encounter = getEncounter(patient, episode,"E9", Encounter.EncounterStatus.FINISHED,rkh, "IMP",
-                "inpatient encounter","2018-11-08", null ,"86181006","Evaluation and management of inpatient");
+                "inpatient encounter","2018-11-08 16:45:00", "2018-11-08 17:15:00" ,"86181006","Evaluation and management of inpatient");
         encounter.addParticipant(new Encounter.EncounterParticipantComponent().setIndividual(new Reference(uuidtag + practitioner.getId())));
+        encounter.addLocation().setLocation(new Reference(uuidtag + ward.getId()));
         bundle.addEntry().setResource(encounter).setFullUrl(encounter.getId());
 
         // E10
+
+        /*
+
+          Ward care to discharge
+
+         */
         encounter = getEncounter(patient, episode,"E10", Encounter.EncounterStatus.FINISHED,rkh, "IMP",
                 "inpatient encounter","2018-11-09", "2018-11-18" ,"53923005","Medical consultation on inpatient");
+        encounter.addParticipant(new Encounter.EncounterParticipantComponent().setIndividual(new Reference(uuidtag + practitioner.getId())));
+        encounter.addLocation().setLocation(new Reference(uuidtag + ward.getId()));
         bundle.addEntry().setResource(encounter).setFullUrl(encounter.getId());
 
         // E11
+
+        /*
+
+        treatment on ward
+
+         */
         encounter = getEncounter(patient,episode, "E11", Encounter.EncounterStatus.FINISHED,rkh, "IMP",
                 "inpatient encounter","2018-11-16", "2018-11-18" ,"53923005","Medical consultation on inpatient");
         encounter.addParticipant(new Encounter.EncounterParticipantComponent().setIndividual(new Reference(uuidtag + nurse.getId())));
+        encounter.addLocation().setLocation(new Reference(uuidtag + ward.getId()));
         bundle.addEntry().setResource(encounter).setFullUrl(encounter.getId());
 
         Procedure procedure = new Procedure();
@@ -1651,7 +1699,9 @@ Inspired Oxygen
 
         // E12
         encounter = getEncounter(patient, episode,"E12", Encounter.EncounterStatus.FINISHED,rkh, "IMP",
-                "inpatient encounter","2018-11-18", "2018-11-18" ,"83362003","Final inpatient visit with instructions at discharge");
+                "inpatient encounter","2018-11-18 11:00", "2018-11-18 11:30" ,"83362003","Final inpatient visit with instructions at discharge");
+        encounter.addLocation().setLocation(new Reference(uuidtag + ward.getId()));
+        encounter.addParticipant(new Encounter.EncounterParticipantComponent().setIndividual(new Reference(uuidtag + practitioner.getId())));
         bundle.addEntry().setResource(encounter).setFullUrl(encounter.getId());
 
         Condition diabetes = new Condition();
@@ -1821,6 +1871,7 @@ Inspired Oxygen
     , String classCode, String classDesc, String encStart, String encEnd,
                                    String typeCode, String typeDesc) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat sdt = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         Encounter encounter = new Encounter();
 
         encounter.addIdentifier()
@@ -1839,12 +1890,22 @@ Inspired Oxygen
                 .setSystem("http://hl7.org/fhir/v3/ActCode")
                 .setDisplay(classDesc);
         try {
-            encounter.getPeriod().setStart(sdf.parse(encStart));
-        } catch (Exception ex) {}
+            encounter.getPeriod().setStart(sdt.parse(encStart));
+        } catch (Exception ex) {
+            try {
+                encounter.getPeriod().setStart(sdf.parse(encStart));
+            } catch (Exception ex2) {
+
+            }
+        }
         if (encEnd != null) {
             try {
-                encounter.getPeriod().setEnd(sdf.parse(encEnd));
-            } catch (Exception ex) {}
+                encounter.getPeriod().setEnd(sdt.parse(encEnd));
+            } catch (Exception ex) {
+                try {
+                    encounter.getPeriod().setEnd(sdf.parse(encEnd));
+                } catch (Exception ex1) {}
+            }
         }
         CodeableConcept type = new CodeableConcept();
         type.addCoding().setSystem(SNOMEDCT).setDisplay(typeDesc).setCode(typeCode);
