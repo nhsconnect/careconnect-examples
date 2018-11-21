@@ -36,6 +36,10 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
     private static String interOpenProcedureIdentifier = "https://fhir.interopen.org/Procedure/Identifier";
     private static String interOpenPractitionerIdentifier = "https://fhir.interopen.org/Practitioner/Identifier";
+    private static String interOpenMedicationRequestIdentifier = "https://fhir.interopen.org/MedicationRequest/Identifier";
+    private static String interOpenMedicationDispenseIdentifier = "https://fhir.interopen.org/MedicationDispense/Identifier";
+    private static String interOpenMedicationAdministrationIdentifier = "https://fhir.interopen.org/MedicationAdministration/Identifier";
+    private static String interOpenDosageUnitsNOS = "https://fhir.interopen.org/Medication/DosageUnitsNOS";
 
     private static String yasEpisodeIdentifier = "https://fhir.yas.nhs.uk/EpisodeOfCare/Identifier";
 
@@ -1696,6 +1700,68 @@ Inspired Oxygen
         procedure.setStatus(Procedure.ProcedureStatus.COMPLETED);
         procedure.addPerformer(new Procedure.ProcedurePerformerComponent().setActor(new Reference(uuidtag + nurse.getId())));
         bundle.addEntry().setResource(procedure).setFullUrl(procedure.getId());
+
+
+        Medication medication = new Medication();
+        medication.setId(fhirBundle.getNewId(medication));
+        medication.getCode().addCoding()
+                .setSystem(SNOMEDCT)
+                .setCode("30268411000001107")
+                .setDisplay("Apidra 100units/ml solution for injection 3ml pre-filled SoloStar pen (Waymade Healthcare Plc) (product)");
+        bundle.addEntry().setResource(medication).setFullUrl(medication.getId());
+
+        MedicationRequest request = new MedicationRequest();
+        request.setId(fhirBundle.getNewId(request));
+        request.setSubject(new Reference(uuidtag + patient.getId()));
+        request.addIdentifier().setSystem(interOpenMedicationRequestIdentifier).setValue("mr1");
+        request.setMedication(new Reference(uuidtag + medication.getId()));
+        request.setContext(new Reference(uuidtag + encounter.getId()));
+        request.setIntent(MedicationRequest.MedicationRequestIntent.ORDER);
+        request.setStatus(MedicationRequest.MedicationRequestStatus.COMPLETED);
+        try {
+        request.setAuthoredOn(sdt.parse("2018-11-16 11:01")); } catch (Exception ex) {}
+        request.getRequester().getAgent().setReference(uuidtag + nurse.getId());
+        request.addReasonCode()
+                .addCoding()
+                .setSystem(SNOMEDCT)
+                .setCode("46635009")
+                .setDisplay("Type 1 diabetes mellitus");
+        Dosage dosage = request.addDosageInstruction();
+
+        dosage.getRoute().addCoding()
+                .setSystem(SNOMEDCT)
+                .setCode("34206005")
+                .setDisplay("Subcutaneous route");
+
+        dosage.addAdditionalInstruction()
+                .addCoding()
+                .setSystem(SNOMEDCT)
+                .setDisplay("As directed")
+                .setCode("421769005");
+        dosage.setPatientInstruction("With evening meal");
+
+        SimpleQuantity dose = new SimpleQuantity();
+        dose.setUnit("pens").setValue(5).setCode("pens").setSystem(interOpenDosageUnitsNOS);
+        dosage.setDose(dose);
+
+        dosage.getTiming().getRepeat().addWhen(Timing.EventTiming.CV);
+
+        bundle.addEntry().setResource(request).setFullUrl(request.getId());
+
+
+        MedicationDispense dispense = new MedicationDispense();
+        dispense.setId(fhirBundle.getNewId(dispense));
+        dispense.addIdentifier().setSystem(interOpenMedicationDispenseIdentifier).setValue("md1");
+        dispense.setSubject(new Reference(uuidtag + patient.getId()));
+        dispense.setMedication(new Reference(uuidtag + medication.getId()));
+        dispense.setStatus(MedicationDispense.MedicationDispenseStatus.COMPLETED);
+        dispense.setContext(new Reference(uuidtag + encounter.getId()));
+        try {
+            dispense.setWhenHandedOver(sdt.parse("2018-11-16 11:03")); } catch (Exception ex) {}
+        dispense.addAuthorizingPrescription(new Reference(uuidtag + request.getId()));
+        dispense.addPerformer().setActor(new Reference(uuidtag + nurse.getId()));
+
+        bundle.addEntry().setResource(dispense).setFullUrl(dispense.getId());
 
         // E12
         encounter = getEncounter(patient, episode,"E12", Encounter.EncounterStatus.FINISHED,rkh, "IMP",
