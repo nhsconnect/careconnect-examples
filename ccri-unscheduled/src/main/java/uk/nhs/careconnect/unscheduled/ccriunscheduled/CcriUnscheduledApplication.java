@@ -1660,6 +1660,14 @@ Inspired Oxygen
                 "inpatient encounter","2018-11-08 16:45:00", "2018-11-08 17:15:00" ,"86181006","Evaluation and management of inpatient");
         encounter.addParticipant(new Encounter.EncounterParticipantComponent().setIndividual(new Reference(uuidtag + practitioner.getId())));
         encounter.addLocation().setLocation(new Reference(uuidtag + ward.getId()));
+        serviceType = encounter.addExtension();
+        serviceType.setUrl("http://hl7.org/fhir/4.0/StructureDefinition/extension-Encounter.serviceType");
+        type = new CodeableConcept();
+        type.addCoding()
+                .setSystem("https://fhir.nhs.uk/STU3/CodeSystem/DCH-Specialty-1")
+                .setCode("300")
+                .setDisplay("GENERAL MEDICINE");
+        serviceType.setValue(type);
         bundle.addEntry().setResource(encounter).setFullUrl(encounter.getId());
 
         // E10
@@ -1673,6 +1681,14 @@ Inspired Oxygen
                 "inpatient encounter","2018-11-09", "2018-11-18" ,"53923005","Medical consultation on inpatient");
         encounter.addParticipant(new Encounter.EncounterParticipantComponent().setIndividual(new Reference(uuidtag + practitioner.getId())));
         encounter.addLocation().setLocation(new Reference(uuidtag + ward.getId()));
+        serviceType = encounter.addExtension();
+        serviceType.setUrl("http://hl7.org/fhir/4.0/StructureDefinition/extension-Encounter.serviceType");
+        type = new CodeableConcept();
+        type.addCoding()
+                .setSystem("https://fhir.nhs.uk/STU3/CodeSystem/DCH-Specialty-1")
+                .setCode("300")
+                .setDisplay("GENERAL MEDICINE");
+        serviceType.setValue(type);
         bundle.addEntry().setResource(encounter).setFullUrl(encounter.getId());
 
         // E11
@@ -1686,6 +1702,14 @@ Inspired Oxygen
                 "inpatient encounter","2018-11-16", "2018-11-18" ,"48550003","Medical consultation on nursing facility inpatient");
         encounter.addParticipant(new Encounter.EncounterParticipantComponent().setIndividual(new Reference(uuidtag + nurse.getId())));
         encounter.addLocation().setLocation(new Reference(uuidtag + ward.getId()));
+        serviceType = encounter.addExtension();
+        serviceType.setUrl("http://hl7.org/fhir/4.0/StructureDefinition/extension-Encounter.serviceType");
+        type = new CodeableConcept();
+        type.addCoding()
+                .setSystem("https://fhir.nhs.uk/STU3/CodeSystem/DCH-Specialty-1")
+                .setCode("300")
+                .setDisplay("GENERAL MEDICINE");
+        serviceType.setValue(type);
         bundle.addEntry().setResource(encounter).setFullUrl(encounter.getId());
 
         Procedure procedure = new Procedure();
@@ -1768,6 +1792,14 @@ Inspired Oxygen
                 "inpatient encounter","2018-11-18 11:00", "2018-11-18 11:30" ,"83362003","Final inpatient visit with instructions at discharge");
         encounter.addLocation().setLocation(new Reference(uuidtag + ward.getId()));
         encounter.addParticipant(new Encounter.EncounterParticipantComponent().setIndividual(new Reference(uuidtag + practitioner.getId())));
+        serviceType = encounter.addExtension();
+        serviceType.setUrl("http://hl7.org/fhir/4.0/StructureDefinition/extension-Encounter.serviceType");
+        type = new CodeableConcept();
+        type.addCoding()
+                .setSystem("https://fhir.nhs.uk/STU3/CodeSystem/DCH-Specialty-1")
+                .setCode("300")
+                .setDisplay("GENERAL MEDICINE");
+        serviceType.setValue(type);
         bundle.addEntry().setResource(encounter).setFullUrl(encounter.getId());
 
         Condition diabetes = new Condition();
