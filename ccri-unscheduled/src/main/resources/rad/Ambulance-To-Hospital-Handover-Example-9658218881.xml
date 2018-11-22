@@ -110,6 +110,15 @@
         <resource>
             <Encounter>
                 <id value="29cc1a8e-707c-4c60-915b-c6c22da4b3db" />
+                <extension url="http://hl7.org/fhir/4.0/StructureDefinition/extension-Encounter.serviceType">
+                    <valueCodeableConcept>
+                        <coding>
+                            <system value="https://fhir.nhs.uk/STU3/CodeSystem/DCH-Specialty-1"></system>
+                            <code value="180"></code>
+                            <display value="ACCIDENT AND EMERGENCY"></display>
+                        </coding>
+                    </valueCodeableConcept>
+                </extension>
                 <identifier>
                     <system value="https://fhir.interopen.org/Encounter/Identifier"></system>
                     <value value="E7-1"></value>

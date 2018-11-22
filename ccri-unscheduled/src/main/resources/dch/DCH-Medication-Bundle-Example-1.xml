@@ -166,6 +166,7 @@
 					</actor>
 				</performer>
 				<dosage>
+					<text value="50 microgram / day" />
 					<route>
 						<coding>
 							<system value="http://snomed.info/sct"/>

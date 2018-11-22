@@ -124,7 +124,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
         clientODS = ctxFHIR.newRestfulGenericClient("https://directory.spineservices.nhs.uk/STU3/");
         clientODS.setEncoding(EncodingEnum.XML);
 
-        Boolean michealOnly = true;
+        Boolean michealOnly = false;
 
         // RAD contains base Resources referenced in the main getMicheal load.
 
@@ -149,9 +149,13 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
             postPatient("9658220142", "LS25 2HF", Encounter.EncounterLocationStatus.PLANNED, "Elbe", "LS26 8PU", 0, -15, "410429000", "Cardiac arrest", true);
         }
 
-        Boolean loadDocuments = false;
+        Boolean loadDocuments = true;
 
         if (loadDocuments) {
+
+            loadTOC("edischarge_full_payload_example-01-9658218873.xml");
+
+            loadDCH("DCH-Medication-Bundle-Example-1.xml");
 
             loadPharm("Digital Medicines Emergency Supply Example_9658220290.xml");
 
@@ -168,7 +172,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
             loadDCH("DCH-PhysicalExamination-Bundle-Example-1.xml");
 
-            loadDCH("DCH-Medication-Bundle-Example-1.xml");
+
 
             loadTOC("mh_eDischarge_elizabeth_black_full_payload_example-01_9658220169.xml");
 
@@ -176,7 +180,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
             loadTOC("mary_jones_outpatient_letter_example-01_9658219705.xml");
 
-            loadTOC("edischarge_full_payload_example-01-9658218873.xml");
+
 
             loadTOC("margaret_walker_outpatient_letter_example-01-9658218997.xml");
 
@@ -415,11 +419,14 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
         try {
             MethodOutcome outcome = client.create().resource(bundle).execute();
         } catch (UnprocessableEntityException ex) {
-            System.out.println("ERROR - "+filename);
+
             System.out.println(ctxFHIR.newXmlParser().encodeResourceToString(ex.getOperationOutcome()));
             if (ex.getStatusCode()==422) {
-                System.out.println("Trying to update "+filename+ ": Bundle?identifier="+bundle.getIdentifier().getSystem()+"|"+bundle.getIdentifier().getValue());
+                System.out.println("WARN - Trying to update "+filename+ ": Bundle?identifier="+bundle.getIdentifier().getSystem()+"|"+bundle.getIdentifier().getValue());
                 MethodOutcome outcome = client.update().resource(bundle).conditionalByUrl("Bundle?identifier="+bundle.getIdentifier().getSystem()+"|"+bundle.getIdentifier().getValue()).execute();
+            } else {
+                System.out.println("ERROR - "+filename);
+                throw ex;
             }
         }
 
@@ -436,7 +443,9 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
             MethodOutcome outcome = client.create().resource(bundle).execute();
         } catch (UnprocessableEntityException ex) {
             System.out.println("ERROR - "+filename);
+
             System.out.println(ctxFHIR.newXmlParser().encodeResourceToString(ex.getOperationOutcome()));
+        throw ex;
 
         }
 
@@ -452,11 +461,14 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
         try {
             MethodOutcome outcome = client.create().resource(bundle).execute();
         } catch (UnprocessableEntityException ex) {
-            System.out.println("ERROR - "+filename);
+
             System.out.println(ctxFHIR.newXmlParser().encodeResourceToString(ex.getOperationOutcome()));
             if (ex.getStatusCode()==422) {
-                System.out.println("Trying to update existing "+filename+ ": Bundle?identifier="+bundle.getIdentifier().getSystem()+"|"+bundle.getIdentifier().getValue());
+                System.out.println("WARN - Trying to update existing "+filename+ ": Bundle?identifier="+bundle.getIdentifier().getSystem()+"|"+bundle.getIdentifier().getValue());
                 MethodOutcome outcome = client.update().resource(bundle).conditionalByUrl("Bundle?identifier="+bundle.getIdentifier().getSystem()+"|"+bundle.getIdentifier().getValue()).execute();
+            } else {
+                System.out.println("ERROR - "+filename);
+                throw ex;
             }
         }
 
@@ -1665,8 +1677,8 @@ Inspired Oxygen
         type = new CodeableConcept();
         type.addCoding()
                 .setSystem("https://fhir.nhs.uk/STU3/CodeSystem/DCH-Specialty-1")
-                .setCode("300")
-                .setDisplay("GENERAL MEDICINE");
+                .setCode("100")
+                .setDisplay("GENERAL SURGERY");
         serviceType.setValue(type);
         bundle.addEntry().setResource(encounter).setFullUrl(encounter.getId());
 
@@ -1686,8 +1698,8 @@ Inspired Oxygen
         type = new CodeableConcept();
         type.addCoding()
                 .setSystem("https://fhir.nhs.uk/STU3/CodeSystem/DCH-Specialty-1")
-                .setCode("300")
-                .setDisplay("GENERAL MEDICINE");
+                .setCode("100")
+                .setDisplay("GENERAL SURGERY");
         serviceType.setValue(type);
         bundle.addEntry().setResource(encounter).setFullUrl(encounter.getId());
 
@@ -1707,8 +1719,8 @@ Inspired Oxygen
         type = new CodeableConcept();
         type.addCoding()
                 .setSystem("https://fhir.nhs.uk/STU3/CodeSystem/DCH-Specialty-1")
-                .setCode("300")
-                .setDisplay("GENERAL MEDICINE");
+                .setCode("100")
+                .setDisplay("GENERAL SURGERY");
         serviceType.setValue(type);
         bundle.addEntry().setResource(encounter).setFullUrl(encounter.getId());
 
@@ -1757,10 +1769,11 @@ Inspired Oxygen
                 .setCode("34206005")
                 .setDisplay("Subcutaneous route");
 
+        dosage.setText("As directed");
         dosage.addAdditionalInstruction()
                 .addCoding()
                 .setSystem(SNOMEDCT)
-                .setDisplay("As directed")
+                .setDisplay("Follow Directions")
                 .setCode("421769005");
         dosage.setPatientInstruction("With evening meal");
 
@@ -1785,6 +1798,26 @@ Inspired Oxygen
         dispense.addAuthorizingPrescription(new Reference(uuidtag + request.getId()));
         dispense.addPerformer().setActor(new Reference(uuidtag + nurse.getId()));
 
+        dosage = dispense.addDosageInstruction();
+
+        dosage.getRoute().addCoding()
+                .setSystem(SNOMEDCT)
+                .setCode("34206005")
+                .setDisplay("Subcutaneous route");
+        dosage.setText("As directed");
+        dosage.addAdditionalInstruction()
+                .addCoding()
+                .setSystem(SNOMEDCT)
+                .setDisplay("Follow instructions")
+                .setCode("421769005");
+        dosage.setPatientInstruction("With evening meal");
+
+        dose = new SimpleQuantity();
+        dose.setUnit("pens").setValue(5).setCode("pens").setSystem(interOpenDosageUnitsNOS);
+        dosage.setDose(dose);
+
+        dosage.getTiming().getRepeat().addWhen(Timing.EventTiming.CV);
+
         bundle.addEntry().setResource(dispense).setFullUrl(dispense.getId());
 
         // E12
@@ -1797,8 +1830,8 @@ Inspired Oxygen
         type = new CodeableConcept();
         type.addCoding()
                 .setSystem("https://fhir.nhs.uk/STU3/CodeSystem/DCH-Specialty-1")
-                .setCode("300")
-                .setDisplay("GENERAL MEDICINE");
+                .setCode("100")
+                .setDisplay("GENERAL SURGERY");
         serviceType.setValue(type);
         bundle.addEntry().setResource(encounter).setFullUrl(encounter.getId());
 
