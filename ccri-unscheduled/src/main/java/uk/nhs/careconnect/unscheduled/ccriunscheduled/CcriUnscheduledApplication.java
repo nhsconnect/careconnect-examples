@@ -107,8 +107,8 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
         }
 
        // client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
-        client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8183/ccri-fhir/STU3/");
-        // client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
+        //client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8183/ccri-fhir/STU3/");
+        client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
         client.setEncoding(EncodingEnum.XML);
 
        // clientGPC = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri/camel/fhir/gpc/");
@@ -1785,17 +1785,7 @@ Inspired Oxygen
         bundle.addEntry().setResource(request).setFullUrl(request.getId());
 
 
-        MedicationDispense dispense = new MedicationDispense();
-        dispense.setId(fhirBundle.getNewId(dispense));
-        dispense.addIdentifier().setSystem(interOpenMedicationDispenseIdentifier).setValue("md1");
-        dispense.setSubject(new Reference(uuidtag + patient.getId()));
-        dispense.setMedication(new Reference(uuidtag + medication.getId()));
-        dispense.setStatus(MedicationDispense.MedicationDispenseStatus.COMPLETED);
-        dispense.setContext(new Reference(uuidtag + encounter.getId()));
-        try {
-            dispense.setWhenHandedOver(sdt.parse("2018-11-16 11:03")); } catch (Exception ex) {}
-        dispense.addAuthorizingPrescription(new Reference(uuidtag + request.getId()));
-        dispense.addPerformer().setActor(new Reference(uuidtag + nurse.getId()));
+        MedicationDispense dispense = getDispense(patient,medication,encounter,request,nurse,"md1","2018-11-16 11:03");
 
         dosage = dispense.addDosageInstruction();
 
@@ -1888,6 +1878,37 @@ Inspired Oxygen
         requestVitB.getDispenseRequest().setExpectedSupplyDuration(duration);
         bundle.addEntry().setResource(requestVitB).setFullUrl(requestVitB.getId());
 
+        dispense = getDispense(patient,vitB,encounter,requestVitB,pharm,"md4","2018-11-18 11:23");
+
+        dosage = dispense.addDosageInstruction();
+
+        dosage.getRoute().addCoding()
+                .setSystem(SNOMEDCT)
+                .setCode("738956005")
+                .setDisplay("Oral");
+
+        dosage.setText("As directed");
+        dosage.addAdditionalInstruction()
+                .addCoding()
+                .setSystem(SNOMEDCT)
+                .setDisplay("Follow Directions")
+                .setCode("421769005");
+        dosage.setPatientInstruction("Morning");
+
+        dose = new SimpleQuantity();
+        dose.setUnit("tablets").setValue(56).setCode("tbs").setSystem(interOpenDosageUnitsNOS);
+        dispense.setQuantity(dose);
+
+        dosage.getTiming().getRepeat().addWhen(Timing.EventTiming.CV);
+        dose = new SimpleQuantity();
+        dose.setUnit("tablets").setValue(2).setCode("tbs").setSystem(interOpenDosageUnitsNOS);
+        dosage.setDose(dose);
+
+        dosage.getTiming().getRepeat().addWhen(Timing.EventTiming.MORN);
+
+
+        bundle.addEntry().setResource(dispense).setFullUrl(dispense.getId());
+
 
         Medication thiamine = new Medication();
         thiamine.setId(fhirBundle.getNewId(thiamine));
@@ -1928,6 +1949,36 @@ Inspired Oxygen
         duration.setValue(28).setUnit("d").setSystem("http://unitsofmeasure.org").setCode("d");
         requestthiamine.getDispenseRequest().setExpectedSupplyDuration(duration);
         bundle.addEntry().setResource(requestthiamine).setFullUrl(requestthiamine.getId());
+
+        dispense = getDispense(patient,thiamine,encounter,requestthiamine,pharm,"md5","2018-11-18 11:23");
+
+        dosage = dispense.addDosageInstruction();
+
+        dosage.getRoute().addCoding()
+                .setSystem(SNOMEDCT)
+                .setCode("738956005")
+                .setDisplay("Oral");
+
+        dosage.setText("As directed");
+        dosage.addAdditionalInstruction()
+                .addCoding()
+                .setSystem(SNOMEDCT)
+                .setDisplay("Follow Directions")
+                .setCode("421769005");
+        dosage.setPatientInstruction("Morning");
+
+        dose = new SimpleQuantity();
+        dose.setUnit("tablets").setValue(28).setCode("tbs").setSystem(interOpenDosageUnitsNOS);
+        dispense.setQuantity(dose);
+
+        dosage.getTiming().getRepeat().addWhen(Timing.EventTiming.CV);
+        dose = new SimpleQuantity();
+        dose.setUnit("tablets").setValue(1).setCode("tbs").setSystem(interOpenDosageUnitsNOS);
+        dosage.setDose(dose);
+
+        dosage.getTiming().getRepeat().addWhen(Timing.EventTiming.MORN);
+
+        bundle.addEntry().setResource(dispense).setFullUrl(dispense.getId());
 
         Condition diabetes = new Condition();
         diabetes.addIdentifier()
@@ -2091,6 +2142,25 @@ Inspired Oxygen
 
         MethodOutcome outcome = client.create().resource(fhirBundle.getFhirDocument()).execute();
     }
+
+
+    private MedicationDispense getDispense(Patient patient, Medication medication, Encounter encounter, MedicationRequest request, Practitioner practitioner, String id, String date ) {
+
+        SimpleDateFormat sdt = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        MedicationDispense dispense = new MedicationDispense();
+        dispense.setId(fhirBundle.getNewId(dispense));
+        dispense.addIdentifier().setSystem(interOpenMedicationDispenseIdentifier).setValue(id);
+        dispense.setSubject(new Reference(uuidtag + patient.getId()));
+        dispense.setMedication(new Reference(uuidtag + medication.getId()));
+        dispense.setStatus(MedicationDispense.MedicationDispenseStatus.COMPLETED);
+        dispense.setContext(new Reference(uuidtag + encounter.getId()));
+        try {
+            dispense.setWhenHandedOver(sdt.parse(date)); } catch (Exception ex) {}
+        dispense.addAuthorizingPrescription(new Reference(uuidtag + request.getId()));
+        dispense.addPerformer().setActor(new Reference(uuidtag + practitioner.getId()));
+        return dispense;
+    }
+
 
     private MedicationAdministration getAdministration(Patient patient, Medication medication, Encounter encounter, MedicationRequest request, Practitioner practitioner, String id, String date ) {
 
