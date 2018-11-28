@@ -61,7 +61,9 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
     private static String yasDocumentIdentifier = "https://fhir.yas.nhs.uk/DocumentReference/Identifier";
 
-    private static String yasBundleIdentifier = "https://fhir.yas.nhs.uk/Bundle/Identifier";
+    private static String westRidingCareTeamIdentifier = "https://fhir.westriding.nhs.uk/CareTeam/Identifier";
+
+
 
     final String uuidtag = "urn:uuid:";
 
@@ -106,8 +108,8 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
             throw new Exception();
         }
 
-        client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
-        //client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8183/ccri-fhir/STU3/");
+       // client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
+        client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8183/ccri-fhir/STU3/");
        // client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
         client.setEncoding(EncodingEnum.XML);
 
@@ -124,7 +126,8 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
         clientODS = ctxFHIR.newRestfulGenericClient("https://directory.spineservices.nhs.uk/STU3/");
         clientODS.setEncoding(EncodingEnum.XML);
 
-        Boolean michealOnly = true;
+        Boolean michealOnly = false;
+        Boolean loadDocuments = false;
 
         // RAD contains base Resources referenced in the main getMicheal load.
 
@@ -138,18 +141,18 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
         if (!michealOnly) {
 
 
-            postPatient("9658218997", "LS25 2AQ", Encounter.EncounterLocationStatus.ACTIVE, "Manstein", "LS15 9JA", 0, -5, "54635001", "Scalding Injury", false);
+            postPatient(loadDocuments,"9658218997", "LS25 2AQ", Encounter.EncounterLocationStatus.ACTIVE, "Manstein", "LS15 9JA", 0, -5, "54635001", "Scalding Injury", false);
 
-            postPatient("9658220223", "LS15 8FS", Encounter.EncounterLocationStatus.ACTIVE, "Danzig", "LS14 6UH", -1, 0, "217082002", "Accidental fall", true);
+            postPatient(loadDocuments,"9658220223", "LS15 8FS", Encounter.EncounterLocationStatus.ACTIVE, "Danzig", "LS14 6UH", -1, 0, "217082002", "Accidental fall", true);
 
-            postPatient("9658218873", "LS25 1NT", Encounter.EncounterLocationStatus.PLANNED, "Dynamo", "LS14 1PW", -1, -15, "217133004", "Fall into quarry", false);
+            postPatient(loadDocuments,"9658218873", "LS25 1NT", Encounter.EncounterLocationStatus.PLANNED, "Dynamo", "LS14 1PW", -1, -15, "217133004", "Fall into quarry", false);
 
-            postPatient("9658220169", "LS15 8ZB", null, null, null, 0, -5, "418399005", "Motor vehicle accident", false);
+            postPatient(loadDocuments,"9658220169", "LS15 8ZB", null, null, null, 0, -5, "418399005", "Motor vehicle accident", false);
 
-            postPatient("9658220142", "LS25 2HF", Encounter.EncounterLocationStatus.PLANNED, "Elbe", "LS26 8PU", 0, -15, "410429000", "Cardiac arrest", true);
+            postPatient(loadDocuments,"9658220142", "LS25 2HF", Encounter.EncounterLocationStatus.PLANNED, "Elbe", "LS26 8PU", 0, -15, "410429000", "Cardiac arrest", true);
         }
 
-        Boolean loadDocuments = false;
+
 
         if (loadDocuments) {
 
@@ -317,15 +320,21 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
         bundle.addEntry().setResource(form);
 
+        CareTeam careTeam = new CareTeam();
+        careTeam.setId(fhirBundle.getNewId(careTeam));
+        careTeam.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
+        careTeam.addIdentifier().setSystem(westRidingCareTeamIdentifier).setValue("blm1");
 
+        bundle.addEntry().setResource(careTeam);
 
 
         CarePlan carePlan = new CarePlan();
         carePlan.setId(fhirBundle.getNewId(carePlan));
         carePlan.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
         carePlan.addIdentifier().setSystem(midYorksCarePlanIdentifier).setValue("blm1");
-        carePlan.addAddresses(new Reference(uuidtag + condition.getId()));
+        // Not required carePlan.addAddresses(new Reference(uuidtag + condition.getId()));
         carePlan.addAuthor(new Reference(uuidtag + consultant.getId()));
+        carePlan.addCareTeam(new Reference(uuidtag + careTeam.getId()));
         carePlan.addCategory().addCoding()
                 .setCode("736373009")
                 .setSystem("http://snomed.info/sct")
@@ -603,7 +612,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
     }
 
-    public void postPatient(String nhsNumber, String encounterPostcode, Encounter.EncounterLocationStatus ambulanceStatus, String ambulanceName, String ambulancePostcode,
+    public void postPatient(Boolean loadDocuments, String nhsNumber, String encounterPostcode, Encounter.EncounterLocationStatus ambulanceStatus, String ambulanceName, String ambulancePostcode,
                             Integer hoursDiff, Integer minsDiff ,String code, String display , Boolean hospital) {
 
 
@@ -990,8 +999,9 @@ Inspired Oxygen
             }
 
 
-
-            getUnstructuredDocumentBundle(nhsNumber);
+            if (loadDocuments) {
+                getUnstructuredDocumentBundle(nhsNumber);
+            }
 
 
 
