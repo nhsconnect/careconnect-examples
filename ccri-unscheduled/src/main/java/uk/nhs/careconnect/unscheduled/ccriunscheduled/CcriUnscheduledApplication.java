@@ -108,7 +108,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
         client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
         //client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8183/ccri-fhir/STU3/");
-       // client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
+        //client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
         client.setEncoding(EncodingEnum.XML);
 
        // clientGPC = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri/camel/fhir/gpc/");
@@ -124,7 +124,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
         clientODS = ctxFHIR.newRestfulGenericClient("https://directory.spineservices.nhs.uk/STU3/");
         clientODS.setEncoding(EncodingEnum.XML);
 
-        Boolean michealOnly = true;
+        Boolean michealOnly = false;
 
         // RAD contains base Resources referenced in the main getMicheal load.
 
@@ -253,11 +253,19 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
         questionnaireCPR.setName("EOL CPR Status");
         bundle.addEntry().setResource(questionnaireCPR);
 
+        Questionnaire questionnaireLPA = new Questionnaire();
+        questionnaireLPA.setId(fhirBundle.getNewId(questionnaireLPA));
+        questionnaireLPA.addIdentifier().setSystem(midYorksQuestionnaireIdentifier).setValue("sr3");
+        questionnaireLPA.setName("Lasting Power of Attorney Official Document");
+        bundle.addEntry().setResource(questionnaireLPA);
+
         Questionnaire questionnaire = new Questionnaire();
         questionnaire.setId(fhirBundle.getNewId(questionnaire));
         questionnaire.addIdentifier().setSystem(midYorksQuestionnaireIdentifier).setValue("sr2");
         questionnaire.setName("EOL Preferences");
         bundle.addEntry().setResource(questionnaire);
+
+
 
         QuestionnaireResponse formCPR = new QuestionnaireResponse();
         formCPR.setId(fhirBundle.getNewId(formCPR));
@@ -287,6 +295,36 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
 
         bundle.addEntry().setResource(formCPR);
+
+        QuestionnaireResponse formLPA = new QuestionnaireResponse();
+        formLPA.setId(fhirBundle.getNewId(formLPA));
+        formLPA.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
+        formLPA.getIdentifier().setSystem(midYorksQuestionnaireResponseIdentifier).setValue("rjm3");
+        formLPA.setAuthor(new Reference(uuidtag + consultant.getId()));
+        formLPA.setQuestionnaire(new Reference(uuidtag + questionnaireLPA.getId()));
+        formLPA.setStatus(QuestionnaireResponse.QuestionnaireResponseStatus.COMPLETED);
+        try {
+            formLPA.setAuthored(sdf.parse("2018-07-15"));
+        } catch (Exception ex) {}
+        formLPA.addItem()
+                .setLinkId("documentName")
+                .setText("Document Name")
+                .addAnswer()
+                .setValue(new StringType("Lasting power of attorny offical document"));
+        formLPA.addItem()
+                .setLinkId("documentLocation")
+                .setText("Document Location")
+                .addAnswer()
+                .setValue(new StringType("Top left drawer in cabinet located in dining room. Documents are inside blue folder."));
+        formLPA.addItem()
+                .setLinkId("documentSource")
+                .setText("Document Source")
+                .addAnswer()
+                .setValue(new StringType("Docuemnt drawn up at A B Solictors, Newcastle"));
+
+
+        bundle.addEntry().setResource(formLPA);
+
 
         QuestionnaireResponse form = new QuestionnaireResponse();
         form.setId(fhirBundle.getNewId(form));
@@ -337,6 +375,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
         } catch (Exception ex) {}
         carePlan.addSupportingInfo(new Reference(uuidtag + form.getId()));
         carePlan.addSupportingInfo(new Reference(uuidtag + formCPR.getId()));
+        carePlan.addSupportingInfo(new Reference(uuidtag + formLPA.getId()));
         carePlan.addActivity()
                 .getDetail().setStatus(CarePlan.CarePlanActivityStatus.NOTSTARTED).setDescription("Nebulizer can be used to make patient more comfortable")
                 .getCode().addCoding().setCode("445141005").setSystem("http://snomed.info/sct").setDisplay("Nebuliser therapy using mask");
@@ -733,7 +772,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
 
             // EOLC
-            if (nhsNumber == "9658220142") {
+            if (nhsNumber.equals("9658220142")) {
                 loadEOLC(bundle);
             }
 
