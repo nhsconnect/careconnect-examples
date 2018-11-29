@@ -1,0 +1,1860 @@
+<Bundle xmlns="http://hl7.org/fhir">
+   <identifier>
+      <system value="https://tools.ietf.org/html/rfc4122"></system>
+      <value value="9f1803fe-31af-4ee8-b9c9-6b05546a4ae5"></value>
+   </identifier>
+   <type value="collection"></type>
+   <entry>
+      <fullUrl value="urn:uuid:2305a166-45ca-4716-8be6-e1a57eda55b0"></fullUrl>
+      <resource>
+         <Patient xmlns="http://hl7.org/fhir">
+            <id value="2305a166-45ca-4716-8be6-e1a57eda55b0"></id>
+            <language value="English (en-GB)"></language>
+            <identifier>
+               <extension url="https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-NHSNumberVerificationStatus-1">
+                  <valueCodeableConcept>
+                     <coding>
+                        <system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-NHSNumberVerificationStatus-1"></system>
+                        <code value="01"></code>
+                        <display value="Number present and verified"></display>
+                     </coding>
+                  </valueCodeableConcept>
+               </extension>
+               <system value="https://fhir.nhs.uk/Id/nhs-number"></system>
+               <value value="9658218881"></value>
+            </identifier>
+            <name>
+               <use value="usual"></use>
+               <family value="Meakin"></family>
+               <given value="Micheal"></given>
+               <prefix value="Mr"></prefix>
+            </name>
+            <telecom>
+               <system value="phone"></system>
+               <value value="0208 412 8867"></value>
+               <use value="home"></use>
+            </telecom>
+            <telecom>
+               <system value="phone"></system>
+               <value value="07778 143 565"></value>
+               <use value="mobile"></use>
+            </telecom>
+            <telecom>
+               <system value="email"></system>
+               <value value="michael@interopen.org"></value>
+               <use value="home"></use>
+            </telecom>
+            <gender value="male"></gender>
+            <birthDate value="1960-08-01"></birthDate>
+            <address>
+               <use value="home"></use>
+               <line value="7 Trinity Way"></line>
+               <city value="London"></city>
+               <postalCode value="W3 7JF"></postalCode>
+            </address>
+            <maritalStatus>
+               <coding>
+                  <system value="http://hl7.org/fhir/v3/MaritalStatus"></system>
+                  <code value="S"></code>
+               </coding>
+            </maritalStatus>
+            <managingOrganization>
+               <reference value="urn:uuid:87e49abd-9410-419d-8682-74930220cd3c"></reference>
+            </managingOrganization>
+         </Patient>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:2305a166-45ca-4716-8be6-e1a57eda55b0"></fullUrl>
+      <resource>
+         <Patient xmlns="http://hl7.org/fhir">
+            <id value="2305a166-45ca-4716-8be6-e1a57eda55b0"></id>
+            <language value="English (en-GB)"></language>
+            <identifier>
+               <extension url="https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-NHSNumberVerificationStatus-1">
+                  <valueCodeableConcept>
+                     <coding>
+                        <system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-NHSNumberVerificationStatus-1"></system>
+                        <code value="01"></code>
+                        <display value="Number present and verified"></display>
+                     </coding>
+                  </valueCodeableConcept>
+               </extension>
+               <system value="https://fhir.nhs.uk/Id/nhs-number"></system>
+               <value value="9658218881"></value>
+            </identifier>
+            <name>
+               <use value="usual"></use>
+               <family value="Meakin"></family>
+               <given value="Micheal"></given>
+               <prefix value="Mr"></prefix>
+            </name>
+            <telecom>
+               <system value="phone"></system>
+               <value value="0208 412 8867"></value>
+               <use value="home"></use>
+            </telecom>
+            <telecom>
+               <system value="phone"></system>
+               <value value="07778 143 565"></value>
+               <use value="mobile"></use>
+            </telecom>
+            <telecom>
+               <system value="email"></system>
+               <value value="michael@interopen.org"></value>
+               <use value="home"></use>
+            </telecom>
+            <gender value="male"></gender>
+            <birthDate value="1960-08-01"></birthDate>
+            <address>
+               <use value="home"></use>
+               <line value="7 Trinity Way"></line>
+               <city value="London"></city>
+               <postalCode value="W3 7JF"></postalCode>
+            </address>
+            <maritalStatus>
+               <coding>
+                  <system value="http://hl7.org/fhir/v3/MaritalStatus"></system>
+                  <code value="S"></code>
+               </coding>
+            </maritalStatus>
+            <managingOrganization>
+               <reference value="urn:uuid:87e49abd-9410-419d-8682-74930220cd3c"></reference>
+            </managingOrganization>
+         </Patient>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:87e49abd-9410-419d-8682-74930220cd3c"></fullUrl>
+      <resource>
+         <Organization xmlns="http://hl7.org/fhir">
+            <id value="87e49abd-9410-419d-8682-74930220cd3c"></id>
+            <meta>
+               <lastUpdated value="2018-08-23T00:00:00+00:00"></lastUpdated>
+               <profile value="https://fhir.nhs.uk/STU3/StructureDefinition/ODSAPI-Organization-1"></profile>
+            </meta>
+            <extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-ODSAPI-ActivePeriod-1">
+               <valuePeriod>
+                  <extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-ODSAPI-DateType-1">
+                     <valueString value="Operational"></valueString>
+                  </extension>
+                  <start value="1999-04-01"></start>
+               </valuePeriod>
+            </extension>
+            <extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-ODSAPI-OrganizationRole-1">
+               <extension url="role">
+                  <valueCoding>
+                     <system value="https://directory.spineservices.nhs.uk/STU3/CodeSystem/ODSAPI-OrganizationRole-1"></system>
+                     <code value="57"></code>
+                     <display value="FOUNDATION TRUST"></display>
+                  </valueCoding>
+               </extension>
+               <extension url="primaryRole">
+                  <valueBoolean value="false"></valueBoolean>
+               </extension>
+               <extension url="activePeriod">
+                  <valuePeriod>
+                     <extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-ODSAPI-DateType-1">
+                        <valueString value="Operational"></valueString>
+                     </extension>
+                     <start value="2009-03-01"></start>
+                  </valuePeriod>
+               </extension>
+               <extension url="status">
+                  <valueString value="Active"></valueString>
+               </extension>
+            </extension>
+            <extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-ODSAPI-OrganizationRole-1">
+               <extension url="role">
+                  <valueCoding>
+                     <system value="https://directory.spineservices.nhs.uk/STU3/CodeSystem/ODSAPI-OrganizationRole-1"></system>
+                     <code value="197"></code>
+                     <display value="NHS TRUST"></display>
+                  </valueCoding>
+               </extension>
+               <extension url="primaryRole">
+                  <valueBoolean value="true"></valueBoolean>
+               </extension>
+               <extension url="activePeriod">
+                  <valuePeriod>
+                     <extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-ODSAPI-DateType-1">
+                        <valueString value="Operational"></valueString>
+                     </extension>
+                     <start value="1999-04-01"></start>
+                  </valuePeriod>
+               </extension>
+               <extension url="status">
+                  <valueString value="Active"></valueString>
+               </extension>
+            </extension>
+            <identifier>
+               <system value="https://fhir.nhs.uk/Id/ods-organization-code"></system>
+               <value value="RVV"></value>
+            </identifier>
+            <active value="true"></active>
+            <type>
+               <coding>
+                  <system value="https://fhir.nhs.uk/STU3/CodeSystem/ODSAPI-OrganizationRecordClass-1"></system>
+                  <code value="1"></code>
+                  <display value="HSCOrg"></display>
+               </coding>
+            </type>
+            <name value="EAST KENT HOSPITALS UNIVERSITY NHS FOUNDATION TRUST"></name>
+            <telecom>
+               <system value="fax"></system>
+               <value value="01227 866385"></value>
+            </telecom>
+            <telecom>
+               <system value="phone"></system>
+               <value value="01227 766877"></value>
+            </telecom>
+            <address>
+               <line value="KENT &amp; CANTERBURY HOSPITAL"></line>
+               <line value="ETHELBERT ROAD"></line>
+               <city value="CANTERBURY"></city>
+               <district value="KENT"></district>
+               <postalCode value="CT1 3NG"></postalCode>
+               <country value="ENGLAND"></country>
+            </address>
+         </Organization>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:f1ff8d48-43f3-438b-861c-60ee32ef9144"></fullUrl>
+      <resource>
+         <Practitioner xmlns="http://hl7.org/fhir">
+            <id value="f1ff8d48-43f3-438b-861c-60ee32ef9144"></id>
+            <identifier>
+               <system value="https://fhir.interopen.org/Practitioner/Identifier"></system>
+               <value value="rkh1"></value>
+            </identifier>
+            <name>
+               <family value="Courday"></family>
+               <given value="Elisabeth"></given>
+               <prefix value="Dr"></prefix>
+            </name>
+         </Practitioner>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:a3bcf90a-6613-42f2-b436-3098b03c6c9d"></fullUrl>
+      <resource>
+         <Practitioner xmlns="http://hl7.org/fhir">
+            <id value="a3bcf90a-6613-42f2-b436-3098b03c6c9d"></id>
+            <identifier>
+               <system value="https://fhir.interopen.org/Practitioner/Identifier"></system>
+               <value value="pharm1"></value>
+            </identifier>
+            <name>
+               <family value="Swift"></family>
+               <given value="William"></given>
+               <prefix value="Dr"></prefix>
+            </name>
+         </Practitioner>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:2b7905c3-c0b9-458f-ad68-7cef5fffcc5d"></fullUrl>
+      <resource>
+         <Location xmlns="http://hl7.org/fhir">
+            <id value="2b7905c3-c0b9-458f-ad68-7cef5fffcc5d"></id>
+            <identifier>
+               <system value="https://fhir.interopen.org/Location/Identifier"></system>
+               <value value="ed1"></value>
+            </identifier>
+            <name value="William Harvey Emergency Dept"></name>
+         </Location>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:9e1ebf36-2a66-47ec-971d-ed5450afc8b8"></fullUrl>
+      <resource>
+         <Location xmlns="http://hl7.org/fhir">
+            <id value="9e1ebf36-2a66-47ec-971d-ed5450afc8b8"></id>
+            <identifier>
+               <system value="https://fhir.interopen.org/Location/Identifier"></system>
+               <value value="ward1"></value>
+            </identifier>
+            <name value="Brisingamen Ward"></name>
+         </Location>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:25a349c0-eb17-436b-ad2d-7891bcc17013"></fullUrl>
+      <resource>
+         <Practitioner xmlns="http://hl7.org/fhir">
+            <id value="25a349c0-eb17-436b-ad2d-7891bcc17013"></id>
+            <identifier>
+               <system value="https://fhir.interopen.org/Practitioner/Identifier"></system>
+               <value value="rkh2"></value>
+            </identifier>
+            <name>
+               <family value="Ross"></family>
+               <given value="Doug"></given>
+               <prefix value="Dr"></prefix>
+            </name>
+         </Practitioner>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:d7b715be-663d-44c8-bb72-c66712ca4bdd"></fullUrl>
+      <resource>
+         <Practitioner xmlns="http://hl7.org/fhir">
+            <id value="d7b715be-663d-44c8-bb72-c66712ca4bdd"></id>
+            <identifier>
+               <system value="https://fhir.interopen.org/Practitioner/Identifier"></system>
+               <value value="rkh3"></value>
+            </identifier>
+            <name>
+               <family value="Hathaway"></family>
+               <given value="Carol"></given>
+               <prefix value="Ms"></prefix>
+            </name>
+         </Practitioner>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:25e4701e-e90f-46b9-8567-b60ac2a7e8e8"></fullUrl>
+      <resource>
+         <Encounter xmlns="http://hl7.org/fhir">
+            <id value="25e4701e-e90f-46b9-8567-b60ac2a7e8e8"></id>
+            <extension url="http://hl7.org/fhir/4.0/StructureDefinition/extension-Encounter.serviceType">
+               <valueCodeableConcept>
+                  <coding>
+                     <system value="https://fhir.nhs.uk/STU3/CodeSystem/DCH-Specialty-1"></system>
+                     <code value="180"></code>
+                     <display value="ACCIDENT &amp; EMERGENCY"></display>
+                  </coding>
+               </valueCodeableConcept>
+            </extension>
+            <identifier>
+               <system value="https://fhir.interopen.org/Encounter/Identifier"></system>
+               <value value="E8"></value>
+            </identifier>
+            <status value="finished"></status>
+            <class>
+               <system value="http://hl7.org/fhir/v3/ActCode"></system>
+               <code value="EMER"></code>
+               <display value="Emergency"></display>
+            </class>
+            <type>
+               <coding>
+                  <system value="http://snomed.info/sct"></system>
+                  <code value="4525004"></code>
+                  <display value="Emergency department patient visit"></display>
+               </coding>
+            </type>
+            <subject>
+               <reference value="urn:uuid:2305a166-45ca-4716-8be6-e1a57eda55b0"></reference>
+            </subject>
+            <participant>
+               <individual>
+                  <reference value="urn:uuid:25a349c0-eb17-436b-ad2d-7891bcc17013"></reference>
+               </individual>
+            </participant>
+            <period>
+               <start value="2018-11-08T13:35:00+00:00"></start>
+               <end value="2018-11-08T13:45:00+00:00"></end>
+            </period>
+            <location>
+               <location>
+                  <reference value="urn:uuid:2b7905c3-c0b9-458f-ad68-7cef5fffcc5d"></reference>
+               </location>
+            </location>
+            <serviceProvider>
+               <reference value="urn:uuid:87e49abd-9410-419d-8682-74930220cd3c"></reference>
+            </serviceProvider>
+         </Encounter>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:1995bd42-fea5-420d-9e92-270c100c16cb"></fullUrl>
+      <resource>
+         <Condition xmlns="http://hl7.org/fhir">
+            <id value="1995bd42-fea5-420d-9e92-270c100c16cb"></id>
+            <identifier>
+               <system value="https://fhir.yas.nhs.uk/Condition/Identifier"></system>
+               <value value="con3"></value>
+            </identifier>
+            <clinicalStatus value="active"></clinicalStatus>
+            <category>
+               <coding>
+                  <system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-ConditionCategory-1"></system>
+                  <code value="Encounter diagnosis"></code>
+                  <display value="encounter-diagnosis"></display>
+               </coding>
+            </category>
+            <severity>
+               <coding>
+                  <system value="http://snomed.info/sct"></system>
+                  <code value="6736007"></code>
+                  <display value="Moderate"></display>
+               </coding>
+            </severity>
+            <code>
+               <coding>
+                  <system value="http://snomed.info/sct"></system>
+                  <code value="723926008"></code>
+                  <display value="Perceptual disturbances and seizures co-occurrent and due to alcohol withdrawal"></display>
+               </coding>
+            </code>
+            <subject>
+               <reference value="urn:uuid:2305a166-45ca-4716-8be6-e1a57eda55b0"></reference>
+            </subject>
+            <context>
+               <reference value="urn:uuid:25e4701e-e90f-46b9-8567-b60ac2a7e8e8"></reference>
+            </context>
+            <assertedDate value="2018-11-08T13:35:00+00:00"></assertedDate>
+            <asserter>
+               <reference value="urn:uuid:25a349c0-eb17-436b-ad2d-7891bcc17013"></reference>
+            </asserter>
+         </Condition>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:ddc15f10-4564-47de-8346-e87f0731d0f0"></fullUrl>
+      <resource>
+         <Observation xmlns="http://hl7.org/fhir">
+            <id value="ddc15f10-4564-47de-8346-e87f0731d0f0"></id>
+            <identifier>
+               <system value="https://fhir.yas.nhs.uk/Observation/Identifier"></system>
+               <value value="501"></value>
+            </identifier>
+            <status value="final"></status>
+            <category>
+               <coding>
+                  <system value="http://hl7.org/fhir/observation-category"></system>
+                  <code value="vital-signs"></code>
+                  <display value="Vital Signs"></display>
+               </coding>
+            </category>
+            <code>
+               <coding>
+                  <system value="http://snomed.info/sct"></system>
+                  <code value="86290005"></code>
+                  <display value="Respiratory rate"></display>
+               </coding>
+            </code>
+            <subject>
+               <reference value="urn:uuid:2305a166-45ca-4716-8be6-e1a57eda55b0"></reference>
+            </subject>
+            <context>
+               <reference value="urn:uuid:25e4701e-e90f-46b9-8567-b60ac2a7e8e8"></reference>
+            </context>
+            <effectiveDateTime value="2018-11-08T13:35:00+00:00"></effectiveDateTime>
+            <performer>
+               <reference value="urn:uuid:25a349c0-eb17-436b-ad2d-7891bcc17013"></reference>
+            </performer>
+            <valueQuantity>
+               <value value="19"></value>
+               <unit value="/min"></unit>
+               <system value="http://unitsofmeasure.org"></system>
+               <code value="/min"></code>
+            </valueQuantity>
+         </Observation>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:8bed2aaf-6015-4cfd-9eb2-c79dbf6a31ee"></fullUrl>
+      <resource>
+         <Observation xmlns="http://hl7.org/fhir">
+            <id value="8bed2aaf-6015-4cfd-9eb2-c79dbf6a31ee"></id>
+            <identifier>
+               <system value="https://fhir.yas.nhs.uk/Observation/Identifier"></system>
+               <value value="502"></value>
+            </identifier>
+            <status value="final"></status>
+            <category>
+               <coding>
+                  <system value="http://hl7.org/fhir/observation-category"></system>
+                  <code value="vital-signs"></code>
+                  <display value="Vital Signs"></display>
+               </coding>
+            </category>
+            <code>
+               <coding>
+                  <system value="http://snomed.info/sct"></system>
+                  <code value="364075005"></code>
+                  <display value="Heart rate"></display>
+               </coding>
+            </code>
+            <subject>
+               <reference value="urn:uuid:2305a166-45ca-4716-8be6-e1a57eda55b0"></reference>
+            </subject>
+            <context>
+               <reference value="urn:uuid:25e4701e-e90f-46b9-8567-b60ac2a7e8e8"></reference>
+            </context>
+            <effectiveDateTime value="2018-11-08T13:35:00+00:00"></effectiveDateTime>
+            <performer>
+               <reference value="urn:uuid:25a349c0-eb17-436b-ad2d-7891bcc17013"></reference>
+            </performer>
+            <valueQuantity>
+               <value value="116"></value>
+               <unit value="/min"></unit>
+               <system value="http://unitsofmeasure.org"></system>
+               <code value="/min"></code>
+            </valueQuantity>
+         </Observation>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:6fdd2dd9-da28-4c37-ad90-cc20be36abb5"></fullUrl>
+      <resource>
+         <Observation xmlns="http://hl7.org/fhir">
+            <id value="6fdd2dd9-da28-4c37-ad90-cc20be36abb5"></id>
+            <identifier>
+               <system value="https://fhir.yas.nhs.uk/Observation/Identifier"></system>
+               <value value="503"></value>
+            </identifier>
+            <status value="final"></status>
+            <category>
+               <coding>
+                  <system value="http://hl7.org/fhir/observation-category"></system>
+                  <code value="vital-signs"></code>
+                  <display value="Vital Signs"></display>
+               </coding>
+            </category>
+            <code>
+               <coding>
+                  <system value="http://snomed.info/sct"></system>
+                  <code value="103228002"></code>
+                  <display value="Blood oxygen saturation"></display>
+               </coding>
+            </code>
+            <subject>
+               <reference value="urn:uuid:2305a166-45ca-4716-8be6-e1a57eda55b0"></reference>
+            </subject>
+            <context>
+               <reference value="urn:uuid:25e4701e-e90f-46b9-8567-b60ac2a7e8e8"></reference>
+            </context>
+            <effectiveDateTime value="2018-11-08T13:35:00+00:00"></effectiveDateTime>
+            <performer>
+               <reference value="urn:uuid:25a349c0-eb17-436b-ad2d-7891bcc17013"></reference>
+            </performer>
+            <valueQuantity>
+               <value value="99"></value>
+               <unit value="%"></unit>
+               <system value="http://unitsofmeasure.org"></system>
+               <code value="%"></code>
+            </valueQuantity>
+         </Observation>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:4459c29c-73a3-4ef0-8cc4-0dcd413489a5"></fullUrl>
+      <resource>
+         <Observation xmlns="http://hl7.org/fhir">
+            <id value="4459c29c-73a3-4ef0-8cc4-0dcd413489a5"></id>
+            <identifier>
+               <system value="https://fhir.yas.nhs.uk/Observation/Identifier"></system>
+               <value value="504"></value>
+            </identifier>
+            <status value="final"></status>
+            <category>
+               <coding>
+                  <system value="http://hl7.org/fhir/observation-category"></system>
+                  <code value="vital-signs"></code>
+                  <display value="Vital Signs"></display>
+               </coding>
+            </category>
+            <code>
+               <coding>
+                  <system value="http://snomed.info/sct"></system>
+                  <code value="276885007"></code>
+                  <display value="Core body temperature"></display>
+               </coding>
+            </code>
+            <subject>
+               <reference value="urn:uuid:2305a166-45ca-4716-8be6-e1a57eda55b0"></reference>
+            </subject>
+            <context>
+               <reference value="urn:uuid:25e4701e-e90f-46b9-8567-b60ac2a7e8e8"></reference>
+            </context>
+            <effectiveDateTime value="2018-11-08T13:35:00+00:00"></effectiveDateTime>
+            <performer>
+               <reference value="urn:uuid:25a349c0-eb17-436b-ad2d-7891bcc17013"></reference>
+            </performer>
+            <valueQuantity>
+               <value value="37.0"></value>
+               <unit value="Cel"></unit>
+               <system value="http://unitsofmeasure.org"></system>
+               <code value="Cel"></code>
+            </valueQuantity>
+         </Observation>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:55953e99-484e-43b2-a6b8-adc714c61499"></fullUrl>
+      <resource>
+         <Observation xmlns="http://hl7.org/fhir">
+            <id value="55953e99-484e-43b2-a6b8-adc714c61499"></id>
+            <identifier>
+               <system value="https://fhir.yas.nhs.uk/Observation/Identifier"></system>
+               <value value="505"></value>
+            </identifier>
+            <status value="final"></status>
+            <category>
+               <coding>
+                  <system value="http://hl7.org/fhir/observation-category"></system>
+                  <code value="vital-signs"></code>
+                  <display value="Vital Signs"></display>
+               </coding>
+            </category>
+            <code>
+               <coding>
+                  <system value="http://snomed.info/sct"></system>
+                  <code value="75367002"></code>
+                  <display value="Blood pressure"></display>
+               </coding>
+            </code>
+            <subject>
+               <reference value="urn:uuid:2305a166-45ca-4716-8be6-e1a57eda55b0"></reference>
+            </subject>
+            <context>
+               <reference value="urn:uuid:25e4701e-e90f-46b9-8567-b60ac2a7e8e8"></reference>
+            </context>
+            <effectiveDateTime value="2018-11-08T13:35:00+00:00"></effectiveDateTime>
+            <performer>
+               <reference value="urn:uuid:25a349c0-eb17-436b-ad2d-7891bcc17013"></reference>
+            </performer>
+            <component>
+               <code>
+                  <coding>
+                     <system value="http://snomed.info/sct"></system>
+                     <code value="72313002"></code>
+                     <display value="Systolic arterial pressure"></display>
+                  </coding>
+               </code>
+               <valueQuantity>
+                  <value value="180"></value>
+                  <unit value="mm[Hg]"></unit>
+                  <system value="http://unitsofmeasure.org"></system>
+                  <code value="mm[Hg]"></code>
+               </valueQuantity>
+            </component>
+            <component>
+               <code>
+                  <coding>
+                     <system value="http://snomed.info/sct"></system>
+                     <code value="1091811000000102"></code>
+                     <display value="Diastolic arterial pressure"></display>
+                  </coding>
+               </code>
+               <valueQuantity>
+                  <value value="120"></value>
+                  <unit value="mm[Hg]"></unit>
+                  <system value="http://unitsofmeasure.org"></system>
+                  <code value="mm[Hg]"></code>
+               </valueQuantity>
+            </component>
+         </Observation>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:feff2a17-f82a-4eec-9889-5f77dfaeed40"></fullUrl>
+      <resource>
+         <Observation xmlns="http://hl7.org/fhir">
+            <id value="feff2a17-f82a-4eec-9889-5f77dfaeed40"></id>
+            <identifier>
+               <system value="https://fhir.yas.nhs.uk/Observation/Identifier"></system>
+               <value value="506"></value>
+            </identifier>
+            <status value="final"></status>
+            <code>
+               <coding>
+                  <system value="http://snomed.info/sct"></system>
+                  <code value="371825009"></code>
+                  <display value="Patient on oxygen"></display>
+               </coding>
+            </code>
+            <subject>
+               <reference value="urn:uuid:2305a166-45ca-4716-8be6-e1a57eda55b0"></reference>
+            </subject>
+            <context>
+               <reference value="urn:uuid:25e4701e-e90f-46b9-8567-b60ac2a7e8e8"></reference>
+            </context>
+            <effectiveDateTime value="2018-11-08T13:35:00+00:00"></effectiveDateTime>
+            <performer>
+               <reference value="urn:uuid:25a349c0-eb17-436b-ad2d-7891bcc17013"></reference>
+            </performer>
+         </Observation>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:49154c3f-e7cd-42e0-a435-e804a7bedc1a"></fullUrl>
+      <resource>
+         <Observation xmlns="http://hl7.org/fhir">
+            <id value="49154c3f-e7cd-42e0-a435-e804a7bedc1a"></id>
+            <identifier>
+               <system value="https://fhir.yas.nhs.uk/Observation/Identifier"></system>
+               <value value="507"></value>
+            </identifier>
+            <status value="final"></status>
+            <code>
+               <coding>
+                  <system value="http://snomed.info/sct"></system>
+                  <code value="1104441000000107"></code>
+                  <display value="ACVPU (Alert Confusion Voice Pain Unresponsive) scale score"></display>
+               </coding>
+            </code>
+            <subject>
+               <reference value="urn:uuid:2305a166-45ca-4716-8be6-e1a57eda55b0"></reference>
+            </subject>
+            <context>
+               <reference value="urn:uuid:25e4701e-e90f-46b9-8567-b60ac2a7e8e8"></reference>
+            </context>
+            <effectiveDateTime value="2018-11-08T13:35:00+00:00"></effectiveDateTime>
+            <performer>
+               <reference value="urn:uuid:25a349c0-eb17-436b-ad2d-7891bcc17013"></reference>
+            </performer>
+            <valueCodeableConcept>
+               <coding>
+                  <system value="http://snomed.info/sct"></system>
+                  <code value="422768004"></code>
+                  <display value="Unresponsive"></display>
+               </coding>
+            </valueCodeableConcept>
+         </Observation>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:51ffa59f-bdd9-400f-9a15-55de9fb27db8"></fullUrl>
+      <resource>
+         <Observation xmlns="http://hl7.org/fhir">
+            <id value="51ffa59f-bdd9-400f-9a15-55de9fb27db8"></id>
+            <identifier>
+               <system value="https://fhir.yas.nhs.uk/Observation/Identifier"></system>
+               <value value="500"></value>
+            </identifier>
+            <status value="final"></status>
+            <category>
+               <coding>
+                  <system value="http://hl7.org/fhir/observation-category"></system>
+                  <code value="survey"></code>
+                  <display value="Survey"></display>
+               </coding>
+            </category>
+            <code>
+               <coding>
+                  <system value="http://snomed.info/sct"></system>
+                  <code value="1104051000000101"></code>
+                  <display value="Royal College of Physicians NEWS2 (National Early Warning Score 2) total score"></display>
+               </coding>
+            </code>
+            <subject>
+               <reference value="urn:uuid:2305a166-45ca-4716-8be6-e1a57eda55b0"></reference>
+            </subject>
+            <context>
+               <reference value="urn:uuid:25e4701e-e90f-46b9-8567-b60ac2a7e8e8"></reference>
+            </context>
+            <effectiveDateTime value="2018-11-08T13:35:00+00:00"></effectiveDateTime>
+            <valueQuantity>
+               <value value="5"></value>
+               <unit value="score"></unit>
+               <system value="http://unitsofmeasure.org"></system>
+               <code value="score"></code>
+            </valueQuantity>
+            <related>
+               <type value="derived-from"></type>
+               <target>
+                  <reference value="urn:uuid:ddc15f10-4564-47de-8346-e87f0731d0f0"></reference>
+               </target>
+            </related>
+            <related>
+               <type value="derived-from"></type>
+               <target>
+                  <reference value="urn:uuid:8bed2aaf-6015-4cfd-9eb2-c79dbf6a31ee"></reference>
+               </target>
+            </related>
+            <related>
+               <type value="derived-from"></type>
+               <target>
+                  <reference value="urn:uuid:6fdd2dd9-da28-4c37-ad90-cc20be36abb5"></reference>
+               </target>
+            </related>
+            <related>
+               <type value="derived-from"></type>
+               <target>
+                  <reference value="urn:uuid:4459c29c-73a3-4ef0-8cc4-0dcd413489a5"></reference>
+               </target>
+            </related>
+            <related>
+               <type value="derived-from"></type>
+               <target>
+                  <reference value="urn:uuid:55953e99-484e-43b2-a6b8-adc714c61499"></reference>
+               </target>
+            </related>
+            <related>
+               <type value="derived-from"></type>
+               <target>
+                  <reference value="urn:uuid:feff2a17-f82a-4eec-9889-5f77dfaeed40"></reference>
+               </target>
+            </related>
+            <related>
+               <type value="derived-from"></type>
+               <target>
+                  <reference value="urn:uuid:49154c3f-e7cd-42e0-a435-e804a7bedc1a"></reference>
+               </target>
+            </related>
+         </Observation>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:f39ed499-223a-47b8-8cb3-92c2a7b2aebe"></fullUrl>
+      <resource>
+         <EpisodeOfCare xmlns="http://hl7.org/fhir">
+            <id value="f39ed499-223a-47b8-8cb3-92c2a7b2aebe"></id>
+            <identifier>
+               <system value="https://fhir.interopen.org/EpisodeOfCare/Identifier"></system>
+               <value value="EP1"></value>
+            </identifier>
+            <status value="finished"></status>
+            <type>
+               <coding>
+                  <system value="http://snomed.info/sct"></system>
+                  <code value="394802001"></code>
+                  <display value="General medicine"></display>
+               </coding>
+            </type>
+            <patient>
+               <reference value="urn:uuid:2305a166-45ca-4716-8be6-e1a57eda55b0"></reference>
+            </patient>
+            <managingOrganization>
+               <reference value="urn:uuid:67058e59-57ed-4a87-9bb2-a8e40bb06507"></reference>
+            </managingOrganization>
+            <period>
+               <start value="2018-11-08T00:00:00+00:00"></start>
+               <end value="2018-11-18T00:00:00+00:00"></end>
+            </period>
+         </EpisodeOfCare>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:5c1a94ec-4789-4a5e-83ce-59c24850e3a5"></fullUrl>
+      <resource>
+         <Encounter xmlns="http://hl7.org/fhir">
+            <id value="5c1a94ec-4789-4a5e-83ce-59c24850e3a5"></id>
+            <extension url="http://hl7.org/fhir/4.0/StructureDefinition/extension-Encounter.serviceType">
+               <valueCodeableConcept>
+                  <coding>
+                     <system value="https://fhir.nhs.uk/STU3/CodeSystem/DCH-Specialty-1"></system>
+                     <code value="100"></code>
+                     <display value="GENERAL SURGERY"></display>
+                  </coding>
+               </valueCodeableConcept>
+            </extension>
+            <identifier>
+               <system value="https://fhir.interopen.org/Encounter/Identifier"></system>
+               <value value="E9"></value>
+            </identifier>
+            <status value="finished"></status>
+            <class>
+               <system value="http://hl7.org/fhir/v3/ActCode"></system>
+               <code value="IMP"></code>
+               <display value="inpatient encounter"></display>
+            </class>
+            <type>
+               <coding>
+                  <system value="http://snomed.info/sct"></system>
+                  <code value="86181006"></code>
+                  <display value="Evaluation and management of inpatient"></display>
+               </coding>
+            </type>
+            <subject>
+               <reference value="urn:uuid:2305a166-45ca-4716-8be6-e1a57eda55b0"></reference>
+            </subject>
+            <episodeOfCare>
+               <reference value="urn:uuid:f39ed499-223a-47b8-8cb3-92c2a7b2aebe"></reference>
+            </episodeOfCare>
+            <participant>
+               <individual>
+                  <reference value="urn:uuid:f1ff8d48-43f3-438b-861c-60ee32ef9144"></reference>
+               </individual>
+            </participant>
+            <period>
+               <start value="2018-11-08T16:45:00+00:00"></start>
+               <end value="2018-11-08T17:15:00+00:00"></end>
+            </period>
+            <location>
+               <location>
+                  <reference value="urn:uuid:9e1ebf36-2a66-47ec-971d-ed5450afc8b8"></reference>
+               </location>
+            </location>
+            <serviceProvider>
+               <reference value="urn:uuid:87e49abd-9410-419d-8682-74930220cd3c"></reference>
+            </serviceProvider>
+         </Encounter>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:b33399d0-6c98-4626-a8e8-8c5985086a90"></fullUrl>
+      <resource>
+         <Encounter xmlns="http://hl7.org/fhir">
+            <id value="b33399d0-6c98-4626-a8e8-8c5985086a90"></id>
+            <extension url="http://hl7.org/fhir/4.0/StructureDefinition/extension-Encounter.serviceType">
+               <valueCodeableConcept>
+                  <coding>
+                     <system value="https://fhir.nhs.uk/STU3/CodeSystem/DCH-Specialty-1"></system>
+                     <code value="100"></code>
+                     <display value="GENERAL SURGERY"></display>
+                  </coding>
+               </valueCodeableConcept>
+            </extension>
+            <identifier>
+               <system value="https://fhir.interopen.org/Encounter/Identifier"></system>
+               <value value="E10"></value>
+            </identifier>
+            <status value="finished"></status>
+            <class>
+               <system value="http://hl7.org/fhir/v3/ActCode"></system>
+               <code value="IMP"></code>
+               <display value="inpatient encounter"></display>
+            </class>
+            <type>
+               <coding>
+                  <system value="http://snomed.info/sct"></system>
+                  <code value="53923005"></code>
+                  <display value="Medical consultation on inpatient"></display>
+               </coding>
+            </type>
+            <subject>
+               <reference value="urn:uuid:2305a166-45ca-4716-8be6-e1a57eda55b0"></reference>
+            </subject>
+            <episodeOfCare>
+               <reference value="urn:uuid:f39ed499-223a-47b8-8cb3-92c2a7b2aebe"></reference>
+            </episodeOfCare>
+            <participant>
+               <individual>
+                  <reference value="urn:uuid:f1ff8d48-43f3-438b-861c-60ee32ef9144"></reference>
+               </individual>
+            </participant>
+            <period>
+               <start value="2018-11-09T00:00:00+00:00"></start>
+               <end value="2018-11-18T00:00:00+00:00"></end>
+            </period>
+            <location>
+               <location>
+                  <reference value="urn:uuid:9e1ebf36-2a66-47ec-971d-ed5450afc8b8"></reference>
+               </location>
+            </location>
+            <serviceProvider>
+               <reference value="urn:uuid:87e49abd-9410-419d-8682-74930220cd3c"></reference>
+            </serviceProvider>
+         </Encounter>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:a0d3ad32-6d06-4599-95c9-dec14e1a1a9b"></fullUrl>
+      <resource>
+         <Encounter xmlns="http://hl7.org/fhir">
+            <id value="a0d3ad32-6d06-4599-95c9-dec14e1a1a9b"></id>
+            <extension url="http://hl7.org/fhir/4.0/StructureDefinition/extension-Encounter.serviceType">
+               <valueCodeableConcept>
+                  <coding>
+                     <system value="https://fhir.nhs.uk/STU3/CodeSystem/DCH-Specialty-1"></system>
+                     <code value="100"></code>
+                     <display value="GENERAL SURGERY"></display>
+                  </coding>
+               </valueCodeableConcept>
+            </extension>
+            <identifier>
+               <system value="https://fhir.interopen.org/Encounter/Identifier"></system>
+               <value value="E11"></value>
+            </identifier>
+            <status value="finished"></status>
+            <class>
+               <system value="http://hl7.org/fhir/v3/ActCode"></system>
+               <code value="IMP"></code>
+               <display value="inpatient encounter"></display>
+            </class>
+            <type>
+               <coding>
+                  <system value="http://snomed.info/sct"></system>
+                  <code value="48550003"></code>
+                  <display value="Medical consultation on nursing facility inpatient"></display>
+               </coding>
+            </type>
+            <subject>
+               <reference value="urn:uuid:2305a166-45ca-4716-8be6-e1a57eda55b0"></reference>
+            </subject>
+            <episodeOfCare>
+               <reference value="urn:uuid:f39ed499-223a-47b8-8cb3-92c2a7b2aebe"></reference>
+            </episodeOfCare>
+            <participant>
+               <individual>
+                  <reference value="urn:uuid:d7b715be-663d-44c8-bb72-c66712ca4bdd"></reference>
+               </individual>
+            </participant>
+            <period>
+               <start value="2018-11-16T00:00:00+00:00"></start>
+               <end value="2018-11-18T00:00:00+00:00"></end>
+            </period>
+            <location>
+               <location>
+                  <reference value="urn:uuid:9e1ebf36-2a66-47ec-971d-ed5450afc8b8"></reference>
+               </location>
+            </location>
+            <serviceProvider>
+               <reference value="urn:uuid:87e49abd-9410-419d-8682-74930220cd3c"></reference>
+            </serviceProvider>
+         </Encounter>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:bfa7cdba-92d0-46f5-a71b-4dd0402c2599"></fullUrl>
+      <resource>
+         <Procedure xmlns="http://hl7.org/fhir">
+            <id value="bfa7cdba-92d0-46f5-a71b-4dd0402c2599"></id>
+            <identifier>
+               <system value="https://fhir.interopen.org/Procedure/Identifier"></system>
+               <value value="proc1"></value>
+            </identifier>
+            <status value="completed"></status>
+            <code>
+               <coding>
+                  <system value="http://snomed.info/sct"></system>
+                  <code value="386465007"></code>
+                  <display value="Prescribed medication education"></display>
+               </coding>
+            </code>
+            <subject>
+               <reference value="urn:uuid:2305a166-45ca-4716-8be6-e1a57eda55b0"></reference>
+            </subject>
+            <context>
+               <reference value="urn:uuid:a0d3ad32-6d06-4599-95c9-dec14e1a1a9b"></reference>
+            </context>
+            <performedPeriod>
+               <start value="2018-11-16T00:00:00+00:00"></start>
+               <end value="2018-11-18T00:00:00+00:00"></end>
+            </performedPeriod>
+            <performer>
+               <actor>
+                  <reference value="urn:uuid:d7b715be-663d-44c8-bb72-c66712ca4bdd"></reference>
+               </actor>
+            </performer>
+         </Procedure>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:d806fe2a-5e7f-4217-b4b8-527f602fb26a"></fullUrl>
+      <resource>
+         <Medication xmlns="http://hl7.org/fhir">
+            <id value="d806fe2a-5e7f-4217-b4b8-527f602fb26a"></id>
+            <code>
+               <coding>
+                  <system value="http://snomed.info/sct"></system>
+                  <code value="30268411000001107"></code>
+                  <display value="Apidra 100units/ml solution for injection 3ml pre-filled SoloStar pen (Waymade Healthcare Plc) (product)"></display>
+               </coding>
+            </code>
+         </Medication>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:25bf9ed9-3913-4d34-907b-fa31c2675d62"></fullUrl>
+      <resource>
+         <MedicationRequest xmlns="http://hl7.org/fhir">
+            <id value="25bf9ed9-3913-4d34-907b-fa31c2675d62"></id>
+            <identifier>
+               <system value="https://fhir.interopen.org/MedicationRequest/Identifier"></system>
+               <value value="mr1"></value>
+            </identifier>
+            <status value="completed"></status>
+            <intent value="order"></intent>
+            <medicationReference>
+               <reference value="urn:uuid:d806fe2a-5e7f-4217-b4b8-527f602fb26a"></reference>
+            </medicationReference>
+            <subject>
+               <reference value="urn:uuid:2305a166-45ca-4716-8be6-e1a57eda55b0"></reference>
+            </subject>
+            <context>
+               <reference value="urn:uuid:a0d3ad32-6d06-4599-95c9-dec14e1a1a9b"></reference>
+            </context>
+            <authoredOn value="2018-11-16T11:01:00+00:00"></authoredOn>
+            <requester>
+               <agent>
+                  <reference value="urn:uuid:d7b715be-663d-44c8-bb72-c66712ca4bdd"></reference>
+               </agent>
+            </requester>
+            <reasonCode>
+               <coding>
+                  <system value="http://snomed.info/sct"></system>
+                  <code value="46635009"></code>
+                  <display value="Type 1 diabetes mellitus"></display>
+               </coding>
+            </reasonCode>
+            <dosageInstruction>
+               <text value="As directed"></text>
+               <additionalInstruction>
+                  <coding>
+                     <system value="http://snomed.info/sct"></system>
+                     <code value="421769005"></code>
+                     <display value="Follow Directions"></display>
+                  </coding>
+               </additionalInstruction>
+               <patientInstruction value="With evening meal"></patientInstruction>
+               <timing>
+                  <repeat>
+                     <when value="CV"></when>
+                  </repeat>
+               </timing>
+               <route>
+                  <coding>
+                     <system value="http://snomed.info/sct"></system>
+                     <code value="34206005"></code>
+                     <display value="Subcutaneous route"></display>
+                  </coding>
+               </route>
+               <doseQuantity>
+                  <value value="1"></value>
+                  <unit value="pens"></unit>
+                  <system value="https://fhir.interopen.org/Medication/DosageUnitsNOS"></system>
+                  <code value="pens"></code>
+               </doseQuantity>
+            </dosageInstruction>
+            <dispenseRequest>
+               <expectedSupplyDuration>
+                  <value value="5"></value>
+                  <unit value="d"></unit>
+                  <system value="http://unitsofmeasure.org"></system>
+                  <code value="d"></code>
+               </expectedSupplyDuration>
+            </dispenseRequest>
+         </MedicationRequest>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:f1bad873-4136-4f0d-9a39-4333e411182c"></fullUrl>
+      <resource>
+         <MedicationDispense xmlns="http://hl7.org/fhir">
+            <id value="f1bad873-4136-4f0d-9a39-4333e411182c"></id>
+            <identifier>
+               <system value="https://fhir.interopen.org/MedicationDispense/Identifier"></system>
+               <value value="md1"></value>
+            </identifier>
+            <status value="completed"></status>
+            <medicationReference>
+               <reference value="urn:uuid:d806fe2a-5e7f-4217-b4b8-527f602fb26a"></reference>
+            </medicationReference>
+            <subject>
+               <reference value="urn:uuid:2305a166-45ca-4716-8be6-e1a57eda55b0"></reference>
+            </subject>
+            <context>
+               <reference value="urn:uuid:a0d3ad32-6d06-4599-95c9-dec14e1a1a9b"></reference>
+            </context>
+            <performer>
+               <actor>
+                  <reference value="urn:uuid:d7b715be-663d-44c8-bb72-c66712ca4bdd"></reference>
+               </actor>
+            </performer>
+            <authorizingPrescription>
+               <reference value="urn:uuid:25bf9ed9-3913-4d34-907b-fa31c2675d62"></reference>
+            </authorizingPrescription>
+            <quantity>
+               <value value="5"></value>
+               <unit value="pens"></unit>
+               <system value="https://fhir.interopen.org/Medication/DosageUnitsNOS"></system>
+               <code value="pens"></code>
+            </quantity>
+            <whenHandedOver value="2018-11-16T11:03:00+00:00"></whenHandedOver>
+            <dosageInstruction>
+               <text value="As directed"></text>
+               <additionalInstruction>
+                  <coding>
+                     <system value="http://snomed.info/sct"></system>
+                     <code value="421769005"></code>
+                     <display value="Follow instructions"></display>
+                  </coding>
+               </additionalInstruction>
+               <patientInstruction value="With evening meal"></patientInstruction>
+               <timing>
+                  <repeat>
+                     <when value="CV"></when>
+                  </repeat>
+               </timing>
+               <route>
+                  <coding>
+                     <system value="http://snomed.info/sct"></system>
+                     <code value="34206005"></code>
+                     <display value="Subcutaneous route"></display>
+                  </coding>
+               </route>
+               <doseQuantity>
+                  <value value="1"></value>
+                  <unit value="pens"></unit>
+                  <system value="https://fhir.interopen.org/Medication/DosageUnitsNOS"></system>
+                  <code value="pens"></code>
+               </doseQuantity>
+            </dosageInstruction>
+         </MedicationDispense>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:bc14d8bb-7242-4952-b714-41895de1f68d"></fullUrl>
+      <resource>
+         <MedicationAdministration xmlns="http://hl7.org/fhir">
+            <id value="bc14d8bb-7242-4952-b714-41895de1f68d"></id>
+            <identifier>
+               <system value="https://fhir.interopen.org/MedicationAdministration/Identifier"></system>
+               <value value="api1"></value>
+            </identifier>
+            <status value="completed"></status>
+            <medicationReference>
+               <reference value="urn:uuid:d806fe2a-5e7f-4217-b4b8-527f602fb26a"></reference>
+            </medicationReference>
+            <subject>
+               <reference value="urn:uuid:2305a166-45ca-4716-8be6-e1a57eda55b0"></reference>
+            </subject>
+            <context>
+               <reference value="urn:uuid:a0d3ad32-6d06-4599-95c9-dec14e1a1a9b"></reference>
+            </context>
+            <effectiveDateTime value="2018-11-16T17:03:00+00:00"></effectiveDateTime>
+            <performer>
+               <actor>
+                  <reference value="urn:uuid:d7b715be-663d-44c8-bb72-c66712ca4bdd"></reference>
+               </actor>
+            </performer>
+            <prescription>
+               <reference value="urn:uuid:25bf9ed9-3913-4d34-907b-fa31c2675d62"></reference>
+            </prescription>
+            <dosage>
+               <text value="As directed"></text>
+               <route>
+                  <coding>
+                     <system value="http://snomed.info/sct"></system>
+                     <code value="34206005"></code>
+                     <display value="Subcutaneous route"></display>
+                  </coding>
+               </route>
+               <dose>
+                  <value value="1"></value>
+                  <unit value="pen"></unit>
+                  <system value="https://fhir.interopen.org/Medication/DosageUnitsNOS"></system>
+                  <code value="pen"></code>
+               </dose>
+            </dosage>
+         </MedicationAdministration>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:4b3966b3-1ea1-4ed7-8e33-e878221dc712"></fullUrl>
+      <resource>
+         <MedicationAdministration xmlns="http://hl7.org/fhir">
+            <id value="4b3966b3-1ea1-4ed7-8e33-e878221dc712"></id>
+            <identifier>
+               <system value="https://fhir.interopen.org/MedicationAdministration/Identifier"></system>
+               <value value="api2"></value>
+            </identifier>
+            <status value="completed"></status>
+            <medicationReference>
+               <reference value="urn:uuid:d806fe2a-5e7f-4217-b4b8-527f602fb26a"></reference>
+            </medicationReference>
+            <subject>
+               <reference value="urn:uuid:2305a166-45ca-4716-8be6-e1a57eda55b0"></reference>
+            </subject>
+            <context>
+               <reference value="urn:uuid:a0d3ad32-6d06-4599-95c9-dec14e1a1a9b"></reference>
+            </context>
+            <effectiveDateTime value="2018-11-17T18:33:00+00:00"></effectiveDateTime>
+            <performer>
+               <actor>
+                  <reference value="urn:uuid:d7b715be-663d-44c8-bb72-c66712ca4bdd"></reference>
+               </actor>
+            </performer>
+            <prescription>
+               <reference value="urn:uuid:25bf9ed9-3913-4d34-907b-fa31c2675d62"></reference>
+            </prescription>
+            <dosage>
+               <text value="As directed"></text>
+               <route>
+                  <coding>
+                     <system value="http://snomed.info/sct"></system>
+                     <code value="34206005"></code>
+                     <display value="Subcutaneous route"></display>
+                  </coding>
+               </route>
+               <dose>
+                  <value value="1"></value>
+                  <unit value="pen"></unit>
+                  <system value="https://fhir.interopen.org/Medication/DosageUnitsNOS"></system>
+                  <code value="pen"></code>
+               </dose>
+            </dosage>
+         </MedicationAdministration>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:0531ced7-bd76-493a-bfef-e18a00fe327f"></fullUrl>
+      <resource>
+         <MedicationAdministration xmlns="http://hl7.org/fhir">
+            <id value="0531ced7-bd76-493a-bfef-e18a00fe327f"></id>
+            <identifier>
+               <system value="https://fhir.interopen.org/MedicationAdministration/Identifier"></system>
+               <value value="api3"></value>
+            </identifier>
+            <status value="completed"></status>
+            <medicationReference>
+               <reference value="urn:uuid:d806fe2a-5e7f-4217-b4b8-527f602fb26a"></reference>
+            </medicationReference>
+            <subject>
+               <reference value="urn:uuid:2305a166-45ca-4716-8be6-e1a57eda55b0"></reference>
+            </subject>
+            <context>
+               <reference value="urn:uuid:a0d3ad32-6d06-4599-95c9-dec14e1a1a9b"></reference>
+            </context>
+            <effectiveDateTime value="2018-11-18T12:03:00+00:00"></effectiveDateTime>
+            <performer>
+               <actor>
+                  <reference value="urn:uuid:d7b715be-663d-44c8-bb72-c66712ca4bdd"></reference>
+               </actor>
+            </performer>
+            <prescription>
+               <reference value="urn:uuid:25bf9ed9-3913-4d34-907b-fa31c2675d62"></reference>
+            </prescription>
+            <dosage>
+               <text value="As directed"></text>
+               <route>
+                  <coding>
+                     <system value="http://snomed.info/sct"></system>
+                     <code value="34206005"></code>
+                     <display value="Subcutaneous route"></display>
+                  </coding>
+               </route>
+               <dose>
+                  <value value="1"></value>
+                  <unit value="pen"></unit>
+                  <system value="https://fhir.interopen.org/Medication/DosageUnitsNOS"></system>
+                  <code value="pen"></code>
+               </dose>
+            </dosage>
+         </MedicationAdministration>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:463d62c3-8267-4c6e-a200-e38bf1c21213"></fullUrl>
+      <resource>
+         <Encounter xmlns="http://hl7.org/fhir">
+            <id value="463d62c3-8267-4c6e-a200-e38bf1c21213"></id>
+            <extension url="http://hl7.org/fhir/4.0/StructureDefinition/extension-Encounter.serviceType">
+               <valueCodeableConcept>
+                  <coding>
+                     <system value="https://fhir.nhs.uk/STU3/CodeSystem/DCH-Specialty-1"></system>
+                     <code value="100"></code>
+                     <display value="GENERAL SURGERY"></display>
+                  </coding>
+               </valueCodeableConcept>
+            </extension>
+            <identifier>
+               <system value="https://fhir.interopen.org/Encounter/Identifier"></system>
+               <value value="E12"></value>
+            </identifier>
+            <status value="finished"></status>
+            <class>
+               <system value="http://hl7.org/fhir/v3/ActCode"></system>
+               <code value="IMP"></code>
+               <display value="inpatient encounter"></display>
+            </class>
+            <type>
+               <coding>
+                  <system value="http://snomed.info/sct"></system>
+                  <code value="83362003"></code>
+                  <display value="Final inpatient visit with instructions at discharge"></display>
+               </coding>
+            </type>
+            <subject>
+               <reference value="urn:uuid:2305a166-45ca-4716-8be6-e1a57eda55b0"></reference>
+            </subject>
+            <episodeOfCare>
+               <reference value="urn:uuid:f39ed499-223a-47b8-8cb3-92c2a7b2aebe"></reference>
+            </episodeOfCare>
+            <participant>
+               <individual>
+                  <reference value="urn:uuid:f1ff8d48-43f3-438b-861c-60ee32ef9144"></reference>
+               </individual>
+            </participant>
+            <period>
+               <start value="2018-11-18T11:00:00+00:00"></start>
+               <end value="2018-11-18T11:30:00+00:00"></end>
+            </period>
+            <location>
+               <location>
+                  <reference value="urn:uuid:9e1ebf36-2a66-47ec-971d-ed5450afc8b8"></reference>
+               </location>
+            </location>
+            <serviceProvider>
+               <reference value="urn:uuid:87e49abd-9410-419d-8682-74930220cd3c"></reference>
+            </serviceProvider>
+         </Encounter>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:303a3f5c-92f2-4c15-a618-c04ba95543af"></fullUrl>
+      <resource>
+         <Medication xmlns="http://hl7.org/fhir">
+            <id value="303a3f5c-92f2-4c15-a618-c04ba95543af"></id>
+            <code>
+               <coding>
+                  <system value="http://snomed.info/sct"></system>
+                  <code value="103069003"></code>
+                  <display value="Vitamin B (substance)"></display>
+               </coding>
+            </code>
+         </Medication>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:44364359-fe60-4034-b3fd-0e7e78353b50"></fullUrl>
+      <resource>
+         <MedicationRequest xmlns="http://hl7.org/fhir">
+            <id value="44364359-fe60-4034-b3fd-0e7e78353b50"></id>
+            <identifier>
+               <system value="https://fhir.interopen.org/MedicationRequest/Identifier"></system>
+               <value value="mr2"></value>
+            </identifier>
+            <status value="completed"></status>
+            <intent value="order"></intent>
+            <medicationReference>
+               <reference value="urn:uuid:303a3f5c-92f2-4c15-a618-c04ba95543af"></reference>
+            </medicationReference>
+            <subject>
+               <reference value="urn:uuid:2305a166-45ca-4716-8be6-e1a57eda55b0"></reference>
+            </subject>
+            <context>
+               <reference value="urn:uuid:463d62c3-8267-4c6e-a200-e38bf1c21213"></reference>
+            </context>
+            <authoredOn value="2018-11-18T11:01:00+00:00"></authoredOn>
+            <requester>
+               <agent>
+                  <reference value="urn:uuid:f1ff8d48-43f3-438b-861c-60ee32ef9144"></reference>
+               </agent>
+            </requester>
+            <reasonCode>
+               <coding>
+                  <system value="http://snomed.info/sct"></system>
+                  <code value="373453009"></code>
+                  <display value="Nutritional supplement"></display>
+               </coding>
+            </reasonCode>
+            <dosageInstruction>
+               <text value="As directed"></text>
+               <additionalInstruction>
+                  <coding>
+                     <system value="http://snomed.info/sct"></system>
+                     <code value="421769005"></code>
+                     <display value="Follow Directions"></display>
+                  </coding>
+               </additionalInstruction>
+               <patientInstruction value="Morning"></patientInstruction>
+               <timing>
+                  <repeat>
+                     <when value="MORN"></when>
+                  </repeat>
+               </timing>
+               <route>
+                  <coding>
+                     <system value="http://snomed.info/sct"></system>
+                     <code value="738956005"></code>
+                     <display value="Oral"></display>
+                  </coding>
+               </route>
+               <doseQuantity>
+                  <value value="2"></value>
+                  <unit value="tablets"></unit>
+                  <system value="https://fhir.interopen.org/Medication/DosageUnitsNOS"></system>
+                  <code value="tbs"></code>
+               </doseQuantity>
+            </dosageInstruction>
+            <dispenseRequest>
+               <expectedSupplyDuration>
+                  <value value="28"></value>
+                  <unit value="d"></unit>
+                  <system value="http://unitsofmeasure.org"></system>
+                  <code value="d"></code>
+               </expectedSupplyDuration>
+            </dispenseRequest>
+         </MedicationRequest>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:8aa2a454-a1fc-4c63-857a-5a2929579a8f"></fullUrl>
+      <resource>
+         <MedicationDispense xmlns="http://hl7.org/fhir">
+            <id value="8aa2a454-a1fc-4c63-857a-5a2929579a8f"></id>
+            <identifier>
+               <system value="https://fhir.interopen.org/MedicationDispense/Identifier"></system>
+               <value value="md4"></value>
+            </identifier>
+            <status value="completed"></status>
+            <medicationReference>
+               <reference value="urn:uuid:303a3f5c-92f2-4c15-a618-c04ba95543af"></reference>
+            </medicationReference>
+            <subject>
+               <reference value="urn:uuid:2305a166-45ca-4716-8be6-e1a57eda55b0"></reference>
+            </subject>
+            <context>
+               <reference value="urn:uuid:463d62c3-8267-4c6e-a200-e38bf1c21213"></reference>
+            </context>
+            <performer>
+               <actor>
+                  <reference value="urn:uuid:a3bcf90a-6613-42f2-b436-3098b03c6c9d"></reference>
+               </actor>
+            </performer>
+            <authorizingPrescription>
+               <reference value="urn:uuid:44364359-fe60-4034-b3fd-0e7e78353b50"></reference>
+            </authorizingPrescription>
+            <quantity>
+               <value value="56"></value>
+               <unit value="tablets"></unit>
+               <system value="https://fhir.interopen.org/Medication/DosageUnitsNOS"></system>
+               <code value="tbs"></code>
+            </quantity>
+            <whenHandedOver value="2018-11-18T11:23:00+00:00"></whenHandedOver>
+            <dosageInstruction>
+               <text value="As directed"></text>
+               <additionalInstruction>
+                  <coding>
+                     <system value="http://snomed.info/sct"></system>
+                     <code value="421769005"></code>
+                     <display value="Follow Directions"></display>
+                  </coding>
+               </additionalInstruction>
+               <patientInstruction value="Morning"></patientInstruction>
+               <timing>
+                  <repeat>
+                     <when value="CV"></when>
+                     <when value="MORN"></when>
+                  </repeat>
+               </timing>
+               <route>
+                  <coding>
+                     <system value="http://snomed.info/sct"></system>
+                     <code value="738956005"></code>
+                     <display value="Oral"></display>
+                  </coding>
+               </route>
+               <doseQuantity>
+                  <value value="2"></value>
+                  <unit value="tablets"></unit>
+                  <system value="https://fhir.interopen.org/Medication/DosageUnitsNOS"></system>
+                  <code value="tbs"></code>
+               </doseQuantity>
+            </dosageInstruction>
+         </MedicationDispense>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:64a14849-1a4c-47a6-ba70-3b77e36f4c6e"></fullUrl>
+      <resource>
+         <Medication xmlns="http://hl7.org/fhir">
+            <id value="64a14849-1a4c-47a6-ba70-3b77e36f4c6e"></id>
+            <code>
+               <coding>
+                  <system value="http://snomed.info/sct"></system>
+                  <code value="259659006"></code>
+                  <display value="Thiamine (substance)"></display>
+               </coding>
+            </code>
+         </Medication>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:4295ed08-250a-4f98-b772-6fc52fe5c929"></fullUrl>
+      <resource>
+         <MedicationRequest xmlns="http://hl7.org/fhir">
+            <id value="4295ed08-250a-4f98-b772-6fc52fe5c929"></id>
+            <identifier>
+               <system value="https://fhir.interopen.org/MedicationRequest/Identifier"></system>
+               <value value="mr3"></value>
+            </identifier>
+            <status value="completed"></status>
+            <intent value="order"></intent>
+            <medicationReference>
+               <reference value="urn:uuid:64a14849-1a4c-47a6-ba70-3b77e36f4c6e"></reference>
+            </medicationReference>
+            <subject>
+               <reference value="urn:uuid:2305a166-45ca-4716-8be6-e1a57eda55b0"></reference>
+            </subject>
+            <context>
+               <reference value="urn:uuid:463d62c3-8267-4c6e-a200-e38bf1c21213"></reference>
+            </context>
+            <authoredOn value="2018-11-18T11:01:00+00:00"></authoredOn>
+            <requester>
+               <agent>
+                  <reference value="urn:uuid:f1ff8d48-43f3-438b-861c-60ee32ef9144"></reference>
+               </agent>
+            </requester>
+            <reasonCode>
+               <coding>
+                  <system value="http://snomed.info/sct"></system>
+                  <code value="373453009"></code>
+                  <display value="Nutritional supplement"></display>
+               </coding>
+            </reasonCode>
+            <dosageInstruction>
+               <text value="THREE TIMES A DAY"></text>
+               <additionalInstruction>
+                  <coding>
+                     <system value="http://snomed.info/sct"></system>
+                     <code value="421769005"></code>
+                     <display value="Follow Directions"></display>
+                  </coding>
+               </additionalInstruction>
+               <patientInstruction value="Morning"></patientInstruction>
+               <timing>
+                  <repeat>
+                     <when value="MORN"></when>
+                  </repeat>
+               </timing>
+               <route>
+                  <coding>
+                     <system value="http://snomed.info/sct"></system>
+                     <code value="738956005"></code>
+                     <display value="Oral"></display>
+                  </coding>
+               </route>
+               <doseQuantity>
+                  <value value="1"></value>
+                  <unit value="tablets"></unit>
+                  <system value="https://fhir.interopen.org/Medication/DosageUnitsNOS"></system>
+                  <code value="tbs"></code>
+               </doseQuantity>
+            </dosageInstruction>
+            <dispenseRequest>
+               <expectedSupplyDuration>
+                  <value value="28"></value>
+                  <unit value="d"></unit>
+                  <system value="http://unitsofmeasure.org"></system>
+                  <code value="d"></code>
+               </expectedSupplyDuration>
+            </dispenseRequest>
+         </MedicationRequest>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:33455249-20b2-46c3-8338-45620f75ccad"></fullUrl>
+      <resource>
+         <MedicationDispense xmlns="http://hl7.org/fhir">
+            <id value="33455249-20b2-46c3-8338-45620f75ccad"></id>
+            <identifier>
+               <system value="https://fhir.interopen.org/MedicationDispense/Identifier"></system>
+               <value value="md5"></value>
+            </identifier>
+            <status value="completed"></status>
+            <medicationReference>
+               <reference value="urn:uuid:64a14849-1a4c-47a6-ba70-3b77e36f4c6e"></reference>
+            </medicationReference>
+            <subject>
+               <reference value="urn:uuid:2305a166-45ca-4716-8be6-e1a57eda55b0"></reference>
+            </subject>
+            <context>
+               <reference value="urn:uuid:463d62c3-8267-4c6e-a200-e38bf1c21213"></reference>
+            </context>
+            <performer>
+               <actor>
+                  <reference value="urn:uuid:a3bcf90a-6613-42f2-b436-3098b03c6c9d"></reference>
+               </actor>
+            </performer>
+            <authorizingPrescription>
+               <reference value="urn:uuid:4295ed08-250a-4f98-b772-6fc52fe5c929"></reference>
+            </authorizingPrescription>
+            <quantity>
+               <value value="28"></value>
+               <unit value="tablets"></unit>
+               <system value="https://fhir.interopen.org/Medication/DosageUnitsNOS"></system>
+               <code value="tbs"></code>
+            </quantity>
+            <whenHandedOver value="2018-11-18T11:23:00+00:00"></whenHandedOver>
+            <dosageInstruction>
+               <text value="As directed"></text>
+               <additionalInstruction>
+                  <coding>
+                     <system value="http://snomed.info/sct"></system>
+                     <code value="421769005"></code>
+                     <display value="Follow Directions"></display>
+                  </coding>
+               </additionalInstruction>
+               <patientInstruction value="Morning"></patientInstruction>
+               <timing>
+                  <repeat>
+                     <when value="CV"></when>
+                     <when value="MORN"></when>
+                  </repeat>
+               </timing>
+               <route>
+                  <coding>
+                     <system value="http://snomed.info/sct"></system>
+                     <code value="738956005"></code>
+                     <display value="Oral"></display>
+                  </coding>
+               </route>
+               <doseQuantity>
+                  <value value="1"></value>
+                  <unit value="tablets"></unit>
+                  <system value="https://fhir.interopen.org/Medication/DosageUnitsNOS"></system>
+                  <code value="tbs"></code>
+               </doseQuantity>
+            </dosageInstruction>
+         </MedicationDispense>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:ff5e8d9a-71ff-4908-837e-f2f5417b2c92"></fullUrl>
+      <resource>
+         <Condition xmlns="http://hl7.org/fhir">
+            <id value="ff5e8d9a-71ff-4908-837e-f2f5417b2c92"></id>
+            <identifier>
+               <system value="https://fhir.yas.nhs.uk/Condition/Identifier"></system>
+               <value value="con1"></value>
+            </identifier>
+            <clinicalStatus value="active"></clinicalStatus>
+            <category>
+               <coding>
+                  <system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-ConditionCategory-1"></system>
+                  <code value="Problem list item"></code>
+                  <display value="problem-list-item"></display>
+               </coding>
+            </category>
+            <severity>
+               <coding>
+                  <system value="http://snomed.info/sct"></system>
+                  <code value="6736007"></code>
+                  <display value="Moderate"></display>
+               </coding>
+            </severity>
+            <code>
+               <coding>
+                  <system value="http://snomed.info/sct"></system>
+                  <code value="46635009"></code>
+                  <display value="Type 1 diabetes mellitus"></display>
+               </coding>
+            </code>
+            <subject>
+               <reference value="urn:uuid:2305a166-45ca-4716-8be6-e1a57eda55b0"></reference>
+            </subject>
+            <onsetDateTime value="1964-08-01T00:00:00+01:00"></onsetDateTime>
+            <assertedDate value="1964-12-01T00:00:00+00:00"></assertedDate>
+            <note>
+               <text value="Taking insulin"></text>
+            </note>
+         </Condition>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:51fee2a2-48e6-48d1-b096-475309e1b66c"></fullUrl>
+      <resource>
+         <Condition xmlns="http://hl7.org/fhir">
+            <id value="51fee2a2-48e6-48d1-b096-475309e1b66c"></id>
+            <identifier>
+               <system value="https://fhir.yas.nhs.uk/Condition/Identifier"></system>
+               <value value="con2"></value>
+            </identifier>
+            <clinicalStatus value="active"></clinicalStatus>
+            <category>
+               <coding>
+                  <system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-ConditionCategory-1"></system>
+                  <code value="Problem list item"></code>
+                  <display value="problem-list-item"></display>
+               </coding>
+            </category>
+            <severity>
+               <coding>
+                  <system value="http://snomed.info/sct"></system>
+                  <code value="24484000"></code>
+                  <display value="Severe"></display>
+               </coding>
+            </severity>
+            <code>
+               <coding>
+                  <system value="http://snomed.info/sct"></system>
+                  <code value="80583007"></code>
+                  <display value="[Severe anxiety (panic)"></display>
+               </coding>
+            </code>
+            <subject>
+               <reference value="urn:uuid:2305a166-45ca-4716-8be6-e1a57eda55b0"></reference>
+            </subject>
+            <onsetDateTime value="1978-01-13T00:00:00+00:00"></onsetDateTime>
+            <assertedDate value="1978-01-13T00:00:00+00:00"></assertedDate>
+            <note>
+               <text value="Mistaken as aggression"></text>
+            </note>
+         </Condition>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:9f1e5d1f-ee56-4953-af06-6c85c29a6b7a"></fullUrl>
+      <resource>
+         <Condition xmlns="http://hl7.org/fhir">
+            <id value="9f1e5d1f-ee56-4953-af06-6c85c29a6b7a"></id>
+            <identifier>
+               <system value="https://fhir.yas.nhs.uk/Condition/Identifier"></system>
+               <value value="con4"></value>
+            </identifier>
+            <clinicalStatus value="active"></clinicalStatus>
+            <category>
+               <coding>
+                  <system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-ConditionCategory-1"></system>
+                  <code value="Problem list item"></code>
+                  <display value="problem-list-item"></display>
+               </coding>
+            </category>
+            <severity>
+               <coding>
+                  <system value="http://snomed.info/sct"></system>
+                  <code value="255604002"></code>
+                  <display value="Mild"></display>
+               </coding>
+            </severity>
+            <code>
+               <coding>
+                  <system value="http://snomed.info/sct"></system>
+                  <code value="164881000119109"></code>
+                  <display value="Foot ulcer due to type 1 diabetes mellitus"></display>
+               </coding>
+            </code>
+            <subject>
+               <reference value="urn:uuid:2305a166-45ca-4716-8be6-e1a57eda55b0"></reference>
+            </subject>
+            <onsetDateTime value="2018-02-18T00:00:00+00:00"></onsetDateTime>
+            <assertedDate value="2018-02-18T00:00:00+00:00"></assertedDate>
+         </Condition>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:29b72e8d-76b6-4845-a6f6-7108e4fb85e2"></fullUrl>
+      <resource>
+         <Condition xmlns="http://hl7.org/fhir">
+            <id value="29b72e8d-76b6-4845-a6f6-7108e4fb85e2"></id>
+            <identifier>
+               <system value="https://fhir.yas.nhs.uk/Condition/Identifier"></system>
+               <value value="con6"></value>
+            </identifier>
+            <clinicalStatus value="active"></clinicalStatus>
+            <category>
+               <coding>
+                  <system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-ConditionCategory-1"></system>
+                  <code value="Encounter diagnosis"></code>
+                  <display value="encounter-diagnosis"></display>
+               </coding>
+            </category>
+            <severity>
+               <coding>
+                  <system value="http://snomed.info/sct"></system>
+                  <code value="255604002"></code>
+                  <display value="Mild"></display>
+               </coding>
+            </severity>
+            <code>
+               <coding>
+                  <system value="http://snomed.info/sct"></system>
+                  <code value="41309000"></code>
+                  <display value="Alcoholic liver damage"></display>
+               </coding>
+            </code>
+            <subject>
+               <reference value="urn:uuid:2305a166-45ca-4716-8be6-e1a57eda55b0"></reference>
+            </subject>
+         </Condition>
+      </resource>
+   </entry>
+</Bundle>

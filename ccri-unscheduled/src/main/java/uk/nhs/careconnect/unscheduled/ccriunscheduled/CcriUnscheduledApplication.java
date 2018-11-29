@@ -106,7 +106,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
             throw new Exception();
         }
 
-       // client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
+        //client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
         client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8183/ccri-fhir/STU3/");
        // client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
         client.setEncoding(EncodingEnum.XML);
@@ -124,225 +124,30 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
         clientODS = ctxFHIR.newRestfulGenericClient("https://directory.spineservices.nhs.uk/STU3/");
         clientODS.setEncoding(EncodingEnum.XML);
 
-        Boolean michealOnly = false;
-        Boolean loadDocuments = true;
+        Boolean loadDocuments = false;
 
         // RAD contains base Resources referenced in the main getMicheal load.
 
 
+        if (!loadDocuments) {
+            loadFolder("patient");
+        } else {
+            loadFolder("patientPlusDocs");
+        }
 
-        loadFolder("patient");
+        postPatient(loadDocuments,"9658220142", "LS25 2HF", Encounter.EncounterLocationStatus.PLANNED, "Elbe", "LS26 8PU", 0, -15, "410429000", "Cardiac arrest", true);
+
+
         loadFolder("rad");
-        loadFolder("toc");
-        loadFolder("dch");
-        loadFolder("pharm");
 
-        updateNRLS();
-
-
-
-
-
+        if (loadDocuments) {
+            loadFolder("dch");
+            loadFolder("toc");
+            loadFolder("pharm");
+            updateNRLS();
+        }
     }
 
-    public Bundle loadEOLC(Bundle bundle) {
-        Flag flag = new Flag();
-        flag.setId(fhirBundle.getNewId(flag));
-        flag.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
-        flag.addIdentifier().setSystem(midYorksFlagIdentifier).setValue("unusmy8");
-        flag.getCode().addCoding()
-                .setCode("450476008")
-                .setSystem("http://snomed.info/sct")
-                .setDisplay("Not for attempted cardiopulmonary resuscitation");
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        try {
-            flag.getPeriod().setStart(sdf.parse("2018-08-01"));
-        } catch (Exception ex) {}
-
-        flag.setAuthor(new Reference(uuidtag + midyorks.getIdElement().getIdPart()));
-        bundle.addEntry().setResource(flag);
-
-        flag = new Flag();
-        flag.setId(fhirBundle.getNewId(flag));
-        flag.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
-        flag.addIdentifier().setSystem(midYorksFlagIdentifier).setValue("unusmy9");
-        flag.getCode().addCoding()
-                .setCode("526631000000108")
-                .setSystem("http://snomed.info/sct")
-                .setDisplay("On end of life care register (finding)");
-        try {
-            flag.getPeriod().setStart(sdf.parse("2018-08-01"));
-        } catch (Exception ex) {}
-
-        flag.setAuthor(new Reference(uuidtag + midyorks.getIdElement().getIdPart()));
-        bundle.addEntry().setResource(flag);
-
-        Practitioner consultant = new Practitioner();
-        consultant.setId(fhirBundle.getNewId(consultant));
-        consultant.addIdentifier().setSystem("https://fhir.nhs.uk/Id/sds-user-id").setValue("C4012900");
-        consultant.addName().setFamily("Rodger").addGiven("KF");
-        bundle.addEntry().setResource(consultant);
-
-        Condition condition = new Condition();
-        condition.setId(fhirBundle.getNewId(condition));
-        condition.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
-        condition.addIdentifier().setSystem(midYorksConditionIdentifier).setValue("crm1");
-        condition.setClinicalStatus(Condition.ConditionClinicalStatus.ACTIVE);
-        condition.setAsserter(new Reference(uuidtag + consultant.getId()));
-        condition.getCode().addCoding()
-                .setDisplay("Dyspnea")
-                .setCode("267036007")
-                .setSystem("http://snomed.info/sct");
-        try {
-            condition.setOnset(new DateTimeType().setValue(sdf.parse("2018-08-01")));
-        } catch (Exception ex) {}
-
-        bundle.addEntry().setResource(condition);
-
-        Questionnaire questionnaireCPR = new Questionnaire();
-        questionnaireCPR.setId(fhirBundle.getNewId(questionnaireCPR));
-        questionnaireCPR.addIdentifier().setSystem(midYorksQuestionnaireIdentifier).setValue("sr1");
-        questionnaireCPR.setName("EOL CPR Status");
-        bundle.addEntry().setResource(questionnaireCPR);
-
-        Questionnaire questionnaire = new Questionnaire();
-        questionnaire.setId(fhirBundle.getNewId(questionnaire));
-        questionnaire.addIdentifier().setSystem(midYorksQuestionnaireIdentifier).setValue("sr2");
-        questionnaire.setName("EOL Preferences");
-        bundle.addEntry().setResource(questionnaire);
-
-        QuestionnaireResponse formCPR = new QuestionnaireResponse();
-        formCPR.setId(fhirBundle.getNewId(formCPR));
-        formCPR.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
-        formCPR.getIdentifier().setSystem(midYorksQuestionnaireResponseIdentifier).setValue("rjm2");
-        formCPR.setAuthor(new Reference(uuidtag + consultant.getId()));
-        formCPR.setQuestionnaire(new Reference(uuidtag + questionnaireCPR.getId()));
-        formCPR.setStatus(QuestionnaireResponse.QuestionnaireResponseStatus.COMPLETED);
-        try {
-            formCPR.setAuthored(sdf.parse("2018-08-01"));
-        } catch (Exception ex) {}
-        formCPR.addItem()
-                .setLinkId("reasonForCPRStatus")
-                .setText("Reason for CPR status")
-                .addAnswer()
-                .setValue(new StringType("At home with family"));
-        formCPR.addItem()
-                .setLinkId("professionalsInvolvedInDecision")
-                .setText("Professionals Involved In Decision")
-                .addAnswer()
-                .setValue(new Reference(uuidtag + consultant.getId()));
-        formCPR.addItem()
-                .setLinkId("professionalEndorsingStatus")
-                .setText("Professional Endorsing Status")
-                .addAnswer()
-                .setValue(new Reference(uuidtag + consultant.getId()));
-
-
-        bundle.addEntry().setResource(formCPR);
-
-        QuestionnaireResponse form = new QuestionnaireResponse();
-        form.setId(fhirBundle.getNewId(form));
-        form.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
-        form.getIdentifier().setSystem(midYorksQuestionnaireResponseIdentifier).setValue("rjm1");
-        form.setAuthor(new Reference(uuidtag + consultant.getId()));
-        form.setQuestionnaire(new Reference(uuidtag + questionnaire.getId()));
-        form.setStatus(QuestionnaireResponse.QuestionnaireResponseStatus.COMPLETED);
-        try {
-            form.setAuthored(sdf.parse("2018-08-01"));
-        } catch (Exception ex) {}
-        form.addItem()
-                .setLinkId("preferredPlaceOfDeathText")
-                .setText("Preferred Place Of Death Text")
-                .addAnswer()
-                    .setValue(new StringType("At home with family"));
-        form.addItem()
-                .setLinkId("preferencesAndWishes")
-                .setText("Preferences and Wishes")
-                .addAnswer()
-                .setValue(new StringType("To be made comfortable and looking out onto garden"));
-        form.addItem()
-                .setLinkId("domesticAccessAndInformation")
-                .setText("Domestic Access and Information")
-                .addAnswer()
-                .setValue(new StringType("A key safe is provided to allow access to the property. Carer and related contact has code."));
-
-
-        bundle.addEntry().setResource(form);
-
-        CareTeam careTeam = new CareTeam();
-        careTeam.setId(fhirBundle.getNewId(careTeam));
-        careTeam.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
-        careTeam.addIdentifier().setSystem(westRidingCareTeamIdentifier).setValue("blm1");
-
-        bundle.addEntry().setResource(careTeam);
-
-
-        CarePlan carePlan = new CarePlan();
-        carePlan.setId(fhirBundle.getNewId(carePlan));
-        carePlan.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
-        carePlan.addIdentifier().setSystem(midYorksCarePlanIdentifier).setValue("blm1");
-        // Not required carePlan.addAddresses(new Reference(uuidtag + condition.getId()));
-        carePlan.addAuthor(new Reference(uuidtag + consultant.getId()));
-        carePlan.addCareTeam(new Reference(uuidtag + careTeam.getId()));
-        carePlan.addCategory().addCoding()
-                .setCode("736373009")
-                .setSystem("http://snomed.info/sct")
-                .setDisplay("End of life care plan");
-        carePlan.setStatus(CarePlan.CarePlanStatus.ACTIVE);
-        carePlan.setIntent(CarePlan.CarePlanIntent.PLAN);
-        try {
-            carePlan.getPeriod().setStart(sdf.parse("2018-08-01"));
-        } catch (Exception ex) {}
-        carePlan.addSupportingInfo(new Reference(uuidtag + form.getId()));
-        carePlan.addSupportingInfo(new Reference(uuidtag + formCPR.getId()));
-        carePlan.addActivity()
-                .getDetail().setStatus(CarePlan.CarePlanActivityStatus.NOTSTARTED).setDescription("Nebulizer can be used to make patient more comfortable")
-                .getCode().addCoding().setCode("445141005").setSystem("http://snomed.info/sct").setDisplay("Nebuliser therapy using mask");
-
-        bundle.addEntry().setResource(carePlan);
-
-        Observation observation = new Observation();
-        observation.setId(fhirBundle.getNewId(observation));
-        observation.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
-        observation.addIdentifier().setSystem("urn:ietf:rfc:3986").setValue("38e8e6ed-eb91-4af8-afa4-ff8fdb7be93c");
-        try {
-            observation.setEffective(new DateTimeType(sdf.parse("2018-08-01")));
-        } catch (Exception ex) {}
-        observation.addPerformer(new Reference(uuidtag + consultant.getId()));
-        observation.setStatus(Observation.ObservationStatus.FINAL);
-        observation.getCode().addCoding()
-                .setSystem("http://snomed.info/sct")
-                .setCode("761869008")
-                .setDisplay("Karnofsky Performance Status score (observable entity)");
-
-        observation.setValue(   new Quantity()
-                .setValue(
-                new BigDecimal(90))
-                        .setUnit("score")
-                        .setSystem("http://unitsofmeasure.org")
-                        .setCode("score"));
-        bundle.addEntry().setResource(observation);
-
-        // 'disability'
-        condition = new Condition();
-        condition.setId(fhirBundle.getNewId(condition));
-        condition.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
-        condition.addIdentifier().setSystem(midYorksConditionIdentifier).setValue("akm2");
-        condition.setClinicalStatus(Condition.ConditionClinicalStatus.ACTIVE);
-        condition.setAsserter(new Reference(uuidtag + consultant.getId()));
-        condition.getCode().addCoding()
-                .setDisplay("Asthma (disorder)")
-                .setCode("195967001")
-                .setSystem("http://snomed.info/sct");
-        try {
-            condition.setOnset(new DateTimeType().setValue(sdf.parse("2002-03-11")));
-        } catch (Exception ex) {}
-
-        bundle.addEntry().setResource(condition);
-
-
-        return bundle;
-    }
 
     public void loadFolder(String folder) throws Exception {
         List<String> filenames = new ArrayList<>();
@@ -425,8 +230,8 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
 
                 DocumentReference documentReference = (DocumentReference) bundle.getEntry().get(0).getResource();
-                System.out.print(documentReference.getId());
-                System.out.print(documentReference.getSubject().getReference());
+                System.out.println(documentReference.getId());
+                System.out.println(documentReference.getSubject().getReference());
                // String patientID =
 
                 Patient patient = client.read().resource(Patient.class).withId(new IdType(documentReference.getSubject().getReference())).execute();
@@ -446,7 +251,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
                             documentReference.getType().getCodingFirstRep().setCode("736253002").setDisplay("Mental health crisis plan");
 
-       //                     System.out.println(ctxFHIR.newJsonParser().setPrettyPrint(true).encodeResourceToString(documentReference));
+                            System.out.println(ctxFHIR.newJsonParser().setPrettyPrint(true).encodeResourceToString(documentReference));
 
 
                             Bundle nrls = clientNRLS.search().forResource(DocumentReference.class)
@@ -473,6 +278,251 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
         location.getPosition().setLatitude(postCodeLongLat.getResult().getLatitude());
         location.getPosition().setLongitude(postCodeLongLat.getResult().getLongitude());
         return location;
+    }
+
+
+    public Bundle loadEOLC(Bundle bundle) {
+        Flag flag = new Flag();
+        flag.setId(fhirBundle.getNewId(flag));
+        flag.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
+        flag.addIdentifier().setSystem(midYorksFlagIdentifier).setValue("unusmy8");
+        flag.setStatus(Flag.FlagStatus.ACTIVE);
+        flag.getCode().addCoding()
+                .setCode("450476008")
+                .setSystem("http://snomed.info/sct")
+                .setDisplay("Not for attempted cardiopulmonary resuscitation");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            flag.getPeriod().setStart(sdf.parse("2018-08-01"));
+        } catch (Exception ex) {}
+
+        flag.setAuthor(new Reference(uuidtag + midyorks.getIdElement().getIdPart()));
+        bundle.addEntry().setResource(flag);
+
+        flag = new Flag();
+        flag.setId(fhirBundle.getNewId(flag));
+        flag.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
+        flag.addIdentifier().setSystem(midYorksFlagIdentifier).setValue("unusmy9");
+        flag.setStatus(Flag.FlagStatus.ACTIVE);
+        flag.getCode().addCoding()
+                .setCode("526631000000108")
+                .setSystem("http://snomed.info/sct")
+                .setDisplay("On end of life care register (finding)");
+        try {
+            flag.getPeriod().setStart(sdf.parse("2018-08-01"));
+        } catch (Exception ex) {}
+
+        flag.setAuthor(new Reference(uuidtag + midyorks.getIdElement().getIdPart()));
+        bundle.addEntry().setResource(flag);
+
+        Practitioner consultant = new Practitioner();
+        consultant.setId(fhirBundle.getNewId(consultant));
+        consultant.addIdentifier().setSystem("https://fhir.nhs.uk/Id/sds-user-id").setValue("C4012900");
+        consultant.addName().setFamily("Rodger").addGiven("KF");
+        bundle.addEntry().setResource(consultant);
+
+        Condition condition = new Condition();
+        condition.setId(fhirBundle.getNewId(condition));
+        condition.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
+        condition.addIdentifier().setSystem(midYorksConditionIdentifier).setValue("crm1");
+        condition.setClinicalStatus(Condition.ConditionClinicalStatus.ACTIVE);
+        condition.setAsserter(new Reference(uuidtag + consultant.getId()));
+        condition.getCode().addCoding()
+                .setDisplay("Dyspnea")
+                .setCode("267036007")
+                .setSystem("http://snomed.info/sct");
+        try {
+            condition.setOnset(new DateTimeType().setValue(sdf.parse("2018-08-01")));
+        } catch (Exception ex) {}
+
+        bundle.addEntry().setResource(condition);
+
+        Questionnaire questionnaireCPR = new Questionnaire();
+        questionnaireCPR.setId(fhirBundle.getNewId(questionnaireCPR));
+        questionnaireCPR.addIdentifier().setSystem(midYorksQuestionnaireIdentifier).setValue("sr1");
+        questionnaireCPR.setName("EOL CPR Status");
+        questionnaireCPR.setTitle("EOL CPR Status");
+        questionnaireCPR.setStatus(Enumerations.PublicationStatus.DRAFT);
+        bundle.addEntry().setResource(questionnaireCPR);
+
+        Questionnaire questionnaireLPA = new Questionnaire();
+        questionnaireLPA.setId(fhirBundle.getNewId(questionnaireLPA));
+        questionnaireLPA.addIdentifier().setSystem(midYorksQuestionnaireIdentifier).setValue("sr3");
+        questionnaireLPA.setName("EOL LPA");
+        questionnaireLPA.setTitle("EOL LPA");
+        questionnaireLPA.setStatus(Enumerations.PublicationStatus.DRAFT);
+        bundle.addEntry().setResource(questionnaireLPA);
+
+        Questionnaire questionnaire = new Questionnaire();
+        questionnaire.setId(fhirBundle.getNewId(questionnaire));
+        questionnaire.addIdentifier().setSystem(midYorksQuestionnaireIdentifier).setValue("sr2");
+        questionnaire.setName("EOL Preferences");
+        questionnaire.setTitle("EOL Preferences");
+        questionnaire.setStatus(Enumerations.PublicationStatus.DRAFT);
+        bundle.addEntry().setResource(questionnaire);
+
+        QuestionnaireResponse formCPR = new QuestionnaireResponse();
+        formCPR.setId(fhirBundle.getNewId(formCPR));
+        formCPR.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
+        formCPR.getIdentifier().setSystem(midYorksQuestionnaireResponseIdentifier).setValue("rjm2");
+        formCPR.setAuthor(new Reference(uuidtag + consultant.getId()));
+        formCPR.setQuestionnaire(new Reference(uuidtag + questionnaireCPR.getId()));
+        formCPR.setStatus(QuestionnaireResponse.QuestionnaireResponseStatus.COMPLETED);
+        try {
+            formCPR.setAuthored(sdf.parse("2018-08-01"));
+        } catch (Exception ex) {}
+        formCPR.addItem()
+                .setLinkId("reasonForCPRStatus")
+                .setText("Reason for CPR status")
+                .addAnswer()
+                .setValue(new StringType("At home with family"));
+        formCPR.addItem()
+                .setLinkId("professionalsInvolvedInDecision")
+                .setText("Professionals Involved In Decision")
+                .addAnswer()
+                .setValue(new Reference(uuidtag + consultant.getId()));
+        formCPR.addItem()
+                .setLinkId("professionalEndorsingStatus")
+                .setText("Professional Endorsing Status")
+                .addAnswer()
+                .setValue(new Reference(uuidtag + consultant.getId()));
+
+
+        bundle.addEntry().setResource(formCPR);
+
+        QuestionnaireResponse formLPA = new QuestionnaireResponse();
+        formLPA.setId(fhirBundle.getNewId(formLPA));
+        formLPA.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
+        formLPA.getIdentifier().setSystem(midYorksQuestionnaireResponseIdentifier).setValue("rjm3");
+        formLPA.setAuthor(new Reference(uuidtag + consultant.getId()));
+        formLPA.setQuestionnaire(new Reference(uuidtag + questionnaireLPA.getId()));
+        formLPA.setStatus(QuestionnaireResponse.QuestionnaireResponseStatus.COMPLETED);
+        try {
+            formLPA.setAuthored(sdf.parse("2018-08-01"));
+        } catch (Exception ex) {}
+        formLPA.addItem()
+                .setLinkId("documentName")
+                .setText("Document Name")
+                .addAnswer()
+                .setValue(new StringType("Lasting power of attorny offical document"));
+        formLPA.addItem()
+                .setLinkId("documentLocation")
+                .setText("Document Location")
+                .addAnswer()
+                .setValue(new StringType("Top left drawer in cabinet located in dining room. Documents are inside blue folder."));
+        formLPA.addItem()
+                .setLinkId("documentSource")
+                .setText("Document Source")
+                .addAnswer()
+                .setValue(new StringType("Document drawn up at A B Solictors, Newcastle"));
+
+
+        bundle.addEntry().setResource(formLPA);
+
+        QuestionnaireResponse form = new QuestionnaireResponse();
+        form.setId(fhirBundle.getNewId(form));
+        form.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
+        form.getIdentifier().setSystem(midYorksQuestionnaireResponseIdentifier).setValue("rjm1");
+        form.setAuthor(new Reference(uuidtag + consultant.getId()));
+        form.setQuestionnaire(new Reference(uuidtag + questionnaire.getId()));
+        form.setStatus(QuestionnaireResponse.QuestionnaireResponseStatus.COMPLETED);
+        try {
+            form.setAuthored(sdf.parse("2018-08-01"));
+        } catch (Exception ex) {}
+        form.addItem()
+                .setLinkId("preferredPlaceOfDeathText")
+                .setText("Preferred Place Of Death Text")
+                .addAnswer()
+                .setValue(new StringType("At home with family"));
+        form.addItem()
+                .setLinkId("preferencesAndWishes")
+                .setText("Preferences and Wishes")
+                .addAnswer()
+                .setValue(new StringType("To be made comfortable and looking out onto garden"));
+        form.addItem()
+                .setLinkId("domesticAccessAndInformation")
+                .setText("Domestic Access and Information")
+                .addAnswer()
+                .setValue(new StringType("A key safe is provided to allow access to the property. Carer and related contact has code."));
+
+
+        bundle.addEntry().setResource(form);
+
+        CareTeam careTeam = new CareTeam();
+        careTeam.setId(fhirBundle.getNewId(careTeam));
+        careTeam.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
+        careTeam.addIdentifier().setSystem(westRidingCareTeamIdentifier).setValue("blm1");
+        careTeam.addParticipant().setMember(new Reference(uuidtag + consultant.getId()));
+
+        bundle.addEntry().setResource(careTeam);
+
+
+        CarePlan carePlan = new CarePlan();
+        carePlan.setId(fhirBundle.getNewId(carePlan));
+        carePlan.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
+        carePlan.addIdentifier().setSystem(midYorksCarePlanIdentifier).setValue("blm1");
+        // Not required carePlan.addAddresses(new Reference(uuidtag + condition.getId()));
+        carePlan.addAuthor(new Reference(uuidtag + consultant.getId()));
+        carePlan.addCareTeam(new Reference(uuidtag + careTeam.getId()));
+        carePlan.addCategory().addCoding()
+                .setCode("736373009")
+                .setSystem("http://snomed.info/sct")
+                .setDisplay("End of life care plan");
+        carePlan.setStatus(CarePlan.CarePlanStatus.ACTIVE);
+        carePlan.setIntent(CarePlan.CarePlanIntent.PLAN);
+        try {
+            carePlan.getPeriod().setStart(sdf.parse("2018-08-01"));
+        } catch (Exception ex) {}
+        carePlan.addSupportingInfo(new Reference(uuidtag + form.getId()));
+        carePlan.addSupportingInfo(new Reference(uuidtag + formCPR.getId()));
+        carePlan.addSupportingInfo(new Reference(uuidtag + formLPA.getId()));
+        carePlan.addActivity()
+                .getDetail().setStatus(CarePlan.CarePlanActivityStatus.NOTSTARTED).setDescription("Nebulizer can be used to make patient more comfortable")
+                .getCode().addCoding().setCode("445141005").setSystem("http://snomed.info/sct").setDisplay("Nebuliser therapy using mask");
+
+        bundle.addEntry().setResource(carePlan);
+
+        Observation observation = new Observation();
+        observation.setId(fhirBundle.getNewId(observation));
+        observation.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
+        observation.addIdentifier().setSystem("urn:ietf:rfc:3986").setValue("38e8e6ed-eb91-4af8-afa4-ff8fdb7be93c");
+        try {
+            observation.setEffective(new DateTimeType(sdf.parse("2018-08-01")));
+        } catch (Exception ex) {}
+        observation.addPerformer(new Reference(uuidtag + consultant.getId()));
+        observation.setStatus(Observation.ObservationStatus.FINAL);
+        observation.getCode().addCoding()
+                .setSystem("http://snomed.info/sct")
+                .setCode("761869008")
+                .setDisplay("Karnofsky Performance Status score (observable entity)");
+
+        observation.setValue(   new Quantity()
+                .setValue(
+                        new BigDecimal(90))
+                .setUnit("score")
+                .setSystem("http://unitsofmeasure.org")
+                .setCode("score"));
+        bundle.addEntry().setResource(observation);
+
+        // 'disability'
+        condition = new Condition();
+        condition.setId(fhirBundle.getNewId(condition));
+        condition.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
+        condition.addIdentifier().setSystem(midYorksConditionIdentifier).setValue("akm2");
+        condition.setClinicalStatus(Condition.ConditionClinicalStatus.ACTIVE);
+        condition.setAsserter(new Reference(uuidtag + consultant.getId()));
+        condition.getCode().addCoding()
+                .setDisplay("Asthma (disorder)")
+                .setCode("195967001")
+                .setSystem("http://snomed.info/sct");
+        try {
+            condition.setOnset(new DateTimeType().setValue(sdf.parse("2002-03-11")));
+        } catch (Exception ex) {}
+
+        bundle.addEntry().setResource(condition);
+
+
+        return bundle;
     }
 
 
@@ -1065,7 +1115,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
         return encounter;
     }
 
-/*
+
     public void postPatient(Boolean loadDocuments, String nhsNumber, String encounterPostcode, Encounter.EncounterLocationStatus ambulanceStatus, String ambulanceName, String ambulancePostcode,
                             Integer hoursDiff, Integer minsDiff ,String code, String display , Boolean hospital) {
 
@@ -1273,7 +1323,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
             bundle.addEntry().setResource(ambulance);
 
 
-
+/*
 Respiration rate 86290005 '/min'
 Sys 72313002 mmHg Dia 271650006 mmHg
 Pulse 364075005 /min
@@ -1288,7 +1338,7 @@ Temperature 276885007 'Cel'
 Inspired Oxygen
     722742002 Breathing room air
     371825009 patient on oxygen
-
+*/
 
 
             if (nhsNumber=="9658220223") {
@@ -1470,13 +1520,13 @@ Inspired Oxygen
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
         }
-        //MethodOutcome outcome = client.create().resource(fhirBundle.getFhirDocument()).execute();
+        MethodOutcome outcome = client.create().resource(fhirBundle.getFhirDocument()).execute();
 
         // System.out.println(outcome.getId().toString());
         // System.out.println(ctxFHIR.newJsonParser().setPrettyPrint(true).encodeResourceToString(outcome.getOperationOutcome()));
 
     }
-*/
+
 
 /// MICHEAL
 
