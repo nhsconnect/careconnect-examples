@@ -1,0 +1,1151 @@
+<Bundle xmlns="http://hl7.org/fhir">
+   <identifier>
+      <system value="https://tools.ietf.org/html/rfc4122"></system>
+      <value value="855e68fd-a187-4b43-adf9-87d09fccf841"></value>
+   </identifier>
+   <type value="collection"></type>
+   <entry>
+      <fullUrl value="urn:uuid:5635302d-dc4a-4129-8709-c1ae5c13d72f"></fullUrl>
+      <resource>
+         <Patient xmlns="http://hl7.org/fhir">
+            <id value="5635302d-dc4a-4129-8709-c1ae5c13d72f"></id>
+            <meta>
+               <lastUpdated value="2018-11-14T16:25:58.346+00:00"></lastUpdated>
+               <profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Patient-1"></profile>
+            </meta>
+            <identifier>
+               <extension url="https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-NHSNumberVerificationStatus-1">
+                  <valueCodeableConcept>
+                     <coding>
+                        <system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-NHSNumberVerificationStatus-1"></system>
+                        <code value="01"></code>
+                        <display value="Number present and verified"></display>
+                     </coding>
+                  </valueCodeableConcept>
+               </extension>
+               <system value="https://fhir.nhs.uk/Id/nhs-number"></system>
+               <value value="9658218873"></value>
+            </identifier>
+            <active value="true"></active>
+            <name>
+               <use value="official"></use>
+               <family value="MEAKIN"></family>
+               <given value="Mike"></given>
+               <prefix value="MR"></prefix>
+            </name>
+            <gender value="male"></gender>
+            <birthDate value="1927-06-19"></birthDate>
+            <address>
+               <use value="home"></use>
+               <type value="physical"></type>
+            </address>
+            <maritalStatus>
+               <coding>
+                  <system value="http://hl7.org/fhir/v3/MaritalStatus"></system>
+                  <code value="S"></code>
+                  <display value="Never Married"></display>
+               </coding>
+            </maritalStatus>
+            <generalPractitioner>
+               <reference value="urn:uuid:38f04c67-0648-404e-8a03-f23436a9a3db"></reference>
+               <display value="Miss Nichole Gilbert"></display>
+            </generalPractitioner>
+            <managingOrganization>
+               <reference value="urn:uuid:ef796090-afc2-4772-a476-7f470793a0ea"></reference>
+            </managingOrganization>
+         </Patient>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:ef796090-afc2-4772-a476-7f470793a0ea"></fullUrl>
+      <resource>
+         <Organization xmlns="http://hl7.org/fhir">
+            <id value="ef796090-afc2-4772-a476-7f470793a0ea"></id>
+            <meta>
+               <lastUpdated value="2018-10-14T15:26:59.755+00:00"></lastUpdated>
+               <profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Organization-1"></profile>
+            </meta>
+            <identifier>
+               <system value="https://fhir.nhs.uk/Id/ods-organization-code"></system>
+               <value value="A20047"></value>
+            </identifier>
+            <active value="false"></active>
+            <name value="HSCIC test Practice"></name>
+            <telecom>
+               <system value="phone"></system>
+               <use value="work"></use>
+            </telecom>
+            <address>
+               <use value="work"></use>
+            </address>
+         </Organization>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:38f04c67-0648-404e-8a03-f23436a9a3db"></fullUrl>
+      <resource>
+         <Practitioner xmlns="http://hl7.org/fhir">
+            <id value="38f04c67-0648-404e-8a03-f23436a9a3db"></id>
+            <meta>
+               <lastUpdated value="2018-10-09T12:59:30.104+00:00"></lastUpdated>
+               <profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Practitioner-1"></profile>
+            </meta>
+            <identifier>
+               <system value="https://fhir.nhs.uk/Id/sds-user-id"></system>
+               <value value="G13579135"></value>
+            </identifier>
+            <active value="false"></active>
+            <name>
+               <family value="Gilbert"></family>
+               <given value="Nichole"></given>
+               <prefix value="Miss"></prefix>
+            </name>
+         </Practitioner>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:aa3e491d-92d0-424a-90c7-ca329b447ecc"></fullUrl>
+      <resource>
+         <DocumentReference xmlns="http://hl7.org/fhir">
+            <id value="aa3e491d-92d0-424a-90c7-ca329b447ecc"></id>
+            <identifier>
+               <system value="https://fhir.yas.nhs.uk/DocumentReference/Identifier"></system>
+               <value value="1"></value>
+            </identifier>
+            <status value="current"></status>
+            <type>
+               <coding>
+                  <system value="http://snomed.info/sct"></system>
+                  <code value="736373009"></code>
+                  <display value="End Of Life Care Plan"></display>
+               </coding>
+            </type>
+            <subject>
+               <reference value="urn:uuid:5635302d-dc4a-4129-8709-c1ae5c13d72f"></reference>
+            </subject>
+            <created value="2018-11-29T09:01:43+00:00"></created>
+            <author>
+               <reference value="urn:uuid:ca07e316-f4df-4927-8090-47cbab0e5564"></reference>
+            </author>
+            <content>
+               <attachment>
+                  <contentType value="image/jpeg"></contentType>
+                  <url value="urn:uuid:1187b346-3811-4917-bf77-d51cc0c8b1ee"></url>
+               </attachment>
+            </content>
+            <context>
+               <facilityType>
+                  <coding>
+                     <system value="http://snomed.info/sct"></system>
+                     <code value="Palliative medicine service"></code>
+                     <display value="Dermatology service"></display>
+                  </coding>
+               </facilityType>
+               <practiceSetting>
+                  <coding>
+                     <system value="http://snomed.info/sct"></system>
+                     <code value="103735009"></code>
+                     <display value="Palliative care"></display>
+                  </coding>
+               </practiceSetting>
+            </context>
+         </DocumentReference>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:568e8daa-52d7-411d-a78d-8e93b318fea1"></fullUrl>
+      <resource>
+         <Organization xmlns="http://hl7.org/fhir">
+            <id value="568e8daa-52d7-411d-a78d-8e93b318fea1"></id>
+            <meta>
+               <lastUpdated value="2018-08-29T00:00:00+00:00"></lastUpdated>
+               <profile value="https://fhir.nhs.uk/STU3/StructureDefinition/ODSAPI-Organization-1"></profile>
+            </meta>
+            <extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-ODSAPI-ActivePeriod-1">
+               <valuePeriod>
+                  <extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-ODSAPI-DateType-1">
+                     <valueString value="Operational"></valueString>
+                  </extension>
+                  <start value="1998-04-01"></start>
+               </valuePeriod>
+            </extension>
+            <extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-ODSAPI-OrganizationRole-1">
+               <extension url="role">
+                  <valueCoding>
+                     <system value="https://directory.spineservices.nhs.uk/STU3/CodeSystem/ODSAPI-OrganizationRole-1"></system>
+                     <code value="197"></code>
+                     <display value="NHS TRUST"></display>
+                  </valueCoding>
+               </extension>
+               <extension url="primaryRole">
+                  <valueBoolean value="true"></valueBoolean>
+               </extension>
+               <extension url="activePeriod">
+                  <valuePeriod>
+                     <extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-ODSAPI-DateType-1">
+                        <valueString value="Operational"></valueString>
+                     </extension>
+                     <start value="1998-04-01"></start>
+                  </valuePeriod>
+               </extension>
+               <extension url="status">
+                  <valueString value="Active"></valueString>
+               </extension>
+            </extension>
+            <identifier>
+               <system value="https://fhir.nhs.uk/Id/ods-organization-code"></system>
+               <value value="RR8"></value>
+            </identifier>
+            <active value="true"></active>
+            <type>
+               <coding>
+                  <system value="https://fhir.nhs.uk/STU3/CodeSystem/ODSAPI-OrganizationRecordClass-1"></system>
+                  <code value="1"></code>
+                  <display value="HSCOrg"></display>
+               </coding>
+            </type>
+            <name value="LEEDS TEACHING HOSPITALS NHS TRUST"></name>
+            <telecom>
+               <system value="fax"></system>
+               <value value="0113 242 6496"></value>
+            </telecom>
+            <telecom>
+               <system value="phone"></system>
+               <value value="0113 243 3144"></value>
+            </telecom>
+            <address>
+               <line value="ST. JAMES'S UNIVERSITY HOSPITAL"></line>
+               <line value="BECKETT STREET"></line>
+               <city value="LEEDS"></city>
+               <district value="WEST YORKSHIRE"></district>
+               <postalCode value="LS9 7TF"></postalCode>
+               <country value="ENGLAND"></country>
+            </address>
+         </Organization>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:ca07e316-f4df-4927-8090-47cbab0e5564"></fullUrl>
+      <resource>
+         <Practitioner xmlns="http://hl7.org/fhir">
+            <id value="ca07e316-f4df-4927-8090-47cbab0e5564"></id>
+            <meta>
+               <lastUpdated value="2018-06-23T18:17:01.559+00:00"></lastUpdated>
+               <profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Practitioner-1"></profile>
+            </meta>
+            <identifier>
+               <system value="https://fhir.nhs.uk/Id/sds-user-id"></system>
+               <value value="C2381390"></value>
+            </identifier>
+            <active value="true"></active>
+            <name>
+               <family value="Dearden"></family>
+               <given value="N"></given>
+               <prefix value="Dr"></prefix>
+            </name>
+         </Practitioner>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:1187b346-3811-4917-bf77-d51cc0c8b1ee"></fullUrl>
+      <resource>
+         <Binary xmlns="http://hl7.org/fhir">
+            <id value="1187b346-3811-4917-bf77-d51cc0c8b1ee"></id>
+            <contentType value="image/jpeg"></contentType>
+            <content value="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MSKSz4wMc24/HmrnxCdPOn27iCESSRIyLLMvlBzIivKsqjJwF8ps/wB4c49DooA4zwz4hn1W71HUZ9SsbyxtbONhJp5YQh2Ls68swYqFQbuM5PAwRXPnxh4j8O6PGuoJbTvJDauZ2XC2skwlZhK8syKwHlgD5ox86qM5Fep0UAedXPjTxHBpUuoGzsFjtILc3AO07pJGdSQ3neWihfLk5dhyV3fxDZtfE95/wgkmv3i2ymL940iFGjaIMMuBHLIB8uTgO3T8K6yigDzqXxJrutPDpkXlWNy2opCzojZXB88RthuohQh+gJkABGaZH481s6rpNkbewf7SiOzho4/tKs5G6ISTqygIA3Cy5zjjGT6RRQB5pe+PPEEEOlyQ2ti51KH7Vbo4SLzEJ+SIGW4j+crgkqG25HyGtXx940uPCqW62iRtcPFJOY5I0cyKuPlUNPGSf9wSED+HpntqKAPObrx/qKG+ktX0ufyGuY/soR/MhMeVSSRt33WlG0AKNwYEHg1BP4tvtQu1gS5huoUZljvNP82OCcyGGJFG18thrhvmVsZjJ+UjjvpNG0+XT4rB7fNrFKkyR72++kgkUk5ycOAeever9AHnF14/u4LSe4jvNMdTL5CRJFuezky2End5kjLEI2QXjIOBhiwqtZ+ONTutQs7l7myjma2t1OnlX33BklO9kQOQm1PLYklwoJBODur1CigDzDw5401a41qy0yOEPFOwuZPtckYlkin/AHu5N8yuEQSBQBE4+QqCuOO58NTy3WgW88sjSby5jdm3F497bDnvlNpzWlPDHcwSQygmORSrAMRkH3HNPVVRQqqFVRgADAAoAWiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACvP/jb/AMkh13/t3/8AR8degV5/8bf+SQ67/wBu/wD6PjoAPgl/ySHQv+3j/wBHyV6BXn/wS/5JDoX/AG8f+j5K9AoAKKKKACiiigAr5A+Nv/JXtd/7d/8A0RHX1/XyB8bf+Sva7/27/wDoiOgDz+iiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAPQP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of8A4mugooA5/wD4QTwf/wBCpof/AILof/iaP+EE8H/9Cpof/guh/wDia6CigDn/APhBPB//AEKmh/8Aguh/+Jo/4QTwf/0Kmh/+C6H/AOJroKKAOf8A+EE8H/8AQqaH/wCC6H/4mj/hBPB//QqaH/4Lof8A4mugooA5/wD4QTwf/wBCpof/AILof/iaP+EE8H/9Cpof/guh/wDia6CigDn/APhBPB//AEKmh/8Aguh/+Jo/4QTwf/0Kmh/+C6H/AOJroKKAOf8A+EE8H/8AQqaH/wCC6H/4mj/hBPB//QqaH/4Lof8A4mugooA5/wD4QTwf/wBCpof/AILof/iaP+EE8H/9Cpof/guh/wDia6CigDn/APhBPB//AEKmh/8Aguh/+Jo/4QTwf/0Kmh/+C6H/AOJroKKAOf8A+EE8H/8AQqaH/wCC6H/4mj/hBPB//QqaH/4Lof8A4mugooA5/wD4QTwf/wBCpof/AILof/iaP+EE8H/9Cpof/guh/wDia6CigDn/APhBPB//AEKmh/8Aguh/+Jo/4QTwf/0Kmh/+C6H/AOJroKKAOf8A+EE8H/8AQqaH/wCC6H/4mj/hBPB//QqaH/4Lof8A4mugooA5/wD4QTwf/wBCpof/AILof/iaP+EE8H/9Cpof/guh/wDia6CigDn/APhBPB//AEKmh/8Aguh/+Jo/4QTwf/0Kmh/+C6H/AOJroKKAOf8A+EE8H/8AQqaH/wCC6H/4mj/hBPB//QqaH/4Lof8A4mugooA5/wD4QTwf/wBCpof/AILof/iaP+EE8H/9Cpof/guh/wDia6CigDn/APhBPB//AEKmh/8Aguh/+Jo/4QTwf/0Kmh/+C6H/AOJroKKAOf8A+EE8H/8AQqaH/wCC6H/4mj/hBPB//QqaH/4Lof8A4mugooA5/wD4QTwf/wBCpof/AILof/iaP+EE8H/9Cpof/guh/wDia6CigDn/APhBPB//AEKmh/8Aguh/+Jo/4QTwf/0Kmh/+C6H/AOJroKKAOf8A+EE8H/8AQqaH/wCC6H/4mj/hBPB//QqaH/4Lof8A4mugooA5/wD4QTwf/wBCpof/AILof/iaP+EE8H/9Cpof/guh/wDia6CigDn/APhBPB//AEKmh/8Aguh/+Jo/4QTwf/0Kmh/+C6H/AOJroKKAOf8A+EE8H/8AQqaH/wCC6H/4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wf8A9Cpof/guh/8AiaP+EE8H/wDQqaH/AOC6H/4mgDn/APhdvw8/6GH/AMkrj/43R/wu34ef9DD/AOSVx/8AG66D/hBPB/8A0Kmh/wDguh/+Jo/4QTwf/wBCpof/AILof/iaAOf/AOF2/Dz/AKGH/wAkrj/43R/wu34ef9DD/wCSVx/8broP+EE8H/8AQqaH/wCC6H/4mj/hBPB//QqaH/4Lof8A4mgDn/8Ahdvw8/6GH/ySuP8A43R/wu34ef8AQw/+SVx/8broP+EE8H/9Cpof/guh/wDiaP8AhBPB/wD0Kmh/+C6H/wCJoA5//hdvw8/6GH/ySuP/AI3R/wALt+Hn/Qw/+SVx/wDG66D/AIQTwf8A9Cpof/guh/8Aia8s+PnhrQdG8C2NxpeiabYztqcaNJa2qRMV8qU4JUA4yBx7CgD2uwvrfU9Otr+zk8y1uolmhfaRuRgCpweRkEdasVz/AIE/5J54Z/7BVr/6KWugoAKKKKACiiigAr5A+Nv/ACV7Xf8At3/9ER19f18gfG3/AJK9rv8A27/+iI6APP6KKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooA9A+CX/ACV7Qv8At4/9ESV9f18gfBL/AJK9oX/bx/6Ikr6/oAKKKKACiiigAooooA8A/wCbvP8AP/PhXv8AXgH/ADd5/n/nwr3+gAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigArx/wDaO/5J5p//AGFY/wD0VLXsFeP/ALR3/JPNP/7Csf8A6KloA9A8Cf8AJPPDP/YKtf8A0UtdBXP+BP8Aknnhn/sFWv8A6KWugoAKKKKACiiigAr5A+Nv/JXtd/7d/wD0RHX1/XyB8bf+Sva7/wBu/wD6IjoA8/ooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAoo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PP6KKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooA9A+CX/ACV7Qv8At4/9ESV9f18gfBL/AJK9oX/bx/6Ikr6/oAKKKKACiiigAooooA8A/wCbvP8AP/PhXv8AXgH/ADd5/n/nwr2PWbvVhq2n6fpVxZW7XEU0skt1avOMIUAACyJjO/rk9KANyiuTi8bww20v220leWzEjX8lrtMVvGkkkfmncwO0mJzgBiMH0zRf+NJYZIltNB1OeOW7jgS5KRiGRTKI3YEuCME4AYAnOQCoYgA6yiuVPjyxEEcq6fqLi5VJLFUWMm8RnRA0fz8DdIn39uAwPTmp5vFS6bq9jpepW5S6vmZoiskSIibsKrF5AXfHURhvywSAdHRWFqHiiDT9abTGsL2Zo4YZ5p4lTy4Uld0Utlwx+aM5Cg9R74oT/EDTYNVuNMa0u3vIimyKNoXaUNKsQIUSZUbnX74Xg57GgDrKK42b4laPa2r3F5a31ogjdk88RKHeOZYJIwd+AVkdVJYhechiASN/QNesvEelLqFiwMRYow8xH2sOo3IzKfqGIoA06KKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiszXbnULWwV9NjVpWkCs7QtMIlOcv5alWfHHAIPPtWPa+LHS1jNyv2y4KYEVnbNE8jlwoGyVgY25GUfp3agDq6K5YeObYgkaRqhEZYXBKRD7OFlaJmbMnIDKfu7iRyAar6p4/t7O9v9NttPuZ9RtoTMkQkh/eqHVGOPMyoBYffC5wcZxQB2NFc6/jGxSwF39lvCDcT24iCpv3xSmJh97HLDjnp6VBZePdJvPEaaCySW9+2UMcs8BZZAu4xlFkZ8gZ+bbt44Y8ZAOpooooAKKKKACiiigAooooAKKKKACiiigAooooAK8f/AGjv+Seaf/2FY/8A0VLXsFeP/tHf8k80/wD7Csf/AKKloA9A8Cf8k88M/wDYKtf/AEUtdBXP+BP+SeeGf+wVa/8Aopa6CgAooooAKKKKACvkD42/8le13/t3/wDREdfX9fIHxt/5K9rv/bv/AOiI6APP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FPLKrZx82OD6nRQB5rr/AIF8Q+IdSnnuLrTYjHbvBBOHlczL5kckYeNhtiIMfzMhO7PQcCus8K6NdaPa6g980P2q/v5b2RIHLpGXwAoYgFsBRzgc54reooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACuf8Zf8AIDtv+wrpv/pbDXQVz/jL/kB23/YV03/0thoA6CiiigAooooAKKKKACvkD42/8le13/t3/wDREdfX9fIHxt/5K9rv/bv/AOiI6APP6KKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooA9A+CX/JXtC/7eP8A0RJX1/XyB8Ev+SvaF/28f+iJK+v6ACiiigAooooAKKKKAOa0ib7NqHjKfbu8rUlfbnGcWNsawofiTcx6RZ6lqmkWtlb6hp731pKt88qYRQxSXEO5DtbOVV+hre0WFbjU/GMDkhZNTVCR1wbK2FZg+GGmPpK6Zd6rqt3bw2L2FqJniBtomADbNka5YhQMtu6UAan/AAnXh8GdTdTM0EwtpPLs53BmP/LNCE+d+c7Vycc4xSN498Mq1qP7UDfaVRkZIZGVQzbF3kLiMlgVAfHII61VvPh1ot9pNxp073Dxzaj/AGkGcRuUmwF4VkKFcZGGVuppbb4f6dY3EM1hfX9jtjjiuEsjFbpdLG5dd4jQbeWbPl7MhiD1oAi/4WDbzfD2+8W2un3DR2rSqLacNCX2SbOpXuMHgHByvUGnHxrPZax/ZGsWFpZXxltgmy7klilSZ2QFWEQO4MpG1lUdPmA5q1/whFh/wiF94YN5etp928jZLJvhDvvKodnTcSRuDHnr0xE/gOxubtb2/wBS1G9vhcW8/wBpmaJXxAxdEARFUJliTgAnPWgBL/x9pttdQWdtHPLePe21rJBcQS2zIs0hQSASINygg9ODjqKTxH43GgawLMaebiGGKCa8m87YYkmm8lCq7TvO7JIyuAO/SqNj8KNEsb6K8W+1KWeOWCXfI8WXML703kRgtzwSSWIwM8CtnW/Bmm69qseoXUt0jBI45oonAS4SOTzEVwQTgPz8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eyzT2AllBs13W7iVFbYoTl/LZ22NnJXgdqAPQKK830yTWbSTUnU6tFZ3OoSSG7/s/NxJiGAR5iMfCsQ4YhRgr/D20re78VvPHPdefEVubOOS1jt1aMq8aecd23cQrFjkHgg5yOKAO2oridejiufG+mxLpt1HJE8Uz6mLOWUDDcQxsqlUDfxkkDaec9RQ0DRr9rPUIZob20kfTY472SNTEbi7BkLspx8xIK5deuQAeOAD0WivL00rUxp/h9HsLozx6bp0doRC2bWZZAZ9xx+7/d4ByRkArz0rs/CxH2TUERt0CajcLDznA3ncB7B949sYoA3aKKKACsnxF/x42X/YV07/ANLIa1qyfEX/AB42X/YV07/0shoA7yiiigAooooAKKKKACvkD42/8le13/t3/wDREdfX9fIHxt/5K9rv/bv/AOiI6APP6KKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooA9A+CX/JXtC/7eP8A0RJX1/XyB8Ev+SvaF/28f+iJK+v6ACiiigAooooAKKKKAOHs/wDkZvFX/YSj/wDSO2rSrNs/+Rm8Vf8AYSj/APSO2rSoAzNR1f7BqukWPkeZ/aEzxb9+PL2xs+cY5ztx261JLrWnw6ithJORcMQMeWxUE9FL42hj2BOT2qHWNDTV5rGcXt1Z3FlK0sMtv5ZILIUOQ6sCMMe1Uf8AhC9PfWotXnlknvUC75ZYIC0jKMK27y9yEcfcK9BQBa/4SnSB9oDTTpJbsqPC9pKspLEhdqFdz52nBUHODVXTvGenXlt5twWtma4miVdruAqSNGHchfkBK/xYAJxmq9r4B06zaSWG8vhdP5RFyTGZFaPdsbOzDNhypLBsjrnrTT8PNGaSCWRpZpYpHkL3EMExk3yGQqd8ZAG5jyuDz1oA0T4u0b95tmuZCkzQYjspnLSKWDKoCHdgqc7c44z1GY4/F1l/wkN1pFxHNC8UkMcUpikKSNIgYAtt2oecAMcmm3fg6xutGk0s3E628lzLcvuiglJaR2cjEkbAAFuMDIwOaX/hDtOClRNd48+1n5kDHdbhQgyQSQdgznk88igB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tN/8jV2dFAHGfZPGH/QJ0P8A8G03/wAjUfZPGH/QJ0P/AMG03/yNXZ0UAcZ9k8Yf9AnQ/wDwbTf/ACNR9k8Yf9AnQ/8AwbTf/I1dnRQBxn2Txh/0CdD/APBtN/8AI1H2Txh/0CdD/wDBtN/8jV2dFAHGfZPGH/QJ0P8A8G03/wAjUfZPGH/QJ0P/AMG03/yNXZ0UAcZ9k8Yf9AnQ/wDwbTf/ACNVTUNJ8WXi2ccul6UsKahZzStBqTu6pHcRuxCtCgOApP3h7ZOAe+ooAKKKKACiiigAooooAK+QPjb/AMle13/t3/8AREdfX9fIHxt/5K9rv/bv/wCiI6APP6KKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooA9A+CX/JXtC/7eP/AERJX1/XyB8Ev+SvaF/28f8AoiSvr+gAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACvkD42/wDJXtd/7d//AERHX1/XyB8bf+Sva7/27/8AoiOgDz+iiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAPQPgl/yV7Qv+3j/wBESV9f18gfBL/kr2hf9vH/AKIkr6/oAKKKKACiiigAooooAwvGd/Ppng3Vrq1YpdC2aO3YHBEr/Ihz/vMK8wl1/wAUzxaVZ2NzdvLo9teLKxdi99cW8bA7gD84DGHIJOS7Z5Ar2yigDyS9v7Q6b5HhfxHrOq6hdpDavdHUHa38yWVB8zc+TIF3nEYG0A5HQU3XNR8T6t40j0sbLaT7Rb2zWdnq88cTgRTTyEzLGrKSvlDhT9ea9dooA881DRZvtnhnTpZt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"></content>
+         </Binary>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:6a3b1c7d-9752-4241-bd6d-a868f73a7c35"></fullUrl>
+      <resource>
+         <Organization xmlns="http://hl7.org/fhir">
+            <id value="6a3b1c7d-9752-4241-bd6d-a868f73a7c35"></id>
+            <meta>
+               <lastUpdated value="2018-11-20T00:00:00+00:00"></lastUpdated>
+               <profile value="https://fhir.nhs.uk/STU3/StructureDefinition/ODSAPI-Organization-1"></profile>
+            </meta>
+            <extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-ODSAPI-ActivePeriod-1">
+               <valuePeriod>
+                  <extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-ODSAPI-DateType-1">
+                     <valueString value="Operational"></valueString>
+                  </extension>
+                  <start value="2006-07-01"></start>
+               </valuePeriod>
+            </extension>
+            <extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-ODSAPI-OrganizationRole-1">
+               <extension url="role">
+                  <valueCoding>
+                     <system value="https://directory.spineservices.nhs.uk/STU3/CodeSystem/ODSAPI-OrganizationRole-1"></system>
+                     <code value="197"></code>
+                     <display value="NHS TRUST"></display>
+                  </valueCoding>
+               </extension>
+               <extension url="primaryRole">
+                  <valueBoolean value="true"></valueBoolean>
+               </extension>
+               <extension url="activePeriod">
+                  <valuePeriod>
+                     <extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-ODSAPI-DateType-1">
+                        <valueString value="Operational"></valueString>
+                     </extension>
+                     <start value="2006-07-01"></start>
+                  </valuePeriod>
+               </extension>
+               <extension url="status">
+                  <valueString value="Active"></valueString>
+               </extension>
+            </extension>
+            <identifier>
+               <system value="https://fhir.nhs.uk/Id/ods-organization-code"></system>
+               <value value="RX8"></value>
+            </identifier>
+            <active value="true"></active>
+            <type>
+               <coding>
+                  <system value="https://fhir.nhs.uk/STU3/CodeSystem/ODSAPI-OrganizationRecordClass-1"></system>
+                  <code value="1"></code>
+                  <display value="HSCOrg"></display>
+               </coding>
+            </type>
+            <name value="YORKSHIRE AMBULANCE SERVICE NHS TRUST"></name>
+            <address>
+               <line value="SPRINGHILL 2,"></line>
+               <line value="WAKEFIELD 41 INDUSTRIAL ESTATE"></line>
+               <line value="BRINDLEY WAY"></line>
+               <city value="WAKEFIELD"></city>
+               <district value="WEST YORKSHIRE"></district>
+               <postalCode value="WF2 0XQ"></postalCode>
+               <country value="ENGLAND"></country>
+            </address>
+         </Organization>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:568e8daa-52d7-411d-a78d-8e93b318fea1"></fullUrl>
+      <resource>
+         <Organization xmlns="http://hl7.org/fhir">
+            <id value="568e8daa-52d7-411d-a78d-8e93b318fea1"></id>
+            <meta>
+               <lastUpdated value="2018-08-29T00:00:00+00:00"></lastUpdated>
+               <profile value="https://fhir.nhs.uk/STU3/StructureDefinition/ODSAPI-Organization-1"></profile>
+            </meta>
+            <extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-ODSAPI-ActivePeriod-1">
+               <valuePeriod>
+                  <extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-ODSAPI-DateType-1">
+                     <valueString value="Operational"></valueString>
+                  </extension>
+                  <start value="1998-04-01"></start>
+               </valuePeriod>
+            </extension>
+            <extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-ODSAPI-OrganizationRole-1">
+               <extension url="role">
+                  <valueCoding>
+                     <system value="https://directory.spineservices.nhs.uk/STU3/CodeSystem/ODSAPI-OrganizationRole-1"></system>
+                     <code value="197"></code>
+                     <display value="NHS TRUST"></display>
+                  </valueCoding>
+               </extension>
+               <extension url="primaryRole">
+                  <valueBoolean value="true"></valueBoolean>
+               </extension>
+               <extension url="activePeriod">
+                  <valuePeriod>
+                     <extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-ODSAPI-DateType-1">
+                        <valueString value="Operational"></valueString>
+                     </extension>
+                     <start value="1998-04-01"></start>
+                  </valuePeriod>
+               </extension>
+               <extension url="status">
+                  <valueString value="Active"></valueString>
+               </extension>
+            </extension>
+            <identifier>
+               <system value="https://fhir.nhs.uk/Id/ods-organization-code"></system>
+               <value value="RR8"></value>
+            </identifier>
+            <active value="true"></active>
+            <type>
+               <coding>
+                  <system value="https://fhir.nhs.uk/STU3/CodeSystem/ODSAPI-OrganizationRecordClass-1"></system>
+                  <code value="1"></code>
+                  <display value="HSCOrg"></display>
+               </coding>
+            </type>
+            <name value="LEEDS TEACHING HOSPITALS NHS TRUST"></name>
+            <telecom>
+               <system value="fax"></system>
+               <value value="0113 242 6496"></value>
+            </telecom>
+            <telecom>
+               <system value="phone"></system>
+               <value value="0113 243 3144"></value>
+            </telecom>
+            <address>
+               <line value="ST. JAMES'S UNIVERSITY HOSPITAL"></line>
+               <line value="BECKETT STREET"></line>
+               <city value="LEEDS"></city>
+               <district value="WEST YORKSHIRE"></district>
+               <postalCode value="LS9 7TF"></postalCode>
+               <country value="ENGLAND"></country>
+            </address>
+         </Organization>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:cb560670-fe9c-485e-8e2f-ea523189dd53"></fullUrl>
+      <resource>
+         <Organization xmlns="http://hl7.org/fhir">
+            <id value="cb560670-fe9c-485e-8e2f-ea523189dd53"></id>
+            <meta>
+               <lastUpdated value="2018-11-26T00:00:00+00:00"></lastUpdated>
+               <profile value="https://fhir.nhs.uk/STU3/StructureDefinition/ODSAPI-Organization-1"></profile>
+            </meta>
+            <extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-ODSAPI-ActivePeriod-1">
+               <valuePeriod>
+                  <extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-ODSAPI-DateType-1">
+                     <valueString value="Operational"></valueString>
+                  </extension>
+                  <start value="2002-04-01"></start>
+               </valuePeriod>
+            </extension>
+            <extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-ODSAPI-OrganizationRole-1">
+               <extension url="role">
+                  <valueCoding>
+                     <system value="https://directory.spineservices.nhs.uk/STU3/CodeSystem/ODSAPI-OrganizationRole-1"></system>
+                     <code value="197"></code>
+                     <display value="NHS TRUST"></display>
+                  </valueCoding>
+               </extension>
+               <extension url="primaryRole">
+                  <valueBoolean value="true"></valueBoolean>
+               </extension>
+               <extension url="activePeriod">
+                  <valuePeriod>
+                     <extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-ODSAPI-DateType-1">
+                        <valueString value="Operational"></valueString>
+                     </extension>
+                     <start value="2002-04-01"></start>
+                  </valuePeriod>
+               </extension>
+               <extension url="status">
+                  <valueString value="Active"></valueString>
+               </extension>
+            </extension>
+            <identifier>
+               <system value="https://fhir.nhs.uk/Id/ods-organization-code"></system>
+               <value value="RXF"></value>
+            </identifier>
+            <active value="true"></active>
+            <type>
+               <coding>
+                  <system value="https://fhir.nhs.uk/STU3/CodeSystem/ODSAPI-OrganizationRecordClass-1"></system>
+                  <code value="1"></code>
+                  <display value="HSCOrg"></display>
+               </coding>
+            </type>
+            <name value="MID YORKSHIRE HOSPITALS NHS TRUST"></name>
+            <telecom>
+               <system value="fax"></system>
+               <value value="01924 814929"></value>
+            </telecom>
+            <telecom>
+               <system value="phone"></system>
+               <value value="01924 213850"></value>
+            </telecom>
+            <address>
+               <line value="PINDERFIELDS HOSPITAL"></line>
+               <line value="ABERFORD ROAD"></line>
+               <city value="WAKEFIELD"></city>
+               <district value="WEST YORKSHIRE"></district>
+               <postalCode value="WF1 4DG"></postalCode>
+               <country value="ENGLAND"></country>
+            </address>
+         </Organization>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:befbecca-c860-4df5-9875-d0543beead93"></fullUrl>
+      <resource>
+         <Location xmlns="http://hl7.org/fhir">
+            <id value="befbecca-c860-4df5-9875-d0543beead93"></id>
+            <identifier>
+               <system value="https://fhir.yas.nhs.uk/Location/Identifier"></system>
+               <value value="732"></value>
+            </identifier>
+            <status value="active"></status>
+            <name value="Casuaulty Location"></name>
+            <type>
+               <coding>
+                  <system value="http://hl7.org/fhir/v3/RoleCode"></system>
+                  <code value="ACC"></code>
+                  <display value="Accident Site"></display>
+               </coding>
+            </type>
+            <telecom>
+               <system value="phone"></system>
+               <value value="0113 12341234"></value>
+               <use value="mobile"></use>
+            </telecom>
+            <physicalType>
+               <coding>
+                  <system value="http://hl7.org/fhir/location-physical-type"></system>
+                  <code value="bu"></code>
+                  <display value="Building"></display>
+               </coding>
+            </physicalType>
+            <position>
+               <longitude value="-1.376786"></longitude>
+               <latitude value="53.791567"></latitude>
+            </position>
+         </Location>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:040e95c4-55a3-4ffb-99e9-0aab0601eef0"></fullUrl>
+      <resource>
+         <Location xmlns="http://hl7.org/fhir">
+            <id value="040e95c4-55a3-4ffb-99e9-0aab0601eef0"></id>
+            <identifier>
+               <system value="https://fhir.yas.nhs.uk/Location/Identifier"></system>
+               <value value="RR8-ED"></value>
+            </identifier>
+            <status value="active"></status>
+            <name value="St James's University Hospital: Emergency Department"></name>
+            <description value="St James's University Hospital: Emergency Department"></description>
+            <type>
+               <coding>
+                  <system value="http://hl7.org/fhir/v3/RoleCode"></system>
+                  <code value="ETU"></code>
+                  <display value="Emergency Trauma Unit"></display>
+               </coding>
+            </type>
+            <telecom>
+               <system value="phone"></system>
+               <value value="airwave-27051940"></value>
+               <use value="mobile"></use>
+            </telecom>
+            <physicalType>
+               <coding>
+                  <system value="http://hl7.org/fhir/location-physical-type"></system>
+                  <code value="bu"></code>
+                  <display value="Building"></display>
+               </coding>
+            </physicalType>
+            <position>
+               <longitude value="-1.5230420347013478"></longitude>
+               <latitude value="53.80634615690993"></latitude>
+               <altitude value="0"></altitude>
+            </position>
+            <managingOrganization>
+               <reference value="urn:uuid:568e8daa-52d7-411d-a78d-8e93b318fea1"></reference>
+            </managingOrganization>
+         </Location>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:799c0064-484f-4cf2-8a38-3b58a1c37a0d"></fullUrl>
+      <resource>
+         <Location xmlns="http://hl7.org/fhir">
+            <id value="799c0064-484f-4cf2-8a38-3b58a1c37a0d"></id>
+            <identifier>
+               <system value="https://fhir.yas.nhs.uk/Location/Identifier"></system>
+               <value value="RXF-EDP"></value>
+            </identifier>
+            <status value="active"></status>
+            <name value="Pinderfields: Emergency Department"></name>
+            <description value="Pinderfields: Emergency Department"></description>
+            <type>
+               <coding>
+                  <system value="http://hl7.org/fhir/v3/RoleCode"></system>
+                  <code value="ETU"></code>
+                  <display value="Emergency Trauma Unit"></display>
+               </coding>
+            </type>
+            <telecom>
+               <system value="phone"></system>
+               <value value="airwave-87351940"></value>
+               <use value="mobile"></use>
+            </telecom>
+            <physicalType>
+               <coding>
+                  <system value="http://hl7.org/fhir/location-physical-type"></system>
+                  <code value="bu"></code>
+                  <display value="Building"></display>
+               </coding>
+            </physicalType>
+            <position>
+               <longitude value="-1.488555"></longitude>
+               <latitude value="53.692418"></latitude>
+            </position>
+            <managingOrganization>
+               <reference value="urn:uuid:cb560670-fe9c-485e-8e2f-ea523189dd53"></reference>
+            </managingOrganization>
+         </Location>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:0c24c4ae-2e8e-4338-9037-91d4fef81c9e"></fullUrl>
+      <resource>
+         <Condition xmlns="http://hl7.org/fhir">
+            <id value="0c24c4ae-2e8e-4338-9037-91d4fef81c9e"></id>
+            <identifier>
+               <system value="https://fhir.yas.nhs.uk/Condition/Identifier"></system>
+               <value value="12732"></value>
+            </identifier>
+            <clinicalStatus value="active"></clinicalStatus>
+            <verificationStatus value="confirmed"></verificationStatus>
+            <code>
+               <coding>
+                  <system value="http://snomed.info/sct"></system>
+                  <code value="217133004"></code>
+                  <display value="Fall into quarry"></display>
+               </coding>
+            </code>
+            <subject>
+               <reference value="urn:uuid:5635302d-dc4a-4129-8709-c1ae5c13d72f"></reference>
+            </subject>
+            <assertedDate value="2018-11-29T07:46:42+00:00"></assertedDate>
+            <asserter>
+               <reference value="urn:uuid:5635302d-dc4a-4129-8709-c1ae5c13d72f"></reference>
+            </asserter>
+         </Condition>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:b88c043a-246b-4e3c-9732-57dedf27b1d9"></fullUrl>
+      <resource>
+         <Encounter xmlns="http://hl7.org/fhir">
+            <id value="b88c043a-246b-4e3c-9732-57dedf27b1d9"></id>
+            <identifier>
+               <system value="https://fhir.yas.nhs.uk/EpisodeOfCare/Identifier"></system>
+               <value value="656"></value>
+            </identifier>
+            <status value="in-progress"></status>
+            <class>
+               <system value="http://hl7.org/fhir/v3/ActCode"></system>
+               <code value="EMER"></code>
+               <display value="emergency"></display>
+            </class>
+            <type>
+               <coding>
+                  <system value="http://snomed.info/sct"></system>
+                  <code value="409971007"></code>
+                  <display value="Emergency medical services"></display>
+               </coding>
+            </type>
+            <subject>
+               <reference value="urn:uuid:5635302d-dc4a-4129-8709-c1ae5c13d72f"></reference>
+            </subject>
+            <period>
+               <start value="2018-11-29T07:46:42+00:00"></start>
+            </period>
+            <diagnosis>
+               <condition>
+                  <reference value="urn:uuid:0c24c4ae-2e8e-4338-9037-91d4fef81c9e"></reference>
+               </condition>
+            </diagnosis>
+            <serviceProvider>
+               <reference value="urn:uuid:6a3b1c7d-9752-4241-bd6d-a868f73a7c35"></reference>
+            </serviceProvider>
+         </Encounter>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:e816a9cc-6dd4-49de-8262-9486e355a81c"></fullUrl>
+      <resource>
+         <Encounter xmlns="http://hl7.org/fhir">
+            <id value="e816a9cc-6dd4-49de-8262-9486e355a81c"></id>
+            <identifier>
+               <system value="https://fhir.yas.nhs.uk/Encounter/Identifier"></system>
+               <value value="657"></value>
+            </identifier>
+            <status value="finished"></status>
+            <class>
+               <system value="http://hl7.org/fhir/v3/ActCode"></system>
+               <code value="EMER"></code>
+               <display value="emergency"></display>
+            </class>
+            <type>
+               <coding>
+                  <system value="http://snomed.info/sct"></system>
+                  <code value="245581009"></code>
+                  <display value="Emergency examination for triage"></display>
+               </coding>
+            </type>
+            <subject>
+               <reference value="urn:uuid:5635302d-dc4a-4129-8709-c1ae5c13d72f"></reference>
+            </subject>
+            <period>
+               <start value="2018-11-29T07:46:42+00:00"></start>
+               <end value="2018-11-29T07:51:42+00:00"></end>
+            </period>
+            <location>
+               <location>
+                  <reference value="urn:uuid:befbecca-c860-4df5-9875-d0543beead93"></reference>
+               </location>
+               <status value="completed"></status>
+            </location>
+            <serviceProvider>
+               <reference value="urn:uuid:6a3b1c7d-9752-4241-bd6d-a868f73a7c35"></reference>
+            </serviceProvider>
+            <partOf>
+               <reference value="urn:uuid:b88c043a-246b-4e3c-9732-57dedf27b1d9"></reference>
+            </partOf>
+         </Encounter>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:682416cc-9c1f-4f40-93c4-867b52c56164"></fullUrl>
+      <resource>
+         <Location xmlns="http://hl7.org/fhir">
+            <id value="682416cc-9c1f-4f40-93c4-867b52c56164"></id>
+            <identifier>
+               <system value="https://fhir.yas.nhs.uk/Location/Identifier"></system>
+               <value value="DYNAMO"></value>
+            </identifier>
+            <status value="active"></status>
+            <name value="Dynamo"></name>
+            <description value="Box Body Ambulance"></description>
+            <type>
+               <coding>
+                  <system value="http://hl7.org/fhir/v3/RoleCode"></system>
+                  <code value="AMB"></code>
+                  <display value="Ambulance"></display>
+               </coding>
+            </type>
+            <telecom>
+               <system value="phone"></system>
+               <value value="airwave-542329"></value>
+               <use value="mobile"></use>
+            </telecom>
+            <physicalType>
+               <coding>
+                  <system value="http://hl7.org/fhir/location-physical-type"></system>
+                  <code value="ve"></code>
+                  <display value="Vehicle"></display>
+               </coding>
+            </physicalType>
+            <position>
+               <longitude value="-1.459479"></longitude>
+               <latitude value="53.825917"></latitude>
+            </position>
+            <managingOrganization>
+               <reference value="urn:uuid:6a3b1c7d-9752-4241-bd6d-a868f73a7c35"></reference>
+            </managingOrganization>
+         </Location>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:3494d049-2187-424a-8d02-662848573fb7"></fullUrl>
+      <resource>
+         <Encounter xmlns="http://hl7.org/fhir">
+            <id value="3494d049-2187-424a-8d02-662848573fb7"></id>
+            <identifier>
+               <system value="https://fhir.yas.nhs.uk/Encounter/Identifier"></system>
+               <value value="658"></value>
+            </identifier>
+            <status value="in-progress"></status>
+            <type>
+               <coding>
+                  <system value="http://snomed.info/sct"></system>
+                  <code value="11424001"></code>
+                  <display value="Ambulance-based care"></display>
+               </coding>
+            </type>
+            <subject>
+               <reference value="urn:uuid:5635302d-dc4a-4129-8709-c1ae5c13d72f"></reference>
+            </subject>
+            <period>
+               <start value="2018-11-29T07:56:42+00:00"></start>
+            </period>
+            <location>
+               <location>
+                  <reference value="urn:uuid:befbecca-c860-4df5-9875-d0543beead93"></reference>
+               </location>
+               <status value="planned"></status>
+            </location>
+            <location>
+               <location>
+                  <reference value="urn:uuid:682416cc-9c1f-4f40-93c4-867b52c56164"></reference>
+               </location>
+               <status value="active"></status>
+            </location>
+            <serviceProvider>
+               <reference value="urn:uuid:6a3b1c7d-9752-4241-bd6d-a868f73a7c35"></reference>
+            </serviceProvider>
+            <partOf>
+               <reference value="urn:uuid:b88c043a-246b-4e3c-9732-57dedf27b1d9"></reference>
+            </partOf>
+         </Encounter>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:c1fd2a43-99a4-4cd2-92d4-8a173bdbbf2a"></fullUrl>
+      <resource>
+         <Observation xmlns="http://hl7.org/fhir">
+            <id value="c1fd2a43-99a4-4cd2-92d4-8a173bdbbf2a"></id>
+            <identifier>
+               <system value="https://fhir.yas.nhs.uk/Observation/Identifier"></system>
+               <value value="525"></value>
+            </identifier>
+            <status value="final"></status>
+            <category>
+               <coding>
+                  <system value="http://hl7.org/fhir/observation-category"></system>
+                  <code value="vital-signs"></code>
+                  <display value="Vital Signs"></display>
+               </coding>
+            </category>
+            <code>
+               <coding>
+                  <system value="http://snomed.info/sct"></system>
+                  <code value="86290005"></code>
+                  <display value="Respiratory rate"></display>
+               </coding>
+            </code>
+            <subject>
+               <reference value="urn:uuid:5635302d-dc4a-4129-8709-c1ae5c13d72f"></reference>
+            </subject>
+            <context>
+               <reference value="urn:uuid:3494d049-2187-424a-8d02-662848573fb7"></reference>
+            </context>
+            <effectiveDateTime value="2018-11-29T09:01:43+00:00"></effectiveDateTime>
+            <valueQuantity>
+               <value value="22"></value>
+               <unit value="/min"></unit>
+               <system value="http://unitsofmeasure.org"></system>
+               <code value="/min"></code>
+            </valueQuantity>
+         </Observation>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:7e241125-ed3e-429b-85c8-aaae418ef69b"></fullUrl>
+      <resource>
+         <Observation xmlns="http://hl7.org/fhir">
+            <id value="7e241125-ed3e-429b-85c8-aaae418ef69b"></id>
+            <identifier>
+               <system value="https://fhir.yas.nhs.uk/Observation/Identifier"></system>
+               <value value="526"></value>
+            </identifier>
+            <status value="final"></status>
+            <category>
+               <coding>
+                  <system value="http://hl7.org/fhir/observation-category"></system>
+                  <code value="vital-signs"></code>
+                  <display value="Vital Signs"></display>
+               </coding>
+            </category>
+            <code>
+               <coding>
+                  <system value="http://snomed.info/sct"></system>
+                  <code value="364075005"></code>
+                  <display value="Heart rate"></display>
+               </coding>
+            </code>
+            <subject>
+               <reference value="urn:uuid:5635302d-dc4a-4129-8709-c1ae5c13d72f"></reference>
+            </subject>
+            <context>
+               <reference value="urn:uuid:3494d049-2187-424a-8d02-662848573fb7"></reference>
+            </context>
+            <effectiveDateTime value="2018-11-29T09:01:43+00:00"></effectiveDateTime>
+            <valueQuantity>
+               <value value="93"></value>
+               <unit value="/min"></unit>
+               <system value="http://unitsofmeasure.org"></system>
+               <code value="/min"></code>
+            </valueQuantity>
+         </Observation>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:e2bacf58-bbeb-4f0b-9900-85134ad3491a"></fullUrl>
+      <resource>
+         <Observation xmlns="http://hl7.org/fhir">
+            <id value="e2bacf58-bbeb-4f0b-9900-85134ad3491a"></id>
+            <identifier>
+               <system value="https://fhir.yas.nhs.uk/Observation/Identifier"></system>
+               <value value="527"></value>
+            </identifier>
+            <status value="final"></status>
+            <category>
+               <coding>
+                  <system value="http://hl7.org/fhir/observation-category"></system>
+                  <code value="vital-signs"></code>
+                  <display value="Vital Signs"></display>
+               </coding>
+            </category>
+            <code>
+               <coding>
+                  <system value="http://snomed.info/sct"></system>
+                  <code value="103228002"></code>
+                  <display value="Blood oxygen saturation"></display>
+               </coding>
+            </code>
+            <subject>
+               <reference value="urn:uuid:5635302d-dc4a-4129-8709-c1ae5c13d72f"></reference>
+            </subject>
+            <context>
+               <reference value="urn:uuid:3494d049-2187-424a-8d02-662848573fb7"></reference>
+            </context>
+            <effectiveDateTime value="2018-11-29T09:01:43+00:00"></effectiveDateTime>
+            <valueQuantity>
+               <value value="98"></value>
+               <unit value="%"></unit>
+               <system value="http://unitsofmeasure.org"></system>
+               <code value="%"></code>
+            </valueQuantity>
+         </Observation>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:a2a14280-565f-4224-8ef4-fdf1ea4866a2"></fullUrl>
+      <resource>
+         <Observation xmlns="http://hl7.org/fhir">
+            <id value="a2a14280-565f-4224-8ef4-fdf1ea4866a2"></id>
+            <identifier>
+               <system value="https://fhir.yas.nhs.uk/Observation/Identifier"></system>
+               <value value="528"></value>
+            </identifier>
+            <status value="final"></status>
+            <category>
+               <coding>
+                  <system value="http://hl7.org/fhir/observation-category"></system>
+                  <code value="vital-signs"></code>
+                  <display value="Vital Signs"></display>
+               </coding>
+            </category>
+            <code>
+               <coding>
+                  <system value="http://snomed.info/sct"></system>
+                  <code value="276885007"></code>
+                  <display value="Core body temperature"></display>
+               </coding>
+            </code>
+            <subject>
+               <reference value="urn:uuid:5635302d-dc4a-4129-8709-c1ae5c13d72f"></reference>
+            </subject>
+            <context>
+               <reference value="urn:uuid:3494d049-2187-424a-8d02-662848573fb7"></reference>
+            </context>
+            <effectiveDateTime value="2018-11-29T09:01:43+00:00"></effectiveDateTime>
+            <valueQuantity>
+               <value value="37.0"></value>
+               <unit value="Cel"></unit>
+               <system value="http://unitsofmeasure.org"></system>
+               <code value="Cel"></code>
+            </valueQuantity>
+         </Observation>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:3f524f6d-3c24-414e-87fe-72fcc1c4ecac"></fullUrl>
+      <resource>
+         <Observation xmlns="http://hl7.org/fhir">
+            <id value="3f524f6d-3c24-414e-87fe-72fcc1c4ecac"></id>
+            <identifier>
+               <system value="https://fhir.yas.nhs.uk/Observation/Identifier"></system>
+               <value value="529"></value>
+            </identifier>
+            <status value="final"></status>
+            <category>
+               <coding>
+                  <system value="http://hl7.org/fhir/observation-category"></system>
+                  <code value="vital-signs"></code>
+                  <display value="Vital Signs"></display>
+               </coding>
+            </category>
+            <code>
+               <coding>
+                  <system value="http://snomed.info/sct"></system>
+                  <code value="75367002"></code>
+                  <display value="Blood pressure"></display>
+               </coding>
+            </code>
+            <subject>
+               <reference value="urn:uuid:5635302d-dc4a-4129-8709-c1ae5c13d72f"></reference>
+            </subject>
+            <context>
+               <reference value="urn:uuid:3494d049-2187-424a-8d02-662848573fb7"></reference>
+            </context>
+            <effectiveDateTime value="2018-11-29T09:01:43+00:00"></effectiveDateTime>
+            <component>
+               <code>
+                  <coding>
+                     <system value="http://snomed.info/sct"></system>
+                     <code value="72313002"></code>
+                     <display value="Systolic arterial pressure"></display>
+                  </coding>
+               </code>
+               <valueQuantity>
+                  <value value="140"></value>
+                  <unit value="mm[Hg]"></unit>
+                  <system value="http://unitsofmeasure.org"></system>
+                  <code value="mm[Hg]"></code>
+               </valueQuantity>
+            </component>
+            <component>
+               <code>
+                  <coding>
+                     <system value="http://snomed.info/sct"></system>
+                     <code value="1091811000000102"></code>
+                     <display value="Diastolic arterial pressure"></display>
+                  </coding>
+               </code>
+               <valueQuantity>
+                  <value value="80"></value>
+                  <unit value="mm[Hg]"></unit>
+                  <system value="http://unitsofmeasure.org"></system>
+                  <code value="mm[Hg]"></code>
+               </valueQuantity>
+            </component>
+         </Observation>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:792322d3-40f4-4415-8c25-94749bc4a746"></fullUrl>
+      <resource>
+         <Observation xmlns="http://hl7.org/fhir">
+            <id value="792322d3-40f4-4415-8c25-94749bc4a746"></id>
+            <identifier>
+               <system value="https://fhir.yas.nhs.uk/Observation/Identifier"></system>
+               <value value="530"></value>
+            </identifier>
+            <status value="final"></status>
+            <code>
+               <coding>
+                  <system value="http://snomed.info/sct"></system>
+                  <code value="371825009"></code>
+                  <display value="Patient on oxygen"></display>
+               </coding>
+            </code>
+            <subject>
+               <reference value="urn:uuid:5635302d-dc4a-4129-8709-c1ae5c13d72f"></reference>
+            </subject>
+            <context>
+               <reference value="urn:uuid:3494d049-2187-424a-8d02-662848573fb7"></reference>
+            </context>
+            <effectiveDateTime value="2018-11-29T09:01:43+00:00"></effectiveDateTime>
+         </Observation>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:dcb6250b-87e3-4063-ade1-6e2e7e678a47"></fullUrl>
+      <resource>
+         <Observation xmlns="http://hl7.org/fhir">
+            <id value="dcb6250b-87e3-4063-ade1-6e2e7e678a47"></id>
+            <identifier>
+               <system value="https://fhir.yas.nhs.uk/Observation/Identifier"></system>
+               <value value="531"></value>
+            </identifier>
+            <status value="final"></status>
+            <code>
+               <coding>
+                  <system value="http://snomed.info/sct"></system>
+                  <code value="1104441000000107"></code>
+                  <display value="ACVPU (Alert Confusion Voice Pain Unresponsive) scale score"></display>
+               </coding>
+            </code>
+            <subject>
+               <reference value="urn:uuid:5635302d-dc4a-4129-8709-c1ae5c13d72f"></reference>
+            </subject>
+            <context>
+               <reference value="urn:uuid:3494d049-2187-424a-8d02-662848573fb7"></reference>
+            </context>
+            <effectiveDateTime value="2018-11-29T09:01:43+00:00"></effectiveDateTime>
+            <valueCodeableConcept>
+               <coding>
+                  <system value="http://snomed.info/sct"></system>
+                  <code value="248234008"></code>
+                  <display value="Mentally alert"></display>
+               </coding>
+            </valueCodeableConcept>
+         </Observation>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:7ba7f98e-3681-4179-82b9-f691dd2e353c"></fullUrl>
+      <resource>
+         <Observation xmlns="http://hl7.org/fhir">
+            <id value="7ba7f98e-3681-4179-82b9-f691dd2e353c"></id>
+            <identifier>
+               <system value="https://fhir.yas.nhs.uk/Observation/Identifier"></system>
+               <value value="524"></value>
+            </identifier>
+            <status value="final"></status>
+            <category>
+               <coding>
+                  <system value="http://hl7.org/fhir/observation-category"></system>
+                  <code value="survey"></code>
+                  <display value="Survey"></display>
+               </coding>
+            </category>
+            <code>
+               <coding>
+                  <system value="http://snomed.info/sct"></system>
+                  <code value="1104051000000101"></code>
+                  <display value="Royal College of Physicians NEWS2 (National Early Warning Score 2) total score"></display>
+               </coding>
+            </code>
+            <subject>
+               <reference value="urn:uuid:5635302d-dc4a-4129-8709-c1ae5c13d72f"></reference>
+            </subject>
+            <context>
+               <reference value="urn:uuid:3494d049-2187-424a-8d02-662848573fb7"></reference>
+            </context>
+            <effectiveDateTime value="2018-11-29T09:01:43+00:00"></effectiveDateTime>
+            <valueQuantity>
+               <value value="6"></value>
+               <unit value="score"></unit>
+               <system value="http://unitsofmeasure.org"></system>
+               <code value="score"></code>
+            </valueQuantity>
+            <related>
+               <type value="derived-from"></type>
+               <target>
+                  <reference value="urn:uuid:c1fd2a43-99a4-4cd2-92d4-8a173bdbbf2a"></reference>
+               </target>
+            </related>
+            <related>
+               <type value="derived-from"></type>
+               <target>
+                  <reference value="urn:uuid:7e241125-ed3e-429b-85c8-aaae418ef69b"></reference>
+               </target>
+            </related>
+            <related>
+               <type value="derived-from"></type>
+               <target>
+                  <reference value="urn:uuid:e2bacf58-bbeb-4f0b-9900-85134ad3491a"></reference>
+               </target>
+            </related>
+            <related>
+               <type value="derived-from"></type>
+               <target>
+                  <reference value="urn:uuid:a2a14280-565f-4224-8ef4-fdf1ea4866a2"></reference>
+               </target>
+            </related>
+            <related>
+               <type value="derived-from"></type>
+               <target>
+                  <reference value="urn:uuid:3f524f6d-3c24-414e-87fe-72fcc1c4ecac"></reference>
+               </target>
+            </related>
+            <related>
+               <type value="derived-from"></type>
+               <target>
+                  <reference value="urn:uuid:792322d3-40f4-4415-8c25-94749bc4a746"></reference>
+               </target>
+            </related>
+            <related>
+               <type value="derived-from"></type>
+               <target>
+                  <reference value="urn:uuid:dcb6250b-87e3-4063-ade1-6e2e7e678a47"></reference>
+               </target>
+            </related>
+         </Observation>
+      </resource>
+   </entry>
+</Bundle>

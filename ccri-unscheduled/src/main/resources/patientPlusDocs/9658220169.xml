@@ -1,0 +1,698 @@
+<Bundle xmlns="http://hl7.org/fhir">
+   <identifier>
+      <system value="https://tools.ietf.org/html/rfc4122"></system>
+      <value value="845d310f-a6ab-4e04-94d8-66a628c0f92c"></value>
+   </identifier>
+   <type value="collection"></type>
+   <entry>
+      <fullUrl value="urn:uuid:bf797ccd-249d-4228-85ad-d889dba4f48e"></fullUrl>
+      <resource>
+         <Patient xmlns="http://hl7.org/fhir">
+            <id value="bf797ccd-249d-4228-85ad-d889dba4f48e"></id>
+            <meta>
+               <lastUpdated value="2018-11-16T15:51:20.844+00:00"></lastUpdated>
+               <profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Patient-1"></profile>
+            </meta>
+            <identifier>
+               <extension url="https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-NHSNumberVerificationStatus-1">
+                  <valueCodeableConcept>
+                     <coding>
+                        <system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-NHSNumberVerificationStatus-1"></system>
+                        <code value="01"></code>
+                        <display value="Number present and verified"></display>
+                     </coding>
+                  </valueCodeableConcept>
+               </extension>
+               <system value="https://fhir.nhs.uk/Id/nhs-number"></system>
+               <value value="9658220169"></value>
+            </identifier>
+            <active value="true"></active>
+            <name>
+               <use value="official"></use>
+               <family value="HUSON"></family>
+               <given value="Loren"></given>
+               <prefix value="MRS"></prefix>
+            </name>
+            <gender value="female"></gender>
+            <birthDate value="1958-12-08"></birthDate>
+            <address>
+               <use value="home"></use>
+               <type value="physical"></type>
+            </address>
+            <maritalStatus>
+               <coding>
+                  <system value="http://hl7.org/fhir/v3/MaritalStatus"></system>
+                  <code value="S"></code>
+                  <display value="Never Married"></display>
+               </coding>
+            </maritalStatus>
+            <generalPractitioner>
+               <reference value="urn:uuid:7adb19cb-11e9-4f8a-914e-5141eca8572b"></reference>
+               <display value="Miss Nichole Gilbert"></display>
+            </generalPractitioner>
+            <managingOrganization>
+               <reference value="urn:uuid:a3f54d19-f0e7-4f04-a575-f9ad373558f9"></reference>
+            </managingOrganization>
+         </Patient>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:a3f54d19-f0e7-4f04-a575-f9ad373558f9"></fullUrl>
+      <resource>
+         <Organization xmlns="http://hl7.org/fhir">
+            <id value="a3f54d19-f0e7-4f04-a575-f9ad373558f9"></id>
+            <meta>
+               <lastUpdated value="2018-10-14T15:26:59.755+00:00"></lastUpdated>
+               <profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Organization-1"></profile>
+            </meta>
+            <identifier>
+               <system value="https://fhir.nhs.uk/Id/ods-organization-code"></system>
+               <value value="A20047"></value>
+            </identifier>
+            <active value="false"></active>
+            <name value="HSCIC test Practice"></name>
+            <telecom>
+               <system value="phone"></system>
+               <use value="work"></use>
+            </telecom>
+            <address>
+               <use value="work"></use>
+            </address>
+         </Organization>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:7adb19cb-11e9-4f8a-914e-5141eca8572b"></fullUrl>
+      <resource>
+         <Practitioner xmlns="http://hl7.org/fhir">
+            <id value="7adb19cb-11e9-4f8a-914e-5141eca8572b"></id>
+            <meta>
+               <lastUpdated value="2018-10-09T12:59:30.104+00:00"></lastUpdated>
+               <profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Practitioner-1"></profile>
+            </meta>
+            <identifier>
+               <system value="https://fhir.nhs.uk/Id/sds-user-id"></system>
+               <value value="G13579135"></value>
+            </identifier>
+            <active value="false"></active>
+            <name>
+               <family value="Gilbert"></family>
+               <given value="Nichole"></given>
+               <prefix value="Miss"></prefix>
+            </name>
+         </Practitioner>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:419acf5e-89cd-4e86-9c44-d15348a8af9d"></fullUrl>
+      <resource>
+         <DocumentReference xmlns="http://hl7.org/fhir">
+            <id value="419acf5e-89cd-4e86-9c44-d15348a8af9d"></id>
+            <identifier>
+               <system value="https://fhir.yas.nhs.uk/DocumentReference/Identifier"></system>
+               <value value="5"></value>
+            </identifier>
+            <status value="current"></status>
+            <type>
+               <coding>
+                  <system value="http://snomed.info/sct"></system>
+                  <code value="736253002"></code>
+                  <display value="Mental health Crisis plan "></display>
+               </coding>
+            </type>
+            <subject>
+               <reference value="urn:uuid:bf797ccd-249d-4228-85ad-d889dba4f48e"></reference>
+            </subject>
+            <created value="2018-11-29T09:01:43+00:00"></created>
+            <author>
+               <reference value="urn:uuid:31a44041-277f-4d6a-843d-46456ad6c26f"></reference>
+            </author>
+            <content>
+               <attachment>
+                  <contentType value="application/pdf"></contentType>
+                  <url value="urn:uuid:0e1dddc0-1225-4ed3-8cc1-c42f0e37d006"></url>
+               </attachment>
+            </content>
+            <context>
+               <facilityType>
+                  <coding>
+                     <system value="http://snomed.info/sct"></system>
+                     <code value="708168004"></code>
+                     <display value="Mental health service"></display>
+                  </coding>
+               </facilityType>
+               <practiceSetting>
+                  <coding>
+                     <system value="http://snomed.info/sct"></system>
+                     <code value="722162001"></code>
+                     <display value="Psychology"></display>
+                  </coding>
+               </practiceSetting>
+            </context>
+         </DocumentReference>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:467e73a8-81b8-40c4-9840-034cccf394f9"></fullUrl>
+      <resource>
+         <Organization xmlns="http://hl7.org/fhir">
+            <id value="467e73a8-81b8-40c4-9840-034cccf394f9"></id>
+            <meta>
+               <lastUpdated value="2018-08-29T00:00:00+00:00"></lastUpdated>
+               <profile value="https://fhir.nhs.uk/STU3/StructureDefinition/ODSAPI-Organization-1"></profile>
+            </meta>
+            <extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-ODSAPI-ActivePeriod-1">
+               <valuePeriod>
+                  <extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-ODSAPI-DateType-1">
+                     <valueString value="Operational"></valueString>
+                  </extension>
+                  <start value="1998-04-01"></start>
+               </valuePeriod>
+            </extension>
+            <extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-ODSAPI-OrganizationRole-1">
+               <extension url="role">
+                  <valueCoding>
+                     <system value="https://directory.spineservices.nhs.uk/STU3/CodeSystem/ODSAPI-OrganizationRole-1"></system>
+                     <code value="197"></code>
+                     <display value="NHS TRUST"></display>
+                  </valueCoding>
+               </extension>
+               <extension url="primaryRole">
+                  <valueBoolean value="true"></valueBoolean>
+               </extension>
+               <extension url="activePeriod">
+                  <valuePeriod>
+                     <extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-ODSAPI-DateType-1">
+                        <valueString value="Operational"></valueString>
+                     </extension>
+                     <start value="1998-04-01"></start>
+                  </valuePeriod>
+               </extension>
+               <extension url="status">
+                  <valueString value="Active"></valueString>
+               </extension>
+            </extension>
+            <identifier>
+               <system value="https://fhir.nhs.uk/Id/ods-organization-code"></system>
+               <value value="RR8"></value>
+            </identifier>
+            <active value="true"></active>
+            <type>
+               <coding>
+                  <system value="https://fhir.nhs.uk/STU3/CodeSystem/ODSAPI-OrganizationRecordClass-1"></system>
+                  <code value="1"></code>
+                  <display value="HSCOrg"></display>
+               </coding>
+            </type>
+            <name value="LEEDS TEACHING HOSPITALS NHS TRUST"></name>
+            <telecom>
+               <system value="fax"></system>
+               <value value="0113 242 6496"></value>
+            </telecom>
+            <telecom>
+               <system value="phone"></system>
+               <value value="0113 243 3144"></value>
+            </telecom>
+            <address>
+               <line value="ST. JAMES'S UNIVERSITY HOSPITAL"></line>
+               <line value="BECKETT STREET"></line>
+               <city value="LEEDS"></city>
+               <district value="WEST YORKSHIRE"></district>
+               <postalCode value="LS9 7TF"></postalCode>
+               <country value="ENGLAND"></country>
+            </address>
+         </Organization>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:31a44041-277f-4d6a-843d-46456ad6c26f"></fullUrl>
+      <resource>
+         <Practitioner xmlns="http://hl7.org/fhir">
+            <id value="31a44041-277f-4d6a-843d-46456ad6c26f"></id>
+            <meta>
+               <lastUpdated value="2018-06-23T18:17:01.559+00:00"></lastUpdated>
+               <profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Practitioner-1"></profile>
+            </meta>
+            <identifier>
+               <system value="https://fhir.nhs.uk/Id/sds-user-id"></system>
+               <value value="C2381390"></value>
+            </identifier>
+            <active value="true"></active>
+            <name>
+               <family value="Dearden"></family>
+               <given value="N"></given>
+               <prefix value="Dr"></prefix>
+            </name>
+         </Practitioner>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:0e1dddc0-1225-4ed3-8cc1-c42f0e37d006"></fullUrl>
+      <resource>
+         <Binary xmlns="http://hl7.org/fhir">
+            <id value="0e1dddc0-1225-4ed3-8cc1-c42f0e37d006"></id>
+            <contentType value="application/pdf"></contentType>
+            <content value="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YnR5cGUvVHJ1ZVR5cGUvTmFtZS9GMS9CYXNlRm9udC9BcmlhbC1Cb2xkTVQvRW5jb2RpbmcvV2luQW5zaUVuY29kaW5nL0ZvbnREZXNjcmlwdG9yIDcgMCBSL0ZpcnN0Q2hhciAzMi9MYXN0Q2hhciAxMTcvV2lkdGhzIDM0IDAgUj4+DQplbmRvYmoNCjcgMCBvYmoNCjw8L1R5cGUvRm9udERlc2NyaXB0b3IvRm9udE5hbWUvQXJpYWwtQm9sZE1UL0ZsYWdzIDMyL0l0YWxpY0FuZ2xlIDAvQXNjZW50IDkwNS9EZXNjZW50IC0yMTAvQ2FwSGVpZ2h0IDcyOC9BdmdXaWR0aCA0NzkvTWF4V2lkdGggMjYyOC9Gb250V2VpZ2h0IDcwMC9YSGVpZ2h0IDI1MC9MZWFkaW5nIDMzL1N0ZW1WIDQ3L0ZvbnRCQm94WyAtNjI4IC0yMTAgMjAwMCA3MjhdID4+DQplbmRvYmoNCjggMCBvYmoNCjw8L1R5cGUvRXh0R1N0YXRlL0JNL05vcm1hbC9DQSAxPj4NCmVuZG9iag0KOSAwIG9iag0KPDwvVHlwZS9Gb250L1N1YnR5cGUvVHJ1ZVR5cGUvTmFtZS9GMi9CYXNlRm9udC9BcmlhbE1UL0VuY29kaW5nL1dpbkFuc2lFbmNvZGluZy9Gb250RGVzY3JpcHRvciAxMCAwIFIvRmlyc3RDaGFyIDMyL0xhc3RDaGFyIDEyMC9XaWR0aHMgMzUgMCBSPj4NCmVuZG9iag0KMTAgMCBvYmoNCjw8L1R5cGUvRm9udERlc2NyaXB0b3IvRm9udE5hbWUvQXJpYWxNVC9GbGFncyAzMi9JdGFsaWNBbmdsZSAwL0FzY2VudCA5MDUvRGVzY2VudCAtMjEwL0NhcEhlaWdodCA3MjgvQXZnV2lkdGggNDQxL01heFdpZHRoIDI2NjUvRm9udFdlaWdodCA0MDAvWEhlaWdodCAyNTAvTGVhZGluZyAzMy9TdGVtViA0NC9Gb250QkJveFsgLTY2NSAtMjEwIDIwMDAgNzI4XSA+Pg0KZW5kb2JqDQoxMSAwIG9iag0KPDwvU3VidHlwZS9MaW5rL1JlY3RbIDEwNC45IDYxMC42NSAzOTkuNzYgNjIzLjg3XSAvQlM8PC9XIDA+Pi9GIDQvQTw8L1R5cGUv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MyA2MTFdIA0KZW5kb2JqDQozNSAwIG9iag0KWyAyNzggMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAyNzggMCA1NTYgNTU2IDU1NiA1NTYgMCAwIDU1NiA1NTYgNTU2IDAgMjc4IDAgMCAwIDAgMCAxMDE1IDY2NyAwIDcyMiAwIDY2NyA2MTEgMCAwIDAgMCAwIDU1NiA4MzMgMCAwIDY2NyAwIDcyMiAwIDYxMSAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCA1NTYgNTU2IDUwMCA1NTYgNTU2IDI3OCAwIDU1NiAyMjIgMCA1MDAgMjIyIDgzMyA1NTYgNTU2IDU1NiAwIDMzMyA1MDAgMjc4IDU1NiAwIDAgNTAwXSANCmVuZG9iag0KMzYgMCBvYmoNCjw8L1R5cGUvTWV0YWRhdGEvU3VidHlwZS9YTUwvTGVuZ3RoIDMwODQ+Pg0Kc3RyZWFtDQo8P3hwYWNrZXQgYmVnaW49Iu+7vyIgaWQ9Ilc1TTBNcENlaGlIenJlU3pOVGN6a2M5ZCI/Pjx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IjMuMS03MDEiPgo8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPgo8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiAgeG1sbnM6cGRmPSJodHRwOi8vbnMuYWRvYmUuY29tL3BkZi8xLjMvIj4KPHBkZjpQcm9kdWNlcj5NaWNyb3NvZnTCriBXb3JkIGZvciBPZmZpY2UgMzY1PC9wZGY6UHJvZHVjZXI+PC9yZGY6RGVzY3JpcHRpb24+CjxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiICB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iPgo8ZGM6Y3JlYXRvcj48cmRmOlNlcT48cmRmOmxpPlBoaWxpcCBSYWRmb3JkPC9yZGY6bGk+PC9yZGY6U2VxPjwvZGM6Y3JlYXRvcj48L3JkZjpEZXNjcmlwdGlvbj4KPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgIHhtbG5zOnhtcD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLyI+Cjx4bXA6Q3JlYXRvclRvb2w+TWljcm9zb2Z0wq4gV29yZCBmb3IgT2ZmaWNlIDM2NTwveG1wOkNyZWF0b3JUb29sPjx4bXA6Q3JlYXRlRGF0ZT4yMDE4LTEwLTE2VDEzOjM4OjMxKzAxOjAwPC94bXA6Q3JlYXRlRGF0ZT48eG1wOk1vZGlmeURhdGU+MjAxOC0xMC0xNlQxMzozODozMSswMTowMDwveG1wOk1vZGlmeURhdGU+PC9yZGY6RGVzY3JpcHRpb24+CjxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiICB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyI+Cjx4bXBNTTpEb2N1bWVudElEPnV1aWQ6MkQ2QTBCQTItOEU1Ny00M0VGLUI1RjMtQkY5RDA0NDg3M0Q0PC94bXBNTTpEb2N1bWVudElEPjx4bXBNTTpJbnN0YW5jZUlEPnV1aWQ6MkQ2QTBCQTItOEU1Ny00M0VGLUI1RjMtQkY5RDA0NDg3M0Q0PC94bXBNTTpJbnN0YW5jZUlEPjwvcmRmOkRlc2NyaXB0aW9uPgogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKPC9yZGY6UkRGPjwveDp4bXBtZXRhPjw/eHBhY2tldCBlbmQ9InciPz4NCmVuZHN0cmVhbQ0KZW5kb2JqDQozNyAwIG9iag0KPDwvRGlzcGxheURvY1RpdGxlIHRydWU+Pg0KZW5kb2JqDQozOCAwIG9iag0KPDwvVHlwZS9YUmVmL1NpemUgMzgvV1sgMSA0IDJdIC9Sb290IDEgMCBSL0luZm8gMTQgMCBSL0lEWzxBMjBCNkEyRDU3OEVFRjQzQjVGM0JGOUQwNDQ4NzNEND48QTIwQjZBMkQ1NzhFRUY0M0I1RjNCRjlEMDQ0ODczRDQ+XSAvRmlsdGVyL0ZsYXRlRGVjb2RlL0xlbmd0aCAxMzU+Pg0Kc3RyZWFtDQp4nGNgAIL//xmBpCADA4haBqHugSkmRTDFthtCfQBT7NPAFEcthNoEpjhDwBSXOYT6CKZU2sCUQQTQJKCZYgy8EIoPQvFDKAEIxQOhoCoFgfoMU2A8RgjFBKGYIRQXhGKBUKwQigNCsUEodgjFCaG4gWYaPwA7yeQsmDJ9CqacXBgYAPJgELoNCmVuZHN0cmVhbQ0KZW5kb2JqDQp4cmVmDQowIDM5DQowMDAwMDAwMDE1IDY1NTM1IGYNCjAwMDAwMDAwMTcgMDAwMDAgbg0KMDAwMDAwMDE2NiAwMDAwMCBuDQowMDAwMDAwMjIyIDAwMDAwIG4NCjAwMDAwMDA1NDUgMDAwMDAgbg0KMDAwMDAwMTcyMyAwMDAwMCBuDQowMDAwMDAxNzc2IDAwMDAwIG4NCjAwMDAwMDE5NDIgMDAwMDAgbg0KMDAwMDAwMjE3MyAwMDAwMCBuDQowMDAwMDAyMjI2IDAwMDAwIG4NCjAwMDAwMDIzODggMDAwMDAgbg0KMDAwMDAwMjYxNSAwMDAwMCBuDQowMDAwMDAyODAxIDAwMDAwIG4NCjAwMDAwMDkzNTAgMDAwMDAgbg0KMDAwMDAxMjM3NiAwMDAwMCBuDQowMDAwMDAwMDE2IDY1NTM1IGYNCjAwMDAwMDAwMTcgNjU1MzUgZg0KMDAwMDAwMDAxOCA2NTUzNSBmDQowMDAwMDAwMDE5IDY1NTM1IGYNCjAwMDAwMDAwMjAgNjU1MzUgZg0KMDAwMDAwMDAyMSA2NTUzNSBmDQowMDAwMDAwMDIyIDY1NTM1IGYNCjAwMDAwMDAwMjMgNjU1MzUgZg0KMDAwMDAwMDAyNCA2NTUzNSBmDQowMDAwMDAwMDI1IDY1NTM1IGYNCjAwMDAwMDAwMjYgNjU1MzUgZg0KMDAwMDAwMDAyNyA2NTUzNSBmDQowMDAwMDAwMDI4IDY1NTM1IGYNCjAwMDAwMDAwMjkgNjU1MzUgZg0KMDAwMDAwMDAzMCA2NTUzNSBmDQowMDAwMDAwMDMxIDY1NTM1IGYNCjAwMDAwMDAwMzIgNjU1MzUgZg0KMDAwMDAwMDAzMyA2NTUzNSBmDQowMDAwMDAwMDAwIDY1NTM1IGYNCjAwMDAwMTMyODAgMDAwMDAgbg0KMDAwMDAxMzUxNyAwMDAwMCBuDQowMDAwMDEzNzk3IDAwMDAwIG4NCjAwMDAwMTY5NjQgMDAwMDAgbg0KMDAwMDAxNzAwOSAwMDAwMCBuDQp0cmFpbGVyDQo8PC9TaXplIDM5L1Jvb3QgMSAwIFIvSW5mbyAxNCAwIFIvSURbPEEyMEI2QTJENTc4RUVGNDNCNUYzQkY5RDA0NDg3M0Q0PjxBMjBCNkEyRDU3OEVFRjQzQjVGM0JGOUQwNDQ4NzNEND5dID4+DQpzdGFydHhyZWYNCjE3MzQ1DQolJUVPRg0KeHJlZg0KMCAwDQp0cmFpbGVyDQo8PC9TaXplIDM5L1Jvb3QgMSAwIFIvSW5mbyAxNCAwIFIvSURbPEEyMEI2QTJENTc4RUVGNDNCNUYzQkY5RDA0NDg3M0Q0PjxBMjBCNkEyRDU3OEVFRjQzQjVGM0JGOUQwNDQ4NzNEND5dIC9QcmV2IDE3MzQ1L1hSZWZTdG0gMTcwMDk+Pg0Kc3RhcnR4cmVmDQoxODI4Mg0KJSVFT0Y="></content>
+         </Binary>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:d50335d2-d125-40b8-9909-0eb435b26b96"></fullUrl>
+      <resource>
+         <Organization xmlns="http://hl7.org/fhir">
+            <id value="d50335d2-d125-40b8-9909-0eb435b26b96"></id>
+            <meta>
+               <lastUpdated value="2018-11-20T00:00:00+00:00"></lastUpdated>
+               <profile value="https://fhir.nhs.uk/STU3/StructureDefinition/ODSAPI-Organization-1"></profile>
+            </meta>
+            <extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-ODSAPI-ActivePeriod-1">
+               <valuePeriod>
+                  <extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-ODSAPI-DateType-1">
+                     <valueString value="Operational"></valueString>
+                  </extension>
+                  <start value="2006-07-01"></start>
+               </valuePeriod>
+            </extension>
+            <extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-ODSAPI-OrganizationRole-1">
+               <extension url="role">
+                  <valueCoding>
+                     <system value="https://directory.spineservices.nhs.uk/STU3/CodeSystem/ODSAPI-OrganizationRole-1"></system>
+                     <code value="197"></code>
+                     <display value="NHS TRUST"></display>
+                  </valueCoding>
+               </extension>
+               <extension url="primaryRole">
+                  <valueBoolean value="true"></valueBoolean>
+               </extension>
+               <extension url="activePeriod">
+                  <valuePeriod>
+                     <extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-ODSAPI-DateType-1">
+                        <valueString value="Operational"></valueString>
+                     </extension>
+                     <start value="2006-07-01"></start>
+                  </valuePeriod>
+               </extension>
+               <extension url="status">
+                  <valueString value="Active"></valueString>
+               </extension>
+            </extension>
+            <identifier>
+               <system value="https://fhir.nhs.uk/Id/ods-organization-code"></system>
+               <value value="RX8"></value>
+            </identifier>
+            <active value="true"></active>
+            <type>
+               <coding>
+                  <system value="https://fhir.nhs.uk/STU3/CodeSystem/ODSAPI-OrganizationRecordClass-1"></system>
+                  <code value="1"></code>
+                  <display value="HSCOrg"></display>
+               </coding>
+            </type>
+            <name value="YORKSHIRE AMBULANCE SERVICE NHS TRUST"></name>
+            <address>
+               <line value="SPRINGHILL 2,"></line>
+               <line value="WAKEFIELD 41 INDUSTRIAL ESTATE"></line>
+               <line value="BRINDLEY WAY"></line>
+               <city value="WAKEFIELD"></city>
+               <district value="WEST YORKSHIRE"></district>
+               <postalCode value="WF2 0XQ"></postalCode>
+               <country value="ENGLAND"></country>
+            </address>
+         </Organization>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:467e73a8-81b8-40c4-9840-034cccf394f9"></fullUrl>
+      <resource>
+         <Organization xmlns="http://hl7.org/fhir">
+            <id value="467e73a8-81b8-40c4-9840-034cccf394f9"></id>
+            <meta>
+               <lastUpdated value="2018-08-29T00:00:00+00:00"></lastUpdated>
+               <profile value="https://fhir.nhs.uk/STU3/StructureDefinition/ODSAPI-Organization-1"></profile>
+            </meta>
+            <extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-ODSAPI-ActivePeriod-1">
+               <valuePeriod>
+                  <extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-ODSAPI-DateType-1">
+                     <valueString value="Operational"></valueString>
+                  </extension>
+                  <start value="1998-04-01"></start>
+               </valuePeriod>
+            </extension>
+            <extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-ODSAPI-OrganizationRole-1">
+               <extension url="role">
+                  <valueCoding>
+                     <system value="https://directory.spineservices.nhs.uk/STU3/CodeSystem/ODSAPI-OrganizationRole-1"></system>
+                     <code value="197"></code>
+                     <display value="NHS TRUST"></display>
+                  </valueCoding>
+               </extension>
+               <extension url="primaryRole">
+                  <valueBoolean value="true"></valueBoolean>
+               </extension>
+               <extension url="activePeriod">
+                  <valuePeriod>
+                     <extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-ODSAPI-DateType-1">
+                        <valueString value="Operational"></valueString>
+                     </extension>
+                     <start value="1998-04-01"></start>
+                  </valuePeriod>
+               </extension>
+               <extension url="status">
+                  <valueString value="Active"></valueString>
+               </extension>
+            </extension>
+            <identifier>
+               <system value="https://fhir.nhs.uk/Id/ods-organization-code"></system>
+               <value value="RR8"></value>
+            </identifier>
+            <active value="true"></active>
+            <type>
+               <coding>
+                  <system value="https://fhir.nhs.uk/STU3/CodeSystem/ODSAPI-OrganizationRecordClass-1"></system>
+                  <code value="1"></code>
+                  <display value="HSCOrg"></display>
+               </coding>
+            </type>
+            <name value="LEEDS TEACHING HOSPITALS NHS TRUST"></name>
+            <telecom>
+               <system value="fax"></system>
+               <value value="0113 242 6496"></value>
+            </telecom>
+            <telecom>
+               <system value="phone"></system>
+               <value value="0113 243 3144"></value>
+            </telecom>
+            <address>
+               <line value="ST. JAMES'S UNIVERSITY HOSPITAL"></line>
+               <line value="BECKETT STREET"></line>
+               <city value="LEEDS"></city>
+               <district value="WEST YORKSHIRE"></district>
+               <postalCode value="LS9 7TF"></postalCode>
+               <country value="ENGLAND"></country>
+            </address>
+         </Organization>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:cbf5513b-5875-4e6f-8d66-6a1df00220a5"></fullUrl>
+      <resource>
+         <Organization xmlns="http://hl7.org/fhir">
+            <id value="cbf5513b-5875-4e6f-8d66-6a1df00220a5"></id>
+            <meta>
+               <lastUpdated value="2018-11-26T00:00:00+00:00"></lastUpdated>
+               <profile value="https://fhir.nhs.uk/STU3/StructureDefinition/ODSAPI-Organization-1"></profile>
+            </meta>
+            <extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-ODSAPI-ActivePeriod-1">
+               <valuePeriod>
+                  <extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-ODSAPI-DateType-1">
+                     <valueString value="Operational"></valueString>
+                  </extension>
+                  <start value="2002-04-01"></start>
+               </valuePeriod>
+            </extension>
+            <extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-ODSAPI-OrganizationRole-1">
+               <extension url="role">
+                  <valueCoding>
+                     <system value="https://directory.spineservices.nhs.uk/STU3/CodeSystem/ODSAPI-OrganizationRole-1"></system>
+                     <code value="197"></code>
+                     <display value="NHS TRUST"></display>
+                  </valueCoding>
+               </extension>
+               <extension url="primaryRole">
+                  <valueBoolean value="true"></valueBoolean>
+               </extension>
+               <extension url="activePeriod">
+                  <valuePeriod>
+                     <extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-ODSAPI-DateType-1">
+                        <valueString value="Operational"></valueString>
+                     </extension>
+                     <start value="2002-04-01"></start>
+                  </valuePeriod>
+               </extension>
+               <extension url="status">
+                  <valueString value="Active"></valueString>
+               </extension>
+            </extension>
+            <identifier>
+               <system value="https://fhir.nhs.uk/Id/ods-organization-code"></system>
+               <value value="RXF"></value>
+            </identifier>
+            <active value="true"></active>
+            <type>
+               <coding>
+                  <system value="https://fhir.nhs.uk/STU3/CodeSystem/ODSAPI-OrganizationRecordClass-1"></system>
+                  <code value="1"></code>
+                  <display value="HSCOrg"></display>
+               </coding>
+            </type>
+            <name value="MID YORKSHIRE HOSPITALS NHS TRUST"></name>
+            <telecom>
+               <system value="fax"></system>
+               <value value="01924 814929"></value>
+            </telecom>
+            <telecom>
+               <system value="phone"></system>
+               <value value="01924 213850"></value>
+            </telecom>
+            <address>
+               <line value="PINDERFIELDS HOSPITAL"></line>
+               <line value="ABERFORD ROAD"></line>
+               <city value="WAKEFIELD"></city>
+               <district value="WEST YORKSHIRE"></district>
+               <postalCode value="WF1 4DG"></postalCode>
+               <country value="ENGLAND"></country>
+            </address>
+         </Organization>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:41eaf0ab-65d5-4ca1-b066-90eabdd06e17"></fullUrl>
+      <resource>
+         <Location xmlns="http://hl7.org/fhir">
+            <id value="41eaf0ab-65d5-4ca1-b066-90eabdd06e17"></id>
+            <identifier>
+               <system value="https://fhir.yas.nhs.uk/Location/Identifier"></system>
+               <value value="733"></value>
+            </identifier>
+            <status value="active"></status>
+            <name value="Casuaulty Location"></name>
+            <type>
+               <coding>
+                  <system value="http://hl7.org/fhir/v3/RoleCode"></system>
+                  <code value="ACC"></code>
+                  <display value="Accident Site"></display>
+               </coding>
+            </type>
+            <telecom>
+               <system value="phone"></system>
+               <value value="0113 12341234"></value>
+               <use value="mobile"></use>
+            </telecom>
+            <physicalType>
+               <coding>
+                  <system value="http://hl7.org/fhir/location-physical-type"></system>
+                  <code value="bu"></code>
+                  <display value="Building"></display>
+               </coding>
+            </physicalType>
+            <position>
+               <longitude value="-1.426439"></longitude>
+               <latitude value="53.796822"></latitude>
+            </position>
+         </Location>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:324840b7-4551-4612-b8e6-a2d3cf17993c"></fullUrl>
+      <resource>
+         <Location xmlns="http://hl7.org/fhir">
+            <id value="324840b7-4551-4612-b8e6-a2d3cf17993c"></id>
+            <identifier>
+               <system value="https://fhir.yas.nhs.uk/Location/Identifier"></system>
+               <value value="RR8-ED"></value>
+            </identifier>
+            <status value="active"></status>
+            <name value="St James's University Hospital: Emergency Department"></name>
+            <description value="St James's University Hospital: Emergency Department"></description>
+            <type>
+               <coding>
+                  <system value="http://hl7.org/fhir/v3/RoleCode"></system>
+                  <code value="ETU"></code>
+                  <display value="Emergency Trauma Unit"></display>
+               </coding>
+            </type>
+            <telecom>
+               <system value="phone"></system>
+               <value value="airwave-27051940"></value>
+               <use value="mobile"></use>
+            </telecom>
+            <physicalType>
+               <coding>
+                  <system value="http://hl7.org/fhir/location-physical-type"></system>
+                  <code value="bu"></code>
+                  <display value="Building"></display>
+               </coding>
+            </physicalType>
+            <position>
+               <longitude value="-1.5230420347013478"></longitude>
+               <latitude value="53.80634615690993"></latitude>
+               <altitude value="0"></altitude>
+            </position>
+            <managingOrganization>
+               <reference value="urn:uuid:467e73a8-81b8-40c4-9840-034cccf394f9"></reference>
+            </managingOrganization>
+         </Location>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:322bb940-e44f-488f-9c99-3e1e8c368b1c"></fullUrl>
+      <resource>
+         <Location xmlns="http://hl7.org/fhir">
+            <id value="322bb940-e44f-488f-9c99-3e1e8c368b1c"></id>
+            <identifier>
+               <system value="https://fhir.yas.nhs.uk/Location/Identifier"></system>
+               <value value="RXF-EDP"></value>
+            </identifier>
+            <status value="active"></status>
+            <name value="Pinderfields: Emergency Department"></name>
+            <description value="Pinderfields: Emergency Department"></description>
+            <type>
+               <coding>
+                  <system value="http://hl7.org/fhir/v3/RoleCode"></system>
+                  <code value="ETU"></code>
+                  <display value="Emergency Trauma Unit"></display>
+               </coding>
+            </type>
+            <telecom>
+               <system value="phone"></system>
+               <value value="airwave-87351940"></value>
+               <use value="mobile"></use>
+            </telecom>
+            <physicalType>
+               <coding>
+                  <system value="http://hl7.org/fhir/location-physical-type"></system>
+                  <code value="bu"></code>
+                  <display value="Building"></display>
+               </coding>
+            </physicalType>
+            <position>
+               <longitude value="-1.488555"></longitude>
+               <latitude value="53.692418"></latitude>
+            </position>
+            <managingOrganization>
+               <reference value="urn:uuid:cbf5513b-5875-4e6f-8d66-6a1df00220a5"></reference>
+            </managingOrganization>
+         </Location>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:121f7224-dbdb-4332-a4ea-31bb75a9e742"></fullUrl>
+      <resource>
+         <Condition xmlns="http://hl7.org/fhir">
+            <id value="121f7224-dbdb-4332-a4ea-31bb75a9e742"></id>
+            <identifier>
+               <system value="https://fhir.yas.nhs.uk/Condition/Identifier"></system>
+               <value value="12733"></value>
+            </identifier>
+            <clinicalStatus value="active"></clinicalStatus>
+            <verificationStatus value="provisional"></verificationStatus>
+            <code>
+               <coding>
+                  <system value="http://snomed.info/sct"></system>
+                  <code value="418399005"></code>
+                  <display value="Motor vehicle accident"></display>
+               </coding>
+            </code>
+            <subject>
+               <reference value="urn:uuid:bf797ccd-249d-4228-85ad-d889dba4f48e"></reference>
+            </subject>
+            <assertedDate value="2018-11-29T08:56:43+00:00"></assertedDate>
+            <asserter>
+               <reference value="urn:uuid:bf797ccd-249d-4228-85ad-d889dba4f48e"></reference>
+            </asserter>
+         </Condition>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:686bae61-0800-422a-9869-bc437f323e5f"></fullUrl>
+      <resource>
+         <Encounter xmlns="http://hl7.org/fhir">
+            <id value="686bae61-0800-422a-9869-bc437f323e5f"></id>
+            <identifier>
+               <system value="https://fhir.yas.nhs.uk/EpisodeOfCare/Identifier"></system>
+               <value value="659"></value>
+            </identifier>
+            <status value="triaged"></status>
+            <class>
+               <system value="http://hl7.org/fhir/v3/ActCode"></system>
+               <code value="EMER"></code>
+               <display value="emergency"></display>
+            </class>
+            <type>
+               <coding>
+                  <system value="http://snomed.info/sct"></system>
+                  <code value="409971007"></code>
+                  <display value="Emergency medical services"></display>
+               </coding>
+            </type>
+            <subject>
+               <reference value="urn:uuid:bf797ccd-249d-4228-85ad-d889dba4f48e"></reference>
+            </subject>
+            <period>
+               <start value="2018-11-29T08:56:43+00:00"></start>
+            </period>
+            <diagnosis>
+               <condition>
+                  <reference value="urn:uuid:121f7224-dbdb-4332-a4ea-31bb75a9e742"></reference>
+               </condition>
+            </diagnosis>
+            <serviceProvider>
+               <reference value="urn:uuid:d50335d2-d125-40b8-9909-0eb435b26b96"></reference>
+            </serviceProvider>
+         </Encounter>
+      </resource>
+   </entry>
+   <entry>
+      <fullUrl value="urn:uuid:5ae74641-bd6f-4f97-91db-464e156f9c93"></fullUrl>
+      <resource>
+         <Encounter xmlns="http://hl7.org/fhir">
+            <id value="5ae74641-bd6f-4f97-91db-464e156f9c93"></id>
+            <identifier>
+               <system value="https://fhir.yas.nhs.uk/Encounter/Identifier"></system>
+               <value value="660"></value>
+            </identifier>
+            <status value="in-progress"></status>
+            <class>
+               <system value="http://hl7.org/fhir/v3/ActCode"></system>
+               <code value="EMER"></code>
+               <display value="emergency"></display>
+            </class>
+            <type>
+               <coding>
+                  <system value="http://snomed.info/sct"></system>
+                  <code value="245581009"></code>
+                  <display value="Emergency examination for triage"></display>
+               </coding>
+            </type>
+            <subject>
+               <reference value="urn:uuid:bf797ccd-249d-4228-85ad-d889dba4f48e"></reference>
+            </subject>
+            <period>
+               <start value="2018-11-29T08:56:43+00:00"></start>
+            </period>
+            <location>
+               <location>
+                  <reference value="urn:uuid:41eaf0ab-65d5-4ca1-b066-90eabdd06e17"></reference>
+               </location>
+               <status value="active"></status>
+            </location>
+            <serviceProvider>
+               <reference value="urn:uuid:d50335d2-d125-40b8-9909-0eb435b26b96"></reference>
+            </serviceProvider>
+            <partOf>
+               <reference value="urn:uuid:686bae61-0800-422a-9869-bc437f323e5f"></reference>
+            </partOf>
+         </Encounter>
+      </resource>
+   </entry>
+</Bundle>
