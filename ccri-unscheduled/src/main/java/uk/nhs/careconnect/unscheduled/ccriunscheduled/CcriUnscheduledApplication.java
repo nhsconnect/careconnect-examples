@@ -6,6 +6,7 @@ import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.hl7.fhir.dstu3.model.*;
 import org.slf4j.Logger;
@@ -108,7 +109,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
         //client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
         client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8183/ccri-fhir/STU3/");
-       // client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
+       //client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
         client.setEncoding(EncodingEnum.XML);
 
        // clientGPC = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri/camel/fhir/gpc/");
@@ -124,7 +125,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
         clientODS = ctxFHIR.newRestfulGenericClient("https://directory.spineservices.nhs.uk/STU3/");
         clientODS.setEncoding(EncodingEnum.XML);
 
-        Boolean loadDocuments = false;
+        Boolean loadDocuments = true;
 
         // RAD contains base Resources referenced in the main getMicheal load.
 
@@ -182,7 +183,12 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
         InputStream inputStream =
                 Thread.currentThread().getContextClassLoader().getResourceAsStream(folder + "/" +filename);
         Reader reader = new InputStreamReader(inputStream);
-        Bundle bundle = (Bundle) ctxFHIR.newXmlParser().parseResource(reader);
+        Bundle bundle = null;
+        if (FilenameUtils.getExtension(filename).equals("json")) {
+            bundle = (Bundle) ctxFHIR.newJsonParser().parseResource(reader);
+        } else {
+            bundle = (Bundle) ctxFHIR.newXmlParser().parseResource(reader);
+        }
         try {
             MethodOutcome outcome = client.create().resource(bundle).execute();
         } catch (UnprocessableEntityException ex) {
@@ -314,6 +320,13 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
         flag.setAuthor(new Reference(uuidtag + midyorks.getIdElement().getIdPart()));
         bundle.addEntry().setResource(flag);
+
+        Practitioner pal = new Practitioner();
+        pal.setId(fhirBundle.getNewId(pal));
+        pal.addIdentifier().setSystem(interOpenPractitionerIdentifier).setValue("x2900");
+        pal.addName().setFamily("Simpson").addGiven("Mike");
+        pal.addTelecom().setSystem(ContactPoint.ContactPointSystem.PHONE).setValue("07855 442038").setUse(ContactPoint.ContactPointUse.MOBILE);
+        bundle.addEntry().setResource(pal);
 
         Practitioner consultant = new Practitioner();
         consultant.setId(fhirBundle.getNewId(consultant));
@@ -447,12 +460,23 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
 
         bundle.addEntry().setResource(form);
+        CareTeam careTeamH = new CareTeam();
+        careTeamH.setId(fhirBundle.getNewId(careTeamH));
+        careTeamH.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
+        careTeamH.addIdentifier().setSystem(westRidingCareTeamIdentifier).setValue("blm2");
+        careTeamH.addParticipant().setMember(new Reference(uuidtag + pal.getId()));
+        careTeamH.setName("Paliative Care Milworthy Healthcare Trust");
+        careTeamH.addNote().setText("Lead case consultant");
+
+        bundle.addEntry().setResource(careTeamH);
 
         CareTeam careTeam = new CareTeam();
         careTeam.setId(fhirBundle.getNewId(careTeam));
         careTeam.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
         careTeam.addIdentifier().setSystem(westRidingCareTeamIdentifier).setValue("blm1");
         careTeam.addParticipant().setMember(new Reference(uuidtag + consultant.getId()));
+        careTeam.setName("Milworthy Emergency Support Team");
+        careTeam.addNote().setText("24 hour emergency support team");
 
         bundle.addEntry().setResource(careTeam);
 
@@ -464,6 +488,8 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
         // Not required carePlan.addAddresses(new Reference(uuidtag + condition.getId()));
         carePlan.addAuthor(new Reference(uuidtag + consultant.getId()));
         carePlan.addCareTeam(new Reference(uuidtag + careTeam.getId()));
+        carePlan.addCareTeam(new Reference(uuidtag + careTeamH.getId()));
+
         carePlan.addCategory().addCoding()
                 .setCode("736373009")
                 .setSystem("http://snomed.info/sct")
@@ -479,7 +505,12 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
         carePlan.addActivity()
                 .getDetail().setStatus(CarePlan.CarePlanActivityStatus.NOTSTARTED).setDescription("Nebulizer can be used to make patient more comfortable")
                 .getCode().addCoding().setCode("445141005").setSystem("http://snomed.info/sct").setDisplay("Nebuliser therapy using mask");
-
+        carePlan.addActivity()
+                .getDetail().setStatus(CarePlan.CarePlanActivityStatus.NOTSTARTED).setDescription("Wants to avoid hospital admission if possible, but would want to consider options as need arises.")
+                .getCode().addCoding().setCode("735324008").setSystem("http://snomed.info/sct").setDisplay("Treatment escalation plan");
+        carePlan.addActivity()
+                .getDetail().setStatus(CarePlan.CarePlanActivityStatus.NOTSTARTED).setDescription("[18 Sept 2018] This plan is known to the Harrogate Palliative Care Team. If advice needed Monday-Friday 0830-1700 contact the team on 01423 553464. Outside these hours contact Saint Michael's Hospice (Harrogate) on 01423 872 658. [21 Nov 2018] At risk of hypercalcaemia (Corr Ca+ 3.01 on 20th Nov) - symptoms were increased confusion and drowsiness.")
+                .getCode().addCoding().setCode("702779007").setSystem("http://snomed.info/sct").setDisplay("Emergency health care plan agreed");
         bundle.addEntry().setResource(carePlan);
 
         Observation observation = new Observation();
