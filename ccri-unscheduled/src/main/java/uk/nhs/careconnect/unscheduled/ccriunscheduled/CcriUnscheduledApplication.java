@@ -61,7 +61,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
     private static String yasDocumentIdentifier = "https://fhir.yas.nhs.uk/DocumentReference/Identifier";
 
     private static String westRidingCareTeamIdentifier = "https://fhir.westriding.nhs.uk/CareTeam/Identifier";
-
+    private static String westRidingClinicalImpressionIdentifier = "https://fhir.westriding.nhs.uk/ClinicalImpressionf/Identifier";
 
 
     final String uuidtag = "urn:uuid:";
@@ -457,9 +457,26 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
                 .setText("Domestic Access and Information")
                 .addAnswer()
                 .setValue(new StringType("A key safe is provided to allow access to the property. Carer and related contact has code."));
-
-
         bundle.addEntry().setResource(form);
+
+        ClinicalImpression prognosis = new ClinicalImpression();
+        prognosis.setId(fhirBundle.getNewId(prognosis));
+        prognosis.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
+        prognosis.setStatus(ClinicalImpression.ClinicalImpressionStatus.COMPLETED);
+        prognosis.addIdentifier().setSystem(westRidingClinicalImpressionIdentifier).setValue("akm1");
+        prognosis.setAssessor(new Reference(uuidtag + consultant.getId()));
+        try {
+            prognosis.setDate(sdf.parse("2018-08-20"));
+        } catch (Exception ex) {}
+
+        prognosis.addPrognosisCodeableConcept().addCoding()
+                .setSystem(SNOMEDCT)
+                .setCode("845701000000104")
+                .setDisplay("Gold standards framework prognostic indicator stage A (blue) - year plus prognosis (finding)");
+        prognosis.setDescription("Limited life expectancy of approximately one year");
+        bundle.addEntry().setResource(prognosis);
+
+
         CareTeam careTeamH = new CareTeam();
         careTeamH.setId(fhirBundle.getNewId(careTeamH));
         careTeamH.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
@@ -479,6 +496,8 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
         careTeam.addNote().setText("24 hour emergency support team");
 
         bundle.addEntry().setResource(careTeam);
+
+
 
 
         CarePlan carePlan = new CarePlan();
@@ -502,6 +521,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
         carePlan.addSupportingInfo(new Reference(uuidtag + form.getId()));
         carePlan.addSupportingInfo(new Reference(uuidtag + formCPR.getId()));
         carePlan.addSupportingInfo(new Reference(uuidtag + formLPA.getId()));
+        carePlan.addSupportingInfo(new Reference(uuidtag + prognosis.getId()));
         carePlan.addActivity()
                 .getDetail().setStatus(CarePlan.CarePlanActivityStatus.NOTSTARTED).setDescription("Nebulizer can be used to make patient more comfortable")
                 .getCode().addCoding().setCode("445141005").setSystem("http://snomed.info/sct").setDisplay("Nebuliser therapy using mask");
