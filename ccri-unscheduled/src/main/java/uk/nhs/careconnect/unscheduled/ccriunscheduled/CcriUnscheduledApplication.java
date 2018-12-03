@@ -108,8 +108,8 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
         }
 
         //client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
-        client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8183/ccri-fhir/STU3/");
-       //client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
+       // client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8183/ccri-fhir/STU3/");
+       client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
         client.setEncoding(EncodingEnum.XML);
 
        // clientGPC = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri/camel/fhir/gpc/");
@@ -136,6 +136,11 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
             loadFolder("patientPlusDocs");
         }
 
+
+        idno = 661;
+        locno = 730;
+        conno = 12734;
+        obsNo = 533;
         postPatient(loadDocuments,"9658220142", "LS25 2HF", Encounter.EncounterLocationStatus.PLANNED, "Elbe", "LS26 8PU", 0, -15, "410429000", "Cardiac arrest", true);
 
 
