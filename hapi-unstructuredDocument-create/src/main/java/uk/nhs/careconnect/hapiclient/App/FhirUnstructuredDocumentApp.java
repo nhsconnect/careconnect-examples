@@ -8,9 +8,9 @@ import org.apache.commons.io.IOUtils;
 import org.hl7.fhir.dstu3.model.*;
 
 import org.hl7.fhir.utilities.xhtml.XhtmlParser;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -60,12 +60,18 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
 
         client.setEncoding(EncodingEnum.XML);
 
-        outputDocument("1",1);
-     ///   outputDocument("1",2);
-        outputDocument("1",3);
-        outputDocument("1002",4);
-        outputDocument("2",5);
-        outputDocument("3",6);
+
+        getSimple();
+
+        Boolean outputDocs = false;
+        if (outputDocs) {
+            outputDocument("1", 1);
+            ///   outputDocument("1",2);
+            outputDocument("1", 3);
+            outputDocument("1002", 4);
+            outputDocument("2", 5);
+            outputDocument("3", 6);
+        }
     }
 
     private void outputDocument(String patientId, Integer docExample) throws Exception {
@@ -80,6 +86,46 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
         //
         // client.create().resource(unstructDocBundle).execute();
 
+    }
+
+    private DocumentReference getSimple() {
+
+        Binary binary = new Binary();
+        binary.setId(UUID.randomUUID().toString());
+        String dummyContent = "ABCDE12345";
+        binary.setContent (dummyContent.getBytes());
+        binary.setContentType("application/pdf");
+        System.out.println(FhirContext.forDstu3().newJsonParser().setPrettyPrint(true).encodeResourceToString(binary));
+
+        DocumentReference doc = new DocumentReference();
+        doc.setId(UUID.randomUUID().toString());
+        doc.setSubject(new Reference("https://demographics.spineservices.nhs.uk/STU3/Patient/2686033207"));
+        doc.setStatus(Enumerations.DocumentReferenceStatus.CURRENT);
+        doc.getType().addCoding()
+                .setSystem("http://snomed.info/sct")
+                .setCode("734163000")
+                .setDisplay("Care plan");
+        doc.addAuthor()
+                .setReference("https://directory.spineservices.nhs.uk/STU3/Organization/1XR").setDisplay("Example NHS Trust");
+        doc.setIndexed(new Date());
+        doc.getContext().getPracticeSetting().addCoding()
+                .setSystem("http://snomed.info/sct")
+                .setCode("408467006")
+                .setDisplay("Adult mental illness");
+        doc.addContent().getAttachment()
+                .setContentType(binary.getContentType())
+                .setUrl("urn:uuid:" + binary.getId());
+        System.out.println(FhirContext.forDstu3().newJsonParser().setPrettyPrint(true).encodeResourceToString(doc));
+
+        Bundle bundle = new Bundle();
+
+        bundle.addEntry().setResource(doc).setFullUrl("urn:uuid:"+doc.getId());
+        bundle.addEntry().setResource(binary).setFullUrl("urn:uuid:"+binary.getId());
+        bundle.setType(Bundle.BundleType.COLLECTION);
+
+        System.out.println(FhirContext.forDstu3().newJsonParser().setPrettyPrint(true).encodeResourceToString(bundle));
+
+        return doc;
     }
 
     private Bundle getUnstructuredBundle(String patientId, Integer docExample) throws Exception {
