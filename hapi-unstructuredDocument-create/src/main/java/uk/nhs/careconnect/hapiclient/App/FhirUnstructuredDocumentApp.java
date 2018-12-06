@@ -92,21 +92,19 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
 
         Binary binary = new Binary();
         binary.setId(UUID.randomUUID().toString());
-        String dummyContent = "ABCDE12345";
+        String dummyContent = "<!DOCTYPE html><html><body>SOME TEXT</body></html>";
         binary.setContent (dummyContent.getBytes());
-        binary.setContentType("application/pdf");
-        System.out.println(FhirContext.forDstu3().newJsonParser().setPrettyPrint(true).encodeResourceToString(binary));
+        binary.setContentType("text/html");
+        //System.out.println(FhirContext.forDstu3().newJsonParser().setPrettyPrint(true).encodeResourceToString(binary));
 
         DocumentReference doc = new DocumentReference();
         doc.setId(UUID.randomUUID().toString());
-        doc.setSubject(new Reference("https://demographics.spineservices.nhs.uk/STU3/Patient/2686033207"));
+        doc.setSubject(new Reference("https://demographics.spineservices.nhs.uk/STU3/Patient/9658220169"));
         doc.setStatus(Enumerations.DocumentReferenceStatus.CURRENT);
         doc.getType().addCoding()
                 .setSystem("http://snomed.info/sct")
                 .setCode("734163000")
                 .setDisplay("Care plan");
-        doc.addAuthor()
-                .setReference("https://directory.spineservices.nhs.uk/STU3/Organization/1XR").setDisplay("Example NHS Trust");
         doc.setIndexed(new Date());
         doc.getContext().getPracticeSetting().addCoding()
                 .setSystem("http://snomed.info/sct")
@@ -115,15 +113,46 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
         doc.addContent().getAttachment()
                 .setContentType(binary.getContentType())
                 .setUrl("urn:uuid:" + binary.getId());
-        System.out.println(FhirContext.forDstu3().newJsonParser().setPrettyPrint(true).encodeResourceToString(doc));
+        //System.out.println(FhirContext.forDstu3().newJsonParser().setPrettyPrint(true).encodeResourceToString(doc));
 
-        Bundle bundle = new Bundle();
+        IGenericClient clientODS = ctxFHIR.newRestfulGenericClient("https://directory.spineservices.nhs.uk/STU3/");
+        clientODS.setEncoding(EncodingEnum.XML);
+        Organization organization =  clientODS
+                .read()
+                .resource(Organization.class)
+                .withId("RR8").execute();
+        organization.setId(UUID.randomUUID().toString());
+        doc.addAuthor(new Reference("urn:uuid:" + organization.getId()).setDisplay(organization.getName()));
 
-        bundle.addEntry().setResource(doc).setFullUrl("urn:uuid:"+doc.getId());
-        bundle.addEntry().setResource(binary).setFullUrl("urn:uuid:"+binary.getId());
-        bundle.setType(Bundle.BundleType.COLLECTION);
+        Patient patient = null;
+        IGenericClient clientCCRI = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
 
-        System.out.println(FhirContext.forDstu3().newJsonParser().setPrettyPrint(true).encodeResourceToString(bundle));
+        clientODS.setEncoding(EncodingEnum.XML);
+        Bundle patientSearchbundle =  clientCCRI
+                .search()
+                .forResource(Patient.class)
+                .where(Patient.IDENTIFIER.exactly().systemAndCode("https://fhir.nhs.uk/Id/nhs-number","9658220169"))
+                .returnBundle(Bundle.class)
+                .execute();
+        if (patientSearchbundle.getEntry().size()>0) {
+            if (patientSearchbundle.getEntry().get(0).getResource() instanceof Patient)
+               patient = (Patient) patientSearchbundle.getEntry().get(0).getResource();
+        }
+
+        if (patient != null) {
+            patient.setId(UUID.randomUUID().toString());
+            doc.setSubject(new Reference("urn:uuid:" + patient.getId()));
+
+            Bundle bundle = new Bundle();
+            bundle.addEntry().setResource(doc).setFullUrl("urn:uuid:" + doc.getId());
+            bundle.addEntry().setResource(binary).setFullUrl("urn:uuid:" + binary.getId());
+            bundle.addEntry().setResource(organization).setFullUrl("urn:uuid:" + organization.getId());
+            bundle.addEntry().setResource(patient).setFullUrl("urn:uuid:" + patient.getId());
+            bundle.setType(Bundle.BundleType.COLLECTION);
+            System.out.println(FhirContext.forDstu3().newJsonParser().setPrettyPrint(true).encodeResourceToString(bundle));
+
+            clientCCRI.create().resource(bundle).execute();
+        }
 
         return doc;
     }
