@@ -3,6 +3,7 @@ package uk.nhs.careconnect.hapiclient.App;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.api.EncodingEnum;
+import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import org.apache.commons.io.IOUtils;
 import org.hl7.fhir.dstu3.model.*;
@@ -88,7 +89,8 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
 
     }
 
-    private DocumentReference getSimple() {
+    private Bundle getSimple() {
+        Bundle bundle = null;
 
         Binary binary = new Binary();
         binary.setId(UUID.randomUUID().toString());
@@ -143,7 +145,7 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
             patient.setId(UUID.randomUUID().toString());
             doc.setSubject(new Reference("urn:uuid:" + patient.getId()));
 
-            Bundle bundle = new Bundle();
+            bundle = new Bundle();
             bundle.addEntry().setResource(doc).setFullUrl("urn:uuid:" + doc.getId());
             bundle.addEntry().setResource(binary).setFullUrl("urn:uuid:" + binary.getId());
             bundle.addEntry().setResource(organization).setFullUrl("urn:uuid:" + organization.getId());
@@ -151,11 +153,47 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
             bundle.setType(Bundle.BundleType.COLLECTION);
             System.out.println(FhirContext.forDstu3().newJsonParser().setPrettyPrint(true).encodeResourceToString(bundle));
 
-            clientCCRI.create().resource(bundle).execute();
+            MethodOutcome outcome = clientCCRI.create().resource(bundle).execute();
+            if (outcome.getCreated()) {
+                sendNRLS((Bundle) outcome.getResource());
+            }
         }
 
-        return doc;
+        return bundle;
     }
+
+    private void sendNRLS(Bundle bundle) {
+        for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
+
+            if (entry.getResource() instanceof DocumentReference) {
+                DocumentReference documentReference = (DocumentReference) entry.getResource();
+
+                documentReference.setSubject(new Reference("https://demographics.spineservices.nhs.uk/STU3/Patient/9658220169"));
+                documentReference.setAuthor(new ArrayList<>());
+                documentReference.addAuthor().setReference("https://directory.spineservices.nhs.uk/STU3/Organization/MHT01");
+                documentReference.setCustodian(new Reference("https://directory.spineservices.nhs.uk/STU3/Organization/MHT01"));
+                documentReference.setType(null);
+                documentReference.getType().addCoding()
+                        .setSystem("http://snomed.info/sct")
+                        .setDisplay("Mental Health Crisis Plan")
+                        .setCode("736253002");
+                System.out.println(FhirContext.forDstu3().newJsonParser().setPrettyPrint(true).encodeResourceToString(documentReference));
+
+                IGenericClient clientNRLS = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/nrls-ri/");
+                SSPInterceptor sspInterceptor = new SSPInterceptor();
+                clientNRLS.registerInterceptor(sspInterceptor);
+
+                clientNRLS.create().resource(documentReference).execute();
+            }
+        }
+    }
+
+    /*
+
+    IGenericClient clientNRLS = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/nrls-ri/");
+                SSPInterceptor sspInterceptor = new SSPInterceptor();
+                clientNRLS.registerInterceptor(sspInterceptor);
+     */
 
     private Bundle getUnstructuredBundle(String patientId, Integer docExample) throws Exception {
         // Create Bundle of type Document
