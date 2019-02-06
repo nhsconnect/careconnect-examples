@@ -177,15 +177,50 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
         questionnaire.setStatus(Enumerations.PublicationStatus.DRAFT);
         questionnaire.addSubjectType("Patient");
 
+
+
+        /// CPR
+
+
         Questionnaire.QuestionnaireItemComponent cpr = questionnaire.addItem();
         cpr.setLinkId("EOL-CPRStatus-1");
         cpr.setText("CPR Status");
         cpr.setType(Questionnaire.QuestionnaireItemType.GROUP);
 
+        Questionnaire.QuestionnaireItemComponent item = cpr.addItem()
+                .setText("CPR Status")
+                .setLinkId("CPRStatus")
+                .setRepeats(false)
+                .setRequired(true)
+                .setType(Questionnaire.QuestionnaireItemType.STRING);
+        item.addExtension()
+                .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
+                .setValue(new Reference("https://fhir.nhs.uk/STU3/StructureDefinition/EOL-CPRStatus-Flag-1"));
+        item.addExtension()
+                .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
+                .setValue(new CodeType().setValue("Flag"));
+
         cpr.addItem()
                     .setText("Reason for CPR status")
                     .setLinkId("reasonForCPRStatus")
                     .setType(Questionnaire.QuestionnaireItemType.STRING);
+
+
+        item = cpr.addItem()
+                .setText("Non-professionals involved in CPR status discussion")
+                .setLinkId("personsInvolvedInDiscussion")
+                .setRepeats(true)
+                .setType(Questionnaire.QuestionnaireItemType.GROUP);
+
+        item.addItem().setText("Non-professionals involved in CPR status discussion (Coded)")
+                .setLinkId("personsInvolvedInDiscussionCoded")
+                .setType(Questionnaire.QuestionnaireItemType.CHOICE)
+                .setOptions(new Reference("Some valueSet2"));
+
+        item.addItem().setText("Non-professionals involved in CPR status discussion (Text)")
+                .setLinkId("personsInvolvedInDiscussionText")
+                .setType(Questionnaire.QuestionnaireItemType.STRING)
+                .setRequired(true);
 
         cpr.addItem()
                     .setText("CPR Status Mental Capacity")
@@ -204,14 +239,9 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
                 .setLinkId("discussionInformation")
                 .setType(Questionnaire.QuestionnaireItemType.STRING);
 
-        cpr.addItem()
-                .setText("Non-professionals involved in CPR status discussion")
-                .setLinkId("personsInvolvedInDiscussion")
-                .setRepeats(true)
-                .setType(Questionnaire.QuestionnaireItemType.CHOICE)
-                .setOptions(new Reference("Some valueSet2"));
 
-        Questionnaire.QuestionnaireItemComponent item = cpr.addItem()
+
+        item = cpr.addItem()
                     .setText("Professionals Involved In Decision")
                     .setLinkId("professionalsInvolvedInDecision")
                     .setRepeats(true)
@@ -235,7 +265,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
                 .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
                 .setValue(new CodeType().setValue("Practitioner"));
 
-
+///
 
         Questionnaire.QuestionnaireItemComponent pref = questionnaire.addItem();
         pref.setLinkId("EOL-Preferences-1");
