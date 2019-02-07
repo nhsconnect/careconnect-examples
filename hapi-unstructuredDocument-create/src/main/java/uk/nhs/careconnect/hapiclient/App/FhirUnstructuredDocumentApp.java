@@ -101,6 +101,7 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
 
         DocumentReference doc = new DocumentReference();
         doc.setId(UUID.randomUUID().toString());
+        doc.getMeta().addProfile("https://fhir.nhs.uk/STU3/StructureDefinition/GPConnect-DocumentReference-1");
         doc.setSubject(new Reference("https://demographics.spineservices.nhs.uk/STU3/Patient/9658220169"));
         doc.setStatus(Enumerations.DocumentReferenceStatus.CURRENT);
         doc.getType().addCoding()
