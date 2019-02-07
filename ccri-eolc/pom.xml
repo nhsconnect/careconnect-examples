@@ -3,13 +3,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>uk.nhs.careconnect.unscheduled</groupId>
-    <artifactId>ccri-unscheduled</artifactId>
+    <groupId>uk.nhs.careconnect.eolc</groupId>
+    <artifactId>ccri-eolc</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>ccri-unscheduled</name>
-    <description>Populates CCRI with unscheduled care examples</description>
+    <name>ccri-eolc</name>
+    <description>Populates CCRI with eolc examples</description>
 
     <parent>
         <groupId>uk.nhs.careconnect.examples</groupId>
@@ -29,7 +29,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
-
 
 
         <dependency>

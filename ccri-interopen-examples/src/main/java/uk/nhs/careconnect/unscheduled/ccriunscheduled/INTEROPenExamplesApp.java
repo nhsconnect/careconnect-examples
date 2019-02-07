@@ -15,6 +15,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.client.RestTemplate;
+import uk.nhs.careconnect.eolc.FhirBundleUtil;
+import uk.nhs.careconnect.eolc.PostCode;
+import uk.nhs.careconnect.eolc.SSPInterceptor;
 
 import java.io.*;
 import java.math.BigDecimal;
@@ -23,9 +26,9 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 @SpringBootApplication
-public class CcriUnscheduledApplication implements CommandLineRunner {
+public class INTEROPenExamplesApp implements CommandLineRunner {
 
-    private static final Logger log = LoggerFactory.getLogger(CcriUnscheduledApplication.class);
+    private static final Logger log = LoggerFactory.getLogger(uk.nhs.careconnect.eolc.EOLCExamplesApp.class);
 
     private static String yasEncounterIdentifier = "https://fhir.yas.nhs.uk/Encounter/Identifier";
 
@@ -85,7 +88,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
 
 
     public static void main(String[] args) {
-        SpringApplication.run(CcriUnscheduledApplication.class, args);
+        SpringApplication.run(uk.nhs.careconnect.eolc.EOLCExamplesApp.class, args);
     }
 
     IGenericClient client = null;
@@ -93,7 +96,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
     IGenericClient clientODS = null;
     IGenericClient clientNRLS = null;
 
-    FhirBundleUtil fhirBundle;
+    uk.nhs.careconnect.eolc.FhirBundleUtil fhirBundle;
 
 
 
@@ -119,7 +122,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
        // clientGPC.setEncoding(EncodingEnum.XML);
 
         clientNRLS = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/nrls-ri/");
-        SSPInterceptor sspInterceptor = new SSPInterceptor();
+        uk.nhs.careconnect.eolc.SSPInterceptor sspInterceptor = new SSPInterceptor();
         clientNRLS.registerInterceptor(sspInterceptor);
         //clientNRLS.setEncoding(EncodingEnum.XML);
 
@@ -514,7 +517,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
         RestTemplate restTemplate = new RestTemplate();
         String url = "https://api.postcodes.io/postcodes/"+postCode;
         //System.out.println(url);
-        PostCode postCodeLongLat = restTemplate.getForObject(url,PostCode.class);
+        uk.nhs.careconnect.eolc.PostCode postCodeLongLat = restTemplate.getForObject(url, PostCode.class);
         //System.out.println(postCodeLongLat.getResult().getLongitude().toString());
         location.getPosition().setLatitude(postCodeLongLat.getResult().getLatitude());
         location.getPosition().setLongitude(postCodeLongLat.getResult().getLongitude());
@@ -1413,7 +1416,7 @@ public class CcriUnscheduledApplication implements CommandLineRunner {
         Calendar cal = Calendar.getInstance();
 
         Date oneHourBack = cal.getTime();
-        fhirBundle = new FhirBundleUtil(Bundle.BundleType.COLLECTION);
+        fhirBundle = new uk.nhs.careconnect.eolc.FhirBundleUtil(Bundle.BundleType.COLLECTION);
 
         doSetUp();
 

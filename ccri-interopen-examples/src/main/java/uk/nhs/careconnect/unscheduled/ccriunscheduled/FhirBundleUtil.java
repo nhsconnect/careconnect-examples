@@ -22,7 +22,7 @@ public class FhirBundleUtil {
 
     final String uuidtag = "urn:uuid:";
 
-    private static final Logger log = LoggerFactory.getLogger(FhirBundleUtil.class);
+    private static final Logger log = LoggerFactory.getLogger(uk.nhs.careconnect.eolc.FhirBundleUtil.class);
 
     FhirBundleUtil(Bundle.BundleType value) {
         fhirDocument = new Bundle()

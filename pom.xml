@@ -12,15 +12,15 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.0.3.RELEASE</version>
+        <version>2.1.1.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     
     <properties>
         <care-connect-version>3.5.0</care-connect-version>
-        <hapi-fhir-version>3.6.0</hapi-fhir-version>
+        <hapi-fhir-version>3.7.0</hapi-fhir-version>
         <cucumber-version>1.2.5</cucumber-version>
-        <hapi-hl7v2-version>2.2</hapi-hl7v2-version>
+        <hapi-hl7v2-version>2.3</hapi-hl7v2-version>
     </properties>
 
     <repositories>
@@ -32,6 +32,7 @@
     </repositories>
 
     <modules>
+        <module>ccri-eolc</module>
         <module>ccri-unscheduled</module>
         <module>hapi-fhirDocument-convert2PdfOrHtml</module>
         <module>hapi-fhirDocument-create</module>
