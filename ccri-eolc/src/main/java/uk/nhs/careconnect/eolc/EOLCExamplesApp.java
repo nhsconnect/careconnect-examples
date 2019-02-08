@@ -819,6 +819,7 @@ public class EOLCExamplesApp implements CommandLineRunner {
                 .setDisplay("Not for attempted cardiopulmonary resuscitation");
 
         flag.setAuthor(new Reference(uuidtag + midyorks.getIdElement().getIdPart()));
+        bundle.addEntry().setResource(flag);
 
         cpr.addItem()
                 .setLinkId("CPRStatus")
