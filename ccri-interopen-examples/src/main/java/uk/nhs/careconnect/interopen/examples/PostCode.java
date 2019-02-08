@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.unscheduled.ccriunscheduled;
+package uk.nhs.careconnect.interopen.examples;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import uk.nhs.careconnect.eolc.Result;

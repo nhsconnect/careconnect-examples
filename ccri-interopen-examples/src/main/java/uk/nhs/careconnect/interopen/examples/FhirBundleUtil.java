@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.unscheduled.ccriunscheduled;
+package uk.nhs.careconnect.interopen.examples;
 
 import org.hl7.fhir.dstu3.model.*;
 import org.slf4j.Logger;
@@ -22,7 +22,7 @@ public class FhirBundleUtil {
 
     final String uuidtag = "urn:uuid:";
 
-    private static final Logger log = LoggerFactory.getLogger(uk.nhs.careconnect.eolc.FhirBundleUtil.class);
+    private static final Logger log = LoggerFactory.getLogger(FhirBundleUtil.class);
 
     FhirBundleUtil(Bundle.BundleType value) {
         fhirDocument = new Bundle()

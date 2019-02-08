@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.unscheduled.ccriunscheduled;
+package uk.nhs.careconnect.interopen.examples;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.api.EncodingEnum;
@@ -15,9 +15,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.client.RestTemplate;
-import uk.nhs.careconnect.eolc.FhirBundleUtil;
-import uk.nhs.careconnect.eolc.PostCode;
-import uk.nhs.careconnect.eolc.SSPInterceptor;
 
 import java.io.*;
 import java.math.BigDecimal;
@@ -28,7 +25,7 @@ import java.util.*;
 @SpringBootApplication
 public class INTEROPenExamplesApp implements CommandLineRunner {
 
-    private static final Logger log = LoggerFactory.getLogger(uk.nhs.careconnect.eolc.EOLCExamplesApp.class);
+    private static final Logger log = LoggerFactory.getLogger(INTEROPenExamplesApp.class);
 
     private static String yasEncounterIdentifier = "https://fhir.yas.nhs.uk/Encounter/Identifier";
 
@@ -96,8 +93,7 @@ public class INTEROPenExamplesApp implements CommandLineRunner {
     IGenericClient clientODS = null;
     IGenericClient clientNRLS = null;
 
-    uk.nhs.careconnect.eolc.FhirBundleUtil fhirBundle;
-
+    FhirBundleUtil fhirBundle;
 
 
     public static final String SNOMEDCT = "http://snomed.info/sct";
@@ -122,7 +118,7 @@ public class INTEROPenExamplesApp implements CommandLineRunner {
        // clientGPC.setEncoding(EncodingEnum.XML);
 
         clientNRLS = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/nrls-ri/");
-        uk.nhs.careconnect.eolc.SSPInterceptor sspInterceptor = new SSPInterceptor();
+        SSPInterceptor sspInterceptor = new SSPInterceptor();
         clientNRLS.registerInterceptor(sspInterceptor);
         //clientNRLS.setEncoding(EncodingEnum.XML);
 
@@ -517,7 +513,7 @@ public class INTEROPenExamplesApp implements CommandLineRunner {
         RestTemplate restTemplate = new RestTemplate();
         String url = "https://api.postcodes.io/postcodes/"+postCode;
         //System.out.println(url);
-        uk.nhs.careconnect.eolc.PostCode postCodeLongLat = restTemplate.getForObject(url, PostCode.class);
+        PostCode postCodeLongLat = restTemplate.getForObject(url, PostCode.class);
         //System.out.println(postCodeLongLat.getResult().getLongitude().toString());
         location.getPosition().setLatitude(postCodeLongLat.getResult().getLatitude());
         location.getPosition().setLongitude(postCodeLongLat.getResult().getLongitude());
@@ -1416,7 +1412,7 @@ public class INTEROPenExamplesApp implements CommandLineRunner {
         Calendar cal = Calendar.getInstance();
 
         Date oneHourBack = cal.getTime();
-        fhirBundle = new uk.nhs.careconnect.eolc.FhirBundleUtil(Bundle.BundleType.COLLECTION);
+        fhirBundle = new FhirBundleUtil(Bundle.BundleType.COLLECTION);
 
         doSetUp();
 

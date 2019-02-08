@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.unscheduled.ccriunscheduled;
+package uk.nhs.careconnect.interopen.examples;
 
 import ca.uhn.fhir.rest.api.Constants;
 import ca.uhn.fhir.rest.client.api.IClientInterceptor;

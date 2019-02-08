@@ -1,4 +1,4 @@
-package uk.nhs.careconnect.unscheduled.ccriunscheduled;
+package uk.nhs.careconnect.interopen.examples;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

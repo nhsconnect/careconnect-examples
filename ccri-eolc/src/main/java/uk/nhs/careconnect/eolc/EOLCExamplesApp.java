@@ -123,9 +123,15 @@ public class EOLCExamplesApp implements CommandLineRunner {
 
         Boolean loadDocuments = false;
 
+        // Example from specification
+
+        postQuestionnaire();
+
+        loadEOLC();
+
         // Example Patient 1
         //  ONE JOHN EDITESTPATIENT  999 999 9468
-        postOneEDITESTPATIENT();
+      //  postOneEDITESTPATIENT();
 
 
         // Example Patient 2
@@ -138,14 +144,32 @@ public class EOLCExamplesApp implements CommandLineRunner {
     public Questionnaire getEOLCQuestionnaire() {
         Questionnaire questionnaire = new Questionnaire();
         questionnaire.setId(fhirBundle.getNewId(questionnaire));
-        questionnaire.addIdentifier().setSystem("https://fhir.nhs.uk/STU3/Questionnaire/").setValue("CareConnect-EOLC-1");
+        questionnaire.addIdentifier().setSystem("https://fhir.nhs.uk/STU3/Questionnaire").setValue("CareConnect-EOLC-1");
         questionnaire.setName("End of Life Care");
         questionnaire.setTitle("End of Life Care");
         questionnaire.setStatus(Enumerations.PublicationStatus.DRAFT);
         questionnaire.addSubjectType("Patient");
         questionnaire.setPurpose("EoL National Minimum Dataset (v2.2) WIP.xlsx");
 
+    // EOL Register
 
+        Questionnaire.QuestionnaireItemComponent register = questionnaire.addItem();
+        register.setLinkId("EOL-Register-1");
+        register.setText("EOL Register");
+        register.setType(Questionnaire.QuestionnaireItemType.GROUP);
+
+        Questionnaire.QuestionnaireItemComponent item = register.addItem()
+                .setText("Consent")
+                .setLinkId("EOL-Register-Flag-1")
+                .setDefinition("EoL Register ")
+                .setRepeats(false)
+                .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
+        item.addExtension()
+                .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
+                .setValue(new Reference("https://fhir.nhs.uk/STU3/StructureDefinition/EOL-Register-Flag-1"));
+        item.addExtension()
+                .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
+                .setValue(new CodeType().setValue("Flag"));
 
         // consent
 
@@ -155,7 +179,7 @@ public class EOLCExamplesApp implements CommandLineRunner {
         consent.setText("EOL Consent");
         consent.setType(Questionnaire.QuestionnaireItemType.GROUP);
 
-        Questionnaire.QuestionnaireItemComponent item = consent.addItem()
+        item = consent.addItem()
                 .setText("Consent")
                 .setLinkId("EOL-Consent")
                 .setDefinition("Consent [G3]")
@@ -279,7 +303,7 @@ public class EOLCExamplesApp implements CommandLineRunner {
         advpref.setType(Questionnaire.QuestionnaireItemType.GROUP);
 
         Questionnaire.QuestionnaireItemComponent subgroup = advpref.addItem()
-                .setLinkId("EOL-ATPProblemHeader-Condition-1")
+                .setLinkId("EOL-ATPProblemList-List-1")
 
                 .setText("Clinical Problems and Advised Interventions")
                 .setDefinition("ATP [G3]")
@@ -302,7 +326,7 @@ public class EOLCExamplesApp implements CommandLineRunner {
         item = subgroup.addItem()
                 .setLinkId("EOL-ATP-Intervention-1")
                 .setText("ATP Intervention")
-                .setDefinition("ATP [G5]")
+                .setDefinition("ATP [G5] Note: the CarePlan should be linked to the Condition via CarePlan.adresses")
                 .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
         item.addExtension()
                 .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
@@ -583,26 +607,183 @@ public class EOLCExamplesApp implements CommandLineRunner {
 
 
 
-    public Bundle loadEOLC(Bundle bundle) {
-        Flag flag = new Flag();
-        flag.setId(fhirBundle.getNewId(flag));
-        flag.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
-        flag.addIdentifier().setSystem(midYorksFlagIdentifier).setValue("unusmy8");
-        flag.setStatus(Flag.FlagStatus.ACTIVE);
-        flag.getCode().addCoding()
-                .setCode("450476008")
-                .setSystem("http://snomed.info/sct")
-                .setDisplay("Not for attempted cardiopulmonary resuscitation");
+    public Bundle loadEOLC() {
+
+        String nhsNumber= "9658220142";
+        System.out.println("Posting Patient NHS Number "+nhsNumber);
+
+        Calendar cal = Calendar.getInstance();
+
+
+        Date oneHourBack = cal.getTime();
+        fhirBundle = new FhirBundleUtil(Bundle.BundleType.COLLECTION);
+
+        doSetUp();
+
+        Bundle patientBundle = getPatientBundle(nhsNumber);
+
+
+        fhirBundle.processBundleResources(patientBundle);
+
+        Bundle bundle = new Bundle();
+
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+        bundle.addEntry().setResource(yas);
+        bundle.addEntry().setResource(lth);
+        bundle.addEntry().setResource(midyorks);
+        getPatientBundle("9658220142");
+
+        QuestionnaireResponse eolc = new QuestionnaireResponse();
+        eolc.setId(fhirBundle.getNewId(eolc));
+
+        eolc.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
+        eolc.getIdentifier().setSystem(midYorksQuestionnaireResponseIdentifier).setValue("yas0");
+
+        Reference qRef = new Reference();
+        qRef.getIdentifier().setSystem("https://fhir.nhs.uk/STU3/Questionnaire").setValue("CareConnect-EOLC-1");
+        eolc.setQuestionnaire(qRef);
+        eolc.setStatus(QuestionnaireResponse.QuestionnaireResponseStatus.COMPLETED);
         try {
-            flag.getPeriod().setStart(sdf.parse("2018-08-01"));
+            eolc.setAuthored(sdf.parse("2018-08-01"));
         } catch (Exception ex) {
         }
 
-        flag.setAuthor(new Reference(uuidtag + midyorks.getIdElement().getIdPart()));
-        bundle.addEntry().setResource(flag);
+        QuestionnaireResponse.QuestionnaireResponseItemComponent register = eolc.addItem()
+                .setLinkId("EOL-Register-1")
+                .setText("EoL Register");
 
-        flag = new Flag();
+        QuestionnaireResponse.QuestionnaireResponseItemComponent other = eolc.addItem()
+                .setLinkId("EOL-OtherDocuments-1")
+                .setText("Other Documents");
+
+        QuestionnaireResponse.QuestionnaireResponseItemComponent disability = eolc.addItem()
+                .setLinkId("EOL-Disabilitiess-1")
+                .setText("Disabilitiess");
+
+        QuestionnaireResponse.QuestionnaireResponseItemComponent func = eolc.addItem()
+                .setLinkId("EOL-FunctionalStatus-1")
+                .setText("Functional Status");
+
+        QuestionnaireResponse.QuestionnaireResponseItemComponent prog = eolc.addItem()
+                .setLinkId("EOL-Prognosis-1")
+                .setText("Prognosis");
+
+        QuestionnaireResponse.QuestionnaireResponseItemComponent consent = eolc.addItem()
+                .setLinkId("EOL-Consent-1")
+                .setText("Consent");
+
+        QuestionnaireResponse.QuestionnaireResponseItemComponent preferences = eolc.addItem()
+                .setLinkId("EOL-Preferences-1")
+                .setText("Preferences");
+
+        QuestionnaireResponse.QuestionnaireResponseItemComponent adv = eolc.addItem()
+                .setLinkId("EOL-Advanced-Treatment-Preferences-1")
+                .setText("Advanced Treatment Preferences");
+
+        QuestionnaireResponse.QuestionnaireResponseItemComponent lpa = eolc.addItem()
+                .setLinkId("EOL-LPA-1")
+                .setText("Lasting Power of Attorney");
+
+        QuestionnaireResponse.QuestionnaireResponseItemComponent cpr = eolc.addItem()
+                .setLinkId("EOL-CPRStatus-1")
+                .setText("CPR Status");
+
+        bundle.addEntry().setResource(eolc);
+
+        Practitioner consultant = new Practitioner();
+        consultant.setId(fhirBundle.getNewId(consultant));
+        consultant.addIdentifier().setSystem("https://fhir.nhs.uk/Id/sds-user-id").setValue("C4012900");
+        consultant.addName().setFamily("Rodger").addGiven("KF");
+        bundle.addEntry().setResource(consultant);
+
+        eolc.setAuthor(new Reference(uuidtag + consultant.getId()));
+
+
+
+
+
+        Practitioner pal = new Practitioner();
+        pal.setId(fhirBundle.getNewId(pal));
+        pal.addIdentifier().setSystem(interOpenPractitionerIdentifier).setValue("x2900");
+        pal.addName().setFamily("Simpson").addGiven("Mike");
+        pal.addTelecom().setSystem(ContactPoint.ContactPointSystem.PHONE).setValue("07855 442038").setUse(ContactPoint.ContactPointUse.MOBILE);
+        bundle.addEntry().setResource(pal);
+
+
+// Advanced Treatment Preferences
+
+
+        Condition condition = new Condition();
+        condition.setId(fhirBundle.getNewId(condition));
+        condition.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
+        condition.addIdentifier().setSystem(midYorksConditionIdentifier).setValue("crm1");
+        condition.setClinicalStatus(Condition.ConditionClinicalStatus.ACTIVE);
+        condition.setAsserter(new Reference(uuidtag + consultant.getId()));
+        condition.getCode().addCoding()
+                .setDisplay("Dyspnea")
+                .setCode("267036007")
+                .setSystem("http://snomed.info/sct");
+        try {
+            condition.setOnset(new DateTimeType().setValue(sdf.parse("2018-08-01")));
+        } catch (Exception ex) {
+        }
+        bundle.addEntry().setResource(condition);
+
+        CarePlan carePlan = new CarePlan();
+        carePlan.setId(fhirBundle.getNewId(carePlan));
+        carePlan.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
+        carePlan.addIdentifier().setSystem(midYorksCarePlanIdentifier).setValue("blm1");
+        // Not required carePlan.addAddresses(new Reference(uuidtag + condition.getId()));
+        carePlan.addAuthor(new Reference(uuidtag + consultant.getId()));
+
+        carePlan.addCategory().addCoding()
+                .setCode("736373009")
+                .setSystem("http://snomed.info/sct")
+                .setDisplay("End of life care plan");
+        carePlan.setStatus(CarePlan.CarePlanStatus.ACTIVE);
+        carePlan.setIntent(CarePlan.CarePlanIntent.PLAN);
+        try {
+            carePlan.getPeriod().setStart(sdf.parse("2018-08-01"));
+        } catch (Exception ex) {
+        }
+
+        carePlan.addActivity()
+                .getDetail().setStatus(CarePlan.CarePlanActivityStatus.NOTSTARTED).setDescription("Nebulizer can be used to make patient more comfortable")
+                .getCode().addCoding().setCode("445141005").setSystem("http://snomed.info/sct").setDisplay("Nebuliser therapy using mask");
+        carePlan.addActivity()
+                .getDetail().setStatus(CarePlan.CarePlanActivityStatus.NOTSTARTED).setDescription("Wants to avoid hospital admission if possible, but would want to consider options as need arises.")
+                .getCode().addCoding().setCode("735324008").setSystem("http://snomed.info/sct").setDisplay("Treatment escalation plan");
+        carePlan.addActivity()
+                .getDetail().setStatus(CarePlan.CarePlanActivityStatus.NOTSTARTED).setDescription("[18 Sept 2018] This plan is known to the Harrogate Palliative Care Team. If advice needed Monday-Friday 0830-1700 contact the team on 01423 553464. Outside these hours contact Saint Michael's Hospice (Harrogate) on 01423 872 658. [21 Nov 2018] At risk of hypercalcaemia (Corr Ca+ 3.01 on 20th Nov) - symptoms were increased confusion and drowsiness.")
+                .getCode().addCoding().setCode("702779007").setSystem("http://snomed.info/sct").setDisplay("Emergency health care plan agreed");
+        bundle.addEntry().setResource(carePlan);
+
+
+        QuestionnaireResponse.QuestionnaireResponseItemComponent group = adv.addItem()
+                .setLinkId("EOL-ATPProblemList-List-1")
+                .setText("Clinical Problems and Advised Interventions");
+
+        group.addItem()
+                .setLinkId("ATPProblemHeader-Condition-1")
+                .setText("Problem or Condition")
+                .addAnswer()
+                .setValue(new Reference(uuidtag + condition.getIdElement().getIdPart()));
+
+        group.addItem()
+                .setLinkId("EOL-ATP-Intervention-1")
+                .setText("ATP Intervention")
+                .addAnswer()
+                .setValue(new Reference(uuidtag + carePlan.getIdElement().getIdPart()));
+
+        // Add in ADRT
+
+
+
+    // EOL Register
+
+
+        Flag flag = new Flag();
         flag.setId(fhirBundle.getNewId(flag));
         flag.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
         flag.addIdentifier().setSystem(midYorksFlagIdentifier).setValue("unusmy9");
@@ -619,147 +800,89 @@ public class EOLCExamplesApp implements CommandLineRunner {
         flag.setAuthor(new Reference(uuidtag + midyorks.getIdElement().getIdPart()));
         bundle.addEntry().setResource(flag);
 
-        Practitioner pal = new Practitioner();
-        pal.setId(fhirBundle.getNewId(pal));
-        pal.addIdentifier().setSystem(interOpenPractitionerIdentifier).setValue("x2900");
-        pal.addName().setFamily("Simpson").addGiven("Mike");
-        pal.addTelecom().setSystem(ContactPoint.ContactPointSystem.PHONE).setValue("07855 442038").setUse(ContactPoint.ContactPointUse.MOBILE);
-        bundle.addEntry().setResource(pal);
+        register.addItem()
+                .setLinkId("EOL-Register-Flag-1")
+                .setText("Register Flag")
+                .addAnswer()
+                .setValue(new Reference(uuidtag + flag.getIdElement().getIdPart()));
 
-        Practitioner consultant = new Practitioner();
-        consultant.setId(fhirBundle.getNewId(consultant));
-        consultant.addIdentifier().setSystem("https://fhir.nhs.uk/Id/sds-user-id").setValue("C4012900");
-        consultant.addName().setFamily("Rodger").addGiven("KF");
-        bundle.addEntry().setResource(consultant);
+        // CPR
 
-        Condition condition = new Condition();
-        condition.setId(fhirBundle.getNewId(condition));
-        condition.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
-        condition.addIdentifier().setSystem(midYorksConditionIdentifier).setValue("crm1");
-        condition.setClinicalStatus(Condition.ConditionClinicalStatus.ACTIVE);
-        condition.setAsserter(new Reference(uuidtag + consultant.getId()));
-        condition.getCode().addCoding()
-                .setDisplay("Dyspnea")
-                .setCode("267036007")
-                .setSystem("http://snomed.info/sct");
-        try {
-            condition.setOnset(new DateTimeType().setValue(sdf.parse("2018-08-01")));
-        } catch (Exception ex) {
-        }
+        flag = new Flag();
+        flag.setId(fhirBundle.getNewId(flag));
+        flag.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
+        flag.addIdentifier().setSystem(midYorksFlagIdentifier).setValue("unusmy8");
+        flag.setStatus(Flag.FlagStatus.ACTIVE);
+        flag.getCode().addCoding()
+                .setCode("450476008")
+                .setSystem("http://snomed.info/sct")
+                .setDisplay("Not for attempted cardiopulmonary resuscitation");
 
-        bundle.addEntry().setResource(condition);
+        flag.setAuthor(new Reference(uuidtag + midyorks.getIdElement().getIdPart()));
 
-        Questionnaire questionnaireCPR = new Questionnaire();
-        questionnaireCPR.setId(fhirBundle.getNewId(questionnaireCPR));
-        questionnaireCPR.addIdentifier().setSystem(midYorksQuestionnaireIdentifier).setValue("sr1");
-        questionnaireCPR.setName("EOL CPR Status");
-        questionnaireCPR.setTitle("EOL CPR Status");
-        questionnaireCPR.setStatus(Enumerations.PublicationStatus.DRAFT);
-        bundle.addEntry().setResource(questionnaireCPR);
+        cpr.addItem()
+                .setLinkId("CPRStatus")
+                .setText("CPR Status")
+                .addAnswer()
+                .setValue(new Reference(uuidtag +flag.getIdElement().getIdPart()));
 
-        Questionnaire questionnaireLPA = new Questionnaire();
-        questionnaireLPA.setId(fhirBundle.getNewId(questionnaireLPA));
-        questionnaireLPA.addIdentifier().setSystem(midYorksQuestionnaireIdentifier).setValue("sr3");
-        questionnaireLPA.setName("EOL LPA");
-        questionnaireLPA.setTitle("EOL LPA");
-        questionnaireLPA.setStatus(Enumerations.PublicationStatus.DRAFT);
-        bundle.addEntry().setResource(questionnaireLPA);
-
-        Questionnaire questionnaire = new Questionnaire();
-        questionnaire.setId(fhirBundle.getNewId(questionnaire));
-        questionnaire.addIdentifier().setSystem(midYorksQuestionnaireIdentifier).setValue("sr2");
-        questionnaire.setName("EOL Preferences");
-        questionnaire.setTitle("EOL Preferences");
-        questionnaire.setStatus(Enumerations.PublicationStatus.DRAFT);
-        bundle.addEntry().setResource(questionnaire);
-
-        QuestionnaireResponse formCPR = new QuestionnaireResponse();
-        formCPR.setId(fhirBundle.getNewId(formCPR));
-        formCPR.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
-        formCPR.getIdentifier().setSystem(midYorksQuestionnaireResponseIdentifier).setValue("rjm2");
-        formCPR.setAuthor(new Reference(uuidtag + consultant.getId()));
-        formCPR.setQuestionnaire(new Reference(uuidtag + questionnaireCPR.getId()));
-        formCPR.setStatus(QuestionnaireResponse.QuestionnaireResponseStatus.COMPLETED);
-        try {
-            formCPR.setAuthored(sdf.parse("2018-08-01"));
-        } catch (Exception ex) {
-        }
-        formCPR.addItem()
+        cpr.addItem()
                 .setLinkId("reasonForCPRStatus")
                 .setText("Reason for CPR status")
                 .addAnswer()
                 .setValue(new StringType("At home with family"));
-        formCPR.addItem()
+        cpr.addItem()
                 .setLinkId("professionalsInvolvedInDecision")
                 .setText("Professionals Involved In Decision")
                 .addAnswer()
                 .setValue(new Reference(uuidtag + consultant.getId()));
-        formCPR.addItem()
+        cpr.addItem()
                 .setLinkId("professionalEndorsingStatus")
                 .setText("Professional Endorsing Status")
                 .addAnswer()
                 .setValue(new Reference(uuidtag + consultant.getId()));
 
 
-        bundle.addEntry().setResource(formCPR);
+        /// OTHER
 
-        QuestionnaireResponse formLPA = new QuestionnaireResponse();
-        formLPA.setId(fhirBundle.getNewId(formLPA));
-        formLPA.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
-        formLPA.getIdentifier().setSystem(midYorksQuestionnaireResponseIdentifier).setValue("rjm3");
-        formLPA.setAuthor(new Reference(uuidtag + consultant.getId()));
-        formLPA.setQuestionnaire(new Reference(uuidtag + questionnaireLPA.getId()));
-        formLPA.setStatus(QuestionnaireResponse.QuestionnaireResponseStatus.COMPLETED);
-        try {
-            formLPA.setAuthored(sdf.parse("2018-08-01"));
-        } catch (Exception ex) {
-        }
-        formLPA.addItem()
+        other.addItem()
                 .setLinkId("documentName")
                 .setText("Document Name")
                 .addAnswer()
                 .setValue(new StringType("Lasting power of attorny offical document"));
-        formLPA.addItem()
+        other.addItem()
                 .setLinkId("documentLocation")
                 .setText("Document Location")
                 .addAnswer()
                 .setValue(new StringType("Top left drawer in cabinet located in dining room. Documents are inside blue folder."));
-        formLPA.addItem()
+        other.addItem()
                 .setLinkId("documentSource")
                 .setText("Document Source")
                 .addAnswer()
                 .setValue(new StringType("Document drawn up at A B Solictors, Newcastle"));
 
 
-        bundle.addEntry().setResource(formLPA);
+        // Preferences
 
-        QuestionnaireResponse form = new QuestionnaireResponse();
-        form.setId(fhirBundle.getNewId(form));
-        form.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
-        form.getIdentifier().setSystem(midYorksQuestionnaireResponseIdentifier).setValue("rjm1");
-        form.setAuthor(new Reference(uuidtag + consultant.getId()));
-        form.setQuestionnaire(new Reference(uuidtag + questionnaire.getId()));
-        form.setStatus(QuestionnaireResponse.QuestionnaireResponseStatus.COMPLETED);
-        try {
-            form.setAuthored(sdf.parse("2018-08-01"));
-        } catch (Exception ex) {
-        }
-        form.addItem()
+        preferences.addItem()
                 .setLinkId("preferredPlaceOfDeathText")
                 .setText("Preferred Place Of Death Text")
                 .addAnswer()
                 .setValue(new StringType("At home with family"));
-        form.addItem()
+        preferences.addItem()
                 .setLinkId("preferencesAndWishes")
                 .setText("Preferences and Wishes")
                 .addAnswer()
                 .setValue(new StringType("To be made comfortable and looking out onto garden"));
-        form.addItem()
+        preferences.addItem()
                 .setLinkId("domesticAccessAndInformation")
                 .setText("Domestic Access and Information")
                 .addAnswer()
                 .setValue(new StringType("A key safe is provided to allow access to the property. Carer and related contact has code."));
-        bundle.addEntry().setResource(form);
+
+
+        // Prognosis
+
 
         ClinicalImpression prognosis = new ClinicalImpression();
         prognosis.setId(fhirBundle.getNewId(prognosis));
@@ -779,61 +902,15 @@ public class EOLCExamplesApp implements CommandLineRunner {
         prognosis.setDescription("Limited life expectancy of approximately one year");
         bundle.addEntry().setResource(prognosis);
 
-
-        CareTeam careTeamH = new CareTeam();
-        careTeamH.setId(fhirBundle.getNewId(careTeamH));
-        careTeamH.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
-        careTeamH.addIdentifier().setSystem(westRidingCareTeamIdentifier).setValue("blm2");
-        careTeamH.addParticipant().setMember(new Reference(uuidtag + pal.getId()));
-        careTeamH.setName("Paliative Care Milworthy Healthcare Trust");
-        careTeamH.addNote().setText("Lead case consultant");
-
-        bundle.addEntry().setResource(careTeamH);
-
-        CareTeam careTeam = new CareTeam();
-        careTeam.setId(fhirBundle.getNewId(careTeam));
-        careTeam.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
-        careTeam.addIdentifier().setSystem(westRidingCareTeamIdentifier).setValue("blm1");
-        careTeam.addParticipant().setMember(new Reference(uuidtag + consultant.getId()));
-        careTeam.setName("Milworthy Emergency Support Team");
-        careTeam.addNote().setText("24 hour emergency support team");
-
-        bundle.addEntry().setResource(careTeam);
+        prog.addItem()
+                .setLinkId("EOL-Prognosis-ClinicalImpression")
+                .setText("Prognosis")
+                .addAnswer()
+                .setValue(new Reference(uuidtag +prognosis.getIdElement().getIdPart()));
 
 
-        CarePlan carePlan = new CarePlan();
-        carePlan.setId(fhirBundle.getNewId(carePlan));
-        carePlan.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
-        carePlan.addIdentifier().setSystem(midYorksCarePlanIdentifier).setValue("blm1");
-        // Not required carePlan.addAddresses(new Reference(uuidtag + condition.getId()));
-        carePlan.addAuthor(new Reference(uuidtag + consultant.getId()));
-        carePlan.addCareTeam(new Reference(uuidtag + careTeam.getId()));
-        carePlan.addCareTeam(new Reference(uuidtag + careTeamH.getId()));
 
-        carePlan.addCategory().addCoding()
-                .setCode("736373009")
-                .setSystem("http://snomed.info/sct")
-                .setDisplay("End of life care plan");
-        carePlan.setStatus(CarePlan.CarePlanStatus.ACTIVE);
-        carePlan.setIntent(CarePlan.CarePlanIntent.PLAN);
-        try {
-            carePlan.getPeriod().setStart(sdf.parse("2018-08-01"));
-        } catch (Exception ex) {
-        }
-        carePlan.addSupportingInfo(new Reference(uuidtag + form.getId()));
-        carePlan.addSupportingInfo(new Reference(uuidtag + formCPR.getId()));
-        carePlan.addSupportingInfo(new Reference(uuidtag + formLPA.getId()));
-        carePlan.addSupportingInfo(new Reference(uuidtag + prognosis.getId()));
-        carePlan.addActivity()
-                .getDetail().setStatus(CarePlan.CarePlanActivityStatus.NOTSTARTED).setDescription("Nebulizer can be used to make patient more comfortable")
-                .getCode().addCoding().setCode("445141005").setSystem("http://snomed.info/sct").setDisplay("Nebuliser therapy using mask");
-        carePlan.addActivity()
-                .getDetail().setStatus(CarePlan.CarePlanActivityStatus.NOTSTARTED).setDescription("Wants to avoid hospital admission if possible, but would want to consider options as need arises.")
-                .getCode().addCoding().setCode("735324008").setSystem("http://snomed.info/sct").setDisplay("Treatment escalation plan");
-        carePlan.addActivity()
-                .getDetail().setStatus(CarePlan.CarePlanActivityStatus.NOTSTARTED).setDescription("[18 Sept 2018] This plan is known to the Harrogate Palliative Care Team. If advice needed Monday-Friday 0830-1700 contact the team on 01423 553464. Outside these hours contact Saint Michael's Hospice (Harrogate) on 01423 872 658. [21 Nov 2018] At risk of hypercalcaemia (Corr Ca+ 3.01 on 20th Nov) - symptoms were increased confusion and drowsiness.")
-                .getCode().addCoding().setCode("702779007").setSystem("http://snomed.info/sct").setDisplay("Emergency health care plan agreed");
-        bundle.addEntry().setResource(carePlan);
+        // Functional Status
 
         Observation observation = new Observation();
         observation.setId(fhirBundle.getNewId(observation));
@@ -858,7 +935,16 @@ public class EOLCExamplesApp implements CommandLineRunner {
                 .setCode("score"));
         bundle.addEntry().setResource(observation);
 
+        func.addItem()
+                .setLinkId("EOL-FunctionalStatus-Observation-1")
+                .setText("Functional Status Observation")
+                .addAnswer()
+                .setValue(new Reference(uuidtag +observation.getIdElement().getIdPart()));
+
+
         // 'disability'
+
+
         condition = new Condition();
         condition.setId(fhirBundle.getNewId(condition));
         condition.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
@@ -876,8 +962,47 @@ public class EOLCExamplesApp implements CommandLineRunner {
 
         bundle.addEntry().setResource(condition);
 
+        disability.addItem()
+                .setLinkId("EOL-Disabilities-Condition-1")
+                .setText("Disability / Condition List")
+                .addAnswer()
+                .setValue(new Reference(uuidtag +condition.getIdElement().getIdPart()));
 
-        return bundle;
+        /*
+        CareTeam careTeamH = new CareTeam();
+        careTeamH.setId(fhirBundle.getNewId(careTeamH));
+        careTeamH.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
+        careTeamH.addIdentifier().setSystem(westRidingCareTeamIdentifier).setValue("blm2");
+        careTeamH.addParticipant().setMember(new Reference(uuidtag + pal.getId()));
+        careTeamH.setName("Paliative Care Milworthy Healthcare Trust");
+        careTeamH.addNote().setText("Lead case consultant");
+
+        bundle.addEntry().setResource(careTeamH);
+
+        CareTeam careTeam = new CareTeam();
+        careTeam.setId(fhirBundle.getNewId(careTeam));
+        careTeam.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
+        careTeam.addIdentifier().setSystem(westRidingCareTeamIdentifier).setValue("blm1");
+        careTeam.addParticipant().setMember(new Reference(uuidtag + consultant.getId()));
+        careTeam.setName("Milworthy Emergency Support Team");
+        careTeam.addNote().setText("24 hour emergency support team");
+
+        bundle.addEntry().setResource(careTeam);
+*/
+
+        fhirBundle.processBundleResources(bundle);
+
+        System.out.println(ctxFHIR.newXmlParser().setPrettyPrint(true).encodeResourceToString(fhirBundle.getFhirDocument()));
+
+
+        try {
+            saveBundle(nhsNumber + ".xml", "patient", fhirBundle.getFhirDocument());
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+        MethodOutcome outcome = client.create().resource(fhirBundle.getFhirDocument()).execute();
+
+        return fhirBundle.getFhirDocument();
     }
 
 
@@ -1254,6 +1379,30 @@ public class EOLCExamplesApp implements CommandLineRunner {
         return encounter;
     }
 
+
+    public void postQuestionnaire() {
+
+
+        SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd");
+
+        Calendar cal = Calendar.getInstance();
+
+        Date oneHourBack = cal.getTime();
+        fhirBundle = new FhirBundleUtil(Bundle.BundleType.COLLECTION);
+
+        Bundle bundle = new Bundle();
+
+        Questionnaire questionnaire = getEOLCQuestionnaire();
+
+        bundle.addEntry().setResource(questionnaire);
+        fhirBundle.processBundleResources(bundle);
+
+        System.out.println(ctxFHIR.newXmlParser().setPrettyPrint(true).encodeResourceToString(fhirBundle.getFhirDocument()));
+
+        MethodOutcome outcome = client.create().resource(fhirBundle.getFhirDocument()).execute();
+
+    }
+
     public void postOneEDITESTPATIENT() {
         String nhsNumber = "9999999468";
         System.out.println("Posting Patient NHS Number " + nhsNumber);
@@ -1399,6 +1548,8 @@ public class EOLCExamplesApp implements CommandLineRunner {
         bundle.addEntry().setResource(questionnaire);
 
         fhirBundle.processBundleResources(bundle);
+
+        System.out.println(ctxFHIR.newXmlParser().setPrettyPrint(true).encodeResourceToString(fhirBundle.getFhirDocument()));
 
 
         try {
