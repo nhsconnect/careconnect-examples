@@ -203,8 +203,12 @@ public class EOLCExamplesApp implements CommandLineRunner {
 
         item = cpr.addItem()
                 .setText("CPR Status")
-                .setLinkId("CPRStatus")
-                .setDefinition("CPR Status [G3]")
+                .setLinkId("CPR001.1")
+                .setDefinition("\"If CPR status is transmitted, then the status code is mandatory.  This will be a straight binary choice of \"\"For\"\" or \"\"Not For\"\" resuscitation.\n" +
+                        "\n" +
+                        "Whilst there is a code for \"\"not aware of decision\"\", this is not a logical requirement for this dataset.  Systems that are unaware of the status will logically not be sending this group.\n" +
+                        "\n" +
+                        "\"\"For CPR\"\" will generally be only used when reversing a \"\"Not for CPR\"\" status.  People who haven't yet had the discussion would just not have a recorded CPR decision in file.\"")
                 .setRepeats(false)
                 .setRequired(true)
                 .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
@@ -217,13 +221,23 @@ public class EOLCExamplesApp implements CommandLineRunner {
 
         cpr.addItem()
                 .setText("Reason for CPR status")
-                .setDefinition("CPR Status [G4]")
-                .setLinkId("reasonForCPRStatus")
+                .setDefinition("\"It will be a strong recommendation that a reason for the status change is included although it is unlikely that it can be mandated from the start.  Also, as this is an MVP dataset, it could be argued that UEC are most keen on seeing the status rather than additional text.  However, in the example below if the text reads \"\"There is a valid advance decision to refuse CPR in the following circumstances...\"\", then the DNACPR decision is not for all circumstances.  In that case, the business may wish to consider whether a non-blanket DNACPR would be better recorded as an Advance Treatment Preference so that where it is appropriate can be made clear.\n" +
+                        "\n" +
+                        "Example text strings could be:\n" +
+                        "+ CPR is unlikely to be successful due to…\n" +
+                        "+ CPR would be of no clinical benefit because of the following medical conditions...\n" +
+                        "+ The outcome of the CPR would not be of overall benefit to the patient\n" +
+                        "+ CPR may be successful, but followed by a length and quality of life which would not be of overall benefit to the person.\n" +
+                        "+ There is a valid advance decision to refuse CPR in the following circumstances...\n" +
+                        "+ CPR is against the wishes of the patient and is recorded in a valid advance decision\n" +
+                        "+ CPR has been discussed with this patient.  It is against their wishes and they have the mental capacity to make that decision\n" +
+                        "+ DNACPR cancelled due to...\"")
+                .setLinkId("CPR001.2")
                 .setType(Questionnaire.QuestionnaireItemType.STRING);
 
         cpr.addItem()
                 .setText("CPR Status Mental Capacity")
-                .setLinkId("cPRStatusMentalCapacity")
+                .setLinkId("CPR001.3")
                 .setDefinition("CPR Status [G5]")
                 .setType(Questionnaire.QuestionnaireItemType.STRING);
 
@@ -231,64 +245,81 @@ public class EOLCExamplesApp implements CommandLineRunner {
         item = cpr.addItem()
                 .setText("Persons involved in discussion")
                 .setDefinition("CPR Status [G8]")
-                .setLinkId("personsInvolvedInDiscussion")
+                .setLinkId("CPR001.6")
                 .setRepeats(true)
-                .setType(Questionnaire.QuestionnaireItemType.GROUP);
-
-        item.addItem().setText("Non-professionals involved in CPR status discussion (Coded)")
-                .setLinkId("personsInvolvedInDiscussionCoded")
                 .setType(Questionnaire.QuestionnaireItemType.CHOICE)
-                .setOptions(new Reference("Some valueSet1"));
+                .addOption(
+                        new Questionnaire.QuestionnaireItemOptionComponent()
+                                .setValue(new Coding()
+                                        .setCode("713656002")
+                                        .setSystem("http://snomed.info/sct")
+                                        .setDisplay("Discussion about cardiopulmonary resuscitation with family member (situation)")))
+                .addOption(
+                        new Questionnaire.QuestionnaireItemOptionComponent()
+                                .setValue(new Coding()
+                                        .setCode("873351000000102")
+                                        .setSystem("http://snomed.info/sct")
+                                        .setDisplay("Discussion about resuscitation with carer (situation)")))
+                .addOption(
+                        new Questionnaire.QuestionnaireItemOptionComponent()
+                                .setValue(new Coding()
+                                        .setCode("873341000000100")
+                                        .setSystem("http://snomed.info/sct")
+                                        .setDisplay("Discussion about resuscitation (procedure)")));
+
 
 
         item = cpr.addItem()
                 .setText("Persons or organisations made aware of the decision")
-                .setDefinition("CPR Status [G11]")
-                .setLinkId("awarenessOfDecision")
+                .setDefinition("This group exists to specifically list those (who were not in the discussion) that have subsequently been made aware of the decision.")
+                .setLinkId("CPR001.7")
                 .setRepeats(true)
-                .setType(Questionnaire.QuestionnaireItemType.GROUP);
-
-        item.addItem().setText("Non-professionals involved in CPR status discussion (Coded)")
-                .setLinkId("awarenessOfDecision")
                 .setType(Questionnaire.QuestionnaireItemType.CHOICE)
-                .setOptions(new Reference("Some valueSet2"));
+                //.setOptions(new Reference("Some valueSet2"))
+                .addOption(
+                        new Questionnaire.QuestionnaireItemOptionComponent()
+                                .setValue(new Coding()
+                                        .setCode("975311000000109")
+                                        .setSystem("http://snomed.info/sct")
+                                        .setDisplay("Carer informed of cardiopulmonary resuscitation clinical decision (situation)")))
+                .addOption(
+                    new Questionnaire.QuestionnaireItemOptionComponent()
+                        .setValue(new Coding()
+                                .setCode("975291000000108")
+                                .setSystem("http://snomed.info/sct")
+                                .setDisplay("Family member informed of cardiopulmonary resuscitation clinical decision (situation)")))
+                                .addOption(
+                    new Questionnaire.QuestionnaireItemOptionComponent()
+                        .setValue(new Coding()
+                                .setCode("845151000000104")
+                                .setSystem("http://snomed.info/sct")
+                                .setDisplay("Not aware of do not attempt cardiopulmonary resuscitation clinical decision (finding)")));
 
 
         item = cpr.addItem()
                 .setText("Professionals Involved In Decision")
-                .setLinkId("professionalsInvolvedInDecision")
+                .setLinkId("CPR001.8")
                 .setDefinition("CPR Status [G14]")
                 .setRepeats(true)
-                .setType(Questionnaire.QuestionnaireItemType.GROUP);
-
-        Questionnaire.QuestionnaireItemComponent groupitem = item.addItem()
-                .setText("Professionals Involved In Decision")
-                .setLinkId("professionalsInvolvedInDecision")
                 .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
-        groupitem.addExtension()
+        item.addExtension()
                 .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
                 .setValue(new Reference("https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Practitioner-1"));
-        groupitem.addExtension()
+        item.addExtension()
                 .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
                 .setValue(new CodeType().setValue("Practitioner"));
 
 
         item = cpr.addItem()
                 .setText("Professional Endorsing Status")
-                .setLinkId("professionalEndorsingStatus")
-                .setDefinition("CPR Status [G24]")
-                .setRepeats(true)
-                .setType(Questionnaire.QuestionnaireItemType.GROUP);
-
-        groupitem = item.addItem()
-                .setText("Professional Endorsing Status Reference")
-                .setLinkId("professionalEndorsingStatusReference")
+                .setLinkId("CPR001.10")
+                .setDefinition("Optional group for professional endorsement, where the profession recording the status change is not senior enough to be de facto endorser.")
                 .setRepeats(true)
                 .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
-        groupitem.addExtension()
+        item.addExtension()
                 .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
                 .setValue(new Reference("https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Practitioner-1"));
-        groupitem.addExtension()
+        item.addExtension()
                 .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
                 .setValue(new CodeType().setValue("Practitioner"));
 
