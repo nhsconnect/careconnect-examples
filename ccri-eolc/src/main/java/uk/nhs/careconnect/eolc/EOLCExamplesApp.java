@@ -149,25 +149,25 @@ public class EOLCExamplesApp implements CommandLineRunner {
         questionnaire.setTitle("End of Life Care");
         questionnaire.setStatus(Enumerations.PublicationStatus.DRAFT);
         questionnaire.addSubjectType("Patient");
-        questionnaire.setPurpose("EoL National Minimum Dataset (v2.2) WIP.xlsx");
+        questionnaire.setPurpose("EoL National Minimum Dataset (v2.3) WIP.xlsx");
 
     // EOL Register
 
         Questionnaire.QuestionnaireItemComponent register = questionnaire.addItem();
         register.setLinkId("EOL-Register-1");
-        register.setText("EOL Register");
+        register.setText("Register");
         register.setType(Questionnaire.QuestionnaireItemType.GROUP);
 
-        Questionnaire.QuestionnaireItemComponent item = register.addItem()
-                .setText("Consent")
-                .setLinkId("EOL-Register-Flag-1")
+        register
+                .setText("EOL Register")
+                .setLinkId("EOL")
                 .setDefinition("EoL Register ")
                 .setRepeats(false)
                 .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
-        item.addExtension()
+        register.addExtension()
                 .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
                 .setValue(new Reference("https://fhir.nhs.uk/STU3/StructureDefinition/EOL-Register-Flag-1"));
-        item.addExtension()
+        register.addExtension()
                 .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
                 .setValue(new CodeType().setValue("Flag"));
 
@@ -175,20 +175,16 @@ public class EOLCExamplesApp implements CommandLineRunner {
 
 
         Questionnaire.QuestionnaireItemComponent consent = questionnaire.addItem();
-        consent.setLinkId("EOL-Consent-1");
-        consent.setText("EOL Consent");
-        consent.setType(Questionnaire.QuestionnaireItemType.GROUP);
-
-        item = consent.addItem()
-                .setText("Consent")
-                .setLinkId("EOL-Consent")
+        consent.setLinkId("CON");
+        consent.setText("Consent");
+        consent
                 .setDefinition("Consent [G3]")
                 .setRepeats(false)
                 .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
-        item.addExtension()
+        consent.addExtension()
                 .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
                 .setValue(new Reference("https://fhir.nhs.uk/STU3/StructureDefinition/EOL-Consent-1"));
-        item.addExtension()
+        consent.addExtension()
                 .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
                 .setValue(new CodeType().setValue("Consent"));
 
@@ -196,19 +192,19 @@ public class EOLCExamplesApp implements CommandLineRunner {
 
 
         Questionnaire.QuestionnaireItemComponent cpr = questionnaire.addItem();
-        cpr.setLinkId("EOL-CPRStatus-1");
+        cpr.setLinkId("CPR");
         cpr.setText("CPR Status");
 
         cpr.setType(Questionnaire.QuestionnaireItemType.GROUP);
 
-        item = cpr.addItem()
+        Questionnaire.QuestionnaireItemComponent item = cpr.addItem()
                 .setText("CPR Status")
                 .setLinkId("CPR001.1")
-                .setDefinition("\"If CPR status is transmitted, then the status code is mandatory.  This will be a straight binary choice of \"\"For\"\" or \"\"Not For\"\" resuscitation.\n" +
+                .setDefinition("If CPR status is transmitted, then the status code is mandatory.  This will be a straight binary choice of \"For\" or \"Not For\" resuscitation.\n" +
                         "\n" +
-                        "Whilst there is a code for \"\"not aware of decision\"\", this is not a logical requirement for this dataset.  Systems that are unaware of the status will logically not be sending this group.\n" +
+                        "Whilst there is a code for \"not aware of decision\", this is not a logical requirement for this dataset.  Systems that are unaware of the status will logically not be sending this group.\n" +
                         "\n" +
-                        "\"\"For CPR\"\" will generally be only used when reversing a \"\"Not for CPR\"\" status.  People who haven't yet had the discussion would just not have a recorded CPR decision in file.\"")
+                        "\"For CPR\" will generally be only used when reversing a \"Not for CPR\" status.  People who haven't yet had the discussion would just not have a recorded CPR decision in file.")
                 .setRepeats(false)
                 .setRequired(true)
                 .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
@@ -221,17 +217,7 @@ public class EOLCExamplesApp implements CommandLineRunner {
 
         cpr.addItem()
                 .setText("Reason for CPR status")
-                .setDefinition("\"It will be a strong recommendation that a reason for the status change is included although it is unlikely that it can be mandated from the start.  Also, as this is an MVP dataset, it could be argued that UEC are most keen on seeing the status rather than additional text.  However, in the example below if the text reads \"\"There is a valid advance decision to refuse CPR in the following circumstances...\"\", then the DNACPR decision is not for all circumstances.  In that case, the business may wish to consider whether a non-blanket DNACPR would be better recorded as an Advance Treatment Preference so that where it is appropriate can be made clear.\n" +
-                        "\n" +
-                        "Example text strings could be:\n" +
-                        "+ CPR is unlikely to be successful due to…\n" +
-                        "+ CPR would be of no clinical benefit because of the following medical conditions...\n" +
-                        "+ The outcome of the CPR would not be of overall benefit to the patient\n" +
-                        "+ CPR may be successful, but followed by a length and quality of life which would not be of overall benefit to the person.\n" +
-                        "+ There is a valid advance decision to refuse CPR in the following circumstances...\n" +
-                        "+ CPR is against the wishes of the patient and is recorded in a valid advance decision\n" +
-                        "+ CPR has been discussed with this patient.  It is against their wishes and they have the mental capacity to make that decision\n" +
-                        "+ DNACPR cancelled due to...\"")
+                .setDefinition("It will be a strong recommendation that a reason for the status change is included although it is unlikely that it can be mandated from the start.  Also, as this is an MVP dataset, it could be argued that UEC are most keen on seeing the status rather than additional text.  However, in the example below if the text reads \"There is a valid advance decision to refuse CPR in the following circumstances...\", then the DNACPR decision is not for all circumstances.  In that case, the business may wish to consider whether a non-blanket DNACPR would be better recorded as an Advance Treatment Preference so that where it is appropriate can be made clear.")
                 .setLinkId("CPR001.2")
                 .setType(Questionnaire.QuestionnaireItemType.STRING);
 
@@ -329,22 +315,44 @@ public class EOLCExamplesApp implements CommandLineRunner {
 
 
         Questionnaire.QuestionnaireItemComponent advpref = questionnaire.addItem();
-        advpref.setLinkId("EOL-Advanced-Treatment-Preferences-1")
+        advpref.setLinkId("ATP")
                 .setText("Advanced Treatment Preferences");
         advpref.setType(Questionnaire.QuestionnaireItemType.GROUP);
 
         Questionnaire.QuestionnaireItemComponent subgroup = advpref.addItem()
-                .setLinkId("EOL-ATPProblemList-List-1")
+                .setLinkId("ATP001")
 
                 .setText("Clinical Problems and Advised Interventions")
-                .setDefinition("ATP [G3]")
-                .setRepeats(true)
+                .setDefinition("This is effectively making up a Treatment Escalation Plan or and Emergency Treatment Plan.")
+
                 .setType(Questionnaire.QuestionnaireItemType.GROUP);
 
         item = subgroup.addItem()
-                .setLinkId("EOL-ATPProblemHeader-Condition-1")
-                .setText("Problem or Condition")
+                .setLinkId("ATP001a")
+                .setText("Clinical Problems and Advised Interventions")
+                .setDefinition("")
+                .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
+        item.addExtension()
+                .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
+                .setValue(new Reference("https://fhir.nhs.uk/STU3/StructureDefinition/EOL-ATPProblemList-List-1"));
+        item.addExtension()
+                .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
+                .setValue(new CodeType().setValue("List"));
+
+
+        Questionnaire.QuestionnaireItemComponent subgroupitem = subgroup.addItem()
+                .setLinkId("ATP001b")
+                .setText("Clinical Problems and Advised Interventions")
                 .setDefinition("ATP [G4]")
+                .setRepeats(true)
+                .setType(Questionnaire.QuestionnaireItemType.GROUP);
+
+
+        item = subgroupitem.addItem()
+                .setLinkId("ATP001.1.1")
+                .setText("ATP Problems")
+                .setDefinition("")
+                .setRequired(true)
                 .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
         item.addExtension()
                 .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
@@ -353,9 +361,8 @@ public class EOLCExamplesApp implements CommandLineRunner {
                 .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
                 .setValue(new CodeType().setValue("Condition"));
 
-
-        item = subgroup.addItem()
-                .setLinkId("EOL-ATP-Intervention-1")
+        item = subgroupitem.addItem()
+                .setLinkId("ATP001.1.2")
                 .setText("ATP Intervention")
                 .setDefinition("ATP [G5] Note: the CarePlan should be linked to the Condition via CarePlan.adresses")
                 .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
@@ -368,62 +375,47 @@ public class EOLCExamplesApp implements CommandLineRunner {
 
 
         subgroup = advpref.addItem()
-                .setLinkId("EOL-ATP-Medicine-Issued")
+                .setLinkId("ATP001.2")
                 .setText("Anticipatory medicines/just in case box issued")
-                .setDefinition("ATP [G7]")
-                .setType(Questionnaire.QuestionnaireItemType.GROUP);
-
-        item = subgroup.addItem()
-                .setLinkId("EOL-ATP-Medicine-Box-1")
-                .setText("ATP Intervention")
-                .setDefinition("ATP [G8]")
+                .setDefinition("To inform those providing care that anticipatory medicines or a just in case box have been issued. These medicines could be administered promptly by appropriate staff if indicated.")
                 .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
-        item.addExtension()
+        subgroup.addExtension()
                 .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
                 .setValue(new Reference("https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-EOL-Procedure-1"));
-        item.addExtension()
+        subgroup.addExtension()
                 .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
                 .setValue(new CodeType().setValue("Procedure"));
 
         subgroup = advpref.addItem()
-                .setLinkId("EOL-ADRT")
+                .setLinkId("ATP001.3")
                 .setText("Advance Decision to Refuse Treatment")
-                .setDefinition("ATP [G12]")
-                .setType(Questionnaire.QuestionnaireItemType.GROUP);
-
-        item = subgroup.addItem()
-                .setLinkId("EOL-ATP-ADRT-1")
-                .setText("Advance Decision to Refuse Treatment - Coded")
-                .setDefinition("ATP [G8]")
                 .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
-        item.addExtension()
+        subgroup.addExtension()
                 .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
                 .setValue(new Reference("https://fhir.nhs.uk/STU3/StructureDefinition/EOL-ADRT-Flag-1"));
-        item.addExtension()
+        subgroup.addExtension()
                 .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
                 .setValue(new CodeType().setValue("Flag"));
 
 
         subgroup = advpref.addItem()
-                .setLinkId("EOL-ATP-Respect")
+                .setLinkId("ATP001.4")
                 .setText("ReSPECT Care")
                 .setDefinition("ATP [G16]")
                 .setType(Questionnaire.QuestionnaireItemType.GROUP);
 
         item = subgroup.addItem()
-                .setLinkId("EOL-ATP-Respect-Scale")
-                .setText("ReSPECT Care Priority Scale")
-                .setDefinition("ATP [G17]")
+                .setLinkId("ATP001.4.1")
+                .setText("ReSPECT Patient Care Priority Scale")
+                .setDefinition("1-100 Where 1= absolute priority on sustaining life and 100= absolute priority in comfort.")
                 .setRequired(true)
-                .setType(Questionnaire.QuestionnaireItemType.CHOICE)
-                .setOptions(new Reference("to be defined"));
+                .setType(Questionnaire.QuestionnaireItemType.INTEGER);
 
         item = subgroup.addItem()
-                .setLinkId("EOL-ATP-Respect-Priority")
-                .setText("ReSPECT Care Priority Priority")
+                .setLinkId("ATP001.4.2")
+                .setText("ReSPECT Patient Care Priority Priority")
                 .setDefinition("ATP [G18]")
-                .setType(Questionnaire.QuestionnaireItemType.CHOICE)
-                .setOptions(new Reference("to be defined"));
+                .setType(Questionnaire.QuestionnaireItemType.STRING);
 
 
         // TODO ADD IN PROVENANCE
@@ -432,12 +424,12 @@ public class EOLCExamplesApp implements CommandLineRunner {
 
 
         Questionnaire.QuestionnaireItemComponent lpa = questionnaire.addItem();
-        lpa.setLinkId("EOL-LPA-1");
+        lpa.setLinkId("LPA");
         lpa.setText("Lasting Power of Attorney");
         lpa.setType(Questionnaire.QuestionnaireItemType.GROUP);
 
         item = lpa.addItem()
-                .setLinkId("EOL-LPA-Flag-1")
+                .setLinkId("LPA001")
                 .setText("Lasting Power of Attorney For Health and Welfare")
                 .setDefinition("LPA [G2]")
                 .setRequired(true)
@@ -450,7 +442,7 @@ public class EOLCExamplesApp implements CommandLineRunner {
                 .setValue(new CodeType().setValue("Flag"));
 
         item = lpa.addItem()
-                .setLinkId("EOL-LPA-RelatedPerson-1")
+                .setLinkId("LPA001.2")
                 .setText("Persons Appointed")
                 .setDefinition("LPA [G4]")
                 .setRepeats(true)
@@ -466,37 +458,26 @@ public class EOLCExamplesApp implements CommandLineRunner {
 
 
         Questionnaire.QuestionnaireItemComponent prognosis = questionnaire.addItem();
-        prognosis.setLinkId("EOL-Prognosis-1");
-        prognosis.setText("Prognosis");
-        prognosis.setType(Questionnaire.QuestionnaireItemType.GROUP);
-
-        item = prognosis.addItem()
-                .setLinkId("EOL-Prognosis-ClinicalImpression")
-                .setText("Prognosis")
-                .setDefinition("Prognosis [G2]")
+        prognosis.setLinkId("PRO");
+        prognosis.setText("Prognosis")
                 .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
-        item.addExtension()
+        prognosis.addExtension()
                 .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
                 .setValue(new Reference("https://fhir.nhs.uk/STU3/StructureDefinition/EOL-Prognosis-ClinicalImpression-1"));
-        item.addExtension()
+        prognosis.addExtension()
                 .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
                 .setValue(new CodeType().setValue("ClinicalImpression"));
 
         // FUNCTIONAL
 
         Questionnaire.QuestionnaireItemComponent func = questionnaire.addItem();
-        func.setLinkId("EOL-FunctionalStatus-1").setText("Functional Status");
-        func.setType(Questionnaire.QuestionnaireItemType.GROUP);
-
-        item = func.addItem()
-                .setLinkId("EOL-FunctionalStatus-Observation-1")
-                .setText("Functional Status")
+        func.setLinkId("FUN").setText("Functional Status")
                 .setRepeats(true)
                 .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
-        item.addExtension()
+        func.addExtension()
                 .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
                 .setValue(new Reference("https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-EOL-FunctionalStatus-Observation-1"));
-        item.addExtension()
+        func.addExtension()
                 .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
                 .setValue(new CodeType().setValue("Observation"));
 
@@ -504,33 +485,43 @@ public class EOLCExamplesApp implements CommandLineRunner {
 
 
         Questionnaire.QuestionnaireItemComponent disability = questionnaire.addItem();
-        disability.setLinkId("EOL-Disabilitiess-1")
+        disability.setLinkId("DIS")
                 .setText("Disabilities");
         disability.setType(Questionnaire.QuestionnaireItemType.GROUP);
 
         item = disability.addItem()
-                .setLinkId("EOL-Disabilities-Condition-1")
+                .setLinkId("DIS001a")
                 .setText("Disability / Condition List")
+                .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
+        item.addExtension()
+                .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
+                .setValue(new Reference("https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-ProblemList-1"));
+        item.addExtension()
+                .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
+                .setValue(new CodeType().setValue("List"));
+
+        item = disability.addItem()
+                .setLinkId("DIS001b")
+                .setText("Disability / Condition")
                 .setRepeats(true)
                 .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
         item.addExtension()
                 .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
-                .setValue(new Reference("https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-ProblemHeader-Condition-1"));
+                .setValue(new Reference("https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-ProblemHeader-Condition-1"));
         item.addExtension()
                 .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
                 .setValue(new CodeType().setValue("Condition"));
 
-
         /// EOL Preferences PREF
 
         Questionnaire.QuestionnaireItemComponent pref = questionnaire.addItem();
-        pref.setLinkId("EOL-Preferences-1");
+        pref.setLinkId("PREF");
         pref.setText("Preferences");
         pref.setType(Questionnaire.QuestionnaireItemType.GROUP);
 
         subgroup = pref.addItem()
                 .setText("Preferred Place Of Death")
-                .setLinkId("preferredPlaceOfDeathCoded")
+                .setLinkId("PRE001.1")
                 .setDefinition("Preferences [G4]")
                 .setRequired(true)
                 .setType(Questionnaire.QuestionnaireItemType.GROUP);
@@ -538,34 +529,35 @@ public class EOLCExamplesApp implements CommandLineRunner {
 
         subgroup.addItem()
                 .setText("Preferred Place Of Death (Coded)")
-                .setLinkId("preferredPlaceOfDeathCoded")
+                .setLinkId("PRE001.1.2")
                 .setType(Questionnaire.QuestionnaireItemType.CHOICE)
                 .setOptions(new Reference("https://fhir.nhs.uk/STU3/ValueSet/EOL-PreferredPlaceDeath-Code-1"));
 
         subgroup.addItem()
                 .setText("Preferred Place Of Death (Text)")
-                .setLinkId("preferredPlaceOfDeathText")
+                .setLinkId("PRE001.1.3")
                 .setRequired(true)
                 .setType(Questionnaire.QuestionnaireItemType.STRING);
 
         pref.addItem()
                 .setText("Preferences and Wishes")
-                .setLinkId("preferencesAndWishes")
+                .setLinkId("PRE001.2")
                 .setType(Questionnaire.QuestionnaireItemType.STRING);
 
         pref.addItem()
                 .setText("Domestic Access and Information")
-                .setLinkId("domesticAccessAndInformation")
-                .setType(Questionnaire.QuestionnaireItemType.STRING);
-
-        pref.addItem()
-                .setText("Domestic Access and Information")
-                .setLinkId("domesticAccessAndInformation")
+                .setLinkId("PRE001.3")
                 .setType(Questionnaire.QuestionnaireItemType.STRING);
 
         item = pref.addItem()
-                .setLinkId("EOL-Preferences-author")
+                .setLinkId("PRE001.4")
+                .setText("Preferences Date Recorded")
+                .setType(Questionnaire.QuestionnaireItemType.DATETIME);
+
+        item = pref.addItem()
+                .setLinkId("PRE001.5")
                 .setText("Preferences Author")
+                .setRequired(true)
                 .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
         item.addExtension()
                 .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
@@ -574,33 +566,36 @@ public class EOLCExamplesApp implements CommandLineRunner {
                 .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
                 .setValue(new CodeType().setValue("Practitioner"));
 
-        item = pref.addItem()
-                .setLinkId("EOL-Preferences-authoredDate")
-                .setText("Preferences Date Recorded")
-                .setType(Questionnaire.QuestionnaireItemType.DATETIME);
+
+
+
         // OTHER
 
 
         Questionnaire.QuestionnaireItemComponent other = questionnaire.addItem();
-        other.setLinkId("EOL-OtherDocuments-1")
+        other.setLinkId("DOC")
                 .setText("Other Documents")
                 .setRepeats(true)
+                .setDefinition("Details of other relevant planning documentsand where to find them.")
                 .setType(Questionnaire.QuestionnaireItemType.GROUP);
 
         other.addItem()
-                .setLinkId("documentName")
+                .setLinkId("DOC001.1")
                 .setText("Document Name")
+                .setDefinition("Description of name of the advance planning document")
                 .setType(Questionnaire.QuestionnaireItemType.STRING)
                 .setRequired(true);
 
         other.addItem()
-                .setLinkId("documentLocation")
+                .setLinkId("DOC001.2")
                 .setText("Document Location")
+                .setDefinition("Location of the document")
                 .setType(Questionnaire.QuestionnaireItemType.STRING);
 
         other.addItem()
-                .setLinkId("documentSource")
+                .setLinkId("DOC001.3")
                 .setText("Document Source")
+                .setDefinition("Description of the organisation where the document was created with the patient.")
                 .setType(Questionnaire.QuestionnaireItemType.STRING);
 
 
@@ -681,31 +676,31 @@ public class EOLCExamplesApp implements CommandLineRunner {
         }
 
         QuestionnaireResponse.QuestionnaireResponseItemComponent register = eolc.addItem()
-                .setLinkId("EOL-Register-1")
+                .setLinkId("EOL")
                 .setText("EoL Register");
 
         QuestionnaireResponse.QuestionnaireResponseItemComponent other = eolc.addItem()
-                .setLinkId("EOL-OtherDocuments-1")
+                .setLinkId("DOC")
                 .setText("Other Documents");
 
         QuestionnaireResponse.QuestionnaireResponseItemComponent disability = eolc.addItem()
-                .setLinkId("EOL-Disabilitiess-1")
+                .setLinkId("DIS")
                 .setText("Disabilitiess");
 
         QuestionnaireResponse.QuestionnaireResponseItemComponent func = eolc.addItem()
-                .setLinkId("EOL-FunctionalStatus-1")
+                .setLinkId("FUN")
                 .setText("Functional Status");
 
         QuestionnaireResponse.QuestionnaireResponseItemComponent prog = eolc.addItem()
-                .setLinkId("EOL-Prognosis-1")
+                .setLinkId("PRO")
                 .setText("Prognosis");
 
         QuestionnaireResponse.QuestionnaireResponseItemComponent consent = eolc.addItem()
-                .setLinkId("EOL-Consent-1")
+                .setLinkId("CON")
                 .setText("Consent");
 
         QuestionnaireResponse.QuestionnaireResponseItemComponent preferences = eolc.addItem()
-                .setLinkId("EOL-Preferences-1")
+                .setLinkId("PREF")
                 .setText("Preferences");
 
         QuestionnaireResponse.QuestionnaireResponseItemComponent adv = eolc.addItem()
