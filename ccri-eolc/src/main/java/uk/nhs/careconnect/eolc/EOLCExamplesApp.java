@@ -46,6 +46,9 @@ public class EOLCExamplesApp implements CommandLineRunner {
 
     private static String yasConditionIdentifier = "https://fhir.yas.nhs.uk/Condition/Identifier";
 
+    private static String tppListIdentifier = "https://fhir.tpp.co.uk/List/Identifier";
+    private static String tppConsentIdentifier = "https://fhir.tpp.co.uk/Consent/Identifier";
+
     private static String yasObservationIdentifier = "https://fhir.yas.nhs.uk/Observation/Identifier";
 
     private static String midYorksFlagIdentifier = "https://fhir.midyorks.nhs.uk/Flag/Identifier";
@@ -785,19 +788,40 @@ public class EOLCExamplesApp implements CommandLineRunner {
                 .getCode().addCoding().setCode("702779007").setSystem("http://snomed.info/sct").setDisplay("Emergency health care plan agreed");
         bundle.addEntry().setResource(carePlan);
 
+        ListResource list = new ListResource();
+        list.setId(fhirBundle.getNewId(list));
+        list.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
+        list.addIdentifier().setSystem(tppListIdentifier).setValue("listATP");
+        list.setSource(new Reference(uuidtag + consultant.getId()));
+        try {
+            list.setDate(sdf.parse("2018-08-01"));
+        } catch (Exception ex) {
+        }
+        list.addEntry().setItem(new Reference(uuidtag + condition.getIdElement().getIdPart()));
+        bundle.addEntry().setResource(list);
 
         QuestionnaireResponse.QuestionnaireResponseItemComponent group = adv.addItem()
-                .setLinkId("EOL-ATPProblemList-List-1")
+                .setLinkId("ATP001")
                 .setText("Clinical Problems and Advised Interventions");
 
         group.addItem()
-                .setLinkId("ATPProblemHeader-Condition-1")
+                .setLinkId("ATP001a")
+                .setText("Clinical Problems and Advised Interventions")
+                .addAnswer()
+                .setValue(new Reference(uuidtag + list.getIdElement().getIdPart()));
+
+        QuestionnaireResponse.QuestionnaireResponseItemComponent subgroup = group.addItem()
+                .setLinkId("ATP001b")
+                .setText("Clinical Problems and Advised Interventions");
+
+        subgroup.addItem()
+                .setLinkId("ATP001.1.1")
                 .setText("Problem or Condition")
                 .addAnswer()
                 .setValue(new Reference(uuidtag + condition.getIdElement().getIdPart()));
 
-        group.addItem()
-                .setLinkId("EOL-ATP-Intervention-1")
+        subgroup.addItem()
+                .setLinkId("ATP001.1.2")
                 .setText("ATP Intervention")
                 .addAnswer()
                 .setValue(new Reference(uuidtag + carePlan.getIdElement().getIdPart()));
@@ -826,11 +850,31 @@ public class EOLCExamplesApp implements CommandLineRunner {
         flag.setAuthor(new Reference(uuidtag + midyorks.getIdElement().getIdPart()));
         bundle.addEntry().setResource(flag);
 
-        register.addItem()
-                .setLinkId("EOL-Register-Flag-1")
-                .setText("Register Flag")
+        register
                 .addAnswer()
                 .setValue(new Reference(uuidtag + flag.getIdElement().getIdPart()));
+
+
+        // Consent
+
+        Consent consentR = new Consent();
+        consentR.setId(fhirBundle.getNewId(consentR));
+        consentR.getIdentifier().setSystem(tppConsentIdentifier).setValue("consent1");
+        consentR.setStatus(Consent.ConsentState.ACTIVE);
+        consentR.setPatient(new Reference(uuidtag + fhirBundle.getPatient().getId()));
+        try {
+            consentR.setDateTime(sdf.parse("2018-08-20"));
+        } catch (Exception ex) {
+        }
+        CodeableConcept role =new CodeableConcept();
+        role.addCoding().setSystem("http://hl7.org/fhir/v3/ParticipationType").setCode("PROV").setDisplay("Healthcare Provider");
+        consentR.addActor()
+                .setRole(role)
+                .setReference(new Reference(uuidtag + consultant.getId()));
+        bundle.addEntry().setResource(consentR);
+
+        consent.addAnswer().setValue(new Reference(uuidtag + consentR.getIdElement().getIdPart()));
+
 
         // CPR
 
@@ -848,23 +892,23 @@ public class EOLCExamplesApp implements CommandLineRunner {
         bundle.addEntry().setResource(flag);
 
         cpr.addItem()
-                .setLinkId("CPRStatus")
+                .setLinkId("CPR")
                 .setText("CPR Status")
                 .addAnswer()
                 .setValue(new Reference(uuidtag +flag.getIdElement().getIdPart()));
 
         cpr.addItem()
-                .setLinkId("reasonForCPRStatus")
+                .setLinkId("CPR001.2")
                 .setText("Reason for CPR status")
                 .addAnswer()
                 .setValue(new StringType("At home with family"));
         cpr.addItem()
-                .setLinkId("professionalsInvolvedInDecision")
+                .setLinkId("CPR001.8")
                 .setText("Professionals Involved In Decision")
                 .addAnswer()
                 .setValue(new Reference(uuidtag + consultant.getId()));
         cpr.addItem()
-                .setLinkId("professionalEndorsingStatus")
+                .setLinkId("CPR001.10")
                 .setText("Professional Endorsing Status")
                 .addAnswer()
                 .setValue(new Reference(uuidtag + consultant.getId()));
@@ -873,17 +917,17 @@ public class EOLCExamplesApp implements CommandLineRunner {
         /// OTHER
 
         other.addItem()
-                .setLinkId("documentName")
+                .setLinkId("DOC001.1")
                 .setText("Document Name")
                 .addAnswer()
-                .setValue(new StringType("Lasting power of attorny offical document"));
+                .setValue(new StringType("Lasting power of attorney offical document"));
         other.addItem()
-                .setLinkId("documentLocation")
+                .setLinkId("DOC001.2")
                 .setText("Document Location")
                 .addAnswer()
                 .setValue(new StringType("Top left drawer in cabinet located in dining room. Documents are inside blue folder."));
         other.addItem()
-                .setLinkId("documentSource")
+                .setLinkId("DOC001.3")
                 .setText("Document Source")
                 .addAnswer()
                 .setValue(new StringType("Document drawn up at A B Solictors, Newcastle"));
@@ -891,21 +935,40 @@ public class EOLCExamplesApp implements CommandLineRunner {
 
         // Preferences
 
-        preferences.addItem()
-                .setLinkId("preferredPlaceOfDeathText")
+        group = preferences.addItem().setLinkId("PRE001.1").setText("Preferred Place Of Death");
+
+        group.addItem()
+                .setLinkId("PRE001.1.3")
                 .setText("Preferred Place Of Death Text")
                 .addAnswer()
                 .setValue(new StringType("At home with family"));
+
         preferences.addItem()
-                .setLinkId("preferencesAndWishes")
+                .setLinkId("PRE001.2")
                 .setText("Preferences and Wishes")
                 .addAnswer()
                 .setValue(new StringType("To be made comfortable and looking out onto garden"));
         preferences.addItem()
-                .setLinkId("domesticAccessAndInformation")
+                .setLinkId("PRE001.3")
                 .setText("Domestic Access and Information")
                 .addAnswer()
                 .setValue(new StringType("A key safe is provided to allow access to the property. Carer and related contact has code."));
+
+        try {
+            preferences.addItem()
+                    .setLinkId("PRE001.4")
+                    .setText("Preferences Date")
+                    .addAnswer()
+                    .setValue(new DateType().setValue(sdf.parse("2019-02-11")));
+        } catch (Exception ex) {
+
+        }
+
+        preferences.addItem()
+                .setLinkId("PRE001.5")
+                .setText("Preferences Author")
+                .addAnswer()
+                .setValue(new Reference(uuidtag + consultant.getId()));
 
 
         // Prognosis
@@ -929,9 +992,7 @@ public class EOLCExamplesApp implements CommandLineRunner {
         prognosis.setDescription("Limited life expectancy of approximately one year");
         bundle.addEntry().setResource(prognosis);
 
-        prog.addItem()
-                .setLinkId("EOL-Prognosis-ClinicalImpression")
-                .setText("Prognosis")
+        prog
                 .addAnswer()
                 .setValue(new Reference(uuidtag +prognosis.getIdElement().getIdPart()));
 
@@ -962,10 +1023,7 @@ public class EOLCExamplesApp implements CommandLineRunner {
                 .setCode("score"));
         bundle.addEntry().setResource(observation);
 
-        func.addItem()
-                .setLinkId("EOL-FunctionalStatus-Observation-1")
-                .setText("Functional Status Observation")
-                .addAnswer()
+        func.addAnswer()
                 .setValue(new Reference(uuidtag +observation.getIdElement().getIdPart()));
 
 
@@ -990,10 +1048,28 @@ public class EOLCExamplesApp implements CommandLineRunner {
         bundle.addEntry().setResource(condition);
 
         disability.addItem()
-                .setLinkId("EOL-Disabilities-Condition-1")
+                .setLinkId("DIS001b")
                 .setText("Disability / Condition List")
                 .addAnswer()
                 .setValue(new Reference(uuidtag +condition.getIdElement().getIdPart()));
+
+        list = new ListResource();
+        list.setId(fhirBundle.getNewId(list));
+        list.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
+        list.addIdentifier().setSystem(tppListIdentifier).setValue("listDIS");
+        list.setSource(new Reference(uuidtag + consultant.getId()));
+        try {
+            list.setDate(sdf.parse("2018-08-01"));
+        } catch (Exception ex) {
+        }
+        list.addEntry().setItem(new Reference(uuidtag + condition.getIdElement().getIdPart()));
+        bundle.addEntry().setResource(list);
+
+        disability.addItem()
+                .setLinkId("DIS001a")
+                .setText("Disability / Condition List")
+                .addAnswer()
+                .setValue(new Reference(uuidtag +list.getIdElement().getIdPart()));
 
         /*
         CareTeam careTeamH = new CareTeam();
