@@ -48,6 +48,7 @@ public class EOLCExamplesApp implements CommandLineRunner {
 
     private static String tppListIdentifier = "https://fhir.tpp.co.uk/List/Identifier";
     private static String tppConsentIdentifier = "https://fhir.tpp.co.uk/Consent/Identifier";
+    private static String tppNOKIdentifier = "https://fhir.tpp.co.uk/NOK/Identifier";
 
     private static String yasObservationIdentifier = "https://fhir.yas.nhs.uk/Observation/Identifier";
 
@@ -707,15 +708,15 @@ public class EOLCExamplesApp implements CommandLineRunner {
                 .setText("Preferences");
 
         QuestionnaireResponse.QuestionnaireResponseItemComponent adv = eolc.addItem()
-                .setLinkId("EOL-Advanced-Treatment-Preferences-1")
+                .setLinkId("ATP")
                 .setText("Advanced Treatment Preferences");
 
         QuestionnaireResponse.QuestionnaireResponseItemComponent lpa = eolc.addItem()
-                .setLinkId("EOL-LPA-1")
+                .setLinkId("LPA")
                 .setText("Lasting Power of Attorney");
 
         QuestionnaireResponse.QuestionnaireResponseItemComponent cpr = eolc.addItem()
-                .setLinkId("EOL-CPRStatus-1")
+                .setLinkId("CPR")
                 .setText("CPR Status");
 
         bundle.addEntry().setResource(eolc);
@@ -827,10 +828,43 @@ public class EOLCExamplesApp implements CommandLineRunner {
                 .setValue(new Reference(uuidtag + carePlan.getIdElement().getIdPart()));
 
         // Add in ADRT
+        Flag adrt = new Flag();
+        adrt.setId(fhirBundle.getNewId(adrt));
+        adrt.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
+        adrt.addIdentifier().setSystem(midYorksFlagIdentifier).setValue("adrt");
+        adrt.setStatus(Flag.FlagStatus.ACTIVE);
+        adrt.getCode().addCoding()
+                .setCode("816301000000100")
+                .setSystem("http://snomed.info/sct")
+                .setDisplay("Has advance decision to refuse treatment (Mental Capacity Act 2005) (finding)");
+
+
+        adrt.setAuthor(new Reference(uuidtag + midyorks.getIdElement().getIdPart()));
+        bundle.addEntry().setResource(adrt);
+
+        adv.addItem()
+                .setLinkId("ATP001.1.3")
+                .setText("Advance Decision to Refuse Treatment")
+                .addAnswer()
+                .setValue(new Reference(uuidtag + adrt.getIdElement().getIdPart()));
+
+        group = adv.addItem()
+                .setLinkId("ATP001.4")
+                .setText("ReSPECT Care");
+        group.addItem()
+                .setLinkId("ATP001.4.1")
+                .setText("ReSPECT Patient Care Priority Scale")
+                .addAnswer()
+                .setValue(new IntegerType().setValue(50));
+        group.addItem()
+                .setLinkId("ATP001.4.2")
+                .setText("ReSPECT Patient Care Priority Priority")
+                .addAnswer()
+                .setValue(new StringType().setValue("Patient is to be treated and made as comfortable as possible."));
 
 
 
-    // EOL Register
+        // EOL Register
 
 
         Flag flag = new Flag();
@@ -892,7 +926,7 @@ public class EOLCExamplesApp implements CommandLineRunner {
         bundle.addEntry().setResource(flag);
 
         cpr.addItem()
-                .setLinkId("CPR")
+                .setLinkId("CPR001.1")
                 .setText("CPR Status")
                 .addAnswer()
                 .setValue(new Reference(uuidtag +flag.getIdElement().getIdPart()));
@@ -902,11 +936,43 @@ public class EOLCExamplesApp implements CommandLineRunner {
                 .setText("Reason for CPR status")
                 .addAnswer()
                 .setValue(new StringType("At home with family"));
+
+        cpr.addItem()
+                .setLinkId("CPR001.3")
+                .setText("CPR Status Mental Capacity")
+                .addAnswer()
+                .setValue(new StringType("This person has the mental capacity to participate in making these recommendations.  They have been fully involved in the decision making process."));
+
+        Coding persons = new Coding();
+        persons
+                .setSystem("http://snomed.info/sct")
+                .setCode("713656002")
+                .setDisplay("Discussion about cardiopulmonary resuscitation with family member (situation)");
+
+        cpr.addItem()
+                .setLinkId("CPR001.6")
+                .setText("Persons involved in discussion")
+                .addAnswer()
+                .setValue(persons);
+
+        Coding aware = new Coding();
+        aware
+                .setSystem("http://snomed.info/sct")
+                .setCode("975291000000108")
+                .setDisplay("Family member informed of cardiopulmonary resuscitation clinical decision (situation)");
+
+        cpr.addItem()
+                .setLinkId("CPR001.7")
+                .setText("Persons or organisations made aware of the decision")
+                .addAnswer()
+                .setValue(aware);
+
         cpr.addItem()
                 .setLinkId("CPR001.8")
                 .setText("Professionals Involved In Decision")
                 .addAnswer()
                 .setValue(new Reference(uuidtag + consultant.getId()));
+
         cpr.addItem()
                 .setLinkId("CPR001.10")
                 .setText("Professional Endorsing Status")
@@ -1070,6 +1136,48 @@ public class EOLCExamplesApp implements CommandLineRunner {
                 .setText("Disability / Condition List")
                 .addAnswer()
                 .setValue(new Reference(uuidtag +list.getIdElement().getIdPart()));
+
+
+        // LPA
+
+        Flag lpaf = new Flag();
+        lpaf.setId(fhirBundle.getNewId(lpaf));
+        lpaf.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
+        lpaf.addIdentifier().setSystem(midYorksFlagIdentifier).setValue("lpa");
+        lpaf.setStatus(Flag.FlagStatus.ACTIVE);
+        lpaf.getCode().addCoding()
+                .setCode("816361000000101")
+                .setSystem("http://snomed.info/sct")
+                .setDisplay("Has appointed person with personal welfare lasting power of attorney (Mental Capacity Act 2005) (finding)");
+
+        lpaf.setAuthor(new Reference(uuidtag + midyorks.getIdElement().getIdPart()));
+        bundle.addEntry().setResource(lpaf);
+
+        lpa.addItem()
+                .setLinkId("LPA001")
+                .setText("Lasting Power of Attorney For Health and Welfare")
+                .addAnswer()
+                .setValue(new Reference(uuidtag +lpaf.getIdElement().getIdPart()));
+
+        RelatedPerson person = new RelatedPerson();
+        person.setId(fhirBundle.getNewId(person));
+        person.addIdentifier()
+                .setValue("person1")
+                .setSystem(tppNOKIdentifier);
+        person.setPatient(new Reference(uuidtag + fhirBundle.getPatient().getId()));
+        CodeableConcept relation = new CodeableConcept();
+        relation.addCoding().setSystem("http://hl7.org/fhir/v3/RoleCode").setDisplay("healthcare power of attorney").setCode("HPOWATT");
+        person.addName().setFamily("Kewn").addPrefix("Mr").addGiven("E");
+
+        person.setRelationship(relation);
+
+        bundle.addEntry().setResource(person);
+
+        lpa.addItem()
+                .setLinkId("LPA001.2")
+                .setText("Persons Appointed")
+                .addAnswer()
+                .setValue(new Reference(uuidtag + person.getIdElement().getIdPart()));
 
         /*
         CareTeam careTeamH = new CareTeam();
