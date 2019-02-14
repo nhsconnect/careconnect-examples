@@ -900,6 +900,11 @@ public class EOLCExamplesApp implements CommandLineRunner {
             consentR.setDateTime(sdf.parse("2018-08-20"));
         } catch (Exception ex) {
         }
+        consentR.addPurpose()
+                .setCode("882981000000105")
+                .setDisplay("Consent given by legitimate patient representative for sharing end of life care coordination record (finding)")
+                .setSystem(SNOMEDCT);
+
         CodeableConcept role =new CodeableConcept();
         role.addCoding().setSystem("http://hl7.org/fhir/v3/ParticipationType").setCode("PROV").setDisplay("Healthcare Provider");
         consentR.addActor()
