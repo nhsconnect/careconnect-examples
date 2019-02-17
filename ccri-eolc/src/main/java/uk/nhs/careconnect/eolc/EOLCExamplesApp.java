@@ -131,6 +131,8 @@ public class EOLCExamplesApp implements CommandLineRunner {
 
         postQuestionnaire();
 
+
+
         loadEOLC();
 
         // Example Patient 1
@@ -145,6 +147,100 @@ public class EOLCExamplesApp implements CommandLineRunner {
 
     }
 
+    public Questionnaire getNEWS2Questionnaire() {
+        Questionnaire questionnaire = new Questionnaire();
+        questionnaire.setId(fhirBundle.getNewId(questionnaire));
+        questionnaire.addIdentifier().setSystem("https://fhir.airelogic.com/STU3/Questionnaire").setValue("NEWS2");
+        questionnaire.setName("NEWS2");
+        questionnaire.setTitle("NEWS2");
+        questionnaire.setDescription("National Early Warning Score (NEWS)2");
+        questionnaire.setStatus(Enumerations.PublicationStatus.DRAFT);
+        questionnaire.addSubjectType("Patient");
+        questionnaire.setPurpose("https://developer.nhs.uk/apis/news2-1.0.0-alpha.1/");
+
+        Questionnaire.QuestionnaireItemComponent obs = questionnaire.addItem();
+        obs.setText("BloodPressure")
+                .setLinkId("NEWS2-1")
+                .setDefinition("A Vital Signs profile to carry blood pressure information that contains at least one component for systolic and/or diastolic pressure.")
+
+                .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
+        addObsExtension(obs, "https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-BloodPressure-Observation-1");
+
+
+        obs = questionnaire.addItem();
+        obs.setText("Body Temperature")
+                .setLinkId("NEWS2-2")
+                .setDefinition("The body temperature reading used to generate the NEWS2 score. ")
+                .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
+        addObsExtension(obs, "https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-BodyTemperature-Observation-1");
+
+        obs = questionnaire.addItem();
+        obs.setText("ACVPU")
+                .setLinkId("NEWS2-3")
+                .setDefinition("This profile is used to carry alert, new-onset or worsening confusion, voice, pain, and unresponsiveness observations for a patient.")
+                .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
+        addObsExtension(obs, "https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-ACVPU-Observation-1");
+
+        obs = questionnaire.addItem();
+        obs.setText("Hear Rate")
+                .setLinkId("NEWS2-4")
+                .setDefinition("The pulse rate reading used to generate the NEWS2 score.")
+                .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
+        addObsExtension(obs, "https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-HeartRate-Observation-1");
+
+        obs = questionnaire.addItem();
+        obs.setText("Inspired Oxygen")
+                .setLinkId("NEWS2-5")
+                .setDefinition("The inspired oxygen observation used to generate the NEWS2 score.")
+                .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
+        addObsExtension(obs, "https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-InspiredOxygen-Observation-1");
+
+        obs = questionnaire.addItem();
+        obs.setText("Saturated Oxygen")
+                .setLinkId("NEWS2-6")
+                .setDefinition("The oxygen saturation reading used to generate the NEWS2 score. ")
+                .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
+        addObsExtension(obs, "https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-OxygenSaturation-Observation-1");
+
+        obs = questionnaire.addItem();
+        obs.setText("Respiratory Rate")
+                .setLinkId("NEWS2-7")
+                .setDefinition("The respiratory rate reading used to generate the NEWS2 score. ")
+                .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
+        addObsExtension(obs, "https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-RespiratoryRate-Observation-1");
+
+               obs = questionnaire.addItem();
+        obs.setText("Sub Score")
+                .setLinkId("NEWS2-SCORE")
+                .setDefinition("Used to hold the sub-scores of the observations that go to make up the overall NEWS2 score. ")
+                .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
+        addObsExtension(obs, "https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Subscore-Observation-1");
+
+        obs = questionnaire.addItem();
+        obs.setText("Encounter Information")
+                .setLinkId("ENCOUNTER (PV1)")
+                .setDefinition("Encounter information for the measurements")
+                .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
+        obs.addExtension()
+                .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
+                .setValue(new Reference("https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Encounter-1"));
+        obs.addExtension()
+                .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
+                .setValue(new CodeType().setValue("Encounter"));
+
+        return questionnaire;
+    }
+
+    private void addObsExtension(Questionnaire.QuestionnaireItemComponent obs, String profile) {
+            obs.addExtension()
+                    .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
+                    .setValue(new Reference(profile));
+            obs.addExtension()
+                    .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
+                    .setValue(new CodeType().setValue("Observation"));
+
+    }
+
     public Questionnaire getEOLCQuestionnaire() {
         Questionnaire questionnaire = new Questionnaire();
         questionnaire.setId(fhirBundle.getNewId(questionnaire));
@@ -153,6 +249,7 @@ public class EOLCExamplesApp implements CommandLineRunner {
         questionnaire.setTitle("End of Life Care");
         questionnaire.setStatus(Enumerations.PublicationStatus.DRAFT);
         questionnaire.addSubjectType("Patient");
+        questionnaire.setDescription("EoL National Minimum Dataset");
         questionnaire.setPurpose("EoL National Minimum Dataset (v2.3) WIP.xlsx");
 
     // EOL Register
@@ -750,10 +847,12 @@ public class EOLCExamplesApp implements CommandLineRunner {
         condition.addIdentifier().setSystem(midYorksConditionIdentifier).setValue("crm1");
         condition.setClinicalStatus(Condition.ConditionClinicalStatus.ACTIVE);
         condition.setAsserter(new Reference(uuidtag + consultant.getId()));
-        condition.getCode().addCoding()
-                .setDisplay("Dyspnea")
-                .setCode("267036007")
-                .setSystem("http://snomed.info/sct");
+        condition.getCode()
+                .setText("Breathlessness")
+                .addCoding()
+                    .setDisplay("Dyspnea")
+                    .setCode("267036007")
+                    .setSystem("http://snomed.info/sct");
         try {
             condition.setOnset(new DateTimeType().setValue(sdf.parse("2018-08-01")));
         } catch (Exception ex) {
@@ -767,7 +866,8 @@ public class EOLCExamplesApp implements CommandLineRunner {
         // Not required carePlan.addAddresses(new Reference(uuidtag + condition.getId()));
         carePlan.addAuthor(new Reference(uuidtag + consultant.getId()));
 
-        carePlan.addCategory().addCoding()
+        carePlan.addCategory()
+                .addCoding()
                 .setCode("736373009")
                 .setSystem("http://snomed.info/sct")
                 .setDisplay("End of life care plan");
@@ -1056,10 +1156,12 @@ public class EOLCExamplesApp implements CommandLineRunner {
         } catch (Exception ex) {
         }
 
-        prognosis.addPrognosisCodeableConcept().addCoding()
-                .setSystem(SNOMEDCT)
-                .setCode("845701000000104")
-                .setDisplay("Gold standards framework prognostic indicator stage A (blue) - year plus prognosis (finding)");
+        prognosis.addPrognosisCodeableConcept()
+               .setText("Limited life expectancy of approximately one year")
+                .addCoding()
+                    .setSystem(SNOMEDCT)
+                    .setCode("845701000000104")
+                    .setDisplay("Gold standards framework prognostic indicator stage A (blue) - year plus prognosis (finding)");
         prognosis.setDescription("Limited life expectancy of approximately one year");
         bundle.addEntry().setResource(prognosis);
 
@@ -1085,6 +1187,7 @@ public class EOLCExamplesApp implements CommandLineRunner {
                 .setSystem("http://snomed.info/sct")
                 .setCode("761869008")
                 .setDisplay("Karnofsky Performance Status score (observable entity)");
+        observation.getCode().setText("Performance Status score");
 
         observation.setValue(new Quantity()
                 .setValue(
@@ -1609,7 +1712,10 @@ public class EOLCExamplesApp implements CommandLineRunner {
         Bundle bundle = new Bundle();
 
         Questionnaire questionnaire = getEOLCQuestionnaire();
+        bundle.addEntry().setResource(questionnaire);
+        fhirBundle.processBundleResources(bundle);
 
+        questionnaire = getNEWS2Questionnaire();
         bundle.addEntry().setResource(questionnaire);
         fhirBundle.processBundleResources(bundle);
 
