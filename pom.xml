@@ -33,7 +33,7 @@
 
     <modules>
         <module>ccri-eolc</module>
-        <module>ccri-unscheduled</module>
+        <module>ccri-interopen-examples</module>
         <module>hapi-fhirDocument-convert2PdfOrHtml</module>
         <module>hapi-fhirDocument-create</module>
         <module>hapi-patient-find-example-one</module>

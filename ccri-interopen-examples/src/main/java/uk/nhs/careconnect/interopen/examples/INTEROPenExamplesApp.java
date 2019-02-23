@@ -85,7 +85,7 @@ public class INTEROPenExamplesApp implements CommandLineRunner {
 
 
     public static void main(String[] args) {
-        SpringApplication.run(uk.nhs.careconnect.eolc.EOLCExamplesApp.class, args);
+        SpringApplication.run(uk.nhs.careconnect.interopen.examples.INTEROPenExamplesApp.class, args);
     }
 
     IGenericClient client = null;
@@ -127,18 +127,7 @@ public class INTEROPenExamplesApp implements CommandLineRunner {
 
         Boolean loadDocuments = false;
 
-        // Example Patient 1
-        //  ONE JOHN EDITESTPATIENT  999 999 9468
-        postOneEDITESTPATIENT();
 
-
-
-        // Example Patient 2
-        // TWO EDITESTPATIENT 999 999 9476
-
-        // RAD contains base Resources referenced in the main getMicheal load.
-
-/*
         if (!loadDocuments) {
             loadFolder("patient");
         } else {
@@ -153,235 +142,17 @@ public class INTEROPenExamplesApp implements CommandLineRunner {
         postPatient(loadDocuments,"9658220142", "LS25 2HF", Encounter.EncounterLocationStatus.PLANNED, "Elbe", "LS26 8PU", 0, -15, "410429000", "Cardiac arrest", true);
 
 
-
-
-
         loadFolder("rad");
 
         if (loadDocuments) {
-            loadFolder("dch");
-            loadFolder("toc");
-            loadFolder("pharm");
+           // loadFolder("dch");
+           // loadFolder("toc");
+           // loadFolder("pharm");
             updateNRLS();
         }
-  */
+
     }
 
-    public Questionnaire getEOLCQuestionnaire() {
-        Questionnaire questionnaire = new Questionnaire();
-        questionnaire.setId(fhirBundle.getNewId(questionnaire));
-        questionnaire.addIdentifier().setSystem("https://fhir.nhs.uk/STU3/Questionnaire/").setValue("CareConnect-EOLC-1");
-        questionnaire.setName("End of Life Care");
-        questionnaire.setTitle("End of Life Care");
-        questionnaire.setStatus(Enumerations.PublicationStatus.DRAFT);
-        questionnaire.addSubjectType("Patient");
-
-
-
-        /// CPR
-
-
-        Questionnaire.QuestionnaireItemComponent cpr = questionnaire.addItem();
-        cpr.setLinkId("EOL-CPRStatus-1");
-        cpr.setText("CPR Status");
-        cpr.setType(Questionnaire.QuestionnaireItemType.GROUP);
-
-        Questionnaire.QuestionnaireItemComponent item = cpr.addItem()
-                .setText("CPR Status")
-                .setLinkId("CPRStatus")
-                .setRepeats(false)
-                .setRequired(true)
-                .setType(Questionnaire.QuestionnaireItemType.STRING);
-        item.addExtension()
-                .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
-                .setValue(new Reference("https://fhir.nhs.uk/STU3/StructureDefinition/EOL-CPRStatus-Flag-1"));
-        item.addExtension()
-                .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
-                .setValue(new CodeType().setValue("Flag"));
-
-        cpr.addItem()
-                    .setText("Reason for CPR status")
-                    .setLinkId("reasonForCPRStatus")
-                    .setType(Questionnaire.QuestionnaireItemType.STRING);
-
-
-        item = cpr.addItem()
-                .setText("Non-professionals involved in CPR status discussion")
-                .setLinkId("personsInvolvedInDiscussion")
-                .setRepeats(true)
-                .setType(Questionnaire.QuestionnaireItemType.GROUP);
-
-        item.addItem().setText("Non-professionals involved in CPR status discussion (Coded)")
-                .setLinkId("personsInvolvedInDiscussionCoded")
-                .setType(Questionnaire.QuestionnaireItemType.CHOICE)
-                .setOptions(new Reference("Some valueSet2"));
-
-        item.addItem().setText("Non-professionals involved in CPR status discussion (Text)")
-                .setLinkId("personsInvolvedInDiscussionText")
-                .setType(Questionnaire.QuestionnaireItemType.STRING)
-                .setRequired(true);
-
-        cpr.addItem()
-                    .setText("CPR Status Mental Capacity")
-                    .setLinkId("cPRStatusMentalCapacity")
-                    .setType(Questionnaire.QuestionnaireItemType.STRING);
-
-        cpr.addItem()
-                .setText("Awareness Of Decision")
-                .setLinkId("awarenessOfDecision")
-                .setRepeats(true)
-                .setType(Questionnaire.QuestionnaireItemType.CHOICE)
-                .setOptions(new Reference("Some valueSet1"));
-
-        cpr.addItem()
-                .setText("Discussion Information")
-                .setLinkId("discussionInformation")
-                .setType(Questionnaire.QuestionnaireItemType.STRING);
-
-
-
-        item = cpr.addItem()
-                    .setText("Professionals Involved In Decision")
-                    .setLinkId("professionalsInvolvedInDecision")
-                    .setRepeats(true)
-                    .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
-         item.addExtension()
-                    .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
-                    .setValue(new Reference("https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Practitioner-1"));
-         item.addExtension()
-            .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
-            .setValue(new CodeType().setValue("Practitioner"));
-
-        item = cpr.addItem()
-                .setText("Professional Endorsing Status")
-                .setLinkId("professionalEndorsingStatus")
-                .setRepeats(true)
-                .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
-                item.addExtension()
-                    .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
-                    .setValue(new Reference("https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Practitioner-1"));
-                item.addExtension()
-                .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
-                .setValue(new CodeType().setValue("Practitioner"));
-
-///
-
-        Questionnaire.QuestionnaireItemComponent pref = questionnaire.addItem();
-        pref.setLinkId("EOL-Preferences-1");
-        pref.setText("Preferences");
-        pref.setType(Questionnaire.QuestionnaireItemType.GROUP);
-
-        pref.addItem()
-                    .setText("Preferred Place Of Death (Coded)")
-                    .setLinkId("preferredPlaceOfDeathCoded")
-                    .setType(Questionnaire.QuestionnaireItemType.CHOICE)
-                    .setOptions(new Reference("https://fhir.nhs.uk/STU3/ValueSet/EOL-PreferredPlaceDeath-Code-1"));
-
-        pref.addItem()
-                .setText("Preferred Place Of Death (Text)")
-                .setLinkId("preferredPlaceOfDeathText")
-                .setType(Questionnaire.QuestionnaireItemType.STRING);
-
-        pref.addItem()
-                .setText("Preferences and Wishes")
-                .setLinkId("preferencesAndWishes")
-                .setRepeats(true)
-                .setType(Questionnaire.QuestionnaireItemType.STRING);
-
-        pref.addItem()
-                .setText("Domestic Access and Information")
-                .setLinkId("domesticAccessAndInformation")
-                .setRepeats(true)
-                .setType(Questionnaire.QuestionnaireItemType.STRING);
-
-
-
-        Questionnaire.QuestionnaireItemComponent other = questionnaire.addItem();
-        other.setLinkId("EOL-OtherDocuments-1")
-                .setText("Other Documents")
-                .setType(Questionnaire.QuestionnaireItemType.GROUP);
-
-        other.addItem()
-                .setLinkId("documentName")
-                .setText("Document Name")
-                .setType(Questionnaire.QuestionnaireItemType.STRING)
-                .setRequired(true);
-
-        other.addItem()
-                .setLinkId("documentLocation")
-                .setText("Document Location")
-                .setType(Questionnaire.QuestionnaireItemType.STRING);
-
-        other.addItem()
-                .setLinkId("documentSource")
-                .setText("Document Source")
-                .setType(Questionnaire.QuestionnaireItemType.STRING);
-
-
-        Questionnaire.QuestionnaireItemComponent advpref = questionnaire.addItem();
-        advpref.setLinkId("EOL-Advanced-Preferences-1")
-        .setText("Advanced Preferences");
-        advpref.setType(Questionnaire.QuestionnaireItemType.GROUP);
-
-        item = advpref.addItem()
-                .setLinkId("EOL-ATPProblemHeader-Condition-1")
-                .setText("ATP Problem / Condition List")
-                .setRepeats(true)
-                .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
-                item.addExtension()
-                    .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
-                    .setValue(new Reference("https://fhir.nhs.uk/STU3/StructureDefinition/EOL-ATPProblemHeader-Condition-1"));
-                item.addExtension()
-                        .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
-                        .setValue(new CodeType().setValue("Condition"));
-
-        item = advpref.addItem()
-                .setLinkId("EOL-ATP-Intervention-1")
-                .setText("ATP Intervention")
-                .setRepeats(true)
-                .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
-                item.addExtension()
-                    .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
-                    .setValue(new Reference("https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Observation-1"));
-         item.addExtension()
-                .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
-                .setValue(new CodeType().setValue("Observation"));
-
-        Questionnaire.QuestionnaireItemComponent disability = questionnaire.addItem();
-        disability.setLinkId("EOL-Disabilitiess-1")
-        .setText("Disabilities");
-        disability.setType(Questionnaire.QuestionnaireItemType.GROUP);
-
-        item = disability.addItem()
-                .setLinkId("EOL-Disabilities-Condition-1")
-                .setText("Disability / Condition List")
-                .setRepeats(true)
-                .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
-                item.addExtension()
-                    .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
-                    .setValue(new Reference("https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-ProblemHeader-Condition-1"));
-                item.addExtension()
-                .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
-                .setValue(new CodeType().setValue("Condition"));;
-
-        Questionnaire.QuestionnaireItemComponent func = questionnaire.addItem();
-        func.setLinkId("EOL-FunctionalStatus-1").setText("Functional Status");
-        func.setType(Questionnaire.QuestionnaireItemType.GROUP);
-
-        item = func.addItem()
-                .setLinkId("EOL-FunctionalStatus-Observation-1")
-                .setText("Functional Status")
-                .setRepeats(true)
-                .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
-                item.addExtension()
-                .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
-                .setValue(new Reference("https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-EOL-FunctionalStatus-Observation-1"));
-                item.addExtension()
-                .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
-                .setValue(new CodeType().setValue("Observation"));
-
-        return questionnaire;
-    }
 
 
     public void loadFolder(String folder) throws Exception {
