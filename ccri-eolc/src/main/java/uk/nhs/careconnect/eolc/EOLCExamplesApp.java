@@ -151,6 +151,7 @@ public class EOLCExamplesApp implements CommandLineRunner {
         Questionnaire questionnaire = new Questionnaire();
         questionnaire.setId(fhirBundle.getNewId(questionnaire));
         questionnaire.addIdentifier().setSystem("https://fhir.airelogic.com/STU3/Questionnaire").setValue("NEWS2");
+        questionnaire.setUrl("https://fhir.airelogic.com/STU3/Questionnaire/NEWS2");
         questionnaire.setName("NEWS2");
         questionnaire.setTitle("NEWS2");
         questionnaire.setDescription("National Early Warning Score (NEWS)2");
@@ -245,6 +246,7 @@ public class EOLCExamplesApp implements CommandLineRunner {
         Questionnaire questionnaire = new Questionnaire();
         questionnaire.setId(fhirBundle.getNewId(questionnaire));
         questionnaire.addIdentifier().setSystem("https://fhir.nhs.uk/STU3/Questionnaire").setValue("CareConnect-EOLC-1");
+        questionnaire.setUrl("https://fhir.nhs.uk/STU3/Questionnaire/CareConnect-EOLC-1");
         questionnaire.setName("End of Life Care");
         questionnaire.setTitle("End of Life Care");
         questionnaire.setStatus(Enumerations.PublicationStatus.DRAFT);
@@ -334,6 +336,12 @@ public class EOLCExamplesApp implements CommandLineRunner {
                 .setDefinition("CPR Status [G8]")
                 .setLinkId("CPR001.6")
                 .setRepeats(true)
+                .setType(Questionnaire.QuestionnaireItemType.GROUP);
+
+        Questionnaire.QuestionnaireItemComponent subitem = item.addItem()
+                .setText("Coded entry for people involved in the discussion")
+                //.setDefinition("This group exists to specifically list those (who were not in the discussion) that have subsequently been made aware of the decision.")
+                .setLinkId("CPR001.6.1")
                 .setType(Questionnaire.QuestionnaireItemType.CHOICE)
                 .addOption(
                         new Questionnaire.QuestionnaireItemOptionComponent()
@@ -353,7 +361,12 @@ public class EOLCExamplesApp implements CommandLineRunner {
                                         .setCode("873341000000100")
                                         .setSystem("http://snomed.info/sct")
                                         .setDisplay("Discussion about resuscitation (procedure)")));
-
+        subitem = item.addItem()
+                .setText("Text entry for people involved in the discussionn")
+              //  .setDefinition("This group exists to specifically list those (who were not in the discussion) that have subsequently been made aware of the decision.")
+                .setLinkId("CPR001.6.2")
+                .setRequired(true)
+                .setType(Questionnaire.QuestionnaireItemType.STRING);
 
 
         item = cpr.addItem()
@@ -361,8 +374,13 @@ public class EOLCExamplesApp implements CommandLineRunner {
                 .setDefinition("This group exists to specifically list those (who were not in the discussion) that have subsequently been made aware of the decision.")
                 .setLinkId("CPR001.7")
                 .setRepeats(true)
-                .setType(Questionnaire.QuestionnaireItemType.CHOICE)
-                //.setOptions(new Reference("Some valueSet2"))
+                .setType(Questionnaire.QuestionnaireItemType.GROUP);
+
+        subitem = item.addItem()
+                .setText("Coded entry for people aware of the decision")
+               // .setDefinition("This group exists to specifically list those (who were not in the discussion) that have subsequently been made aware of the decision.")
+                .setLinkId("CPR001.7.1")
+                .setType(Questionnaire.QuestionnaireItemType.CHOICE)//.setOptions(new Reference("Some valueSet2"))
                 .addOption(
                         new Questionnaire.QuestionnaireItemOptionComponent()
                                 .setValue(new Coding()
@@ -381,6 +399,12 @@ public class EOLCExamplesApp implements CommandLineRunner {
                                 .setCode("845151000000104")
                                 .setSystem("http://snomed.info/sct")
                                 .setDisplay("Not aware of do not attempt cardiopulmonary resuscitation clinical decision (finding)")));
+         subitem = item.addItem()
+                .setText("Textual version of that person or group of people")
+              //  .setDefinition("This group exists to specifically list those (who were not in the discussion) that have subsequently been made aware of the decision.")
+                .setLinkId("CPR001.7.2")
+                .setRequired(true)
+                .setType(Questionnaire.QuestionnaireItemType.STRING);
 
 
         item = cpr.addItem()
@@ -1040,7 +1064,7 @@ public class EOLCExamplesApp implements CommandLineRunner {
                 .setLinkId("CPR001.2")
                 .setText("Reason for CPR status")
                 .addAnswer()
-                .setValue(new StringType("At home with family"));
+                .setValue(new StringType("The outcome of the CPR would not be of overall benefit to the patient"));
 
         cpr.addItem()
                 .setLinkId("CPR001.3")
@@ -1054,11 +1078,19 @@ public class EOLCExamplesApp implements CommandLineRunner {
                 .setCode("713656002")
                 .setDisplay("Discussion about cardiopulmonary resuscitation with family member (situation)");
 
-        cpr.addItem()
-                .setLinkId("CPR001.6")
+        group = cpr.addItem()
+                .setLinkId("CPR001.6");
+
+        group.addItem()
+                .setLinkId("CPR001.6.1")
                 .setText("Persons involved in discussion")
                 .addAnswer()
                 .setValue(persons);
+        group.addItem()
+                .setLinkId("CPR001.6.2")
+                .setText("Persons involved in discussion")
+                .addAnswer()
+                .setValue(new StringType().setValue("Supporting inforamtion not provided."));
 
         Coding aware = new Coding();
         aware
@@ -1066,11 +1098,20 @@ public class EOLCExamplesApp implements CommandLineRunner {
                 .setCode("975291000000108")
                 .setDisplay("Family member informed of cardiopulmonary resuscitation clinical decision (situation)");
 
-        cpr.addItem()
-                .setLinkId("CPR001.7")
+        group = cpr.addItem()
+                .setLinkId("CPR001.7");
+
+        group.addItem()
+                .setLinkId("CPR001.7.1")
                 .setText("Persons or organisations made aware of the decision")
                 .addAnswer()
                 .setValue(aware);
+
+        group.addItem()
+                .setLinkId("CPR001.7.1")
+                .setText("Persons or organisations made aware of the decision")
+                .addAnswer()
+                .setValue(new StringType().setValue("Uncle Bob has been made aware of the decision"));
 
         cpr.addItem()
                 .setLinkId("CPR001.8")
