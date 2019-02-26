@@ -1310,10 +1310,6 @@ public class INTEROPenExamplesApp implements CommandLineRunner {
 
         bundle.addEntry().setResource(carePlan);
 
-        Questionnaire questionnaire = getEOLCQuestionnaire();
-
-        System.out.println(ctxFHIR.newXmlParser().setPrettyPrint(true).encodeResourceToString(questionnaire));
-        bundle.addEntry().setResource(questionnaire);
 
         fhirBundle.processBundleResources(bundle);
 
