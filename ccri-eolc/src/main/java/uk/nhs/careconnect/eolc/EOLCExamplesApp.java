@@ -445,7 +445,7 @@ public class EOLCExamplesApp implements CommandLineRunner {
         advpref.setType(Questionnaire.QuestionnaireItemType.GROUP);
 
         Questionnaire.QuestionnaireItemComponent subgroup = advpref.addItem()
-                .setLinkId("ATP001")
+                .setLinkId("ATP001.1")
 
                 .setText("Clinical Problems and Advised Interventions")
                 .setDefinition("This is effectively making up a Treatment Escalation Plan or and Emergency Treatment Plan.")
@@ -453,7 +453,7 @@ public class EOLCExamplesApp implements CommandLineRunner {
                 .setType(Questionnaire.QuestionnaireItemType.GROUP);
 
         item = subgroup.addItem()
-                .setLinkId("ATP001a")
+                .setLinkId("ATP001.1a")
                 .setText("Clinical Problems and Advised Interventions")
                 .setDefinition("")
                 .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
@@ -466,7 +466,7 @@ public class EOLCExamplesApp implements CommandLineRunner {
 
 
         Questionnaire.QuestionnaireItemComponent subgroupitem = subgroup.addItem()
-                .setLinkId("ATP001b")
+                .setLinkId("ATP001.1b")
                 .setText("Clinical Problems and Advised Interventions")
                 .setDefinition("ATP [G4]")
                 .setRepeats(true)
@@ -488,7 +488,7 @@ public class EOLCExamplesApp implements CommandLineRunner {
 
         item = subgroupitem.addItem()
                 .setLinkId("ATP001.1.2")
-                .setText("ATP Intervention")
+                .setText("Treatment Level")
                 .setDefinition("ATP [G5] Note: the CarePlan should be linked to the Condition via CarePlan.adresses")
                 .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
         item.addExtension()
@@ -513,7 +513,7 @@ public class EOLCExamplesApp implements CommandLineRunner {
 
         subgroup = advpref.addItem()
                 .setLinkId("ATP001.3")
-                .setText("Advance Decision to Refuse Treatment")
+                .setText("Intervention")
                 .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
         subgroup.addExtension()
                 .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
@@ -538,7 +538,7 @@ public class EOLCExamplesApp implements CommandLineRunner {
 
         item = subgroup.addItem()
                 .setLinkId("ATP001.4.2")
-                .setText("ReSPECT Patient Care Priority Priority")
+                .setText("ReSPECT Patient Care Priority - Textual")
                 .setDefinition("ATP [G18]")
                 .setType(Questionnaire.QuestionnaireItemType.STRING);
 
@@ -554,7 +554,7 @@ public class EOLCExamplesApp implements CommandLineRunner {
         lpa.setType(Questionnaire.QuestionnaireItemType.GROUP);
 
         item = lpa.addItem()
-                .setLinkId("LPA001")
+                .setLinkId("LPA001.1")
                 .setText("Lasting Power of Attorney For Health and Welfare")
                 .setDefinition("LPA [G2]")
                 .setRequired(true)
@@ -1303,7 +1303,7 @@ public class EOLCExamplesApp implements CommandLineRunner {
         bundle.addEntry().setResource(lpaf);
 
         lpa.addItem()
-                .setLinkId("LPA001")
+                .setLinkId("LPA001.1")
                 .setText("Lasting Power of Attorney For Health and Welfare")
                 .addAnswer()
                 .setValue(new Reference(uuidtag +lpaf.getIdElement().getIdPart()));
