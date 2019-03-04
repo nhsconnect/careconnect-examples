@@ -254,7 +254,7 @@ public class EOLCExamplesApp implements CommandLineRunner {
         questionnaire.addSubjectType("Patient");
         questionnaire
                 .setDescription("EoL National Minimum Dataset")
-                .setCopyright("Copyright © 2017 NHS Digital");
+                .setCopyright("Copyright © 2019 NHS Digital");
         questionnaire.setPurpose("EoL National Minimum Dataset (v2.3) WIP.xlsx");
 
     // EOL Register
