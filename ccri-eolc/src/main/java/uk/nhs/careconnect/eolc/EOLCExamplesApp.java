@@ -128,7 +128,7 @@ public class EOLCExamplesApp implements CommandLineRunner {
         Boolean loadDocuments = false;
 
        // KGM This is now fairly static. Use careconnect-cli to load the resource
-       // postQuestionnaire();
+        postQuestionnaire();
 
 
         // Kewn example patient
@@ -248,9 +248,13 @@ public class EOLCExamplesApp implements CommandLineRunner {
         questionnaire.setUrl("https://fhir.nhs.uk/STU3/Questionnaire/CareConnect-EOLC-1");
         questionnaire.setName("End of Life Care");
         questionnaire.setTitle("End of Life Care");
+        questionnaire.setVersion("0.1");
         questionnaire.setStatus(Enumerations.PublicationStatus.DRAFT);
+        questionnaire.setPublisher("NHS Digital").setDate(new Date());
         questionnaire.addSubjectType("Patient");
-        questionnaire.setDescription("EoL National Minimum Dataset");
+        questionnaire
+                .setDescription("EoL National Minimum Dataset")
+                .setCopyright("Copyright © 2017 NHS Digital");
         questionnaire.setPurpose("EoL National Minimum Dataset (v2.3) WIP.xlsx");
 
     // EOL Register
@@ -280,8 +284,9 @@ public class EOLCExamplesApp implements CommandLineRunner {
         consent.setLinkId("CON");
         consent.setText("Consent");
         consent
-                .setDefinition("Consent [G3]")
+                .setDefinition("This is not a mandatory group to allow for the concept where the provider has not recorded consent.")
                 .setRepeats(false)
+                .setRequired(true)
                 .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
         consent.addExtension()
                 .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
@@ -326,13 +331,26 @@ public class EOLCExamplesApp implements CommandLineRunner {
         cpr.addItem()
                 .setText("CPR Status Mental Capacity")
                 .setLinkId("CPR001.3")
-                .setDefinition("CPR Status [G5]")
+                .setDefinition("Systems should also deliver the mental capacity information as a textual field.  The exact text will vary from system to system - below is a selection.  Some refer to \"\"consent\"\" rather than the \"\"capacity to be involved\"\".  This highlights a difference across England of this concept, which is not for the dataset to resolve.\n" +
+                        "\n" +
+                        "Example text strings could be:\n" +
+                        "+ This person has the mental capacity to participate in making these recommendations.  They have been fully involved in the decision making process.\n" +
+                        "+ This person lacks the capacity to to give consent (Mental Capacity Act 2005)\n" +
+                        "+ This person is less than 18 (UK except Scotland) / 16 (Scotland) years old and has sufficient maturity and understanding to participate in making this decision\n" +
+                        "+ This person is less than 18 (UK except Scotland) / 16 (Scotland) years old and does not currently have sufficient maturity and understanding to participate in making this decision\n" +
+                        "+ This person has the mental capacity to participate in making these recommendations, but they have declined to discuss the decision.")
                 .setType(Questionnaire.QuestionnaireItemType.STRING);
 
 
         item = cpr.addItem()
                 .setText("Persons involved in discussion")
-                .setDefinition("CPR Status [G8]")
+                .setDefinition("This group lists the persons involved in the discussion.\n" +
+                        "\n" +
+                        "Feedback indicated it might be helpful to split those present from those involved.  For V1 this is a level of complexity that may not be supported around the country.\n" +
+                        "\n" +
+                        "It was also highlighted that this is a discussion with, NOT a decision by, the patient and their representatives.  CPR status is a clinical decision except in the situation where an adult with mental capacity has made the decision not to be resuscitated or where there is a Lasting Power of Attorney with authority to make such a decision.\n" +
+                        "\n" +
+                        "The persons involved in the discussion are most important where the patient lacks capacity.")
                 .setLinkId("CPR001.6")
                 .setRepeats(true)
                 .setType(Questionnaire.QuestionnaireItemType.GROUP);
@@ -409,7 +427,7 @@ public class EOLCExamplesApp implements CommandLineRunner {
         item = cpr.addItem()
                 .setText("Professionals Involved In Decision")
                 .setLinkId("CPR001.8")
-                .setDefinition("CPR Status [G14]")
+                //.setDefinition("CPR Status [G14]")
                 .setRepeats(true)
                 .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
         item.addExtension()
@@ -448,9 +466,10 @@ public class EOLCExamplesApp implements CommandLineRunner {
 
                 .setText("Clinical Problems and Advised Interventions")
                 .setDefinition("This is effectively making up a Treatment Escalation Plan or and Emergency Treatment Plan.")
-
+                .setRepeats(true)
                 .setType(Questionnaire.QuestionnaireItemType.GROUP);
 
+        /*
         item = subgroup.addItem()
                 .setLinkId("ATP001.1a")
                 .setText("Clinical Problems and Advised Interventions")
@@ -464,18 +483,20 @@ public class EOLCExamplesApp implements CommandLineRunner {
                 .setValue(new CodeType().setValue("List"));
 
 
+
         Questionnaire.QuestionnaireItemComponent subgroupitem = subgroup.addItem()
-                .setLinkId("ATP001.1b")
+                .setLinkId("ATP001.1")
                 .setText("Clinical Problems and Advised Interventions")
                 .setDefinition("ATP [G4]")
                 .setRepeats(true)
                 .setType(Questionnaire.QuestionnaireItemType.GROUP);
+                */
 
 
-        item = subgroupitem.addItem()
+        item = subgroup.addItem()
                 .setLinkId("ATP001.1.1")
                 .setText("ATP Problems")
-                .setDefinition("")
+                .setDefinition("Description of the problem or the condition.  Either a diagnosis or description of an event that could actually happen  eg. breathlessness, fits, delerium, worsening oral intake of foods and fluids")
                 .setRequired(true)
                 .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
         item.addExtension()
@@ -485,10 +506,16 @@ public class EOLCExamplesApp implements CommandLineRunner {
                 .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
                 .setValue(new CodeType().setValue("Condition"));
 
-        item = subgroupitem.addItem()
+        item = subgroup.addItem()
                 .setLinkId("ATP001.1.2")
                 .setText("Treatment Level")
-                .setDefinition("ATP [G5] Note: the CarePlan should be linked to the Condition via CarePlan.adresses")
+                .setDefinition("Different systems use different word collections.  However, respondents agreed that implementation guidance will request that only these four values can be used: \n" +
+                        "+ Comfort, symptomatic treatment only\n" +
+                        "+ Home/Hospice, treatment of reversible conditions as appropriate\n" +
+                        "+ Hospital, treatment of reversible conditions as appropriate\n" +
+                        "+ Intensive, full active treatment\n" +
+                        "\n" +
+                        "Some systems may include the treatment level as part of the intervention text, hence it cannot be mandatory.")
                 .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
         item.addExtension()
                 .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
@@ -500,6 +527,7 @@ public class EOLCExamplesApp implements CommandLineRunner {
 
         subgroup = advpref.addItem()
                 .setLinkId("ATP001.2")
+                .setRequired(true)
                 .setText("Anticipatory medicines/just in case box issued")
                 .setDefinition("To inform those providing care that anticipatory medicines or a just in case box have been issued. These medicines could be administered promptly by appropriate staff if indicated.")
                 .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
@@ -512,7 +540,9 @@ public class EOLCExamplesApp implements CommandLineRunner {
 
         subgroup = advpref.addItem()
                 .setLinkId("ATP001.3")
+                .setRequired(true)
                 .setText("Intervention")
+                .setDefinition("If ADRT is transmitted, then a status code should be transmitted.  It is acknowledged that some systems do not code this data, hence it cannot be mandatory.")
                 .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
         subgroup.addExtension()
                 .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
@@ -525,12 +555,12 @@ public class EOLCExamplesApp implements CommandLineRunner {
         subgroup = advpref.addItem()
                 .setLinkId("ATP001.4")
                 .setText("ReSPECT Care")
-                .setDefinition("ATP [G16]")
+                .setDefinition("This is special case to include the ReSPECT Priority Scale value.  Many systems have/will implement eReSPECT and therefore the value can be preserved when being transmitted between systems.")
                 .setType(Questionnaire.QuestionnaireItemType.GROUP);
 
         item = subgroup.addItem()
                 .setLinkId("ATP001.4.1")
-                .setText("ReSPECT Patient Care Priority Scale")
+                .setText("ReSPECT Patient Care Priority - Scale")
                 .setDefinition("1-100 Where 1= absolute priority on sustaining life and 100= absolute priority in comfort.")
                 .setRequired(true)
                 .setType(Questionnaire.QuestionnaireItemType.INTEGER);
@@ -538,11 +568,28 @@ public class EOLCExamplesApp implements CommandLineRunner {
         item = subgroup.addItem()
                 .setLinkId("ATP001.4.2")
                 .setText("ReSPECT Patient Care Priority - Textual")
-                .setDefinition("ATP [G18]")
+                .setDefinition("Where the ReSPECT priority is being transmitted, this value can include the ReSPECT Patient Care Priority statement - \"Considering the above priority, what is most important to you?\"")
                 .setType(Questionnaire.QuestionnaireItemType.STRING);
 
 
-        // TODO ADD IN PROVENANCE
+        subgroup = advpref.addItem()
+                .setLinkId("ATP001.5")
+                .setRequired(true)
+                .setText("Date of change in list of advance treatment preferences")
+                .setType(Questionnaire.QuestionnaireItemType.DATE);
+
+        subgroup = advpref.addItem()
+                .setLinkId("ATP001.6")
+                .setRequired(true)
+                .setText("Professional recording these changes to this list of Problems and Interventions")
+                .setDefinition("The professional recording the changes is mandatory as someone must have entered this data into the system.  This data may have been asked for overtly in the data entry form or may be taken from the user details of person logged in creating the record.")
+                .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
+        subgroup.addExtension()
+                .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
+                .setValue(new Reference("https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Practitioner-1"));
+        subgroup.addExtension()
+                .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
+                .setValue(new CodeType().setValue("Practitioner"));
 
         // LPA
 
@@ -550,12 +597,16 @@ public class EOLCExamplesApp implements CommandLineRunner {
         Questionnaire.QuestionnaireItemComponent lpa = questionnaire.addItem();
         lpa.setLinkId("LPA");
         lpa.setText("Lasting Power of Attorney");
+        lpa.setDefinition("Will detail what LPAs are in force and who the main contacts are wrt to each LPA.\n" +
+                "\n" +
+                "Some systems record all the LPA for finance, but this is outside the scope of this minimum dataset.\n" +
+                "\n" +
+                "NB.  Would not have an LPA HW for a child");
         lpa.setType(Questionnaire.QuestionnaireItemType.GROUP);
 
         item = lpa.addItem()
                 .setLinkId("LPA001.1")
                 .setText("Lasting Power of Attorney For Health and Welfare")
-                .setDefinition("LPA [G2]")
                 .setRequired(true)
                 .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
         item.addExtension()
@@ -568,7 +619,6 @@ public class EOLCExamplesApp implements CommandLineRunner {
         item = lpa.addItem()
                 .setLinkId("LPA001.2")
                 .setText("Persons Appointed")
-                .setDefinition("LPA [G4]")
                 .setRepeats(true)
                 .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
         item.addExtension()
@@ -597,6 +647,11 @@ public class EOLCExamplesApp implements CommandLineRunner {
         Questionnaire.QuestionnaireItemComponent func = questionnaire.addItem();
         func.setLinkId("FUN").setText("Functional Status")
                 .setRepeats(true)
+                .setDefinition("Respondents were all happy to use, or move to the Karnofsky codes.  The dataset should be encouraging this move to a nationally-agreed code.  However, it is mandatory for GPs to record the Electronic Frailty Index (EFI) of the patient, so both types of code must be capable of being transmitted.\n" +
+                        "\n" +
+                        "Systems without this coding will always be able to transmit a textual value.\n" +
+                        "\n" +
+                        "The FHIR resource provides a code and then an indicator for what code is being used.  Both Karnofsky and eFI can be transmitted.")
                 .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
         func.addExtension()
                 .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
@@ -612,7 +667,7 @@ public class EOLCExamplesApp implements CommandLineRunner {
         disability.setLinkId("DIS")
                 .setText("Disabilities");
         disability.setType(Questionnaire.QuestionnaireItemType.GROUP);
-
+/*
         item = disability.addItem()
                 .setLinkId("DIS001a")
                 .setText("Disability / Condition List")
@@ -623,10 +678,12 @@ public class EOLCExamplesApp implements CommandLineRunner {
         item.addExtension()
                 .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
                 .setValue(new CodeType().setValue("List"));
+                */
 
         item = disability.addItem()
-                .setLinkId("DIS001b")
-                .setText("Disability / Condition")
+                .setLinkId("DIS001.1")
+                .setText("Patient Disabilities")
+                .setDefinition("Repeating group of all current recorded disabilities.")
                 .setRepeats(true)
                 .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
         item.addExtension()
@@ -635,6 +692,19 @@ public class EOLCExamplesApp implements CommandLineRunner {
         item.addExtension()
                 .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
                 .setValue(new CodeType().setValue("Condition"));
+
+        item = disability.addItem()
+                .setLinkId("DIS001.2")
+                .setText("Professional recording these changes to Disabilities")
+                .setDefinition("The professional recording the changes is mandatory as someone must have entered this data into the system.  This data may have been asked for overtly in the data entry form or may be taken from the user details of person logged in creating the record.")
+                .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
+        item.addExtension()
+                .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
+                .setValue(new Reference("https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Practitioner-1"));
+        item.addExtension()
+                .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
+                .setValue(new CodeType().setValue("Practitioner"));
+
 
         /// EOL Preferences PREF
 
@@ -646,7 +716,7 @@ public class EOLCExamplesApp implements CommandLineRunner {
         subgroup = pref.addItem()
                 .setText("Preferred Place Of Death")
                 .setLinkId("PRE001.1")
-                .setDefinition("Preferences [G4]")
+                //.setDefinition("Preferences [G4]")
                 .setRequired(true)
                 .setType(Questionnaire.QuestionnaireItemType.GROUP);
 
@@ -654,33 +724,58 @@ public class EOLCExamplesApp implements CommandLineRunner {
         subgroup.addItem()
                 .setText("Preferred Place Of Death (Coded)")
                 .setLinkId("PRE001.1.2")
+                .setDefinition("Coded value of the preferred place of death.  Includes some codes to indicate that there is not yet (and maybe cannot be) a decision from the patient. ")
                 .setType(Questionnaire.QuestionnaireItemType.CHOICE)
                 .setOptions(new Reference("https://fhir.nhs.uk/STU3/ValueSet/EOL-PreferredPlaceDeath-Code-1"));
 
         subgroup.addItem()
                 .setText("Preferred Place Of Death (Text)")
                 .setLinkId("PRE001.1.3")
+                .setDefinition("Notes associated with the PPD code or, if not coded, text to describe the patient's preferred place of death.\n" +
+                        "\n" +
+                        "Examples include:\n" +
+                        "+ Care Home\n" +
+                        "+ Community Hospital\n" +
+                        "+ Home\n" +
+                        "+ Hospice\n" +
+                        "+ Hospital\n" +
+                        "+ Learning disability unit\n" +
+                        "+ Mental health unit\n" +
+                        "+ Not Yet Discussed\n" +
+                        "+ Nursing home\n" +
+                        "+ Patient Not Able To Discuss\n" +
+                        "+ Patient Not Wishing To State Preference\n" +
+                        "+ Residential home\n" +
+                        "+ \"Other\" plus text")
                 .setRequired(true)
                 .setType(Questionnaire.QuestionnaireItemType.STRING);
 
         pref.addItem()
                 .setText("Preferences and Wishes")
                 .setLinkId("PRE001.2")
+                .setDefinition("A free text field where overall preferences and wishes are captured.\n" +
+                        "\n" +
+                        "This is a catch-all data item where the whole of the patient's preferences are recorded.  This will include wishes for care and also cultural, religious and social needs.\n" +
+                        "\n" +
+                        "However, some systems retain the logical split between true \"\"personal preferences\"\" and other data about the patient's home and living conditions.  The dataset attempts to split these two types of data, as many systems will record them separately.")
                 .setType(Questionnaire.QuestionnaireItemType.STRING);
 
         pref.addItem()
                 .setText("Domestic Access and Information")
                 .setLinkId("PRE001.3")
+                .setDefinition("A free text field for information relating to home, access and other practical domestic and living information relating to the patient.")
                 .setType(Questionnaire.QuestionnaireItemType.STRING);
 
         item = pref.addItem()
                 .setLinkId("PRE001.4")
+                .setRequired(true)
                 .setText("Preferences Date Recorded")
                 .setType(Questionnaire.QuestionnaireItemType.DATETIME);
 
         item = pref.addItem()
                 .setLinkId("PRE001.5")
                 .setText("Preferences Author")
+                .setDefinition("The professional recording the changes is mandatory as someone must have entered this data into the system.  This data may have been asked for overtly in the data entry form or may be taken from the user details of person logged in creating the record.")
                 .setRequired(true)
                 .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
         item.addExtension()
