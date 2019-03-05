@@ -99,7 +99,6 @@ public class EOLCExamplesApp implements CommandLineRunner {
 
     FhirBundleUtil fhirBundle;
 
-
     public static final String SNOMEDCT = "http://snomed.info/sct";
 
 
@@ -113,7 +112,7 @@ public class EOLCExamplesApp implements CommandLineRunner {
 
         //client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
         client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8182/ccri-messaging/STU3/");
-        //client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
+        //client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri/camel/ccri-messaging/STU3/");
         client.setEncoding(EncodingEnum.XML);
 
         // clientGPC = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri/camel/fhir/gpc/");
@@ -1024,6 +1023,7 @@ public class EOLCExamplesApp implements CommandLineRunner {
                 .getCode().addCoding().setCode("702779007").setSystem("http://snomed.info/sct").setDisplay("Emergency health care plan agreed");
         bundle.addEntry().setResource(carePlan);
 
+        /*
         ListResource list = new ListResource();
         list.setId(fhirBundle.getNewId(list));
         list.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
@@ -1035,19 +1035,21 @@ public class EOLCExamplesApp implements CommandLineRunner {
         }
         list.addEntry().setItem(new Reference(uuidtag + condition.getIdElement().getIdPart()));
         bundle.addEntry().setResource(list);
-
-        QuestionnaireResponse.QuestionnaireResponseItemComponent group = adv.addItem()
+        */
+   /*
+        QuestionnaireResponse.QuestionnaireResponseItemComponent group =
                 .setLinkId("ATP001")
                 .setText("Clinical Problems and Advised Interventions");
+
 
         group.addItem()
                 .setLinkId("ATP001a")
                 .setText("Clinical Problems and Advised Interventions")
                 .addAnswer()
                 .setValue(new Reference(uuidtag + list.getIdElement().getIdPart()));
-
-        QuestionnaireResponse.QuestionnaireResponseItemComponent subgroup = group.addItem()
-                .setLinkId("ATP001b")
+*/
+        QuestionnaireResponse.QuestionnaireResponseItemComponent subgroup = adv.addItem()
+                .setLinkId("ATP001.1")
                 .setText("Clinical Problems and Advised Interventions");
 
         subgroup.addItem()
@@ -1078,26 +1080,40 @@ public class EOLCExamplesApp implements CommandLineRunner {
         bundle.addEntry().setResource(adrt);
 
         adv.addItem()
-                .setLinkId("ATP001.1.3")
+                .setLinkId("ATP001.3")
                 .setText("Advance Decision to Refuse Treatment")
                 .addAnswer()
                 .setValue(new Reference(uuidtag + adrt.getIdElement().getIdPart()));
 
-        group = adv.addItem()
+        QuestionnaireResponse.QuestionnaireResponseItemComponent group = adv.addItem()
                 .setLinkId("ATP001.4")
                 .setText("ReSPECT Care");
-        group.addItem()
+
+         group.addItem()
                 .setLinkId("ATP001.4.1")
                 .setText("ReSPECT Patient Care Priority Scale")
                 .addAnswer()
                 .setValue(new IntegerType().setValue(50));
+
         group.addItem()
                 .setLinkId("ATP001.4.2")
                 .setText("ReSPECT Patient Care Priority Priority")
                 .addAnswer()
                 .setValue(new StringType().setValue("Patient is to be treated and made as comfortable as possible."));
 
-
+        try {
+            adv.addItem()
+                    .setLinkId("ATP001.5")
+                    .setText("Date of change in list of advance treatment preferences")
+                    .addAnswer()
+                    .setValue(new DateType().setValue(sdf.parse("2018-08-01")));
+        } catch (Exception ex) {
+        }
+        adv.addItem()
+                .setLinkId("ATP001.6")
+                .setText("Professional recording these changes")
+                .addAnswer()
+                .setValue(new Reference(uuidtag + consultant.getIdElement().getIdPart()));
 
         // EOL Register
 
@@ -1219,7 +1235,7 @@ public class EOLCExamplesApp implements CommandLineRunner {
                 .setValue(aware);
 
         group.addItem()
-                .setLinkId("CPR001.7.1")
+                .setLinkId("CPR001.7.2")
                 .setText("Persons or organisations made aware of the decision")
                 .addAnswer()
                 .setValue(new StringType().setValue("Uncle Bob has been made aware of the decision"));
@@ -1374,11 +1390,17 @@ public class EOLCExamplesApp implements CommandLineRunner {
         bundle.addEntry().setResource(condition);
 
         disability.addItem()
-                .setLinkId("DIS001b")
-                .setText("Disability / Condition List")
+                .setLinkId("DIS001.1")
+                .setText("Patient Disabilities")
                 .addAnswer()
                 .setValue(new Reference(uuidtag +condition.getIdElement().getIdPart()));
 
+        disability.addItem()
+                .setLinkId("DIS001.2")
+                .setText("Professional recording these changes to Disabilities")
+                .addAnswer()
+                .setValue(new Reference(uuidtag +consultant.getIdElement().getIdPart()));
+        /*
         list = new ListResource();
         list.setId(fhirBundle.getNewId(list));
         list.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
@@ -1396,7 +1418,7 @@ public class EOLCExamplesApp implements CommandLineRunner {
                 .setText("Disability / Condition List")
                 .addAnswer()
                 .setValue(new Reference(uuidtag +list.getIdElement().getIdPart()));
-
+*/
 
         // LPA
 
