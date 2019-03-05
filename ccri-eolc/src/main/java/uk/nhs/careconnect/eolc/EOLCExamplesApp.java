@@ -146,6 +146,32 @@ public class EOLCExamplesApp implements CommandLineRunner {
 
     }
 
+    public void postQuestionnaire() {
+
+
+        SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd");
+
+        Calendar cal = Calendar.getInstance();
+
+        Date oneHourBack = cal.getTime();
+        fhirBundle = new FhirBundleUtil(Bundle.BundleType.COLLECTION);
+
+        Bundle bundle = new Bundle();
+
+        Questionnaire questionnaire = getEOLCQuestionnaire();
+        bundle.addEntry().setResource(questionnaire);
+        fhirBundle.processBundleResources(bundle);
+
+        questionnaire = getNEWS2Questionnaire();
+        bundle.addEntry().setResource(questionnaire);
+        fhirBundle.processBundleResources(bundle);
+
+        System.out.println(ctxFHIR.newXmlParser().setPrettyPrint(true).encodeResourceToString(fhirBundle.getFhirDocument()));
+
+        MethodOutcome outcome = client.create().resource(fhirBundle.getFhirDocument()).execute();
+
+    }
+
     public Questionnaire getNEWS2Questionnaire() {
         Questionnaire questionnaire = new Questionnaire();
         questionnaire.setId(fhirBundle.getNewId(questionnaire));
@@ -231,15 +257,7 @@ public class EOLCExamplesApp implements CommandLineRunner {
         return questionnaire;
     }
 
-    private void addObsExtension(Questionnaire.QuestionnaireItemComponent obs, String profile) {
-            obs.addExtension()
-                    .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
-                    .setValue(new Reference(profile));
-            obs.addExtension()
-                    .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
-                    .setValue(new CodeType().setValue("Observation"));
 
-    }
 
     public Questionnaire getEOLCQuestionnaire() {
         Questionnaire questionnaire = new Questionnaire();
@@ -541,7 +559,7 @@ public class EOLCExamplesApp implements CommandLineRunner {
         subgroup = advpref.addItem()
                 .setLinkId("ATP001.3")
                 .setRequired(true)
-                .setText("Intervention")
+                .setText("Advance Decision to Refuse Treatment")
                 .setDefinition("If ADRT is transmitted, then a status code should be transmitted.  It is acknowledged that some systems do not code this data, hence it cannot be mandatory.")
                 .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
         subgroup.addExtension()
@@ -885,8 +903,7 @@ public class EOLCExamplesApp implements CommandLineRunner {
         eolc.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
         eolc.getIdentifier().setSystem(midYorksQuestionnaireResponseIdentifier).setValue("yas0");
 
-        Reference qRef = new Reference();
-        qRef.getIdentifier().setSystem("https://fhir.nhs.uk/STU3/Questionnaire").setValue("CareConnect-EOLC-1");
+        Reference qRef = new Reference("https://fhir.nhs.uk/STU3/Questionnaire/CareConnect-EOLC-1");
         eolc.setQuestionnaire(qRef);
         eolc.setStatus(QuestionnaireResponse.QuestionnaireResponseStatus.COMPLETED);
         try {
@@ -1834,31 +1851,7 @@ public class EOLCExamplesApp implements CommandLineRunner {
     }
 
 
-    public void postQuestionnaire() {
 
-
-        SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd");
-
-        Calendar cal = Calendar.getInstance();
-
-        Date oneHourBack = cal.getTime();
-        fhirBundle = new FhirBundleUtil(Bundle.BundleType.COLLECTION);
-
-        Bundle bundle = new Bundle();
-
-        Questionnaire questionnaire = getEOLCQuestionnaire();
-        bundle.addEntry().setResource(questionnaire);
-        fhirBundle.processBundleResources(bundle);
-
-        questionnaire = getNEWS2Questionnaire();
-        bundle.addEntry().setResource(questionnaire);
-        fhirBundle.processBundleResources(bundle);
-
-        System.out.println(ctxFHIR.newXmlParser().setPrettyPrint(true).encodeResourceToString(fhirBundle.getFhirDocument()));
-
-        MethodOutcome outcome = client.create().resource(fhirBundle.getFhirDocument()).execute();
-
-    }
 
     public void postOneEDITESTPATIENT() {
         String nhsNumber = "9999999468";
@@ -2018,5 +2011,15 @@ public class EOLCExamplesApp implements CommandLineRunner {
 
     }
 
+
+    private void addObsExtension(Questionnaire.QuestionnaireItemComponent obs, String profile) {
+        obs.addExtension()
+                .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
+                .setValue(new Reference(profile));
+        obs.addExtension()
+                .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
+                .setValue(new CodeType().setValue("Observation"));
+
+    }
 
 }
