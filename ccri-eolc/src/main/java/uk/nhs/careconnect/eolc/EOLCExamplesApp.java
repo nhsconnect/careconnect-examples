@@ -128,7 +128,7 @@ public class EOLCExamplesApp implements CommandLineRunner {
         Boolean loadDocuments = false;
 
        // KGM This is now fairly static. Use careconnect-cli to load the resource
-       //postQuestionnaire();
+       postQuestionnaire();
 
 
         // Kewn example patient
