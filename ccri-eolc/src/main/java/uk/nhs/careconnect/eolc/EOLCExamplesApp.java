@@ -61,6 +61,7 @@ public class EOLCExamplesApp implements CommandLineRunner {
     private static String midYorksQuestionnaireIdentifier = "https://fhir.midyorks.nhs.uk/Questionnaire/Identifier";
 
     private static String midYorksConditionIdentifier = "https://fhir.midyorks.nhs.uk/Condition/Identifier";
+    private static String midYorksProcedureIdentifier = "https://fhir.midyorks.nhs.uk/Procedure/Identifier";
 
     private static String yasDocumentIdentifier = "https://fhir.yas.nhs.uk/DocumentReference/Identifier";
 
@@ -127,7 +128,7 @@ public class EOLCExamplesApp implements CommandLineRunner {
         Boolean loadDocuments = false;
 
        // KGM This is now fairly static. Use careconnect-cli to load the resource
-        postQuestionnaire();
+       //postQuestionnaire();
 
 
         // Kewn example patient
@@ -274,200 +275,6 @@ public class EOLCExamplesApp implements CommandLineRunner {
                 .setCopyright("Copyright © 2019 NHS Digital");
         questionnaire.setPurpose("EoL National Minimum Dataset (v2.3) WIP.xlsx");
 
-    // EOL Register
-
-        Questionnaire.QuestionnaireItemComponent register = questionnaire.addItem();
-        register.setLinkId("EOL-Register-1");
-        register.setText("Register");
-        register.setType(Questionnaire.QuestionnaireItemType.GROUP);
-
-        register
-                .setText("EOL Register")
-                .setLinkId("EOL")
-                .setDefinition("EoL Register ")
-                .setRepeats(false)
-                .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
-        register.addExtension()
-                .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
-                .setValue(new Reference("https://fhir.nhs.uk/STU3/StructureDefinition/EOL-Register-Flag-1"));
-        register.addExtension()
-                .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
-                .setValue(new CodeType().setValue("Flag"));
-
-        // consent
-
-
-        Questionnaire.QuestionnaireItemComponent consent = questionnaire.addItem();
-        consent.setLinkId("CON");
-        consent.setText("Consent");
-        consent
-                .setDefinition("This is not a mandatory group to allow for the concept where the provider has not recorded consent.")
-                .setRepeats(false)
-                .setRequired(true)
-                .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
-        consent.addExtension()
-                .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
-                .setValue(new Reference("https://fhir.nhs.uk/STU3/StructureDefinition/EOL-Consent-1"));
-        consent.addExtension()
-                .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
-                .setValue(new CodeType().setValue("Consent"));
-
-        /// CPR
-
-
-        Questionnaire.QuestionnaireItemComponent cpr = questionnaire.addItem();
-        cpr.setLinkId("CPR");
-        cpr.setText("CPR Status");
-
-        cpr.setType(Questionnaire.QuestionnaireItemType.GROUP);
-
-        Questionnaire.QuestionnaireItemComponent item = cpr.addItem()
-                .setText("CPR Status")
-                .setLinkId("CPR001.1")
-                .setDefinition("If CPR status is transmitted, then the status code is mandatory.  This will be a straight binary choice of \"For\" or \"Not For\" resuscitation.\n" +
-                        "\n" +
-                        "Whilst there is a code for \"not aware of decision\", this is not a logical requirement for this dataset.  Systems that are unaware of the status will logically not be sending this group.\n" +
-                        "\n" +
-                        "\"For CPR\" will generally be only used when reversing a \"Not for CPR\" status.  People who haven't yet had the discussion would just not have a recorded CPR decision in file.")
-                .setRepeats(false)
-                .setRequired(true)
-                .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
-        item.addExtension()
-                .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
-                .setValue(new Reference("https://fhir.nhs.uk/STU3/StructureDefinition/EOL-CPRStatus-Flag-1"));
-        item.addExtension()
-                .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
-                .setValue(new CodeType().setValue("Flag"));
-
-        cpr.addItem()
-                .setText("Reason for CPR status")
-                .setDefinition("It will be a strong recommendation that a reason for the status change is included although it is unlikely that it can be mandated from the start.  Also, as this is an MVP dataset, it could be argued that UEC are most keen on seeing the status rather than additional text.  However, in the example below if the text reads \"There is a valid advance decision to refuse CPR in the following circumstances...\", then the DNACPR decision is not for all circumstances.  In that case, the business may wish to consider whether a non-blanket DNACPR would be better recorded as an Advance Treatment Preference so that where it is appropriate can be made clear.")
-                .setLinkId("CPR001.2")
-                .setType(Questionnaire.QuestionnaireItemType.STRING);
-
-        cpr.addItem()
-                .setText("CPR Status Mental Capacity")
-                .setLinkId("CPR001.3")
-                .setDefinition("Systems should also deliver the mental capacity information as a textual field.  The exact text will vary from system to system - below is a selection.  Some refer to \"\"consent\"\" rather than the \"\"capacity to be involved\"\".  This highlights a difference across England of this concept, which is not for the dataset to resolve.\n" +
-                        "\n" +
-                        "Example text strings could be:\n" +
-                        "+ This person has the mental capacity to participate in making these recommendations.  They have been fully involved in the decision making process.\n" +
-                        "+ This person lacks the capacity to to give consent (Mental Capacity Act 2005)\n" +
-                        "+ This person is less than 18 (UK except Scotland) / 16 (Scotland) years old and has sufficient maturity and understanding to participate in making this decision\n" +
-                        "+ This person is less than 18 (UK except Scotland) / 16 (Scotland) years old and does not currently have sufficient maturity and understanding to participate in making this decision\n" +
-                        "+ This person has the mental capacity to participate in making these recommendations, but they have declined to discuss the decision.")
-                .setType(Questionnaire.QuestionnaireItemType.STRING);
-
-
-        item = cpr.addItem()
-                .setText("Persons involved in discussion")
-                .setDefinition("This group lists the persons involved in the discussion.\n" +
-                        "\n" +
-                        "Feedback indicated it might be helpful to split those present from those involved.  For V1 this is a level of complexity that may not be supported around the country.\n" +
-                        "\n" +
-                        "It was also highlighted that this is a discussion with, NOT a decision by, the patient and their representatives.  CPR status is a clinical decision except in the situation where an adult with mental capacity has made the decision not to be resuscitated or where there is a Lasting Power of Attorney with authority to make such a decision.\n" +
-                        "\n" +
-                        "The persons involved in the discussion are most important where the patient lacks capacity.")
-                .setLinkId("CPR001.6")
-                .setRepeats(true)
-                .setType(Questionnaire.QuestionnaireItemType.GROUP);
-
-        Questionnaire.QuestionnaireItemComponent subitem = item.addItem()
-                .setText("Coded entry for people involved in the discussion")
-                //.setDefinition("This group exists to specifically list those (who were not in the discussion) that have subsequently been made aware of the decision.")
-                .setLinkId("CPR001.6.1")
-                .setType(Questionnaire.QuestionnaireItemType.CHOICE)
-                .addOption(
-                        new Questionnaire.QuestionnaireItemOptionComponent()
-                                .setValue(new Coding()
-                                        .setCode("713656002")
-                                        .setSystem("http://snomed.info/sct")
-                                        .setDisplay("Discussion about cardiopulmonary resuscitation with family member (situation)")))
-                .addOption(
-                        new Questionnaire.QuestionnaireItemOptionComponent()
-                                .setValue(new Coding()
-                                        .setCode("873351000000102")
-                                        .setSystem("http://snomed.info/sct")
-                                        .setDisplay("Discussion about resuscitation with carer (situation)")))
-                .addOption(
-                        new Questionnaire.QuestionnaireItemOptionComponent()
-                                .setValue(new Coding()
-                                        .setCode("873341000000100")
-                                        .setSystem("http://snomed.info/sct")
-                                        .setDisplay("Discussion about resuscitation (procedure)")));
-        subitem = item.addItem()
-                .setText("Text entry for people involved in the discussionn")
-              //  .setDefinition("This group exists to specifically list those (who were not in the discussion) that have subsequently been made aware of the decision.")
-                .setLinkId("CPR001.6.2")
-                .setRequired(true)
-                .setType(Questionnaire.QuestionnaireItemType.STRING);
-
-
-        item = cpr.addItem()
-                .setText("Persons or organisations made aware of the decision")
-                .setDefinition("This group exists to specifically list those (who were not in the discussion) that have subsequently been made aware of the decision.")
-                .setLinkId("CPR001.7")
-                .setRepeats(true)
-                .setType(Questionnaire.QuestionnaireItemType.GROUP);
-
-        subitem = item.addItem()
-                .setText("Coded entry for people aware of the decision")
-               // .setDefinition("This group exists to specifically list those (who were not in the discussion) that have subsequently been made aware of the decision.")
-                .setLinkId("CPR001.7.1")
-                .setType(Questionnaire.QuestionnaireItemType.CHOICE)//.setOptions(new Reference("Some valueSet2"))
-                .addOption(
-                        new Questionnaire.QuestionnaireItemOptionComponent()
-                                .setValue(new Coding()
-                                        .setCode("975311000000109")
-                                        .setSystem("http://snomed.info/sct")
-                                        .setDisplay("Carer informed of cardiopulmonary resuscitation clinical decision (situation)")))
-                .addOption(
-                    new Questionnaire.QuestionnaireItemOptionComponent()
-                        .setValue(new Coding()
-                                .setCode("975291000000108")
-                                .setSystem("http://snomed.info/sct")
-                                .setDisplay("Family member informed of cardiopulmonary resuscitation clinical decision (situation)")))
-                                .addOption(
-                    new Questionnaire.QuestionnaireItemOptionComponent()
-                        .setValue(new Coding()
-                                .setCode("845151000000104")
-                                .setSystem("http://snomed.info/sct")
-                                .setDisplay("Not aware of do not attempt cardiopulmonary resuscitation clinical decision (finding)")));
-         subitem = item.addItem()
-                .setText("Textual version of that person or group of people")
-              //  .setDefinition("This group exists to specifically list those (who were not in the discussion) that have subsequently been made aware of the decision.")
-                .setLinkId("CPR001.7.2")
-                .setRequired(true)
-                .setType(Questionnaire.QuestionnaireItemType.STRING);
-
-
-        item = cpr.addItem()
-                .setText("Professionals Involved In Decision")
-                .setLinkId("CPR001.8")
-                //.setDefinition("CPR Status [G14]")
-                .setRepeats(true)
-                .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
-        item.addExtension()
-                .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
-                .setValue(new Reference("https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Practitioner-1"));
-        item.addExtension()
-                .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
-                .setValue(new CodeType().setValue("Practitioner"));
-
-
-        item = cpr.addItem()
-                .setText("Professional Endorsing Status")
-                .setLinkId("CPR001.10")
-                .setDefinition("Optional group for professional endorsement, where the profession recording the status change is not senior enough to be de facto endorser.")
-                .setRepeats(true)
-                .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
-        item.addExtension()
-                .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
-                .setValue(new Reference("https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Practitioner-1"));
-        item.addExtension()
-                .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
-                .setValue(new CodeType().setValue("Practitioner"));
-
 
         // Advanced Treatment Preferences
 
@@ -486,31 +293,8 @@ public class EOLCExamplesApp implements CommandLineRunner {
                 .setRepeats(true)
                 .setType(Questionnaire.QuestionnaireItemType.GROUP);
 
-        /*
-        item = subgroup.addItem()
-                .setLinkId("ATP001.1a")
-                .setText("Clinical Problems and Advised Interventions")
-                .setDefinition("")
-                .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
-        item.addExtension()
-                .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
-                .setValue(new Reference("https://fhir.nhs.uk/STU3/StructureDefinition/EOL-ATPProblemList-List-1"));
-        item.addExtension()
-                .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
-                .setValue(new CodeType().setValue("List"));
 
-
-
-        Questionnaire.QuestionnaireItemComponent subgroupitem = subgroup.addItem()
-                .setLinkId("ATP001.1")
-                .setText("Clinical Problems and Advised Interventions")
-                .setDefinition("ATP [G4]")
-                .setRepeats(true)
-                .setType(Questionnaire.QuestionnaireItemType.GROUP);
-                */
-
-
-        item = subgroup.addItem()
+        Questionnaire.QuestionnaireItemComponent item = subgroup.addItem()
                 .setLinkId("ATP001.1.1")
                 .setText("ATP Problems")
                 .setDefinition("Description of the problem or the condition.  Either a diagnosis or description of an event that could actually happen  eg. breathlessness, fits, delerium, worsening oral intake of foods and fluids")
@@ -608,74 +392,184 @@ public class EOLCExamplesApp implements CommandLineRunner {
                 .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
                 .setValue(new CodeType().setValue("Practitioner"));
 
-        // LPA
 
 
-        Questionnaire.QuestionnaireItemComponent lpa = questionnaire.addItem();
-        lpa.setLinkId("LPA");
-        lpa.setText("Lasting Power of Attorney");
-        lpa.setDefinition("Will detail what LPAs are in force and who the main contacts are wrt to each LPA.\n" +
-                "\n" +
-                "Some systems record all the LPA for finance, but this is outside the scope of this minimum dataset.\n" +
-                "\n" +
-                "NB.  Would not have an LPA HW for a child");
-        lpa.setType(Questionnaire.QuestionnaireItemType.GROUP);
 
-        item = lpa.addItem()
-                .setLinkId("LPA001.1")
-                .setText("Lasting Power of Attorney For Health and Welfare")
+        // consent
+
+
+        Questionnaire.QuestionnaireItemComponent consent = questionnaire.addItem();
+        consent.setLinkId("CON");
+        consent.setText("Consent");
+        consent
+                .setDefinition("This is not a mandatory group to allow for the concept where the provider has not recorded consent.")
+                .setRepeats(false)
+                .setRequired(true)
+                .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
+        consent.addExtension()
+                .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
+                .setValue(new Reference("https://fhir.nhs.uk/STU3/StructureDefinition/EOL-Consent-1"));
+        consent.addExtension()
+                .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
+                .setValue(new CodeType().setValue("Consent"));
+
+        /// CPR
+
+
+        Questionnaire.QuestionnaireItemComponent cpr = questionnaire.addItem();
+        cpr.setLinkId("CPR");
+        cpr.setText("CPR Status");
+
+        cpr.setType(Questionnaire.QuestionnaireItemType.GROUP);
+
+        item = cpr.addItem()
+                .setText("CPR Status")
+                .setLinkId("CPR001.1")
+                .setDefinition("If CPR status is transmitted, then the status code is mandatory.  This will be a straight binary choice of \"For\" or \"Not For\" resuscitation.\n" +
+                        "\n" +
+                        "Whilst there is a code for \"not aware of decision\", this is not a logical requirement for this dataset.  Systems that are unaware of the status will logically not be sending this group.\n" +
+                        "\n" +
+                        "\"For CPR\" will generally be only used when reversing a \"Not for CPR\" status.  People who haven't yet had the discussion would just not have a recorded CPR decision in file.")
+                .setRepeats(false)
                 .setRequired(true)
                 .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
         item.addExtension()
                 .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
-                .setValue(new Reference("https://fhir.nhs.uk/STU3/StructureDefinition/EOL-LPA-Flag-1"));
+                .setValue(new Reference("https://fhir.nhs.uk/STU3/StructureDefinition/EOL-CPRStatus-Flag-1"));
         item.addExtension()
                 .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
                 .setValue(new CodeType().setValue("Flag"));
 
-        item = lpa.addItem()
-                .setLinkId("LPA001.2")
-                .setText("Persons Appointed")
+        cpr.addItem()
+                .setText("Reason for CPR status")
+                .setDefinition("It will be a strong recommendation that a reason for the status change is included although it is unlikely that it can be mandated from the start.  Also, as this is an MVP dataset, it could be argued that UEC are most keen on seeing the status rather than additional text.  However, in the example below if the text reads \"There is a valid advance decision to refuse CPR in the following circumstances...\", then the DNACPR decision is not for all circumstances.  In that case, the business may wish to consider whether a non-blanket DNACPR would be better recorded as an Advance Treatment Preference so that where it is appropriate can be made clear.")
+                .setLinkId("CPR001.2")
+                .setType(Questionnaire.QuestionnaireItemType.STRING);
+
+        cpr.addItem()
+                .setText("CPR Status Mental Capacity")
+                .setLinkId("CPR001.3")
+                .setDefinition("Systems should also deliver the mental capacity information as a textual field.  The exact text will vary from system to system - below is a selection.  Some refer to \"\"consent\"\" rather than the \"\"capacity to be involved\"\".  This highlights a difference across England of this concept, which is not for the dataset to resolve.\n" +
+                        "\n" +
+                        "Example text strings could be:\n" +
+                        "+ This person has the mental capacity to participate in making these recommendations.  They have been fully involved in the decision making process.\n" +
+                        "+ This person lacks the capacity to to give consent (Mental Capacity Act 2005)\n" +
+                        "+ This person is less than 18 (UK except Scotland) / 16 (Scotland) years old and has sufficient maturity and understanding to participate in making this decision\n" +
+                        "+ This person is less than 18 (UK except Scotland) / 16 (Scotland) years old and does not currently have sufficient maturity and understanding to participate in making this decision\n" +
+                        "+ This person has the mental capacity to participate in making these recommendations, but they have declined to discuss the decision.")
+                .setType(Questionnaire.QuestionnaireItemType.STRING);
+
+
+        item = cpr.addItem()
+                .setText("Persons involved in discussion")
+                .setDefinition("This group lists the persons involved in the discussion.\n" +
+                        "\n" +
+                        "Feedback indicated it might be helpful to split those present from those involved.  For V1 this is a level of complexity that may not be supported around the country.\n" +
+                        "\n" +
+                        "It was also highlighted that this is a discussion with, NOT a decision by, the patient and their representatives.  CPR status is a clinical decision except in the situation where an adult with mental capacity has made the decision not to be resuscitated or where there is a Lasting Power of Attorney with authority to make such a decision.\n" +
+                        "\n" +
+                        "The persons involved in the discussion are most important where the patient lacks capacity.")
+                .setLinkId("CPR001.6")
+                .setRepeats(true)
+                .setType(Questionnaire.QuestionnaireItemType.GROUP);
+
+        Questionnaire.QuestionnaireItemComponent subitem = item.addItem()
+                .setText("Coded entry for people involved in the discussion")
+                //.setDefinition("This group exists to specifically list those (who were not in the discussion) that have subsequently been made aware of the decision.")
+                .setLinkId("CPR001.6.1")
+                .setType(Questionnaire.QuestionnaireItemType.CHOICE)
+                .addOption(
+                        new Questionnaire.QuestionnaireItemOptionComponent()
+                                .setValue(new Coding()
+                                        .setCode("713656002")
+                                        .setSystem("http://snomed.info/sct")
+                                        .setDisplay("Discussion about cardiopulmonary resuscitation with family member (situation)")))
+                .addOption(
+                        new Questionnaire.QuestionnaireItemOptionComponent()
+                                .setValue(new Coding()
+                                        .setCode("873351000000102")
+                                        .setSystem("http://snomed.info/sct")
+                                        .setDisplay("Discussion about resuscitation with carer (situation)")))
+                .addOption(
+                        new Questionnaire.QuestionnaireItemOptionComponent()
+                                .setValue(new Coding()
+                                        .setCode("873341000000100")
+                                        .setSystem("http://snomed.info/sct")
+                                        .setDisplay("Discussion about resuscitation (procedure)")));
+        subitem = item.addItem()
+                .setText("Text entry for people involved in the discussion")
+              //  .setDefinition("This group exists to specifically list those (who were not in the discussion) that have subsequently been made aware of the decision.")
+                .setLinkId("CPR001.6.2")
+                .setRequired(true)
+                .setType(Questionnaire.QuestionnaireItemType.STRING);
+
+
+        item = cpr.addItem()
+                .setText("Persons or organisations made aware of the decision")
+                .setDefinition("This group exists to specifically list those (who were not in the discussion) that have subsequently been made aware of the decision.")
+                .setLinkId("CPR001.7")
+                .setRepeats(true)
+                .setType(Questionnaire.QuestionnaireItemType.GROUP);
+
+        subitem = item.addItem()
+                .setText("Coded entry for people aware of the decision")
+               // .setDefinition("This group exists to specifically list those (who were not in the discussion) that have subsequently been made aware of the decision.")
+                .setLinkId("CPR001.7.1")
+                .setType(Questionnaire.QuestionnaireItemType.CHOICE)//.setOptions(new Reference("Some valueSet2"))
+                .addOption(
+                        new Questionnaire.QuestionnaireItemOptionComponent()
+                                .setValue(new Coding()
+                                        .setCode("975311000000109")
+                                        .setSystem("http://snomed.info/sct")
+                                        .setDisplay("Carer informed of cardiopulmonary resuscitation clinical decision (situation)")))
+                .addOption(
+                    new Questionnaire.QuestionnaireItemOptionComponent()
+                        .setValue(new Coding()
+                                .setCode("975291000000108")
+                                .setSystem("http://snomed.info/sct")
+                                .setDisplay("Family member informed of cardiopulmonary resuscitation clinical decision (situation)")))
+                                .addOption(
+                    new Questionnaire.QuestionnaireItemOptionComponent()
+                        .setValue(new Coding()
+                                .setCode("845151000000104")
+                                .setSystem("http://snomed.info/sct")
+                                .setDisplay("Not aware of do not attempt cardiopulmonary resuscitation clinical decision (finding)")));
+         subitem = item.addItem()
+                .setText("Textual version of that person or group of people")
+              //  .setDefinition("This group exists to specifically list those (who were not in the discussion) that have subsequently been made aware of the decision.")
+                .setLinkId("CPR001.7.2")
+                .setRequired(true)
+                .setType(Questionnaire.QuestionnaireItemType.STRING);
+
+
+        item = cpr.addItem()
+                .setText("Professionals Involved In Decision")
+                .setLinkId("CPR001.8")
+                //.setDefinition("CPR Status [G14]")
                 .setRepeats(true)
                 .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
         item.addExtension()
                 .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
-                .setValue(new Reference("https://fhir.nhs.uk/STU3/StructureDefinition/EOL-LPA-RelatedPerson-1"));
+                .setValue(new Reference("https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Practitioner-1"));
         item.addExtension()
                 .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
-                .setValue(new CodeType().setValue("RelatedPerson"));
-
-        // Prognosis
+                .setValue(new CodeType().setValue("Practitioner"));
 
 
-        Questionnaire.QuestionnaireItemComponent prognosis = questionnaire.addItem();
-        prognosis.setLinkId("PRO");
-        prognosis.setText("Prognosis")
-                .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
-        prognosis.addExtension()
-                .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
-                .setValue(new Reference("https://fhir.nhs.uk/STU3/StructureDefinition/EOL-Prognosis-ClinicalImpression-1"));
-        prognosis.addExtension()
-                .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
-                .setValue(new CodeType().setValue("ClinicalImpression"));
-
-        // FUNCTIONAL
-
-        Questionnaire.QuestionnaireItemComponent func = questionnaire.addItem();
-        func.setLinkId("FUN").setText("Functional Status")
+        item = cpr.addItem()
+                .setText("Professional Endorsing Status")
+                .setLinkId("CPR001.10")
+                .setDefinition("Optional group for professional endorsement, where the profession recording the status change is not senior enough to be de facto endorser.")
                 .setRepeats(true)
-                .setDefinition("Respondents were all happy to use, or move to the Karnofsky codes.  The dataset should be encouraging this move to a nationally-agreed code.  However, it is mandatory for GPs to record the Electronic Frailty Index (EFI) of the patient, so both types of code must be capable of being transmitted.\n" +
-                        "\n" +
-                        "Systems without this coding will always be able to transmit a textual value.\n" +
-                        "\n" +
-                        "The FHIR resource provides a code and then an indicator for what code is being used.  Both Karnofsky and eFI can be transmitted.")
                 .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
-        func.addExtension()
+        item.addExtension()
                 .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
-                .setValue(new Reference("https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-EOL-FunctionalStatus-Observation-1"));
-        func.addExtension()
+                .setValue(new Reference("https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Practitioner-1"));
+        item.addExtension()
                 .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
-                .setValue(new CodeType().setValue("Observation"));
+                .setValue(new CodeType().setValue("Practitioner"));
+
+
 
         // DISABILITY
 
@@ -721,6 +615,112 @@ public class EOLCExamplesApp implements CommandLineRunner {
         item.addExtension()
                 .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
                 .setValue(new CodeType().setValue("Practitioner"));
+
+        // Documentments
+
+
+        Questionnaire.QuestionnaireItemComponent other = questionnaire.addItem();
+        other.setLinkId("DOC")
+                .setText("Other Documents")
+                .setRepeats(true)
+                .setDefinition("Details of other relevant planning documentsand where to find them.")
+                .setType(Questionnaire.QuestionnaireItemType.GROUP);
+
+        other.addItem()
+                .setLinkId("DOC001.1")
+                .setText("Document Name")
+                .setDefinition("Description of name of the advance planning document")
+                .setType(Questionnaire.QuestionnaireItemType.STRING)
+                .setRequired(true);
+
+        other.addItem()
+                .setLinkId("DOC001.2")
+                .setText("Document Location")
+                .setDefinition("Location of the document")
+                .setType(Questionnaire.QuestionnaireItemType.STRING);
+
+        other.addItem()
+                .setLinkId("DOC001.3")
+                .setText("Document Source")
+                .setDefinition("Description of the organisation where the document was created with the patient.")
+                .setType(Questionnaire.QuestionnaireItemType.STRING);
+
+
+
+        // EOL Register
+
+        Questionnaire.QuestionnaireItemComponent register = questionnaire.addItem();
+        register.setLinkId("EOL-Register-1");
+        register.setText("Register");
+        register.setType(Questionnaire.QuestionnaireItemType.GROUP);
+
+        register
+                .setText("EOL Register")
+                .setLinkId("EOL")
+                .setDefinition("EoL Register ")
+                .setRepeats(false)
+                .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
+        register.addExtension()
+                .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
+                .setValue(new Reference("https://fhir.nhs.uk/STU3/StructureDefinition/EOL-Register-Flag-1"));
+        register.addExtension()
+                .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
+                .setValue(new CodeType().setValue("Flag"));
+
+        // FUNCTIONAL
+
+        Questionnaire.QuestionnaireItemComponent func = questionnaire.addItem();
+        func.setLinkId("FUN").setText("Functional Status")
+                .setRepeats(true)
+                .setDefinition("Respondents were all happy to use, or move to the Karnofsky codes.  The dataset should be encouraging this move to a nationally-agreed code.  However, it is mandatory for GPs to record the Electronic Frailty Index (EFI) of the patient, so both types of code must be capable of being transmitted.\n" +
+                        "\n" +
+                        "Systems without this coding will always be able to transmit a textual value.\n" +
+                        "\n" +
+                        "The FHIR resource provides a code and then an indicator for what code is being used.  Both Karnofsky and eFI can be transmitted.")
+                .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
+        func.addExtension()
+                .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
+                .setValue(new Reference("https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-EOL-FunctionalStatus-Observation-1"));
+        func.addExtension()
+                .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
+                .setValue(new CodeType().setValue("Observation"));
+
+        // LPA
+
+
+        Questionnaire.QuestionnaireItemComponent lpa = questionnaire.addItem();
+        lpa.setLinkId("LPA");
+        lpa.setText("Lasting Power of Attorney");
+        lpa.setDefinition("Will detail what LPAs are in force and who the main contacts are wrt to each LPA.\n" +
+                "\n" +
+                "Some systems record all the LPA for finance, but this is outside the scope of this minimum dataset.\n" +
+                "\n" +
+                "NB.  Would not have an LPA HW for a child");
+        lpa.setType(Questionnaire.QuestionnaireItemType.GROUP);
+
+        item = lpa.addItem()
+                .setLinkId("LPA001.1")
+                .setText("Lasting Power of Attorney For Health and Welfare")
+                .setRequired(true)
+                .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
+        item.addExtension()
+                .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
+                .setValue(new Reference("https://fhir.nhs.uk/STU3/StructureDefinition/EOL-LPA-Flag-1"));
+        item.addExtension()
+                .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
+                .setValue(new CodeType().setValue("Flag"));
+
+        item = lpa.addItem()
+                .setLinkId("LPA001.2")
+                .setText("Persons Appointed")
+                .setRepeats(true)
+                .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
+        item.addExtension()
+                .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
+                .setValue(new Reference("https://fhir.nhs.uk/STU3/StructureDefinition/EOL-LPA-RelatedPerson-1"));
+        item.addExtension()
+                .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
+                .setValue(new CodeType().setValue("RelatedPerson"));
 
 
         /// EOL Preferences PREF
@@ -805,34 +805,23 @@ public class EOLCExamplesApp implements CommandLineRunner {
 
 
 
-        // OTHER
+        // Prognosis
 
 
-        Questionnaire.QuestionnaireItemComponent other = questionnaire.addItem();
-        other.setLinkId("DOC")
-                .setText("Other Documents")
-                .setRepeats(true)
-                .setDefinition("Details of other relevant planning documentsand where to find them.")
-                .setType(Questionnaire.QuestionnaireItemType.GROUP);
+        Questionnaire.QuestionnaireItemComponent prognosis = questionnaire.addItem();
+        prognosis.setLinkId("PRO");
+        prognosis.setText("Prognosis")
+                .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
+        prognosis.addExtension()
+                .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
+                .setValue(new Reference("https://fhir.nhs.uk/STU3/StructureDefinition/EOL-Prognosis-ClinicalImpression-1"));
+        prognosis.addExtension()
+                .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
+                .setValue(new CodeType().setValue("ClinicalImpression"));
 
-        other.addItem()
-                .setLinkId("DOC001.1")
-                .setText("Document Name")
-                .setDefinition("Description of name of the advance planning document")
-                .setType(Questionnaire.QuestionnaireItemType.STRING)
-                .setRequired(true);
 
-        other.addItem()
-                .setLinkId("DOC001.2")
-                .setText("Document Location")
-                .setDefinition("Location of the document")
-                .setType(Questionnaire.QuestionnaireItemType.STRING);
 
-        other.addItem()
-                .setLinkId("DOC001.3")
-                .setText("Document Source")
-                .setDefinition("Description of the organisation where the document was created with the patient.")
-                .setType(Questionnaire.QuestionnaireItemType.STRING);
+
 
 
 
@@ -865,6 +854,7 @@ public class EOLCExamplesApp implements CommandLineRunner {
 
         outputStream.close();
     }
+
 
 
 
@@ -910,45 +900,48 @@ public class EOLCExamplesApp implements CommandLineRunner {
         } catch (Exception ex) {
         }
 
-        QuestionnaireResponse.QuestionnaireResponseItemComponent register = eolc.addItem()
-                .setLinkId("EOL")
-                .setText("EoL Register");
+        QuestionnaireResponse.QuestionnaireResponseItemComponent adv = eolc.addItem()
+                .setLinkId("ATP")
+                .setText("Advanced Treatment Preferences");
 
-        QuestionnaireResponse.QuestionnaireResponseItemComponent other = eolc.addItem()
-                .setLinkId("DOC")
-                .setText("Other Documents");
-
-        QuestionnaireResponse.QuestionnaireResponseItemComponent disability = eolc.addItem()
-                .setLinkId("DIS")
-                .setText("Disabilitiess");
-
-        QuestionnaireResponse.QuestionnaireResponseItemComponent func = eolc.addItem()
-                .setLinkId("FUN")
-                .setText("Functional Status");
-
-        QuestionnaireResponse.QuestionnaireResponseItemComponent prog = eolc.addItem()
-                .setLinkId("PRO")
-                .setText("Prognosis");
 
         QuestionnaireResponse.QuestionnaireResponseItemComponent consent = eolc.addItem()
                 .setLinkId("CON")
                 .setText("Consent");
 
-        QuestionnaireResponse.QuestionnaireResponseItemComponent preferences = eolc.addItem()
-                .setLinkId("PREF")
-                .setText("Preferences");
+        QuestionnaireResponse.QuestionnaireResponseItemComponent cpr = eolc.addItem()
+                .setLinkId("CPR")
+                .setText("CPR Status");
 
-        QuestionnaireResponse.QuestionnaireResponseItemComponent adv = eolc.addItem()
-                .setLinkId("ATP")
-                .setText("Advanced Treatment Preferences");
+        QuestionnaireResponse.QuestionnaireResponseItemComponent disability = eolc.addItem()
+                .setLinkId("DIS")
+                .setText("Disabilities");
+
+        QuestionnaireResponse.QuestionnaireResponseItemComponent other = eolc.addItem()
+                .setLinkId("DOC")
+                .setText("Other Documents");
+
+        QuestionnaireResponse.QuestionnaireResponseItemComponent register = eolc.addItem()
+                .setLinkId("EOL")
+                .setText("EOL Register");
+
+        QuestionnaireResponse.QuestionnaireResponseItemComponent func = eolc.addItem()
+                .setLinkId("FUN")
+                .setText("Functional Status");
 
         QuestionnaireResponse.QuestionnaireResponseItemComponent lpa = eolc.addItem()
                 .setLinkId("LPA")
                 .setText("Lasting Power of Attorney");
 
-        QuestionnaireResponse.QuestionnaireResponseItemComponent cpr = eolc.addItem()
-                .setLinkId("CPR")
-                .setText("CPR Status");
+
+        QuestionnaireResponse.QuestionnaireResponseItemComponent preferences = eolc.addItem()
+                .setLinkId("PREF")
+                .setText("Preferences");
+
+
+        QuestionnaireResponse.QuestionnaireResponseItemComponent prog = eolc.addItem()
+                .setLinkId("PRO")
+                .setText("Prognosis");
 
         bundle.addEntry().setResource(eolc);
 
@@ -1023,46 +1016,39 @@ public class EOLCExamplesApp implements CommandLineRunner {
                 .getCode().addCoding().setCode("702779007").setSystem("http://snomed.info/sct").setDisplay("Emergency health care plan agreed");
         bundle.addEntry().setResource(carePlan);
 
-        /*
-        ListResource list = new ListResource();
-        list.setId(fhirBundle.getNewId(list));
-        list.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
-        list.addIdentifier().setSystem(tppListIdentifier).setValue("listATP");
-        list.setSource(new Reference(uuidtag + consultant.getId()));
-        try {
-            list.setDate(sdf.parse("2018-08-01"));
-        } catch (Exception ex) {
-        }
-        list.addEntry().setItem(new Reference(uuidtag + condition.getIdElement().getIdPart()));
-        bundle.addEntry().setResource(list);
-        */
-   /*
-        QuestionnaireResponse.QuestionnaireResponseItemComponent group =
-                .setLinkId("ATP001")
-                .setText("Clinical Problems and Advised Interventions");
 
 
-        group.addItem()
-                .setLinkId("ATP001a")
-                .setText("Clinical Problems and Advised Interventions")
-                .addAnswer()
-                .setValue(new Reference(uuidtag + list.getIdElement().getIdPart()));
-*/
+
         QuestionnaireResponse.QuestionnaireResponseItemComponent subgroup = adv.addItem()
                 .setLinkId("ATP001.1")
                 .setText("Clinical Problems and Advised Interventions");
 
         subgroup.addItem()
                 .setLinkId("ATP001.1.1")
-                .setText("Problem or Condition")
+                .setText("ATP Problems")
                 .addAnswer()
                 .setValue(new Reference(uuidtag + condition.getIdElement().getIdPart()));
 
         subgroup.addItem()
                 .setLinkId("ATP001.1.2")
-                .setText("ATP Intervention")
+                .setText("Treatment Level")
                 .addAnswer()
                 .setValue(new Reference(uuidtag + carePlan.getIdElement().getIdPart()));
+
+        Procedure procedure = new Procedure();
+        procedure.setId(fhirBundle.getNewId(procedure));
+        procedure.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
+        procedure.addIdentifier().setSystem(midYorksProcedureIdentifier).setValue("adrt");
+        procedure.setStatus(Procedure.ProcedureStatus.COMPLETED);
+        procedure.getCode().addCoding().setSystem(SNOMEDCT).setCode("376201000000102").setDisplay("Issue of palliative care anticipatory medication box (procedure)");
+        bundle.addEntry().setResource(procedure);
+
+        adv.addItem()
+                .setLinkId("ATP001.2")
+                .setText("Anticipatory medicines/just in case box issued")
+                .addAnswer()
+                .setValue(new Reference(uuidtag + procedure.getIdElement().getIdPart()));
+
 
         // Add in ADRT
         Flag adrt = new Flag();
@@ -1091,13 +1077,13 @@ public class EOLCExamplesApp implements CommandLineRunner {
 
          group.addItem()
                 .setLinkId("ATP001.4.1")
-                .setText("ReSPECT Patient Care Priority Scale")
+                .setText("ReSPECT Patient Care Priority - Scale")
                 .addAnswer()
                 .setValue(new IntegerType().setValue(50));
 
         group.addItem()
                 .setLinkId("ATP001.4.2")
-                .setText("ReSPECT Patient Care Priority Priority")
+                .setText("ReSPECT Patient Care Priority - Textual")
                 .addAnswer()
                 .setValue(new StringType().setValue("Patient is to be treated and made as comfortable as possible."));
 
@@ -1111,9 +1097,10 @@ public class EOLCExamplesApp implements CommandLineRunner {
         }
         adv.addItem()
                 .setLinkId("ATP001.6")
-                .setText("Professional recording these changes")
+                .setText("Professional recording these changes to this list of Problems and Interventions")
                 .addAnswer()
                 .setValue(new Reference(uuidtag + consultant.getIdElement().getIdPart()));
+
 
         // EOL Register
 
@@ -1161,6 +1148,8 @@ public class EOLCExamplesApp implements CommandLineRunner {
         consentR.addActor()
                 .setRole(role)
                 .setReference(new Reference(uuidtag + consultant.getId()));
+        consentR.addPolicy()
+                .setAuthority("http://fhir.nhs.uk/Policy/EOLC");
         bundle.addEntry().setResource(consentR);
 
         consent.addAnswer().setValue(new Reference(uuidtag + consentR.getIdElement().getIdPart()));
@@ -1210,14 +1199,14 @@ public class EOLCExamplesApp implements CommandLineRunner {
 
         group.addItem()
                 .setLinkId("CPR001.6.1")
-                .setText("Persons involved in discussion")
+                .setText("Coded entry for people involved in the discussion")
                 .addAnswer()
                 .setValue(persons);
         group.addItem()
                 .setLinkId("CPR001.6.2")
-                .setText("Persons involved in discussion")
+                .setText("Text entry for people involved in the discussion")
                 .addAnswer()
-                .setValue(new StringType().setValue("Supporting inforamtion not provided."));
+                .setValue(new StringType().setValue("Supporting information not provided."));
 
         Coding aware = new Coding();
         aware
@@ -1230,13 +1219,13 @@ public class EOLCExamplesApp implements CommandLineRunner {
 
         group.addItem()
                 .setLinkId("CPR001.7.1")
-                .setText("Persons or organisations made aware of the decision")
+                .setText("Coded entry for people aware of the decision")
                 .addAnswer()
                 .setValue(aware);
 
         group.addItem()
                 .setLinkId("CPR001.7.2")
-                .setText("Persons or organisations made aware of the decision")
+                .setText("Textual version of that person or group of people")
                 .addAnswer()
                 .setValue(new StringType().setValue("Uncle Bob has been made aware of the decision"));
 
@@ -1278,7 +1267,7 @@ public class EOLCExamplesApp implements CommandLineRunner {
 
         group.addItem()
                 .setLinkId("PRE001.1.3")
-                .setText("Preferred Place Of Death Text")
+                .setText("Preferred Place Of Death (Text)")
                 .addAnswer()
                 .setValue(new StringType("At home with family"));
 
@@ -1296,9 +1285,9 @@ public class EOLCExamplesApp implements CommandLineRunner {
         try {
             preferences.addItem()
                     .setLinkId("PRE001.4")
-                    .setText("Preferences Date")
+                    .setText("Preferences Date Recorded")
                     .addAnswer()
-                    .setValue(new DateType().setValue(sdf.parse("2019-02-11")));
+                    .setValue(new DateTimeType().setValue(sdf.parse("2019-02-11")));
         } catch (Exception ex) {
 
         }
@@ -1400,25 +1389,7 @@ public class EOLCExamplesApp implements CommandLineRunner {
                 .setText("Professional recording these changes to Disabilities")
                 .addAnswer()
                 .setValue(new Reference(uuidtag +consultant.getIdElement().getIdPart()));
-        /*
-        list = new ListResource();
-        list.setId(fhirBundle.getNewId(list));
-        list.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
-        list.addIdentifier().setSystem(tppListIdentifier).setValue("listDIS");
-        list.setSource(new Reference(uuidtag + consultant.getId()));
-        try {
-            list.setDate(sdf.parse("2018-08-01"));
-        } catch (Exception ex) {
-        }
-        list.addEntry().setItem(new Reference(uuidtag + condition.getIdElement().getIdPart()));
-        bundle.addEntry().setResource(list);
 
-        disability.addItem()
-                .setLinkId("DIS001a")
-                .setText("Disability / Condition List")
-                .addAnswer()
-                .setValue(new Reference(uuidtag +list.getIdElement().getIdPart()));
-*/
 
         // LPA
 
@@ -1461,7 +1432,23 @@ public class EOLCExamplesApp implements CommandLineRunner {
                 .addAnswer()
                 .setValue(new Reference(uuidtag + person.getIdElement().getIdPart()));
 
-        /*
+        fhirBundle.processBundleResources(bundle);
+
+        System.out.println(ctxFHIR.newXmlParser().setPrettyPrint(true).encodeResourceToString(fhirBundle.getFhirDocument()));
+
+
+        try {
+            saveBundle(nhsNumber + ".xml", "patient", fhirBundle.getFhirDocument());
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+        MethodOutcome outcome = client.create().resource(fhirBundle.getFhirDocument()).execute();
+
+        return fhirBundle.getFhirDocument();
+    }
+
+
+     /*
         CareTeam careTeamH = new CareTeam();
         careTeamH.setId(fhirBundle.getNewId(careTeamH));
         careTeamH.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
@@ -1482,21 +1469,6 @@ public class EOLCExamplesApp implements CommandLineRunner {
 
         bundle.addEntry().setResource(careTeam);
 */
-
-        fhirBundle.processBundleResources(bundle);
-
-        System.out.println(ctxFHIR.newXmlParser().setPrettyPrint(true).encodeResourceToString(fhirBundle.getFhirDocument()));
-
-
-        try {
-            saveBundle(nhsNumber + ".xml", "patient", fhirBundle.getFhirDocument());
-        } catch (Exception ex) {
-            System.out.println(ex.getMessage());
-        }
-        MethodOutcome outcome = client.create().resource(fhirBundle.getFhirDocument()).execute();
-
-        return fhirBundle.getFhirDocument();
-    }
 
 
     public void doSetUp() {
