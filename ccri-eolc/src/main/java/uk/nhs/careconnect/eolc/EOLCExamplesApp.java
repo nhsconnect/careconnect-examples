@@ -112,8 +112,8 @@ public class EOLCExamplesApp implements CommandLineRunner {
         }
 
         //client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
-        client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8182/ccri-messaging/STU3/");
-        //client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri/camel/ccri-messaging/STU3/");
+        //client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8182/ccri-messaging/STU3/");
+        client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri/camel/ccri-messaging/STU3/");
         client.setEncoding(EncodingEnum.XML);
 
         // clientGPC = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri/camel/fhir/gpc/");
