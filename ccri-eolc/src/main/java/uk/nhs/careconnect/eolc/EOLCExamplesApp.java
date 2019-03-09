@@ -112,8 +112,8 @@ public class EOLCExamplesApp implements CommandLineRunner {
         }
 
         //client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
-        client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8182/ccri-messaging/STU3/");
-        //client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri/camel/ccri-messaging/STU3/");
+        //client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8182/ccri-messaging/STU3/");
+        client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri/camel/ccri-messaging/STU3/");
         client.setEncoding(EncodingEnum.XML);
 
         // clientGPC = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri/camel/fhir/gpc/");
@@ -322,11 +322,11 @@ public class EOLCExamplesApp implements CommandLineRunner {
                 .setText("Treatment Level")
                 .setType(Questionnaire.QuestionnaireItemType.REFERENCE);
         
-                item.addExtension().setUrl("http://hl7.org/fhir/StructureDefinition/designNote").setValue(new MarkdownType("Different systems use different word collections.  However, respondents agreed that implementation guidance will request that only these four values can be used: " +
-                        "+ Comfort, symptomatic treatment only" +
-                        "+ Home/Hospice, treatment of reversible conditions as appropriate " +
-                        "+ Hospital, treatment of reversible conditions as appropriate" +
-                        "+ Intensive, full active treatment" +
+                item.addExtension().setUrl("http://hl7.org/fhir/StructureDefinition/designNote").setValue(new MarkdownType("Different systems use different word collections.  However, respondents agreed that implementation guidance will request that only these four values can be used: \\n" +
+                        "* Comfort, symptomatic treatment only\\n" +
+                        "* Home/Hospice, treatment of reversible conditions as appropriate \\n" +
+                        "* Hospital, treatment of reversible conditions as appropriate\\n" +
+                        "* Intensive, full active treatment\\n\\n" +
                         "Some systems may include the treatment level as part of the intervention text, hence it cannot be mandatory."));
                
         item.addExtension()
@@ -468,14 +468,13 @@ public class EOLCExamplesApp implements CommandLineRunner {
                 .setText("CPR Status Mental Capacity")
                 .setLinkId("CPR001.3")
                 .setType(Questionnaire.QuestionnaireItemType.STRING)
-                .addExtension().setUrl("http://hl7.org/fhir/StructureDefinition/designNote").setValue(new MarkdownType("Systems should also deliver the mental capacity information as a textual field.  The exact text will vary from system to system - below is a selection.  Some refer to \"\"consent\"\" rather than the \"\"capacity to be involved\"\".  This highlights a difference across England of this concept, which is not for the dataset to resolve.\n" +
-                        "\n" +
-                        "Example text strings could be:\n" +
-                        "+ This person has the mental capacity to participate in making these recommendations.  They have been fully involved in the decision making process.\n" +
-                        "+ This person lacks the capacity to to give consent (Mental Capacity Act 2005)\n" +
-                        "+ This person is less than 18 (UK except Scotland) / 16 (Scotland) years old and has sufficient maturity and understanding to participate in making this decision\n" +
-                        "+ This person is less than 18 (UK except Scotland) / 16 (Scotland) years old and does not currently have sufficient maturity and understanding to participate in making this decision\n" +
-                        "+ This person has the mental capacity to participate in making these recommendations, but they have declined to discuss the decision."));
+                .addExtension().setUrl("http://hl7.org/fhir/StructureDefinition/designNote").setValue(new MarkdownType("Systems should also deliver the mental capacity information as a textual field.  The exact text will vary from system to system - below is a selection.  Some refer to \"\"consent\"\" rather than the \"\"capacity to be involved\"\".  This highlights a difference across England of this concept, which is not for the dataset to resolve.\\n" +
+                        "\\n example text strings could be:\\n" +
+                        "* This person has the mental capacity to participate in making these recommendations.  They have been fully involved in the decision making process.\\n" +
+                        "* This person lacks the capacity to to give consent (Mental Capacity Act 2005)\\n" +
+                        "* This person is less than 18 (UK except Scotland) / 16 (Scotland) years old and has sufficient maturity and understanding to participate in making this decision\\n" +
+                        "* This person is less than 18 (UK except Scotland) / 16 (Scotland) years old and does not currently have sufficient maturity and understanding to participate in making this decision\\n" +
+                        "* This person has the mental capacity to participate in making these recommendations, but they have declined to discuss the decision."));
 
 
 
@@ -780,22 +779,22 @@ public class EOLCExamplesApp implements CommandLineRunner {
                 .setLinkId("PRE001.1.3")
                 .setRequired(true)
                 .setType(Questionnaire.QuestionnaireItemType.STRING)
-               .addExtension().setUrl("http://hl7.org/fhir/StructureDefinition/designNote").setValue(new MarkdownType("Notes associated with the PPD code or, if not coded, text to describe the patient's preferred place of death.\n" +
-                        "\n" +
-                        "Examples include:\n" +
-                        "+ Care Home\n" +
-                        "+ Community Hospital\n" +
-                        "+ Home\n" +
-                        "+ Hospice\n" +
-                        "+ Hospital\n" +
-                        "+ Learning disability unit\n" +
-                        "+ Mental health unit\n" +
-                        "+ Not Yet Discussed\n" +
-                        "+ Nursing home\n" +
-                        "+ Patient Not Able To Discuss\n" +
-                        "+ Patient Not Wishing To State Preference\n" +
-                        "+ Residential home\n" +
-                        "+ \"Other\" plus text"))
+               .addExtension().setUrl("http://hl7.org/fhir/StructureDefinition/designNote").setValue(new MarkdownType("Notes associated with the PPD code or, if not coded, text to describe the patient's preferred place of death.\\n" +
+                        "\\n" +
+                        "Examples include:\\n" +
+                        "* Care Home\\n" +
+                        "* Community Hospital\\n" +
+                        "* Home\\n" +
+                        "* Hospice\\n" +
+                        "* Hospital\\n" +
+                        "* Learning disability unit\\n" +
+                        "* Mental health unit\\n" +
+                        "* Not Yet Discussed\\n" +
+                        "* Nursing home\\n" +
+                        "* Patient Not Able To Discuss\\n" +
+                        "* Patient Not Wishing To State Preference\\n" +
+                        "* Residential home\\n" +
+                        "* \"Other\" plus text"))
                ;
 
         pref.addItem()
