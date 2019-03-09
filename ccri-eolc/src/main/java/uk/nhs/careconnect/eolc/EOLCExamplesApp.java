@@ -312,7 +312,7 @@ public class EOLCExamplesApp implements CommandLineRunner {
         item.addExtension().setUrl("http://hl7.org/fhir/StructureDefinition/designNote").setValue(new MarkdownType("Description of the problem or the condition.  Either a diagnosis or description of an event that could actually happen  eg. breathlessness, fits, delerium, worsening oral intake of foods and fluids"));
         item.addExtension()
                 .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
-                .setValue(new Reference("https://fhir.nhs.uk/STU3/StructureDefinition/EOL-ATPProblemHeader-Condition-1"));
+                .setValue(new Reference("https://fhir.hl7.org.uk/StructureDefinition/CareConnect-Condition-1"));
         item.addExtension()
                 .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
                 .setValue(new CodeType().setValue("Condition"));
@@ -622,7 +622,7 @@ public class EOLCExamplesApp implements CommandLineRunner {
         
         item.addExtension()
                 .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedProfile")
-                .setValue(new Reference("https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-ProblemHeader-Condition-1"));
+                .setValue(new Reference("https://fhir.hl7.org.uk/StructureDefinition/CareConnect-Condition-1"));
         item.addExtension()
                 .setUrl("http://hl7.org/fhir/StructureDefinition/questionnaire-allowedResource")
                 .setValue(new CodeType().setValue("Condition"));
@@ -980,7 +980,7 @@ public class EOLCExamplesApp implements CommandLineRunner {
         bundle.addEntry().setResource(eolc);
 
         Practitioner consultant = new Practitioner();
-        consultant.getMeta().getProfile().add(new UriType("https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Practitioner-1"));
+        //consultant.getMeta().getProfile().add(new UriType("https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Practitioner-1"));
         consultant.setId(fhirBundle.getNewId(consultant));
         consultant.addIdentifier().setSystem("https://fhir.nhs.uk/Id/sds-user-id").setValue("C4012900");
         consultant.addName().setFamily("Rodger").addGiven("KF");
@@ -993,7 +993,7 @@ public class EOLCExamplesApp implements CommandLineRunner {
 
 
         Practitioner pal = new Practitioner();
-        pal.getMeta().getProfile().add(new UriType("https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Practitioner-1"));
+       // pal.getMeta().getProfile().add(new UriType("https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Practitioner-1"));
 
         pal.setId(fhirBundle.getNewId(pal));
         pal.addIdentifier().setSystem(interOpenPractitionerIdentifier).setValue("x2900");
@@ -1006,12 +1006,18 @@ public class EOLCExamplesApp implements CommandLineRunner {
 
 
         Condition condition = new Condition();
-        condition.getMeta().getProfile().add(new UriType("https://fhir.nhs.uk/STU3/StructureDefinition/EOL-ATPProblemHeader-Condition-1"));
+        //condition.getMeta().getProfile().add(new UriType("https://fhir.hl7.org.uk/StructureDefinition/CareConnect-Condition-1"));
         condition.setId(fhirBundle.getNewId(condition));
         condition.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
         condition.addIdentifier().setSystem(midYorksConditionIdentifier).setValue("crm1");
         condition.setClinicalStatus(Condition.ConditionClinicalStatus.ACTIVE);
         condition.setAsserter(new Reference(uuidtag + consultant.getId()));
+        /*
+        condition.addCategory().addCoding()
+                .setSystem("https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-ConditionCategory-1")
+                .setCode("problem-list-item")
+                .setDisplay("Problem List Item");
+                */
         condition.getCode()
                 .setText("Breathlessness")
                 .addCoding()
@@ -1025,7 +1031,7 @@ public class EOLCExamplesApp implements CommandLineRunner {
         bundle.addEntry().setResource(condition);
 
         CarePlan carePlan = new CarePlan();
-        carePlan.getMeta().getProfile().add(new UriType("https://fhir.nhs.uk/STU3/StructureDefinition/EOL-ATP-CarePlan-1"));
+        //carePlan.getMeta().getProfile().add(new UriType("https://fhir.nhs.uk/STU3/StructureDefinition/EOL-ATP-CarePlan-1"));
 
         carePlan.setId(fhirBundle.getNewId(carePlan));
         carePlan.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
@@ -1369,13 +1375,15 @@ public class EOLCExamplesApp implements CommandLineRunner {
         // Functional Status
 
         Observation observation = new Observation();
+        observation.getMeta().getProfile().add(new UriType("https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-EOL-FunctionalStatus-Observation-1"));
         observation.setId(fhirBundle.getNewId(observation));
         observation.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
         observation.addIdentifier().setSystem("urn:ietf:rfc:3986").setValue("38e8e6ed-eb91-4af8-afa4-ff8fdb7be93c");
+        /*
         try {
             observation.setEffective(new DateTimeType(sdf.parse("2018-08-01")));
         } catch (Exception ex) {
-        }
+        }*/
         observation.addPerformer(new Reference(uuidtag + consultant.getId()));
         observation.setStatus(Observation.ObservationStatus.FINAL);
         observation.getCode().addCoding()
