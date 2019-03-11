@@ -112,8 +112,8 @@ public class EOLCExamplesApp implements CommandLineRunner {
         }
 
         //client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
-        //client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8182/ccri-messaging/STU3/");
-        client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri/camel/ccri-messaging/STU3/");
+        client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8182/ccri-messaging/STU3/");
+        //client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri/camel/ccri-messaging/STU3/");
         client.setEncoding(EncodingEnum.XML);
 
         // clientGPC = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri/camel/fhir/gpc/");
@@ -1717,6 +1717,19 @@ public class EOLCExamplesApp implements CommandLineRunner {
                 practitioner.setId(fhirBundle.getNewId(practitioner));
                 patient.getGeneralPractitioner().get(0).setReference(uuidtag + practitioner.getId());
                 bundle.addEntry().setResource(practitioner);
+            }
+        }
+
+        for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
+            if (entry.getResource() instanceof Patient) {
+                Patient patient = (Patient) entry.getResource();
+                for (Identifier identifier : patient.getIdentifier()) {
+                    if (identifier.hasSystem()) {
+                        if (identifier.getSystem().contains("https://fhir.nhs.uk/Id/nhs-number")) {
+                            identifier.setUse(Identifier.IdentifierUse.OFFICIAL);
+                        }
+                    }
+                }
             }
         }
         return bundle;
