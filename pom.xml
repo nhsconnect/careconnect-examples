@@ -41,6 +41,7 @@
         <module>hapi-patient-find-example-three</module>
         <module>ccri-nosql-fhirStarter</module>
         <module>hapi-unstructuredDocument-create</module>
+        <module>yhcr-examples</module>
     </modules>
 
 </project>
