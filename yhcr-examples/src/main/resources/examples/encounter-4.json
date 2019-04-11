@@ -1,0 +1,96 @@
+{
+	"resourceType": "Encounter",
+	"meta": {
+		"tag": [
+			{
+				"system": "http://yhcr-fhir-proxy-server.test.nhs.uk/quality-measure",
+				"code": "disposal",
+				"display": "outcome of ED attendance as a result of 999"
+			}
+		]
+	},
+	"identifier": [
+		{
+			"system": "https://tools.ietf.org/html/rfc4122",
+			"value": "0ba43a41-63e1-4b79-b5e2-fd256704ec27"
+		},
+		{
+			"system": "https://fhir.leedsth.nhs.uk/Id/Encounter/account-number",
+			"value": "003004"
+		}
+	],
+	"status": "finished",
+	"class": {
+		"system": "http://hl7.org/fhir/v3/ActCode",
+		"code": "EMER",
+		"display": "emergency"
+	},
+	"type": [
+		{
+			"coding": [
+				{
+					"system": "http://snomed.info/sct",
+					"code": "1185265000",
+					"display": "Seen in emergency clinic"
+				}
+			]
+		}
+	],
+	"subject": {
+		"reference": "Patient/[PatientResourceId]",
+		"display": "MRS MUZNA ALIZADEH",
+		"identifier": {
+			"system": "https://fhir.nhs.uk/Id/nhs-number",
+			"value": "9657702070"
+		}
+	},
+	"participant": [
+		{
+			"type": [
+				{
+					"coding": [
+						{
+							"system": "http://hl7.org/fhir/v3/ParticipationType",
+							"code": "PART",
+							"display": "Participation"
+						}
+					]
+				}
+			],
+			"individual": {
+				"reference": "Practitioner/3"
+			}
+		},
+		{
+			"type": [
+				{
+					"coding": [
+						{
+							"system": "http://hl7.org/fhir/v3/ParticipationType",
+							"code": "ATND",
+							"display": "attender"
+						}
+					]
+				}
+			],
+			"individual": {
+				"reference": "Practitioner/2"
+			}
+		}
+	],
+	"period": {
+		"start": "2017-03-23T09:00:00+00:00",
+		"end": "2019-03-23T10:00:00+00:00"
+	},
+	"hospitalization": {
+		"dischargeDisposition": {
+			"coding": [
+				{
+					"system": "https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-DischargeDestination-1",
+					"code": "19",
+					"display": "Usual place of residence unless listed below, for example, a private dwelling whether owner occupied or owned by Local Authority, housing association or other landlord. This includes wardened accommodation but not residential accommodation where health care is provided. It also includes Patients with no fixed abode."
+				}
+			]
+		}
+	}
+}

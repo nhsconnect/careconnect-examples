@@ -1,0 +1,40 @@
+{
+  "resourceType": "EpisodeOfCare",
+  "identifier": [
+    {
+      "system": "https://fhir.leedsth.nhs.uk/Id/EpisodeOfCare/episode-number",
+      "value": "2101"
+    }
+  ],
+  "status": "finished",
+  "type": [
+    {
+      "coding": [
+        {
+          "system": "http://snomed.info/sct",
+          "code": "394802001",
+          "display": "General medicine"
+        }
+      ]
+    }
+  ],
+  "patient": {
+    "identifier": {
+      "system": "https://fhir.nhs.uk/Id/nhs-number",
+      "value": "9657702070"
+    }
+  },
+  "managingOrganization": {
+    "identifier": {
+      "system": "https://fhir.nhs.uk/Id/ods-organization-code",
+      "value": "RR8"
+    }
+  },
+  "period": {
+    "start": "2010-10-20T17:16:00+00:00",
+    "end": "2010-10-21T17:06:00+00:00"
+  },
+  "careManager": {
+    "reference": "Practitioner/1"
+  }
+}

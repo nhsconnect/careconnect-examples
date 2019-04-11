@@ -1,6 +1,6 @@
 {
   "resourceType": "NamingSystem",
-  "name": "LTHT Account Number",
+  "name": "LTHT Episode Number",
   "status": "active",
   "kind": "identifier",
   "date": "2019-04-11T11:00:01+00:00",

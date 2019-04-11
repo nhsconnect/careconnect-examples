@@ -1,0 +1,76 @@
+{
+	"resourceType": "Encounter",
+	"identifier": [
+		{
+			"system": "https://tools.ietf.org/html/rfc4122",
+			"value": "cb5053c1-0e10-4e58-81ce-f674b1386fdb"
+		},
+		{
+			"system": "https://fhir.leedsth.nhs.uk/Id/Encounter/account-number",
+			"value": "003002"
+		}
+	],
+	"status": "finished",
+	"class": {
+		"system": "http://hl7.org/fhir/v3/ActCode",
+		"code": "EMER",
+		"display": "emergency"
+	},
+	"type": [
+		{
+			"coding": [
+				{
+					"system": "http://snomed.info/sct",
+					"code": "1185265000",
+					"display": "Seen in emergency clinic"
+				}
+			]
+		}
+	],
+	"subject": {
+		"reference": "Patient/[PatientResourceId]",
+		"display": "MRS MUZNA ALIZADEH",
+		"identifier": {
+			"system": "https://fhir.nhs.uk/Id/nhs-number",
+			"value": "9657702070"
+		}
+	},
+	"participant": [
+		{
+			"type": [
+				{
+					"coding": [
+						{
+							"system": "http://hl7.org/fhir/v3/ParticipationType",
+							"code": "PART",
+							"display": "Participation"
+						}
+					]
+				}
+			],
+			"individual": {
+				"reference": "Practitioner/3"
+			}
+		},
+		{
+			"type": [
+				{
+					"coding": [
+						{
+							"system": "http://hl7.org/fhir/v3/ParticipationType",
+							"code": "ATND",
+							"display": "attender"
+						}
+					]
+				}
+			],
+			"individual": {
+				"reference": "Practitioner/2"
+			}
+		}
+	],
+	"period": {
+		"start": "2019-03-01T09:00:00+00:00",
+		"end": "2019-03-01T10:00:00+00:00"
+	}
+}
