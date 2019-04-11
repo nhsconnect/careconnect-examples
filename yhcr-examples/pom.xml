@@ -8,7 +8,7 @@
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>ccri-interopen-examples</name>
+    <name>yhcr-examples</name>
     <description>Populates CCRI with interopen-examples care examples</description>
 
     <parent>

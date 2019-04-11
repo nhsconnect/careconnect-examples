@@ -1,0 +1,43 @@
+{
+    "resourceType": "Observation",
+    "identifier": [{
+        "system": "https://tools.ietf.org/html/rfc4122",
+        "value": "401442ed-2ac0-4a98-966d-2dd0392308dc"
+    }],
+    "status": "final",
+    "category": [
+        {
+            "coding": [
+                {
+                    "system": "http://hl7.org/fhir/observation-category",
+                    "code": "vital-signs",
+                    "display": "Vital Signs"
+                }
+            ]
+        }
+    ],
+    "code": {
+        "coding": [
+            {
+                "system": "http://snomed.info/sct",
+                "code": "364075005",
+                "display": "Heart rate"
+            }
+        ]
+    },
+    "subject": {
+		"reference": "Patient/[PatientResourceId]",
+		"display": "MRS MUZNA ALIZADEH",
+		"identifier": {
+			"system": "https://fhir.nhs.uk/Id/nhs-number",
+			"value": "9657702070"
+		}
+	},
+    "effectiveDateTime": "2019-01-19T09:01:42+00:00",
+    "valueQuantity": {
+        "value": 95,
+        "unit": "/min",
+        "system": "http://unitsofmeasure.org",
+        "code": "/min"
+    }
+}

@@ -1,0 +1,62 @@
+{
+	"resourceType": "Observation",
+	"identifier": [{
+		"system": "https://tools.ietf.org/html/rfc4122",
+		"value": "70fa0ed3-198f-4c10-aef2-d1c59b779698"
+	}],
+	"status": "final",
+	"category": [{
+		"coding": [{
+			"system": "http://hl7.org/fhir/observation-category",
+			"code": "vital-signs",
+			"display": "Vital Signs"
+		}]
+	}],
+	"code": {
+		"coding": [{
+			"system": "http://snomed.info/sct",
+			"code": "75367002",
+			"display": "Blood pressure"
+		}]
+	},
+	"subject": {
+		"reference": "Patient/[PatientResourceId]",
+		"display": "MRS MUZNA ALIZADEH",
+		"identifier": {
+			"system": "https://fhir.nhs.uk/Id/nhs-number",
+			"value": "9657702070"
+		}
+	},
+	"effectiveDateTime": "2019-01-18T09:01:42+00:00",
+	"component": [{
+			"code": {
+				"coding": [{
+					"system": "http://snomed.info/sct",
+					"code": "72313002",
+					"display": "Systolic blood pressure"
+				}]
+			},
+			"valueQuantity": {
+				"value": 132,
+				"unit": "mm[Hg]",
+				"system": "http://unitsofmeasure.org",
+				"code": "mm[Hg]"
+			}
+		},
+		{
+			"code": {
+				"coding": [{
+					"system": "http://snomed.info/sct",
+					"code": "1091811000000102",
+					"display": "Diastolic arterial pressure"
+				}]
+			},
+			"valueQuantity": {
+				"value": 78,
+				"unit": "mm[Hg]",
+				"system": "http://unitsofmeasure.org",
+				"code": "mm[Hg]"
+			}
+		}
+	]
+}

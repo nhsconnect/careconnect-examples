@@ -1,0 +1,37 @@
+{
+	"resourceType": "Observation",
+	"identifier": [{
+		"system": "https://tools.ietf.org/html/rfc4122",
+		"value": "c2780a54-1e29-47eb-a07a-d4b3a2719dff"
+	}],
+	"status": "final",
+	"category": [{
+		"coding": [{
+			"system": "http://hl7.org/fhir/observation-category",
+			"code": "vital-signs",
+			"display": "Vital Signs"
+		}]
+	}],
+	"code": {
+		"coding": [{
+			"system": "http://snomed.info/sct",
+			"code": "103228002",
+			"display": "Blood oxygen saturation"
+		}]
+	},
+	"subject": {
+		"reference": "Patient/[PatientResourceId]",
+		"display": "MRS MUZNA ALIZADEH",
+		"identifier": {
+			"system": "https://fhir.nhs.uk/Id/nhs-number",
+			"value": "9657702070"
+		}
+	},
+	"effectiveDateTime": "2019-01-18T09:01:42+00:00",
+	"valueQuantity": {
+		"value": 98,
+		"unit": "%",
+		"system": "http://unitsofmeasure.org",
+		"code": "%"
+	}
+}
