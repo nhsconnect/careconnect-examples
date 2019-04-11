@@ -34,8 +34,7 @@
 				}]
 			}],
 			"individual": {
-				"reference": "Practitioner/203531",
-				"display": "Mrs N Bryant"
+				"reference": "Practitioner/3"
 			}
 		},
 		{
@@ -47,8 +46,7 @@
 				}]
 			}],
 			"individual": {
-				"reference": "Practitioner/203530",
-				"display": "Dr Doris MacKay"
+				"reference": "Practitioner/2"
 			}
 		}
 	],

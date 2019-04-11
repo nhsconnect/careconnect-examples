@@ -19,6 +19,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.*;
 import java.math.BigDecimal;
+import java.rmi.Naming;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -59,8 +60,11 @@ public class YHCRExamplesApp implements CommandLineRunner {
             throw new Exception();
         }
 
-        client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
+        //client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
+        client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8186/ccri-fhir/STU3/");
         client.setEncoding(EncodingEnum.XML);
+
+        loadFolder("namingSystems");
 
         Patient patient = buildPatient("9657702070",
                 "Mrs",
@@ -288,7 +292,16 @@ public class YHCRExamplesApp implements CommandLineRunner {
 
             System.out.println(ctxFHIR.newJsonParser().setPrettyPrint(true).encodeResourceToString(encounter));
 
-            client.search().forResource(Encounter.class).
+            postEncounter(encounter);
+        }
+
+        if (resource instanceof NamingSystem) {
+            NamingSystem namingSystem = (NamingSystem) resource;
+
+
+            System.out.println(ctxFHIR.newJsonParser().setPrettyPrint(true).encodeResourceToString(namingSystem));
+
+            postNamingSystem(namingSystem);
         }
 
         /*
@@ -344,7 +357,7 @@ public class YHCRExamplesApp implements CommandLineRunner {
                 .setValue(code);
 
         Identifier ppm = patient.addIdentifier()
-                .setSystem("https://fhir.leedsth.nhs.uk/Id/ppm-number")
+                .setSystem("https://fhir.leedsth.nhs.uk/Id/pas-number")
                 .setValue(ppmno);
         patient.addName()
                 .setFamily(lastName)
@@ -424,8 +437,29 @@ public class YHCRExamplesApp implements CommandLineRunner {
         return patient;
     }
 
+    private NamingSystem postNamingSystem(NamingSystem namingSystem) {
+
+        Bundle bundle =  client
+                .search()
+                .forResource(NamingSystem.class)
+                .where(NamingSystem.VALUE.matches().value(namingSystem.getUniqueIdFirstRep().getValue()))
+                .returnBundle(Bundle.class)
+                .execute();
+        if (bundle.getEntry().size()>0) {
+            if (bundle.getEntry().get(0).getResource() instanceof NamingSystem) {
+                NamingSystem temp = (NamingSystem) bundle.getEntry().get(0).getResource();
+                namingSystem.setId(temp.getId());
+                client.update().resource(namingSystem).execute();
+            }
+
+        } else {
+            client.create().resource(namingSystem).execute();
+        }
+        return namingSystem;
+    }
+
     private Encounter postEncounter(Encounter encounter) {
-        Encounter encounter = null;
+
         Bundle bundle =  client
                 .search()
                 .forResource(Encounter.class)
@@ -435,10 +469,12 @@ public class YHCRExamplesApp implements CommandLineRunner {
         if (bundle.getEntry().size()>0) {
             if (bundle.getEntry().get(0).getResource() instanceof Encounter) {
                 Encounter temp = (Encounter) bundle.getEntry().get(0).getResource();
+                encounter.setId(temp.getId());
+                client.update().resource(encounter).execute();
             }
 
         } else {
-
+            client.create().resource(encounter).execute();
         }
         return encounter;
     }

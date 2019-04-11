@@ -1,0 +1,20 @@
+{
+  "resourceType": "NamingSystem",
+  "name": "LTHT Casenote Number",
+  "status": "active",
+  "kind": "identifier",
+  "date": "2019-04-11T11:00:01+00:00",
+  "publisher": "Leeds Teaching Hospitals NHS Trust",
+  "description": "A patient may have many Casenote Numbers and may be visible to users",
+  "uniqueId": [
+    {
+      "type": "other",
+      "value": "RR8-AN"
+    },
+    {
+      "type": "uri",
+      "value": "https://fhir.leedsth.nhs.uk/Id/casenote-number",
+      "preferred": false
+    }
+  ]
+}

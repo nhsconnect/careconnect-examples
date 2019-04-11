@@ -1,0 +1,16 @@
+{
+  "resourceType": "NamingSystem",
+  "name": "LTHT Account Number",
+  "status": "active",
+  "kind": "identifier",
+  "date": "2019-04-11T11:00:01+00:00",
+  "publisher": "Leeds Teaching Hospitals NHS Trust",
+  "description": "The Episode Number shall be mapped to the field Alternate Visit Number PV1.19",
+  "uniqueId": [
+    {
+      "type": "uri",
+      "value": "https://fhir.leedsth.nhs.uk/Id/EpisodeOfCare/episode-number",
+      "preferred": true
+    }
+  ]
+}

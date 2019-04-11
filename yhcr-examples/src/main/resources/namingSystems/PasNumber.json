@@ -1,0 +1,20 @@
+{
+  "resourceType": "NamingSystem",
+  "name": "LTHT PAS Number",
+  "status": "active",
+  "kind": "identifier",
+  "date": "2019-04-11T11:00:01+00:00",
+  "publisher": "Leeds Teaching Hospitals NHS Trust",
+  "description": "Known within the trust as the PAS Number, also known as District Number ",
+  "uniqueId": [
+    {
+      "type": "other",
+      "value": "RR8-MR"
+    },
+    {
+      "type": "uri",
+      "value": "https://fhir.leedsth.nhs.uk/Id/pas-number",
+      "preferred": true
+    }
+  ]
+}
