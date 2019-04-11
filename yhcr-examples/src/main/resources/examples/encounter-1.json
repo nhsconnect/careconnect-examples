@@ -35,14 +35,6 @@
 			"value": "9657702070"
 		}
 	},
-	"episodeOfCare": [
-		{
-			"identifier": {
-				"system": "https://fhir.leedsth.nhs.uk/Id/EpisodeOfCare/episode-number",
-				"value": "2101"
-			}
-		}
-	],
 	"participant": [
 		{
 			"type": [
