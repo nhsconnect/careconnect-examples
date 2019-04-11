@@ -46,8 +46,6 @@ public class YHCRExamplesApp implements CommandLineRunner {
     IGenericClient clientCCRI = null;
 
 
-    FhirBundleUtil fhirBundle;
-
 
     public static final String SNOMEDCT = "http://snomed.info/sct";
 
@@ -60,8 +58,8 @@ public class YHCRExamplesApp implements CommandLineRunner {
             throw new Exception();
         }
 
-        client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
-        //client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8186/ccri-fhir/STU3/");
+        //client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
+        client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8186/ccri-fhir/STU3/");
         client.setEncoding(EncodingEnum.XML);
 
         loadFolder("namingSystems");
@@ -119,7 +117,7 @@ public class YHCRExamplesApp implements CommandLineRunner {
 
         patient = buildPatient("9657702437",
                 "Miss",
-                "Debra",
+                "DEBRA",
                 "Mara",
                 "Hislop",
                 "",
@@ -147,15 +145,15 @@ public class YHCRExamplesApp implements CommandLineRunner {
                 "OL16 3RA",
                 "P86609",
                 "9",
-                "1983-07-23",
+                "1986-07-23",
                 "TEST5PPM");
         addPatient(patient);
 
-        patient = buildPatient("9657702402",
-                "Ms",
-                "ALISON",
-                "Jean",
-                "Huxley",
+        patient = buildPatient("9657702240",
+                "Mrs",
+                "Lisa",
+                "Linda",
+                "Lopez",
                 "",
                 "1 SEVERN DRIVE",
                 "MILNROW",
@@ -287,36 +285,32 @@ public class YHCRExamplesApp implements CommandLineRunner {
             Encounter encounter = (Encounter) resource;
 
             Patient patient = getPatient(encounter.getSubject().getIdentifier().getValue());
-           // log.info(patient.getIdElement().getIdPart());
+
             encounter.setSubject(new Reference("Patient/"+patient.getIdElement().getIdPart()));
 
-            System.out.println(ctxFHIR.newJsonParser().setPrettyPrint(true).encodeResourceToString(encounter));
+            //System.out.println(ctxFHIR.newJsonParser().setPrettyPrint(true).encodeResourceToString(encounter));
 
             postEncounter(encounter);
         }
+        if (resource instanceof Observation) {
+            Observation observation = (Observation) resource;
 
+            Patient patient = getPatient(observation.getSubject().getIdentifier().getValue());
+
+            observation.setSubject(new Reference("Patient/"+patient.getIdElement().getIdPart()));
+
+
+            postObservation(observation);
+        }
         if (resource instanceof NamingSystem) {
             NamingSystem namingSystem = (NamingSystem) resource;
 
 
-            System.out.println(ctxFHIR.newJsonParser().setPrettyPrint(true).encodeResourceToString(namingSystem));
 
             postNamingSystem(namingSystem);
         }
 
-        /*
-        try {
-            MethodOutcome outcome = client.create().resource(bundle).execute();
-        } catch (UnprocessableEntityException ex) {
-            System.out.println("ERROR - "+filename);
-            System.out.println(ctxFHIR.newXmlParser().encodeResourceToString(ex.getOperationOutcome()));
-            if (ex.getStatusCode()==422) {
-                System.out.println("Trying to update "+filename+ ": Bundle?identifier="+bundle.getIdentifier().getSystem()+"|"+bundle.getIdentifier().getValue());
-                MethodOutcome outcome = client.update().resource(bundle).conditionalByUrl("Bundle?identifier="+bundle.getIdentifier().getSystem()+"|"+bundle.getIdentifier().getValue()).execute();
-            }
-        }
 
-         */
     }
 
 
@@ -392,7 +386,7 @@ public class YHCRExamplesApp implements CommandLineRunner {
         }
         try {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-            format.setTimeZone(TimeZone.getTimeZone("UTC"));
+            //format.setTimeZone(TimeZone.getTimeZone("UTC"));
 
            patient.setBirthDate(format.parse(dob));
         } catch (Exception e) {
@@ -412,6 +406,7 @@ public class YHCRExamplesApp implements CommandLineRunner {
                 .execute();
         if (bundle.getEntry().size()>0) {
             patient.setId(((Patient) bundle.getEntry().get(0).getResource()).getId());
+            System.out.println(ctxFHIR.newJsonParser().setPrettyPrint(true).encodeResourceToString(patient));
             client.update().resource(patient).execute();
         } else {
             client.create().resource(patient).execute();
@@ -477,6 +472,27 @@ public class YHCRExamplesApp implements CommandLineRunner {
             client.create().resource(encounter).execute();
         }
         return encounter;
+    }
+
+    private Observation postObservation(Observation observation) {
+
+        Bundle bundle =  client
+                .search()
+                .forResource(Observation.class)
+                .where(Observation.IDENTIFIER.exactly().code(observation.getIdentifierFirstRep().getValue()))
+                .returnBundle(Bundle.class)
+                .execute();
+        if (bundle.getEntry().size()>0) {
+            if (bundle.getEntry().get(0).getResource() instanceof Observation) {
+                Observation temp = (Observation) bundle.getEntry().get(0).getResource();
+                observation.setId(temp.getId());
+                client.update().resource(observation).execute();
+            }
+
+        } else {
+            client.create().resource(observation).execute();
+        }
+        return observation;
     }
 
     private Organization getOrganization(String sdsCode) {
