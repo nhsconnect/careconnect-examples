@@ -3,25 +3,14 @@
   "identifier": [
     {
       "system": "https://fhir.leedsth.nhs.uk/Id/EpisodeOfCare/episode-number",
-      "value": "2101"
+      "value": "000456004"
     }
   ],
-  "status": "finished",
-  "type": [
-    {
-      "coding": [
-        {
-          "system": "http://snomed.info/sct",
-          "code": "394802001",
-          "display": "General medicine"
-        }
-      ]
-    }
-  ],
+  "status": "active",
   "patient": {
     "identifier": {
-      "system": "https://fhir.nhs.uk/Id/nhs-number",
-      "value": "9657702070"
+      "system": "https://fhir.leedsth.nhs.uk/Id/pas-number",
+      "value": "0026640"
     }
   },
   "managingOrganization": {
@@ -31,10 +20,12 @@
     }
   },
   "period": {
-    "start": "2010-10-20T17:16:00+00:00",
-    "end": "2010-10-21T17:06:00+00:00"
+    "start": "2016-06-02T14:06:00+00:00"
   },
   "careManager": {
-    "reference": "Practitioner/1"
+    "identifier": {
+      "system": "https://fhir.nhs.uk/Id/sds-user-id",
+      "value": "C4617570"
+    }
   }
 }

@@ -1,0 +1,45 @@
+{
+	"resourceType": "Encounter",
+	"identifier": [
+		{
+			"system": "https://fhir.leedsth.nhs.uk/Id/Encounter/account-number",
+			"value": "000456004-000000001"
+		}
+	],
+	"status": "finished",
+	"class": {
+		"system": "http://hl7.org/fhir/v3/ActCode",
+		"code": "IMP",
+		"display": "inpatient-encounter"
+	},
+	"subject": {
+		"identifier": {
+			"system": "https://fhir.leedsth.nhs.uk/Id/pas-number",
+			"value": "0026640"
+		}
+	},
+	"participant": [
+		{
+			"type": [
+				{
+					"coding": [
+						{
+							"system": "http://hl7.org/fhir/v3/ParticipationType",
+							"code": "CON",
+							"display": "consultant"
+						}
+					]
+				}
+			],
+			"individual": {
+				"identifier": {
+					"system": "https://fhir.nhs.uk/Id/sds-user-id",
+					"value": "C4617570"
+				}
+			}
+		}
+	],
+	"period": {
+		"start": "2016-06-02T14:06:00+00:00"
+	}
+}
