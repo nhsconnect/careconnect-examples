@@ -53,11 +53,13 @@ public class YHCRExamplesApp implements CommandLineRunner {
         }
 
         //client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
-        client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8080/fhircdr/STU3/");
+
+        client = ctxFHIR.newRestfulGenericClient("http://rievmappp02its.leedsth.nhs.uk:8080/fhircdr/STU3/");
+        //client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8080/fhircdr/STU3/");
         //client = ctxFHIR.newRestfulGenericClient("http://163.160.64.135:8186/ccri-fhir/STU3/");
         client.setEncoding(EncodingEnum.XML);
 
-        loadFolder("namingSystems");
+
 
         Patient patient = buildPatient("9657702070",
                 "Mrs",
@@ -308,6 +310,7 @@ public class YHCRExamplesApp implements CommandLineRunner {
         addPatient(patient);
 
 
+        loadFolder("namingSystems");
         // lth test patient
 
         loadFolder("examples");
@@ -359,18 +362,20 @@ public class YHCRExamplesApp implements CommandLineRunner {
 
             Patient patient = getPatient(encounter.getSubject().getIdentifier().getValue());
 
-            encounter.setSubject(new Reference("Patient/"+patient.getIdElement().getIdPart()));
+            if (patient != null) {
+                encounter.setSubject(new Reference("Patient/" + patient.getIdElement().getIdPart()));
 
-            for (Encounter.EncounterParticipantComponent component : encounter.getParticipant()) {
-                if (component.hasIndividual() && component.getIndividual().hasIdentifier()) {
-                    Practitioner practitioner = getPractitioner(component.getIndividual().getIdentifier().getValue());
-                    component.setIndividual(new Reference("Practitioner/"+practitioner.getIdElement().getIdPart()));
+                for (Encounter.EncounterParticipantComponent component : encounter.getParticipant()) {
+                    if (component.hasIndividual() && component.getIndividual().hasIdentifier()) {
+                        Practitioner practitioner = getPractitioner(component.getIndividual().getIdentifier().getValue());
+                        component.setIndividual(new Reference("Practitioner/" + practitioner.getIdElement().getIdPart()));
+                    }
                 }
+
+                //System.out.println(ctxFHIR.newJsonParser().setPrettyPrint(true).encodeResourceToString(encounter));
+
+                postEncounter(encounter);
             }
-
-            //System.out.println(ctxFHIR.newJsonParser().setPrettyPrint(true).encodeResourceToString(encounter));
-
-            postEncounter(encounter);
         }
 
         if (resource instanceof EpisodeOfCare) {
@@ -378,28 +383,33 @@ public class YHCRExamplesApp implements CommandLineRunner {
 
             Patient patient = getPatient(episode.getPatient().getIdentifier().getValue());
 
-            episode.setPatient(new Reference("Patient/"+patient.getIdElement().getIdPart()));
+            if (patient !=null) {
+                episode.setPatient(new Reference("Patient/" + patient.getIdElement().getIdPart()));
 
-            Organization organization = getOrganization(episode.getManagingOrganization().getIdentifier().getValue());
-            episode.setManagingOrganization(new Reference("Organization/"+organization.getIdElement().getIdPart()));
+                Organization organization = getOrganization(episode.getManagingOrganization().getIdentifier().getValue());
+                episode.setManagingOrganization(new Reference("Organization/" + organization.getIdElement().getIdPart()));
 
-            Practitioner practitioner = getPractitioner(episode.getCareManager().getIdentifier().getValue());
-            episode.setCareManager(new Reference("Practitioner/"+practitioner.getIdElement().getIdPart()));
+                Practitioner practitioner = getPractitioner(episode.getCareManager().getIdentifier().getValue());
+                episode.setCareManager(new Reference("Practitioner/" + practitioner.getIdElement().getIdPart()));
 
-            System.out.println(ctxFHIR.newJsonParser().setPrettyPrint(true).encodeResourceToString(episode));
+                System.out.println(ctxFHIR.newJsonParser().setPrettyPrint(true).encodeResourceToString(episode));
 
-            postEpisodeOfCare(episode);
+                postEpisodeOfCare(episode);
+            }
         }
 
         if (resource instanceof Observation) {
             Observation observation = (Observation) resource;
 
+
             Patient patient = getPatient(observation.getSubject().getIdentifier().getValue());
 
-            observation.setSubject(new Reference("Patient/"+patient.getIdElement().getIdPart()));
+            if (patient != null) {
+                observation.setSubject(new Reference("Patient/" + patient.getIdElement().getIdPart()));
 
 
-            postObservation(observation);
+                postObservation(observation);
+            }
         }
         if (resource instanceof NamingSystem) {
             NamingSystem namingSystem = (NamingSystem) resource;
