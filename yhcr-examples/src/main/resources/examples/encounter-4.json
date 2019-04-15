@@ -58,7 +58,10 @@
 				}
 			],
 			"individual": {
-				"reference": "Practitioner/3"
+				"identifier": {
+					"system": "https://fhir.nhs.uk/Id/sds-user-id",
+					"value": "PT1357"
+				}
 			}
 		},
 		{
@@ -74,7 +77,11 @@
 				}
 			],
 			"individual": {
-				"reference": "Practitioner/2"
+				"identifier":
+					{
+						"system": "https://fhir.nhs.uk/Id/sds-user-id",
+						"value": "G8650149"
+					}
 			}
 		}
 	],

@@ -53,8 +53,8 @@ public class YHCRExamplesApp implements CommandLineRunner {
         }
 
         //client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
-        //client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8186/ccri-fhir/STU3/");
-        client = ctxFHIR.newRestfulGenericClient("http://163.160.64.135:8186/ccri-fhir/STU3/");
+        client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8080/fhircdr/STU3/");
+        //client = ctxFHIR.newRestfulGenericClient("http://163.160.64.135:8186/ccri-fhir/STU3/");
         client.setEncoding(EncodingEnum.XML);
 
         loadFolder("namingSystems");
@@ -526,6 +526,8 @@ public class YHCRExamplesApp implements CommandLineRunner {
     }
 
     private Patient getPatient(String nhsNumber) {
+
+        System.out.println("Looking for patient nhsNumber = "+nhsNumber);
         Patient patient = null;
         Bundle bundle =  client
                 .search()
