@@ -54,8 +54,8 @@ public class YHCRExamplesApp implements CommandLineRunner {
 
         //client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
 
-        client = ctxFHIR.newRestfulGenericClient("http://rievmappp02its.leedsth.nhs.uk:8080/fhircdr/STU3/");
-        //client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8080/fhircdr/STU3/");
+        //client = ctxFHIR.newRestfulGenericClient("http://rievmappp02its.leedsth.nhs.uk:8080/fhircdr/STU3/");
+        client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8181/STU3/");
         //client = ctxFHIR.newRestfulGenericClient("http://163.160.64.135:8186/ccri-fhir/STU3/");
         client.setEncoding(EncodingEnum.XML);
 
@@ -587,15 +587,21 @@ public class YHCRExamplesApp implements CommandLineRunner {
                 .where(Encounter.IDENTIFIER.exactly().code(encounter.getIdentifierFirstRep().getValue()))
                 .returnBundle(Bundle.class)
                 .execute();
-        if (bundle.getEntry().size()>0) {
-            if (bundle.getEntry().get(0).getResource() instanceof Encounter) {
-                Encounter temp = (Encounter) bundle.getEntry().get(0).getResource();
-                encounter.setId(temp.getId());
-                client.update().resource(encounter).execute();
-            }
+        try {
+            if (bundle.getEntry().size()>0) {
+                if (bundle.getEntry().get(0).getResource() instanceof Encounter) {
+                    Encounter temp = (Encounter) bundle.getEntry().get(0).getResource();
+                    encounter.setId(temp.getId());
+                    client.update().resource(encounter).execute();
+                }
 
-        } else {
-            client.create().resource(encounter).execute();
+            } else {
+                client.create().resource(encounter).execute();
+            }
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+            log.error("Error processing "+ctxFHIR.newJsonParser().setPrettyPrint(true).encodeResourceToString(encounter));
+            throw ex;
         }
         return encounter;
     }
