@@ -56,7 +56,7 @@ public class YHCRExamplesApp implements CommandLineRunner {
 
         //client = ctxFHIR.newRestfulGenericClient("http://rievmappp02its.leedsth.nhs.uk:8080/fhircdr/STU3/");
         client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8181/STU3/");
-        //client = ctxFHIR.newRestfulGenericClient("http://163.160.64.135:8186/ccri-fhir/STU3/");
+        //client = ctxFHIR.newRestfulGenericClient("http://163.160.64.135:8181/STU3/");
         client.setEncoding(EncodingEnum.XML);
 
 
@@ -76,7 +76,7 @@ public class YHCRExamplesApp implements CommandLineRunner {
                 "X",
                 "1983-07-18",
                 "TEST1PPM",
-                null);
+                "G8805083");
         addPatient(patient);
 
         patient = buildPatient("9657702100",
@@ -314,6 +314,15 @@ public class YHCRExamplesApp implements CommandLineRunner {
         // lth test patient
 
         loadFolder("examples");
+
+        Bundle response = client.search()
+                .forResource(Patient.class)
+                .encodedJson()
+                .where(Patient.IDENTIFIER.exactly().systemAndCode("https://fhir.nhs.uk/Id/nhs-number","9657702070"))
+                .include(Patient.INCLUDE_ORGANIZATION.asRecursive())
+                .include(Patient.INCLUDE_GENERAL_PRACTITIONER.asNonRecursive())
+                .returnBundle(Bundle.class)
+                .execute();
     }
 
 
