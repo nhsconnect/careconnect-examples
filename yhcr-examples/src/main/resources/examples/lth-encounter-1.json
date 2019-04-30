@@ -2,7 +2,7 @@
 	"resourceType": "Encounter",
 	"identifier": [
 		{
-			"system": "https://fhir.leedsth.nhs.uk/Id/Encounter/account-number",
+			"system": "https://fhir.leedsth.nhs.uk/Id/Encounter/episode-number",
 			"value": "000456004-000000001"
 		}
 	],

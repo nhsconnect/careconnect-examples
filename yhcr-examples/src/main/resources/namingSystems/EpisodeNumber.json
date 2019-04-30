@@ -5,11 +5,11 @@
   "kind": "identifier",
   "date": "2019-04-11T11:00:01+00:00",
   "publisher": "Leeds Teaching Hospitals NHS Trust",
-  "description": "The Episode Number shall be mapped to the field Alternate Visit Number PV1.19",
+  "description": "The Episode Number shall be mapped to the field internal patient number (PI) and Alternate Visit Number PV1.19",
   "uniqueId": [
     {
       "type": "uri",
-      "value": "https://fhir.leedsth.nhs.uk/Id/EpisodeOfCare/episode-number",
+      "value": "https://fhir.leedsth.nhs.uk/Id/Encounter/episode-number",
       "preferred": true
     }
   ]

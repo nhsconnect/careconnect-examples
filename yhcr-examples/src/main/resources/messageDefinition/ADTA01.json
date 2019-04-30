@@ -1,0 +1,26 @@
+  {
+    "resourceType": "MessageDefinition",
+    "url": "https://fhir.leedsth.nhs.uk/MessageDefinition/EncounterNotification-1",
+    "version": "1.0.0",
+    "name": "Admit/Visit Notification",
+    "title": "Example FHIR MessageDefinition for ADT^A01 Admit/Visit Notification",
+    "status": "draft",
+    "date": "2019-04-29T00:00:00+00:00",
+    "copyright": "Copyright © 2019 Aire Logic",
+    "event": {
+      "system": "https://fhir.leedsth.nhs.uk/CodeSystem/ITK-HL7v2-MessageEvent-1",
+      "code": "ADT-A01",
+      "display": "Admit/Visit Notification"
+    },
+    "category": "Notification",
+    "focus": [
+      {
+        "code": "Encounter",
+        "profile": {
+          "reference": "https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Encounter-1"
+        },
+        "min": 1,
+        "max": 1
+      }
+    ]
+  }

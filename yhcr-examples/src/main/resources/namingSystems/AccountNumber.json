@@ -5,12 +5,12 @@
   "kind": "identifier",
   "date": "2019-04-11T11:00:01+00:00",
   "publisher": "Leeds Teaching Hospitals NHS Trust",
-  "description": "The Account Number is a unique number that is stored internally for a patient episode. On HL7v2 systems, the Account Number is mapped to PV1.50. In FHIR based systems this is a combination of PV1.19 (episodeNumber) and PV1.50",
+  "description": "The Account Number is a unique number that is stored internally for a patient episode. On HL7v2 systems, the Account Number is mapped to PV1.50. In FHIR based systems this is a combination of internal patient number and PV1.50",
   "uniqueId": [
     {
       "type": "uri",
       "value": "https://fhir.leedsth.nhs.uk/Id/Encounter/account-number",
-      "preferred": true
+      "preferred": false
     }
   ]
 }

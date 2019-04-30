@@ -15,7 +15,7 @@
 			"value": "0ba43a41-63e1-4b79-b5e2-fd256704ec27"
 		},
 		{
-			"system": "https://fhir.leedsth.nhs.uk/Id/Encounter/account-number",
+			"system": "https://fhir.leedsth.nhs.uk/Id/Encounter/episode-number",
 			"value": "003004"
 		}
 	],

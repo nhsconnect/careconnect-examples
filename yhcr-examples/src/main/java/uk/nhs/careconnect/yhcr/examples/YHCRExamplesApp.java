@@ -52,10 +52,10 @@ public class YHCRExamplesApp implements CommandLineRunner {
             throw new Exception();
         }
 
-        //client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
+        client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
 
         //client = ctxFHIR.newRestfulGenericClient("http://rievmappp02its.leedsth.nhs.uk:8080/fhircdr/STU3/");
-        client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8181/STU3/");
+        //client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8181/STU3/");
         //client = ctxFHIR.newRestfulGenericClient("http://163.160.64.135:8181/STU3/");
         client.setEncoding(EncodingEnum.XML);
 
@@ -311,6 +311,8 @@ public class YHCRExamplesApp implements CommandLineRunner {
 
 
         loadFolder("namingSystems");
+
+        loadFolder("messageDefinition");
         // lth test patient
 
         loadFolder("examples");
@@ -422,10 +424,11 @@ public class YHCRExamplesApp implements CommandLineRunner {
         }
         if (resource instanceof NamingSystem) {
             NamingSystem namingSystem = (NamingSystem) resource;
-
-
-
             postNamingSystem(namingSystem);
+        }
+        if (resource instanceof MessageDefinition) {
+            MessageDefinition messageDefinition = (MessageDefinition) resource;
+            postMessageDefinition(messageDefinition);
         }
 
 
@@ -584,6 +587,27 @@ public class YHCRExamplesApp implements CommandLineRunner {
             client.create().resource(namingSystem).execute();
         }
         return namingSystem;
+    }
+
+    private MessageDefinition postMessageDefinition(MessageDefinition messageDefinition) {
+
+        Bundle bundle =  client
+                .search()
+                .forResource(MessageDefinition.class)
+                .where(MessageDefinition.URL.matches().value(messageDefinition.getUrl()))
+                .returnBundle(Bundle.class)
+                .execute();
+        if (bundle.getEntry().size()>0) {
+            if (bundle.getEntry().get(0).getResource() instanceof MessageDefinition) {
+                MessageDefinition temp = (MessageDefinition) bundle.getEntry().get(0).getResource();
+                messageDefinition.setId(temp.getId());
+                client.update().resource(messageDefinition).execute();
+            }
+
+        } else {
+            client.create().resource(messageDefinition).execute();
+        }
+        return messageDefinition;
     }
 
     private Encounter postEncounter(Encounter encounter) {
