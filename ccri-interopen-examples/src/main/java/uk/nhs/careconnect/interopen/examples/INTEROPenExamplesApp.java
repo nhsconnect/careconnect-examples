@@ -30,7 +30,7 @@ public class INTEROPenExamplesApp implements CommandLineRunner {
     private static String yasEncounterIdentifier = "https://fhir.yas.nhs.uk/Encounter/Identifier";
 
     private static String interOpenEncounterIdentifier = "https://fhir.interopen.org/Encounter/Identifier";
-    private static String interOpenLocationIdentifier = "https://fhir.interopen.org/Location/Identifier";
+ //   private static String interOpenLocationIdentifier = "https://fhir.interopen.org/Location/Identifier";
     private static String interOpenEpisodeOfCareIdentifier = "https://fhir.interopen.org/EpisodeOfCare/Identifier";
 
     private static String interOpenProcedureIdentifier = "https://fhir.interopen.org/Procedure/Identifier";
@@ -42,7 +42,7 @@ public class INTEROPenExamplesApp implements CommandLineRunner {
 
     private static String yasEpisodeIdentifier = "https://fhir.yas.nhs.uk/EpisodeOfCare/Identifier";
 
-    private static String yasLocationIdentifier = "https://fhir.yas.nhs.uk/Location/Identifier";
+ //   private static String yasLocationIdentifier = "https://fhir.yas.nhs.uk/Location/Identifier";
 
     private static String yasConditionIdentifier = "https://fhir.yas.nhs.uk/Condition/Identifier";
 
@@ -73,8 +73,8 @@ public class INTEROPenExamplesApp implements CommandLineRunner {
     Organization rkh;
     Organization hdft;
 
-    Location jimmy;
-    Location pinderfields;
+ //   Location jimmy;
+ //   Location pinderfields;
 
     FhirContext ctxFHIR = FhirContext.forDstu3();
 
@@ -279,16 +279,6 @@ public class INTEROPenExamplesApp implements CommandLineRunner {
                 }
             }
         }
-    }
-    public Location getCoords(Location location, String postCode) {
-        RestTemplate restTemplate = new RestTemplate();
-        String url = "https://api.postcodes.io/postcodes/"+postCode;
-        //System.out.println(url);
-        PostCode postCodeLongLat = restTemplate.getForObject(url, PostCode.class);
-        //System.out.println(postCodeLongLat.getResult().getLongitude().toString());
-        location.getPosition().setLatitude(postCodeLongLat.getResult().getLatitude());
-        location.getPosition().setLongitude(postCodeLongLat.getResult().getLongitude());
-        return location;
     }
 
 
@@ -597,7 +587,7 @@ public class INTEROPenExamplesApp implements CommandLineRunner {
         midyorks.setId(fhirBundle.getNewId(midyorks));
 
 
-
+/*
         jimmy = new Location();
         jimmy.setId(fhirBundle.getNewId(jimmy));
         jimmy.setStatus(Location.LocationStatus.ACTIVE);
@@ -641,9 +631,9 @@ public class INTEROPenExamplesApp implements CommandLineRunner {
                 .setSystem("http://hl7.org/fhir/location-physical-type")
                 .setCode("bu")
                 .setDisplay("Building");
-        pinderfields = getCoords(pinderfields,"WF1 4DG");
-        pinderfields.setManagingOrganization(new Reference(uuidtag + midyorks.getIdElement().getIdPart()));
 
+        pinderfields.setManagingOrganization(new Reference(uuidtag + midyorks.getIdElement().getIdPart()));
+*/
 
     }
 
@@ -1352,7 +1342,7 @@ public class INTEROPenExamplesApp implements CommandLineRunner {
         bundle.addEntry().setResource(lth);
         bundle.addEntry().setResource(midyorks);
 
-
+/*
         Location patientLoc = new Location();
         patientLoc.setId(fhirBundle.getNewId(patientLoc));
         patientLoc.setStatus(Location.LocationStatus.ACTIVE);
@@ -1371,15 +1361,15 @@ public class INTEROPenExamplesApp implements CommandLineRunner {
                 .setSystem("http://hl7.org/fhir/location-physical-type")
                 .setCode("bu")
                 .setDisplay("Building");
-        getCoords(patientLoc,encounterPostcode);
-
+        //getCoords(patientLoc,encounterPostcode);
+*/
         locno++;
-        bundle.addEntry().setResource(patientLoc);
+      //  bundle.addEntry().setResource(patientLoc);
 
 
 
-        bundle.addEntry().setResource(this.jimmy);
-        bundle.addEntry().setResource(this.pinderfields);
+        //bundle.addEntry().setResource(this.jimmy);
+        //bundle.addEntry().setResource(this.pinderfields);
 
         Condition condition = new Condition();
         condition.setId(fhirBundle.getNewId(condition));
@@ -1442,11 +1432,11 @@ public class INTEROPenExamplesApp implements CommandLineRunner {
         if (ambulanceStatus != null) {
             cal.add(Calendar.MINUTE,5);
             triage.getPeriod().setEnd(cal.getTime());
-            triage.addLocation().setLocation(new Reference(uuidtag + patientLoc.getId()))
-                    .setStatus(Encounter.EncounterLocationStatus.COMPLETED);
+           // triage.addLocation().setLocation(new Reference(uuidtag + patientLoc.getId()))
+           //         .setStatus(Encounter.EncounterLocationStatus.COMPLETED);
         } else {
-            triage.addLocation().setLocation(new Reference(uuidtag + patientLoc.getId()))
-                    .setStatus(Encounter.EncounterLocationStatus.ACTIVE);
+           // triage.addLocation().setLocation(new Reference(uuidtag + patientLoc.getId()))
+           //         .setStatus(Encounter.EncounterLocationStatus.ACTIVE);
         }
         idno++;
         bundle.addEntry().setResource(triage);
@@ -1462,6 +1452,7 @@ public class INTEROPenExamplesApp implements CommandLineRunner {
 
         if (ambulanceStatus != null) {
 
+            /*
             Location ambulanceVech = new Location();
             ambulanceVech.setId(fhirBundle.getNewId(ambulanceVech));
             ambulanceVech.setStatus(Location.LocationStatus.ACTIVE);
@@ -1480,11 +1471,11 @@ public class INTEROPenExamplesApp implements CommandLineRunner {
                     .setSystem("http://hl7.org/fhir/location-physical-type")
                     .setCode("ve")
                     .setDisplay("Vehicle");
-            getCoords(ambulanceVech,ambulancePostcode);
+            //getCoords(ambulanceVech,ambulancePostcode);
 
             ambulanceVech.setManagingOrganization(new Reference(uuidtag + yas.getIdElement().getIdPart()));
             bundle.addEntry().setResource(ambulanceVech);
-
+*/
 
             Encounter ambulance = new Encounter();
             ambulance.setId(fhirBundle.getNewId(ambulance));
@@ -1498,17 +1489,18 @@ public class INTEROPenExamplesApp implements CommandLineRunner {
                     .setDisplay("Ambulance-based care");
             ambulance.setPartOf(new Reference(uuidtag + encounter.getId()));
             if (!hospital) {
-                ambulance.addLocation()
-                        .setLocation(new Reference(uuidtag + patientLoc.getId()))
-                        .setStatus(ambulanceStatus);
+              //  ambulance.addLocation()
+              //          .setLocation(new Reference(uuidtag + patientLoc.getId()))
+              //          .setStatus(ambulanceStatus);
             } else {
-                ambulance.addLocation()
-                        .setLocation(new Reference(uuidtag + patientLoc.getId()))
-                        .setStatus(Encounter.EncounterLocationStatus.COMPLETED);
+              //  ambulance.addLocation()
+              //          .setLocation(new Reference(uuidtag + patientLoc.getId()))
+              //          .setStatus(Encounter.EncounterLocationStatus.COMPLETED);
             }
-            ambulance.addLocation()
-                    .setLocation(new Reference(uuidtag + ambulanceVech.getId()))
-                    .setStatus(Encounter.EncounterLocationStatus.ACTIVE);
+           // ambulance.addLocation()
+           //         .setLocation(new Reference(uuidtag + ambulanceVech.getId()))
+           //         .setStatus(Encounter.EncounterLocationStatus.ACTIVE);
+            /*
             if (hospital) {
                 if (!ambulanceName.equals("Elbe")) {
                     ambulance.addLocation()
@@ -1522,6 +1514,8 @@ public class INTEROPenExamplesApp implements CommandLineRunner {
 
                 }
             }
+            */
+
 
             cal.add(Calendar.MINUTE,5);
             ambulance.getPeriod().setStart(cal.getTime());
@@ -1589,7 +1583,7 @@ Inspired Oxygen
 
 
 
-            if (nhsNumber=="9658218997") {
+            if (nhsNumber =="9658218997") {
 
                 Observation news = createObservation("6", "score", "Royal College of Physicians NEWS2 (National Early Warning Score 2) total score","1104051000000101", ambulance);
 
