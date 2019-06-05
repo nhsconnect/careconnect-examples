@@ -1,0 +1,1596 @@
+<!--This xml example is for illustrative purposes only and has not been clinically verified-->
+<Bundle xmlns="http://hl7.org/fhir">
+	<id value="f862ec24-e05a-42d1-aea5-d0a9c092e6ae"/>
+	<meta>
+	<lastUpdated value="2015-04-07T19:30:00+00:00"/> 
+		<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/ITK-Document-Bundle-1"/>
+	</meta>
+	<identifier>
+		<system value="https://tools.ietf.org/html/rfc4122"/>
+		<value value="f36927ef-7703-45ed-b0e5-6ec6723cf0f6"/>
+	</identifier>
+	<type value="document"/>
+	<entry>
+		<fullUrl value="urn:uuid:3aa7a8bf-0628-44f2-8c1f-bdf81ac54b14"/>
+		<resource>
+			<!--A resource carrying a set of healthcare-related information about the patient-->
+			<Composition>
+				<id value="3aa7a8bf-0628-44f2-8c1f-bdf81ac54b14"/>
+				<meta>
+					<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-ITK-MH-Composition-1"/>
+				</meta>
+				<!-- Extension to carry details of the Correspondence Care Setting Type. -->
+				<extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-CareSettingType-1">
+					<valueCodeableConcept>
+						<coding>
+							<system value="http://snomed.info/sct"/>
+							<code value="892811000000109"/>
+							<display value="Adult mental health service"/>
+						</coding>
+					</valueCodeableConcept>
+				</extension>
+				<identifier>
+					<system value="https://tools.ietf.org/html/rfc4122"/>
+					<value value="6d377e88-ff86-4db9-9c9b-6c61411c50f9"/>
+				</identifier>
+				<!--The workflow/clinical status of this composition. The status is a marker for the clinical standing of the document.-->
+				<status value="final"/>
+				<type>
+					<!--Discharge Summary document type-->
+					<coding>
+						<system value="http://snomed.info/sct"/>
+						<code value="373942005"/>
+						<display value="Discharge summary"/>
+					</coding>
+				</type>
+				<!--Reference to the patient subject of the Composition-->
+				<subject>
+					<reference value="urn:uuid:f919dedc-3c62-462f-a171-8d86c5aaa074"/>
+				</subject>
+				<!--Reference to the clinical encounter or type of care this documentation is associated with.-->
+				<encounter>
+					<reference value="urn:uuid:cf080749-31c9-4ff6-b2d8-a2dd3dce851c"/>
+				</encounter>
+				<!--The composition editing time, when the composition was last logically changed by the author.-->
+				<date value="2015-04-07T17:30:00+00:00"/>
+				<!--Identifies who is responsible for the information in the composition, not necessarily who typed it in-->
+				<author>
+					<reference value="urn:uuid:04d089aa-be17-42fd-a6fc-961245696263"/>
+				</author>
+				<title value="Adult Mental Health Service Discharge Summary"/>
+				<!--Identifies the organization responsible for ongoing maintenance of and access to the composition/document information.-->
+				<custodian>
+					<reference value="urn:uuid:6de0a05a-d4b2-4f67-b0d4-80cc2a670f90"/>
+				</custodian>
+				<!--Admission details-->
+				<section>
+					<!--The label for this particular section. This will be part of the rendered content for the document, and is often used to build a table of contents.-->
+					<title value="Admission details"/>
+					<!--A SNOMED CT code identifying the kind of content contained within the section-->
+					<code>
+						<coding>
+							<system value="http://snomed.info/sct"/>
+							<code value="886781000000108"/>
+							<display value="Admission details"/>
+						</coding>
+					</code>
+					<!--A human-readable narrative that contains the attested content of the section-->
+					<text>
+						<status value="additional"/>
+						<div xmlns="http://www.w3.org/1999/xhtml">
+							<table width="100%">
+								<tbody>
+									<tr>
+										<th>Reason for admission</th>
+										<td>Paracetamol overdose of undetermined intent</td>
+									</tr>
+									<tr>
+										<th>Admission method</th>
+										<td>Accident and emergency or dental casualty department of the Health Care Provider</td>
+									</tr>
+									<tr>
+										<th>Legal status on admission</th>
+										<td>Informal</td>
+									</tr>
+									<tr>
+										<th>Source of admission</th>
+										<td>NHS other Hospital Provider - Ward for general Patients or the younger physically disabled or A and E department</td>
+									</tr>
+									<tr>
+										<th>Date/time of admission</th>
+										<td>13-Mar-2015 12:00</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</text>
+					<!--Reference to the encounter resource where information for this section can be found-->
+					<entry>
+						<reference value="urn:uuid:cf080749-31c9-4ff6-b2d8-a2dd3dce851c"/>
+					</entry>
+				</section>
+				<!--Allergies and adverse reactions-->
+				<section>
+					<title value="Allergies and adverse reactions"/>
+					<code>
+						<coding>
+							<system value="http://snomed.info/sct"/>
+							<code value="886921000000105"/>
+							<display value="Allergies and adverse reactions"/>
+						</coding>
+					</code>
+					<text>
+						<status value="additional"/>
+						<div xmlns="http://www.w3.org/1999/xhtml">
+							<table width="100%">
+								<tbody>
+									<tr>
+										<th>Causative agent</th>
+										<td>Peanut - dietary</td>
+									</tr>
+									<tr>
+										<th>Reaction details</th>
+										<td>Description of reaction:<br/>Hives</td>
+									</tr>
+									<tr>
+										<th>Date recorded</th>
+										<td>13 March 2015</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</text>
+					<!--Reference to Allergies List as the source of information for this section-->
+					<entry>
+						<reference value="urn:uuid:95e8f8d0-dfc3-4c72-a9dc-7ba1ccd1fab4"/>
+					</entry>
+				</section>
+				<!--Assessment scales-->
+				<section>
+					<title value="Assessment scales"/>
+					<code>
+						<coding>
+							<system value="http://snomed.info/sct"/>
+							<code value="887141000000103"/>
+							<display value="Assessment scales"/>
+						</coding>
+					</code>
+					<text>
+						<status value="additional"/>
+						<div xmlns="http://www.w3.org/1999/xhtml">
+							<table width="100%">
+								<tbody>
+									<tr>
+										<th>Assessment scale</th>
+										<td>HoNOS Total = 19</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</text>
+				</section>
+				<!--Clinical summary-->
+				<section>
+					<title value="Clinical summary"/>
+					<code>
+						<coding>
+							<system value="http://snomed.info/sct"/>
+							<code value="887181000000106"/>
+							<display value="Clinical summary"/>
+						</coding>
+					</code>
+					<text>
+						<status value="additional"/>
+						<div xmlns="http://www.w3.org/1999/xhtml">
+							<table width="100%">
+								<tbody>
+									<tr>
+										<th>Clinical Summary</th>
+									</tr>
+									<tr>
+										<td>
+											<p>Jon was taken to casualty and admitted to a medical ward two weeks ago after taking a
+ serious overdose of paracetamol and drinking half a bottle of whisky.</p>
+											<p>He was found unconscious face down among the bushes in a local park.</p>
+											<p>Jon had been depressed for some months prior to this having lost his job as a building surveyor.</p>
+											<p>He was having difficulty sleeping and often waking early, sometimes at three of four in the morning.</p>
+										</td>
+									</tr>
+									<tr>
+										<th>Treatments and interventions and changes made to treatments</th>
+									</tr>
+									<tr>
+										<td>
+											<p>While on the ward his suicidal urges have reduced and he has been started on an atypical antidepressant to good effect.</p>
+											<p>He now regrets attempting to take his own life, is thankful for the support of his family and looks forward 
+to commencing psychological therapies for depression (IAPT) and seeking new employment.</p>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</text>
+				</section>
+				<!--Diagnoses-->
+				<section>
+					<title value="Diagnoses"/>
+					<code>
+						<coding>
+							<system value="http://snomed.info/sct"/>
+							<code value="887161000000102"/>
+							<display value="Diagnoses"/>
+						</coding>
+					</code>
+					<text>
+						<status value="generated"/>
+						<div xmlns="http://www.w3.org/1999/xhtml">
+							<table width="100%">
+								<tbody>
+									<tr>
+										<th>Diagnosis name</th>
+										<td>Paracetamol overdose of undetermined intent</td>
+									</tr>
+									<tr>
+										<th>Diagnosis name</th>
+										<td>[X]Severe depressive episode without psychotic symptoms</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</text>
+					<!-- Reference to Condition list-->
+					<entry>
+						<reference value="urn:uuid:e2b1c9ff-4a34-45db-af57-5f6d72f8d1b9"/>
+					</entry>
+				</section>
+				<!--Discharge details-->
+				<section>
+					<title value="Discharge details"/>
+					<code>
+						<coding>
+							<system value="http://snomed.info/sct"/>
+							<code value="886811000000106"/>
+							<display value="Discharge details"/>
+						</coding>
+					</code>
+					<text>
+						<status value="additional"/>
+						<div xmlns="http://www.w3.org/1999/xhtml">
+							<table width="100%">
+								<tbody>
+									<tr>
+										<th>Discharging consultant</th>
+										<td>
+											<p>Prefix: Dr</p>
+											<p>Given Name: Mike</p>
+											<p>Family Name: Scott</p>
+											<p>Identifier: 9222477</p>
+										</td>
+									</tr>
+									<tr>
+										<th>Discharging specialty/department</th>
+										<td>Adult Mental Health Service</td>
+									</tr>
+									<tr>
+										<th>Discharge location</th>
+										<td>Alder ward</td>
+									</tr>
+									<tr>
+										<th>Date/time of discharge</th>
+										<td>06-Apr-2015 13:00</td>
+									</tr>
+									<tr>
+										<th>Legal status on discharge</th>
+										<td>Informal</td>
+									</tr>
+									<tr>
+										<th>Discharge method</th>
+										<td>Patient discharged on clinical advice or with clinical consent</td>
+									</tr>
+									<tr>
+										<th>Discharge destination</th>
+										<td>Discharge type: Usual place of residence unless listed below, for example, a private dwelling whether owner occupied or owned by Local Authority, housing association or other landlord. This includes wardened accommodation but not residential accommodation where health care is provided. It also includes Patients with no fixed abode.</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</text>
+					<!--Reference to the Encounter entry as a source of information for this section-->
+					<entry>
+						<reference value="urn:uuid:cf080749-31c9-4ff6-b2d8-a2dd3dce851c"/>
+					</entry>
+					<!--Reference to the Practitioner entry as a source of information for this section-->
+					<entry>
+						<reference value="urn:uuid:44c853c7-a22f-49ce-8eb5-27a05c83e6ec"/>
+					</entry>
+				</section>
+				<!--Distribution list-->
+				<section>
+					<title value="Distribution list"/>
+					<code>
+						<coding>
+							<system value="http://snomed.info/sct"/>
+							<code value="887261000000109"/>
+							<display value="Distribution list"/>
+						</coding>
+					</code>
+					<text>
+						<status value="generated"/>
+						<div xmlns="http://www.w3.org/1999/xhtml">
+							<table width="100%">
+								<tbody>
+									<tr>
+										<th>Name</th>
+										<td>
+											<p>Prefix: Mrs</p>
+											<p>Given Name: Gay</p>
+											<p>Family Name: Gillingham</p>
+											<p>Identifier: 033345750518</p>
+										</td>
+									</tr>
+									<tr>
+										<th>Role</th>
+										<td>Consultant</td>
+									</tr>
+									<tr>
+										<th>Organisation</th>
+										<td>Leeds Mental Health NHS Trust<p>Identifier: RGD</p>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							<table width="100%">
+								<tbody>
+									<tr>
+										<th>Name</th>
+										<td>
+											<p>Prefix: Dr</p>
+											<p>Given Name: James</p>
+											<p>Family Name: Lozo</p>
+											<p>Identifier: GP12345600</p>
+										</td>
+									</tr>
+									<tr>
+										<th>Role</th>
+										<td>General Medical Practitioner</td>
+									</tr>
+									<tr>
+										<th>Organisation</th>
+										<td>MGP Medical Centre<p>Identifier: GP123456</p>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</text>
+					<!--Reference to the practitioner entries as recipients of information-->
+					<entry>
+						<reference value="urn:uuid:a74e1942-8ff8-4c4a-9edb-7b5e4e2f198c"/>
+					</entry>
+					<entry>
+						<reference value="urn:uuid:5e414a77-d394-4248-a631-00e45ddb64a0"/>
+					</entry>
+				</section>
+				<!-- GP Practice-->
+				<section>
+					<title value="GP practice"/>
+					<code>
+						<coding>
+							<system value="http://snomed.info/sct"/>
+							<code value="886711000000101"/>
+							<display value="GP practice"/>
+						</coding>
+					</code>
+					<text>
+						<status value="additional"/>
+						<div xmlns="http://www.w3.org/1999/xhtml">
+							<table width="100%">
+								<tbody>
+									<tr>
+										<th>GP practice identifier</th>
+										<td>GP123456</td>
+									</tr>
+									<tr>
+										<th>GP name</th>
+										<td>Dr James Lozo</td>
+									</tr>
+									<tr>
+										<th>GP practice details</th>
+										<td>
+											<p>Name: MGP Medical Centre</p>
+											<p>Address:</p>
+											<p>Address Line: 1 MGP House, Overtown</p>
+											<p>City: Leeds</p>
+											<p>Post Code: LS21 7PA</p>
+											<p>Tel: 0113 4111223 (Work)</p>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</text>
+					<!--Reference to the Organisation entry as the source of information for this section-->
+					<entry>
+						<reference value="urn:uuid:f9f24f89-646b-4a19-a6b1-cabfa3b612e1"/>
+					</entry>
+				</section>
+				<!--Individual requirements-->
+				<section>
+					<title value="Individual requirements"/>
+					<code>
+						<coding>
+							<system value="http://snomed.info/sct"/>
+							<code value="1052901000000109"/>
+							<display value="Individual requirement"/>
+						</coding>
+					</code>
+					<text>
+						<status value="additional"/>
+						<div xmlns="http://www.w3.org/1999/xhtml">
+							<table width="100%">
+								<tbody>
+									<tr>
+										<th>Individual requirements</th>
+										<td>No special requirements but always wants family to be kept informed</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</text>
+				</section>
+				<!--Information and advice given-->
+				<section>
+					<title value="Information and advice given"/>
+					<code>
+						<coding>
+							<system value="http://snomed.info/sct"/>
+							<code value="1052951000000105"/>
+							<display value="Information and advice given"/>
+						</coding>
+					</code>
+					<text>
+						<status value="additional"/>
+						<div xmlns="http://www.w3.org/1999/xhtml">
+							<table width="100%">
+								<tbody>
+									<tr>
+										<th>Information and advice given</th>
+										<td>CBT for Depression - referral to local IAPT services (High Intensity)</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</text>
+				</section>
+				<!--Investigation results-->
+				<section>
+					<title value="Investigation results"/>
+					<code>
+						<coding>
+							<system value="http://snomed.info/sct"/>
+							<code value="1082101000000102"/>
+							<display value="Investigation results"/>
+						</coding>
+					</code>
+					<text>
+						<status value="additional"/>
+						<div xmlns="http://www.w3.org/1999/xhtml">
+							<table>
+								<tbody>
+									<tr>
+										<th>Investigation result</th>
+									</tr>
+									<tr>
+										<td>
+											<pre>
+Full Blood Count      
+      
+Test						Value			Units			Reference Range
+White Cell Count				11.1			x10*9/L			3.5 - 10.0
+Red Cell Count					5.0			x10*12/L		4.25 - 5.75 
+Haemoglobin					150			g/L			13.0 - 17.0
+Haematocrit					0.230						0.400 - 0.500
+Mean Cell Volume				90			fL			84 - 98
+Mean Cell Hb					33.0			pg			27.5 - 32.0
+Mean Cell Hb Con				34.0			pg			31.0 - 35.0
+RDW						12.0			%			&lt; 14.5
+Platelet Count					300			x10*9/L			150 - 400
+
+Machine Differential      
+      
+Test                  				Value			Units        		Reference Range
+Neutrophils					7.0			x10*9/L			1.7 - 7.5
+Lymphocytes					3.5			x10*9/L			1.0 - 3.5   
+Monocytes					0.3			x10*9/L			&lt; 0.6  
+Eosinophils					0.4			x10*9/L			&lt; 0.4  
+Basophils					0.1			x10*9/L			&lt; 0.1 
+LUCs						0.2			x10*9/L			&lt; 0.4 
+      </pre>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</text>
+				</section>
+				<!--Legal information-->
+				<section>
+					<title value="Legal information"/>
+					<code>
+						<coding>
+							<system value="http://snomed.info/sct"/>
+							<code value="886961000000102"/>
+							<display value="Legal information"/>
+						</coding>
+					</code>
+					<text>
+						<status value="additional"/>
+						<div xmlns="http://www.w3.org/1999/xhtml">
+							<table width="100%">
+								<tbody>
+									<tr>
+										<th>Mental capacity assessment</th>
+										<td>Not undertaken</td>
+									</tr>
+									<tr>
+										<th>Safeguarding issues</th>
+										<td>None</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</text>
+				</section>
+				<!--Medications-->
+				<section>
+					<title value="Medications and medical devices"/>
+					<code>
+						<coding>
+							<system value="http://snomed.info/sct"/>
+							<code value="933361000000108"/>
+							<display value="Medications and medical devices"/>
+						</coding>
+					</code>
+					<text>
+						<status value="additional"/>
+						<div xmlns="http://www.w3.org/1999/xhtml">
+							<table width="100%">
+								<tbody>
+									<tr>
+										<th>Medication item</th>
+										<td>Medication name: Sertraline 100mg tablets</td>
+										<td>Form: Tablet</td>
+										<td>Route: Oral</td>
+										<td>Dose directions description: Take two 100 mg tablets daily.</td>
+									</tr>
+									<tr>
+										<th>Medication change</th>
+										<td colspan="4">Status: Added</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</text>
+					<!--Reference to Medication List-->
+					<entry>
+						<reference value="urn:uuid:972eeaba-9aec-4154-8925-9062cdcd95f0"/>
+					</entry>
+				</section>
+				<!--Participation in research-->
+				<section>
+					<title value="Participation in research"/>
+					<code>
+						<coding>
+							<system value="http://snomed.info/sct"/>
+							<code value="886751000000102"/>
+							<display value="Participation in research"/>
+						</coding>
+					</code>
+					<text>
+						<status value="additional"/>
+						<div xmlns="http://www.w3.org/1999/xhtml">
+							<table width="100%">
+								<tbody>
+									<tr>
+										<th>Name of research study</th>
+										<td>No specific study currently identified, but patient agrees to be approached for potential participation in appropriate research.</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</text>
+				</section>
+				<!--Patient and carer concerns-->
+				<section>
+					<title value="Patient and carer concerns, expectations and wishes"/>
+					<code>
+						<coding>
+							<system value="http://snomed.info/sct"/>
+							<code value="1052941000000107"/>
+							<display value="Patient and carer concerns, expectations and wishes"/>
+						</coding>
+					</code>
+					<text>
+						<status value="additional"/>
+						<div xmlns="http://www.w3.org/1999/xhtml">
+							<table width="100%">
+								<tbody>
+									<tr>
+										<th>Patient and carer concerns, expectations and wishes</th>
+										<td>Patient stated "I do not want ECT."</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</text>
+				</section>
+				<!-- Patient demographics-->
+				<section>
+					<title value="Patient demographics"/>
+					<code>
+						<coding>
+							<system value="http://snomed.info/sct"/>
+							<code value="886731000000109"/>
+							<display value="Patient demographics"/>
+						</coding>
+					</code>
+					<text>
+						<status value="additional"/>
+						<div xmlns="http://www.w3.org/1999/xhtml">
+							<table width="100%">
+								<tbody>
+									<tr>
+										<th>Patient name</th>
+										<td>
+											<p>Prefix: Mr</p>
+											<p>Given Name: Jon</p>
+											<p>Family Name: Burrows</p>
+										</td>
+									</tr>
+									<tr>
+										<th>Date of birth</th>
+										<td>10 September 1970</td>
+									</tr>
+									<tr>
+										<th>Gender</th>
+										<td>Male</td>
+									</tr>
+									<tr>
+										<th>NHS number</th>
+										<td>1234567890</td>
+									</tr>
+									<tr>
+										<th>Patient address</th>
+										<td>
+											<p>Address Line: 22, Brown Street, Overtown</p>
+											<p>City: Leeds</p>
+											<p>Post Code: LS22 2JK</p>
+										</td>
+									</tr>
+									<tr>
+										<th>Relevant contacts</th>
+										<td>Name: Eve Burrows <p>Relationship: Next of kin</p>
+											<p>Contact details: Tel. 07912678910 Email. eburrows@mymail.com</p>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</text>
+					<!--reference to further information carried in the patient resource-->
+					<entry>
+						<reference value="urn:uuid:f919dedc-3c62-462f-a171-8d86c5aaa074"/>
+					</entry>
+				</section>
+				<!--Person completing record-->
+				<section>
+					<title value="Person completing record"/>
+					<code>
+						<coding>
+							<system value="http://snomed.info/sct"/>
+							<code value="887231000000104"/>
+							<display value="Person completing record"/>
+						</coding>
+					</code>
+					<text>
+						<status value="additional"/>
+						<div xmlns="http://www.w3.org/1999/xhtml">
+							<table width="100%">
+								<tbody>
+									<tr>
+										<th>Name</th>
+										<td>
+											<p>Prefix: Dr</p>
+											<p>Given Name: Mike</p>
+											<p>Family Name: Scott</p>
+											<p>Identifier: 9222477</p>
+										</td>
+									</tr>
+									<tr>
+										<th>Role</th>
+										<td>Consultant</td>
+									</tr>
+									<tr>
+										<th>Specialty</th>
+										<td>Adult mental illness - speciality</td>
+									</tr>
+									<tr>
+										<th>Date and time completed</th>
+										<td>07 April 2015 17:30</td>
+									</tr>
+									<tr>
+										<th>Contact details</th>
+										<td>Phone: 0113 111222 (Work)</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</text>
+					<!--reference to practitioner entry-->
+					<entry>
+						<reference value="urn:uuid:44c853c7-a22f-49ce-8eb5-27a05c83e6ec"/>
+					</entry>
+				</section>
+				<!--Plan and requested actions-->
+				<section>
+					<title value="Plan and requested actions"/>
+					<code>
+						<coding>
+							<system value="http://snomed.info/sct"/>
+							<code value="887201000000105"/>
+							<display value="Plan and requested actions"/>
+						</coding>
+					</code>
+					<text>
+						<status value="additional"/>
+						<div xmlns="http://www.w3.org/1999/xhtml">
+							<table width="100%">
+								<tbody>
+									<tr>
+										<th>Actions for healthcare professionals</th>
+										<td>
+											<p>Routine follow up will be needed from Primary Care e.g. Well man clinic. 
+The Community Consultant responsible for this action is Dr Gillingham working for the Leeds Recovery and Support Team.</p>
+											<p>Status: Requested</p>
+										</td>
+									</tr>
+									<tr>
+										<th>Actions for patient or their carer</th>
+										<td>Patient to commence psychological therapies for depression (IAPT)</td>
+									</tr>
+									<tr>
+										<th>Agreed with patient or legitimate patient representative</th>
+										<td>Patient has agreed to treatment plan.</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</text>
+				</section>
+				<!--Procedures-->
+				<section>
+					<title value="Procedures"/>
+					<code>
+						<coding>
+							<system value="http://snomed.info/sct"/>
+							<code value="887171000000109"/>
+							<display value="Procedures"/>
+						</coding>
+					</code>
+					<text>
+						<status value="generated"/>
+						<div xmlns="http://www.w3.org/1999/xhtml">
+							<table width="100%">
+								<tbody>
+									<tr>
+										<th>Procedure name</th>
+										<td>Assessment using health of the nation outcome scale</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</text>
+					<!--reference to further information carried in the procedure list resource-->
+					<entry>
+						<reference value="urn:uuid:3e5cc458-6e99-46c0-b334-6222258aa22a"/>
+					</entry>
+				</section>
+				<!--Referrer details-->
+				<section>
+					<title value="Referrer details"/>
+					<code>
+						<coding>
+							<system value="http://snomed.info/sct"/>
+							<code value="1052891000000108"/>
+							<display value="Referrer details"/>
+						</coding>
+					</code>
+					<text>
+						<status value="additional"/>
+						<div xmlns="http://www.w3.org/1999/xhtml">
+							<table width="100%">
+								<tbody>
+									<tr>
+										<th>Referrer details</th>
+										<td>St. James's University Hospital Accident and Emergency Department, Chancellor Wing, St. James's University Hospital, Beckett Street, Leeds LS9 7TF</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</text>
+				</section>
+				<!--Safety alerts-->
+				<section>
+					<title value="Safety alerts"/>
+					<code>
+						<coding>
+							<system value="http://snomed.info/sct"/>
+							<code value="886931000000107"/>
+							<display value="Safety alerts"/>
+						</coding>
+					</code>
+					<text>
+						<status value="additional"/>
+						<div xmlns="http://www.w3.org/1999/xhtml">
+							<table width="100%">
+								<tbody>
+									<tr>
+										<th>Risks to self</th>
+										<td>Has taken an overdose of paracetamol, but no risks to self on discharge providing patient continues his medication.</td>
+									</tr>
+									<tr>
+										<th>Risks to others</th>
+										<td>None</td>
+									</tr>
+									<tr>
+										<th>Risk from others</th>
+										<td>None</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</text>
+				</section>
+				<!--Social context-->
+				<section>
+					<title value="Social context"/>
+					<code>
+						<coding>
+							<system value="http://snomed.info/sct"/>
+							<code value="887051000000101"/>
+							<display value="Social context"/>
+						</coding>
+					</code>
+					<text>
+						<status value="additional"/>
+						<div xmlns="http://www.w3.org/1999/xhtml">
+							<table width="100%">
+								<tbody>
+									<tr>
+										<th>Household composition</th>
+										<td>Lives with wife and two teenage daughters</td>
+									</tr>
+									<tr>
+										<th>Occupational history</th>
+										<td>Patient currently employed after having lost his job as a building surveyor.</td>
+									</tr>
+									<tr>
+										<th>Alcohol intake</th>
+										<td>Drank half a bottle of whisky prior to admittance to Emergency department. (Patient states he does not normally drink.)</td>
+									</tr>
+									<tr>
+										<th>Drug/substance use</th>
+										<td>Patient stated he "Took a few paracetamol" prior to admittance to Emergency department. No history of substance use.</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</text>
+				</section>
+			</Composition>
+		</resource>
+	</entry>
+	<entry>
+		<fullUrl value="urn:uuid:cf080749-31c9-4ff6-b2d8-a2dd3dce851c"/>
+		<resource>
+			<!--Encounter resource providing context for the discharge-->
+			<Encounter>
+				<id value="cf080749-31c9-4ff6-b2d8-a2dd3dce851c"/>
+				<meta>
+					<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-ITK-Encounter-1"/>
+				</meta>
+				<extension url="https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-AdmissionMethod-1">
+					<valueCodeableConcept>
+						<coding>
+							<system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-AdmissionMethod-1"/>
+							<code value="21"/>
+							<display value="Accident and emergency or dental casualty department of the Health Care Provider"/>
+						</coding>
+					</valueCodeableConcept>
+				</extension>
+				<extension url="https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-DischargeMethod-1">
+					<valueCodeableConcept>
+						<coding>
+							<system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-DischargeMethod-1"/>
+							<code value="1"/>
+							<display value="Patient discharged on clinical advice or with clinical consent"/>
+						</coding>
+					</valueCodeableConcept>
+				</extension>
+				<identifier>
+					<system value="https://tools.ietf.org/html/rfc4122"/>
+					<value value="24c91f00-dde0-4662-bdce-2e483fe89daa"/>
+				</identifier>
+				<status value="finished"/>
+    <class>
+     <system value="http://hl7.org/fhir/v3-ActEncounterCode"/>
+     <code value="IMP"/>
+     <display value="inpatient encounter"/>
+    </class>
+    <!--Specific type of encounter-->
+    <type>
+     <coding>
+      <system value="http://snomed.info/sct"/>
+      <code value="24882007"/>
+      <display value="Medical consultation on hospital inpatient"/>
+     </coding>
+    </type>
+				<!--Reference to the patient as the subject of the Encounter-->
+				<subject>
+					<reference value="urn:uuid:f919dedc-3c62-462f-a171-8d86c5aaa074"/>
+				</subject>
+				<!--	The start and end time of the encounter-->
+				<period>
+					<start value="2015-03-13T12:00:00+00:00"/>
+					<end value="2015-04-06T13:00:00+00:00"/>
+				</period>
+				<reason>
+					<coding>
+						<system value="http://snomed.info/sct"/>
+						<code value="295126006"/>
+						<display value="Paracetamol overdose of undetermined intent"/>
+					</coding>
+				</reason>
+				<hospitalization>
+					<!--From where patient was admitted-->
+					<admitSource>
+						<coding>
+							<system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-SourceOfAdmission-1"/>
+							<code value="51"/>
+							<display value="NHS other Hospital Provider - Ward for general Patients or the younger physically disabled or A and E department"/>
+						</coding>
+					</admitSource>
+					<!--	Category or kind of location after discharge-->
+					<dischargeDisposition>
+						<coding>
+							<system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-DischargeDestination-1"/>
+							<code value="19"/>
+							<display value="Usual place of residence unless listed below, for example, a private dwelling whether owner occupied or owned by Local Authority, housing association or other landlord. This includes wardened accommodation but not residential accommodation where health care is provided. It also includes Patients with no fixed abode."/>
+						</coding>
+					</dischargeDisposition>
+				</hospitalization>
+				<!--Discharge location-->
+				<location>
+					<location>
+						<reference value="urn:uuid:cd265d1d-2254-4671-8f97-37876c9bac6a"/>
+					</location>
+					<period>
+						<start value="2015-03-13T12:00:00+00:00"/>
+						<end value="2015-04-06T13:00:00+00:00"/>
+					</period>
+				</location>
+			</Encounter>
+		</resource>
+	</entry>
+	<entry>
+		<fullUrl value="urn:uuid:972eeaba-9aec-4154-8925-9062cdcd95f0"/>
+		<resource>
+			<List>
+				<id value="972eeaba-9aec-4154-8925-9062cdcd95f0"/>
+				<meta>
+					<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-ITK-Medication-List-1"/>
+				</meta>
+				<identifier>
+					<system value="https://tools.ietf.org/html/rfc4122"/>
+					<value value="afb94840-1a20-48b2-8162-6cbdceaa260a"/>
+				</identifier>
+				<status value="current"/>
+				<mode value="snapshot"/>
+				<code>
+					<coding>
+						<system value="http://snomed.info/sct"/>
+						<code value="933361000000108"/>
+						<display value="Medications and medical devices"/>
+					</coding>
+				</code>
+				<subject>
+					<reference value="urn:uuid:f919dedc-3c62-462f-a171-8d86c5aaa074"/>
+				</subject>
+				<entry>
+					<flag>
+						<coding>
+							<system value="https://fhir.nhs.uk/STU3/CodeSystem/ITK-PatientMedicationChangeType-1"/>
+							<code value="4"/>
+							<display value="Addition"/>
+						</coding>
+					</flag>
+					<item>
+						<reference value="urn:uuid:dd596f8a-2c72-44b1-a7aa-c1490fce46d2"/>
+					</item>
+				</entry>
+			</List>
+		</resource>
+	</entry>
+	<entry>
+		<fullUrl value="urn:uuid:dd596f8a-2c72-44b1-a7aa-c1490fce46d2"/>
+		<resource>
+			<MedicationStatement>
+				<id value="dd596f8a-2c72-44b1-a7aa-c1490fce46d2"/>
+				<meta>
+					<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-ITK-MedicationStatement-1"/>
+				</meta>
+				<extension url="https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-MedicationChangeSummary-1">
+					<extension url="status">
+						<valueCode value="Added"/>
+					</extension>
+				</extension>
+				<identifier>
+					<system value="https://tools.ietf.org/html/rfc4122"/>
+					<value value="eb515b2d-e87f-41e2-9ff0-cc756d9b12c8"/>
+				</identifier>
+				<status value="active"/>
+				<medicationReference>
+					<reference value="urn:uuid:911b8338-79b7-4e9a-9441-49934b3e19e1"/>
+				</medicationReference>
+				<!--Patient subject of the Medication statement-->
+				<subject>
+					<reference value="urn:uuid:f919dedc-3c62-462f-a171-8d86c5aaa074"/>
+				</subject>
+				<taken value="y"/>
+				<dosage>
+					<text value="Take two 100 mg tablets daily"/>
+					<route>
+						<coding>
+							<system value="http://snomed.info/sct"/>
+							<code value="26643006"/>
+							<display value="Oral"/>
+						</coding>
+					</route>
+				</dosage>
+			</MedicationStatement>
+		</resource>
+	</entry>
+	<!--Medication Example 1-->
+	<entry>
+		<fullUrl value="urn:uuid:911b8338-79b7-4e9a-9441-49934b3e19e1"/>
+		<resource>
+			<Medication>
+				<id value="911b8338-79b7-4e9a-9441-49934b3e19e1"/>
+				<meta>
+					<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-ITK-Medication-1"/>
+				</meta>
+				<code>
+					<coding>
+						<system value="http://snomed.info/sct"/>
+						<code value="321960002"/>
+						<display value="Sertraline 100mg tablets"/>
+					</coding>
+				</code>
+			</Medication>
+		</resource>
+	</entry>
+	<!-- Allergies list example-->
+	<entry>
+		<fullUrl value="urn:uuid:95e8f8d0-dfc3-4c72-a9dc-7ba1ccd1fab4"/>
+		<resource>
+			<List>
+				<id value="95e8f8d0-dfc3-4c72-a9dc-7ba1ccd1fab4"/>
+				<meta>
+					<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-ITK-Allergy-List-1"/>
+				</meta>
+				<identifier>
+					<system value="https://tools.ietf.org/html/rfc4122"/>
+					<value value="6ee0967d-aaa7-411a-9398-518c089ce3a1"/>
+				</identifier>
+				<status value="current"/>
+				<mode value="snapshot"/>
+				<code>
+					<coding>
+						<system value="http://snomed.info/sct"/>
+						<code value="886921000000105"/>
+						<display value="Allergies and adverse reactions"/>
+					</coding>
+				</code>
+				<subject>
+					<reference value="urn:uuid:f919dedc-3c62-462f-a171-8d86c5aaa074"/>
+				</subject>
+				<entry>
+					<flag>
+						<coding>
+							<system value="https://fhir.nhs.uk/STU3/CodeSystem/ITK-PatientAllergyChangeType-1"/>
+							<code value="1"/>
+							<display value="Unchanged"/>
+						</coding>
+					</flag>
+					<!--Reference to AllergyIntolerance resource-->
+					<item>
+						<reference value="urn:uuid:f8deaa1e-62ac-41cb-a475-9df3ea737a8e"/>
+					</item>
+				</entry>
+			</List>
+		</resource>
+	</entry>
+	<!--Allergy Intolerance example-->
+	<entry>
+		<fullUrl value="urn:uuid:f8deaa1e-62ac-41cb-a475-9df3ea737a8e"/>
+		<resource>
+			<AllergyIntolerance>
+				<id value="f8deaa1e-62ac-41cb-a475-9df3ea737a8e"/>
+				<meta>
+					<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-ITK-AllergyIntolerance-1"/>
+				</meta>
+				<identifier>
+					<system value="https://tools.ietf.org/html/rfc4122"/>
+					<value value="17faf6c5-2897-458d-9893-3428c755fffb"/>
+				</identifier>
+				<clinicalStatus value="active"/>
+				<verificationStatus value="confirmed"/>
+				<code>
+					<coding>
+						<system value="http://snomed.info/sct"/>
+						<code value="256349002"/>
+						<display value="Peanut - dietary"/>
+					</coding>
+				</code>
+				<patient>
+					<reference value="urn:uuid:f919dedc-3c62-462f-a171-8d86c5aaa074"/>
+				</patient>
+			</AllergyIntolerance>
+		</resource>
+	</entry>
+	<!-- Procedure List-->
+	<entry>
+		<fullUrl value="urn:uuid:3e5cc458-6e99-46c0-b334-6222258aa22a"/>
+		<resource>
+			<List>
+				<id value="3e5cc458-6e99-46c0-b334-6222258aa22a"/>
+				<meta>
+					<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-ITK-Procedure-List-1"/>
+				</meta>
+				<identifier>
+					<system value="https://tools.ietf.org/html/rfc4122"/>
+					<value value="043cf11d-fff9-4b49-8621-f2968364c841"/>
+				</identifier>
+				<status value="current"/>
+				<mode value="snapshot"/>
+				<code>
+					<coding>
+						<system value="http://snomed.info/sct"/>
+						<code value="887171000000109"/>
+						<display value="Procedures"/>
+					</coding>
+				</code>
+				<subject>
+					<reference value="urn:uuid:f919dedc-3c62-462f-a171-8d86c5aaa074"/>
+				</subject>
+				<entry>
+					<item>
+						<reference value="urn:uuid:48facc39-3d1f-4682-8989-71d7e9e10e96"/>
+					</item>
+				</entry>
+			</List>
+		</resource>
+	</entry>
+	<!--Procedure Example 1-->
+	<entry>
+		<fullUrl value="urn:uuid:48facc39-3d1f-4682-8989-71d7e9e10e96"/>
+		<resource>
+			<Procedure>
+				<id value="48facc39-3d1f-4682-8989-71d7e9e10e96"/>
+				<meta>
+					<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-ITK-Procedure-1"/>
+				</meta>
+				<identifier>
+					<system value="https://tools.ietf.org/html/rfc4122"/>
+					<value value="317d11ba-8e2a-44e9-86ee-9e1c46c852ce"/>
+				</identifier>
+				<status value="completed"/>
+				<code>
+					<coding>
+						<system value="http://snomed.info/sct"/>
+						<code value="493121000000105"/>
+						<display value="Assessment using health of the nation outcome scale"/>
+					</coding>
+				</code>
+				<subject>
+					<reference value="urn:uuid:f919dedc-3c62-462f-a171-8d86c5aaa074"/>
+				</subject>
+				<context>
+					<reference value="urn:uuid:cf080749-31c9-4ff6-b2d8-a2dd3dce851c"/>
+				</context>
+			</Procedure>
+		</resource>
+	</entry>
+	<!--Condition list-->
+	<entry>
+		<fullUrl value="urn:uuid:e2b1c9ff-4a34-45db-af57-5f6d72f8d1b9"/>
+		<resource>
+			<List>
+				<id value="e2b1c9ff-4a34-45db-af57-5f6d72f8d1b9"/>
+				<meta>
+					<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-ITK-Condition-List-1"/>
+				</meta>
+				<identifier>
+					<system value="https://tools.ietf.org/html/rfc4122"/>
+					<value value="73f7933c-115a-4f26-8ce4-e847f03803b5"/>
+				</identifier>
+				<status value="current"/>
+				<mode value="snapshot"/>
+				<code>
+					<coding>
+						<system value="http://snomed.info/sct"/>
+						<code value="887161000000102"/>
+						<display value="Diagnoses"/>
+					</coding>
+				</code>
+				<subject>
+					<reference value="urn:uuid:f919dedc-3c62-462f-a171-8d86c5aaa074"/>
+				</subject>
+				<entry>
+					<item>
+						<reference value="urn:uuid:11ae3617-f898-4503-a895-54eed614a574"/>
+					</item>
+				</entry>
+				<entry>
+					<item>
+						<reference value="urn:uuid:0a0c5f79-c36b-47b3-a602-74ec7a75719f"/>
+					</item>
+				</entry>
+			</List>
+		</resource>
+	</entry>
+	<!--Condition example 1-->
+	<entry>
+		<fullUrl value="urn:uuid:11ae3617-f898-4503-a895-54eed614a574"/>
+		<resource>
+			<Condition>
+				<id value="11ae3617-f898-4503-a895-54eed614a574"/>
+				<meta>
+					<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-ITK-Condition-1"/>
+				</meta>
+				<identifier>
+					<system value="https://tools.ietf.org/html/rfc4122"/>
+					<value value="c4b2d64e-23f3-4055-8299-141aacf9c16c"/>
+				</identifier>
+				<clinicalStatus value="active"/>
+				<code>
+					<coding>
+						<system value="http://snomed.info/sct"/>
+						<code value="397701000000102"/>
+						<display value="[X]Severe depressive episode without psychotic symptoms"/>
+					</coding>
+				</code>
+				<subject>
+					<reference value="urn:uuid:f919dedc-3c62-462f-a171-8d86c5aaa074"/>
+				</subject>
+				<context>
+					<reference value="urn:uuid:cf080749-31c9-4ff6-b2d8-a2dd3dce851c"/>
+				</context>
+			</Condition>
+		</resource>
+	</entry>
+	<!--Condition example 2-->
+	<entry>
+		<fullUrl value="urn:uuid:0a0c5f79-c36b-47b3-a602-74ec7a75719f"/>
+		<resource>
+			<Condition>
+				<id value="0a0c5f79-c36b-47b3-a602-74ec7a75719f"/>
+				<meta>
+					<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-ITK-Condition-1"/>
+				</meta>
+				<identifier>
+					<system value="https://tools.ietf.org/html/rfc4122"/>
+					<value value="118255a6-8dd7-4411-ae1b-592ce217e57d"/>
+				</identifier>
+				<clinicalStatus value="active"/>
+				<code>
+					<coding>
+						<system value="http://snomed.info/sct"/>
+						<code value="295126006"/>
+						<display value="Paracetamol overdose of undetermined intent"/>
+					</coding>
+				</code>
+				<subject>
+					<reference value="urn:uuid:f919dedc-3c62-462f-a171-8d86c5aaa074"/>
+				</subject>
+				<context>
+					<reference value="urn:uuid:cf080749-31c9-4ff6-b2d8-a2dd3dce851c"/>
+				</context>
+			</Condition>
+		</resource>
+	</entry>
+	<entry>
+		<fullUrl value="urn:uuid:f919dedc-3c62-462f-a171-8d86c5aaa074"/>
+		<resource>
+			<Patient>
+				<id value="f919dedc-3c62-462f-a171-8d86c5aaa074"/>
+				<meta>
+					<profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Patient-1"/>
+				</meta>
+				<identifier>
+					<extension url="https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-NHSNumberVerificationStatus-1">
+						<valueCodeableConcept>
+							<coding>
+								<system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-NHSNumberVerificationStatus-1"/>
+								<code value="01"/>
+								<display value="Number present and verified"/>
+							</coding>
+						</valueCodeableConcept>
+					</extension>
+					<system value="https://fhir.nhs.uk/Id/nhs-number"/>
+					<value value="1234567890"/>
+				</identifier>
+				<name>
+					<use value="official"/>
+					<family value="Burrows"/>
+					<given value="Jon"/>
+					<prefix value="Mr"/>
+				</name>
+				<gender value="male"/>
+				<birthDate value="1970-09-10"/>
+				<address>
+					<line value="22, Brown Street, Overtown"/>
+					<city value="Leeds"/>
+					<postalCode value="LS22 2JK"/>
+				</address>
+			</Patient>
+		</resource>
+	</entry>
+	<!--Practitioner-Example-1-->
+	<entry>
+		<fullUrl value="urn:uuid:5e414a77-d394-4248-a631-00e45ddb64a0"/>
+		<resource>
+			<Practitioner>
+				<id value="5e414a77-d394-4248-a631-00e45ddb64a0"/>
+				<meta>
+					<profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Practitioner-1"/>
+				</meta>
+				<identifier>
+					<system value="https://fhir.nhs.uk/Id/local-practitioner-identifier"/>
+					<value value="GP12345600"/>
+				</identifier>
+				<name>
+					<family value="Lozo"/>
+					<given value="James"/>
+					<prefix value="Dr"/>
+				</name>
+			</Practitioner>
+		</resource>
+	</entry>
+	<entry>
+		<fullUrl value="urn:uuid:04d089aa-be17-42fd-a6fc-961245696263"/>
+		<resource>
+			<Practitioner>
+				<id value="04d089aa-be17-42fd-a6fc-961245696263"/>
+				<meta>
+					<profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Practitioner-1"/>
+				</meta>
+				<name>
+					<family value="Beck"/>
+					<given value="Daniel"/>
+					<prefix value="Dr"/>
+				</name>
+			</Practitioner>
+		</resource>
+	</entry>
+	<entry>
+		<fullUrl value="urn:uuid:44c853c7-a22f-49ce-8eb5-27a05c83e6ec"/>
+		<resource>
+			<Practitioner>
+				<id value="44c853c7-a22f-49ce-8eb5-27a05c83e6ec"/>
+				<meta>
+					<profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Practitioner-1"/>
+				</meta>
+				<identifier>
+					<system value="https://fhir.nhs.uk/Id/local-practitioner-identifier"/>
+					<value value="9222477"/>
+				</identifier>
+				<name>
+					<family value="Scott"/>
+					<given value="Mike"/>
+					<prefix value="Dr"/>
+				</name>
+				<telecom>
+					<system value="phone"/>
+					<value value="0113 111222"/>
+					<use value="work"/>
+				</telecom>
+			</Practitioner>
+		</resource>
+	</entry>
+	<entry>
+		<fullUrl value="urn:uuid:a74e1942-8ff8-4c4a-9edb-7b5e4e2f198c"/>
+		<resource>
+			<Practitioner>
+				<id value="a74e1942-8ff8-4c4a-9edb-7b5e4e2f198c"/>
+				<meta>
+					<profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Practitioner-1"/>
+				</meta>
+				<identifier>
+					<system value="https://fhir.nhs.uk/Id/sds-user-id"/>
+					<value value="033345750518"/>
+				</identifier>
+				<name>
+					<family value="Gillingham"/>
+					<given value="Gay"/>
+					<prefix value="Mrs"/>
+				</name>
+			</Practitioner>
+		</resource>
+	</entry>
+	<!--Role details for referenced practitioners-->
+	<entry>
+		<fullUrl value="urn:uuid:001c858c-3e3d-4b58-be94-0f46c79d8bae"/>
+		<resource>
+			<PractitionerRole>
+				<id value="001c858c-3e3d-4b58-be94-0f46c79d8bae"/>
+				<meta>
+					<profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-PractitionerRole-1"/>
+				</meta>
+				<practitioner>
+					<reference value="urn:uuid:5e414a77-d394-4248-a631-00e45ddb64a0"/>
+				</practitioner>
+				<organization>
+					<reference value="urn:uuid:f9f24f89-646b-4a19-a6b1-cabfa3b612e1"/>
+				</organization>
+				<code>
+					<coding>
+						<system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-SDSJobRoleName-1"/>
+						<code value="R0260"/>
+						<display value="General Medical Practitioner"/>
+					</coding>
+				</code>
+			</PractitionerRole>
+		</resource>
+	</entry>
+	<entry>
+		<fullUrl value="urn:uuid:d53edede-fcb0-4bdd-9724-e4e5745f1b63"/>
+		<resource>
+			<PractitionerRole>
+				<id value="d53edede-fcb0-4bdd-9724-e4e5745f1b63"/>
+				<meta>
+					<profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-PractitionerRole-1"/>
+				</meta>
+				<practitioner>
+					<reference value="urn:uuid:04d089aa-be17-42fd-a6fc-961245696263"/>
+				</practitioner>
+				<organization>
+					<reference value="urn:uuid:6de0a05a-d4b2-4f67-b0d4-80cc2a670f90"/>
+				</organization>
+				<code>
+					<coding>
+						<system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-SDSJobRoleName-1"/>
+						<code value="R0050"/>
+						<display value="Consultant"/>
+					</coding>
+				</code>
+			</PractitionerRole>
+		</resource>
+	</entry>
+	<entry>
+		<fullUrl value="urn:uuid:18e9c262-e21a-4b32-bf59-eae2e549f5a4"/>
+		<resource>
+			<PractitionerRole>
+				<id value="18e9c262-e21a-4b32-bf59-eae2e549f5a4"/>
+				<meta>
+					<profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-PractitionerRole-1"/>
+				</meta>
+				<practitioner>
+					<reference value="urn:uuid:44c853c7-a22f-49ce-8eb5-27a05c83e6ec"/>
+				</practitioner>
+				<organization>
+					<reference value="urn:uuid:6de0a05a-d4b2-4f67-b0d4-80cc2a670f90"/>
+				</organization>
+				<code>
+					<coding>
+						<system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-SDSJobRoleName-1"/>
+						<code value="R0050"/>
+						<display value="Consultant"/>
+					</coding>
+				</code>
+				<specialty>
+					<coding>
+						<system value="http://snomed.info/sct"/>
+						<code value="408467006"/>
+						<display value="Adult mental illness - speciality"/>
+					</coding>
+				</specialty>
+			</PractitionerRole>
+		</resource>
+	</entry>
+	<entry>
+		<fullUrl value="urn:uuid:95fa0336-21f0-4cf1-b453-9117efbfbaa4"/>
+		<resource>
+			<PractitionerRole>
+				<id value="95fa0336-21f0-4cf1-b453-9117efbfbaa4"/>
+				<meta>
+					<profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-PractitionerRole-1"/>
+				</meta>
+				<practitioner>
+					<reference value="urn:uuid:a74e1942-8ff8-4c4a-9edb-7b5e4e2f198c"/>
+				</practitioner>
+				<organization>
+					<reference value="urn:uuid:6de0a05a-d4b2-4f67-b0d4-80cc2a670f90"/>
+				</organization>
+				<code>
+					<coding>
+						<system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-SDSJobRoleName-1"/>
+						<code value="R0050"/>
+						<display value="Consultant"/>
+					</coding>
+					<text value="Community Team Member"/>
+				</code>
+			</PractitionerRole>
+		</resource>
+	</entry>
+	<!--Organization-Example-1-->
+	<entry>
+		<fullUrl value="urn:uuid:f9f24f89-646b-4a19-a6b1-cabfa3b612e1"/>
+		<resource>
+			<Organization>
+				<id value="f9f24f89-646b-4a19-a6b1-cabfa3b612e1"/>
+				<meta>
+					<profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Organization-1"/>
+				</meta>
+				<identifier>
+					<system value="https://fhir.nhs.uk/Id/ods-organization-code"/>
+					<value value="GP123456"/>
+				</identifier>
+				<name value="MGP Medical Centre"/>
+				<telecom>
+					<system value="phone"/>
+					<value value="0113 4111223"/>
+					<use value="work"/>
+				</telecom>
+				<address>
+					<line value="1 MGP House, Overtown"/>
+					<city value="Leeds"/>
+					<postalCode value="LS21 7PA"/>
+				</address>
+			</Organization>
+		</resource>
+	</entry>
+	<!--Organization-Example-2-->
+	<entry>
+		<fullUrl value="urn:uuid:6de0a05a-d4b2-4f67-b0d4-80cc2a670f90"/>
+		<resource>
+			<Organization>
+				<id value="6de0a05a-d4b2-4f67-b0d4-80cc2a670f90"/>
+				<meta>
+					<profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Organization-1"/>
+				</meta>
+				<identifier>
+					<system value="https://fhir.nhs.uk/Id/ods-organization-code"/>
+					<value value="RGD"/>
+				</identifier>
+				<name value="Leeds Mental Health NHS Trust"/>
+			</Organization>
+		</resource>
+	</entry>
+	<!--Location example 1-->
+	<entry>
+		<fullUrl value="urn:uuid:cd265d1d-2254-4671-8f97-37876c9bac6a"/>
+		<resource>
+			<Location>
+				<id value="cd265d1d-2254-4671-8f97-37876c9bac6a"/>
+				<meta>
+					<profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Location-1"/>
+				</meta>
+				<name value="Alder Ward"/>
+				<managingOrganization>
+					<reference value="urn:uuid:6de0a05a-d4b2-4f67-b0d4-80cc2a670f90"/>
+				</managingOrganization>
+			</Location>
+		</resource>
+	</entry>
+</Bundle>

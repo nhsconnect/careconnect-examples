@@ -442,7 +442,6 @@
                <value value="12730"></value>
             </identifier>
             <clinicalStatus value="active"></clinicalStatus>
-            <verificationStatus value="confirmed"></verificationStatus>
             <code>
                <coding>
                   <system value="http://snomed.info/sct"></system>

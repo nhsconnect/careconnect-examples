@@ -9,117 +9,47 @@
       <resource>
          <Patient xmlns="http://hl7.org/fhir">
             <id value="2305a166-45ca-4716-8be6-e1a57eda55b0"></id>
-            <language value="English (en-GB)"></language>
+            <meta>
+               <lastUpdated value="2019-06-05T13:18:38.363+00:00"/>
+               <profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Patient-1"/>
+            </meta>
             <identifier>
                <extension url="https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-NHSNumberVerificationStatus-1">
                   <valueCodeableConcept>
                      <coding>
-                        <system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-NHSNumberVerificationStatus-1"></system>
-                        <code value="01"></code>
-                        <display value="Number present and verified"></display>
+                        <system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-NHSNumberVerificationStatus-1"/>
+                        <code value="01"/>
+                        <display value="Number present and verified"/>
                      </coding>
                   </valueCodeableConcept>
                </extension>
-               <system value="https://fhir.nhs.uk/Id/nhs-number"></system>
-               <value value="9658218881"></value>
+               <system value="https://fhir.nhs.uk/Id/nhs-number"/>
+               <value value="9658218881"/>
             </identifier>
             <name>
-               <use value="usual"></use>
-               <family value="Meakin"></family>
-               <given value="Micheal"></given>
-               <prefix value="Mr"></prefix>
+               <use value="official"/>
+               <family value="Meakin"/>
+               <given value="Micheal"/>
+               <prefix value="Mr"/>
             </name>
-            <telecom>
-               <system value="phone"></system>
-               <value value="0208 412 8867"></value>
-               <use value="home"></use>
-            </telecom>
-            <telecom>
-               <system value="phone"></system>
-               <value value="07778 143 565"></value>
-               <use value="mobile"></use>
-            </telecom>
-            <telecom>
-               <system value="email"></system>
-               <value value="michael@interopen.org"></value>
-               <use value="home"></use>
-            </telecom>
-            <gender value="male"></gender>
-            <birthDate value="1960-08-01"></birthDate>
+            <gender value="male"/>
+            <birthDate value="1960-08-01"/>
             <address>
-               <use value="home"></use>
-               <line value="7 Trinity Way"></line>
-               <city value="London"></city>
-               <postalCode value="W3 7JF"></postalCode>
+               <use value="home"/>
+               <line value="7 Trinity Way"/>
+               <city value="London"/>
+               <postalCode value="W3 7JF"/>
             </address>
             <maritalStatus>
                <coding>
-                  <system value="http://hl7.org/fhir/v3/MaritalStatus"></system>
-                  <code value="S"></code>
+                  <system value="http://hl7.org/fhir/v3/MaritalStatus"/>
+                  <code value="S"/>
+                  <display value="Never Married"/>
                </coding>
             </maritalStatus>
             <managingOrganization>
                <reference value="urn:uuid:87e49abd-9410-419d-8682-74930220cd3c"></reference>
-            </managingOrganization>
-         </Patient>
-      </resource>
-   </entry>
-   <entry>
-      <fullUrl value="urn:uuid:2305a166-45ca-4716-8be6-e1a57eda55b0"></fullUrl>
-      <resource>
-         <Patient xmlns="http://hl7.org/fhir">
-            <id value="2305a166-45ca-4716-8be6-e1a57eda55b0"></id>
-            <language value="English (en-GB)"></language>
-            <identifier>
-               <extension url="https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-NHSNumberVerificationStatus-1">
-                  <valueCodeableConcept>
-                     <coding>
-                        <system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-NHSNumberVerificationStatus-1"></system>
-                        <code value="01"></code>
-                        <display value="Number present and verified"></display>
-                     </coding>
-                  </valueCodeableConcept>
-               </extension>
-               <system value="https://fhir.nhs.uk/Id/nhs-number"></system>
-               <value value="9658218881"></value>
-            </identifier>
-            <name>
-               <use value="usual"></use>
-               <family value="Meakin"></family>
-               <given value="Micheal"></given>
-               <prefix value="Mr"></prefix>
-            </name>
-            <telecom>
-               <system value="phone"></system>
-               <value value="0208 412 8867"></value>
-               <use value="home"></use>
-            </telecom>
-            <telecom>
-               <system value="phone"></system>
-               <value value="07778 143 565"></value>
-               <use value="mobile"></use>
-            </telecom>
-            <telecom>
-               <system value="email"></system>
-               <value value="michael@interopen.org"></value>
-               <use value="home"></use>
-            </telecom>
-            <gender value="male"></gender>
-            <birthDate value="1960-08-01"></birthDate>
-            <address>
-               <use value="home"></use>
-               <line value="7 Trinity Way"></line>
-               <city value="London"></city>
-               <postalCode value="W3 7JF"></postalCode>
-            </address>
-            <maritalStatus>
-               <coding>
-                  <system value="http://hl7.org/fhir/v3/MaritalStatus"></system>
-                  <code value="S"></code>
-               </coding>
-            </maritalStatus>
-            <managingOrganization>
-               <reference value="urn:uuid:87e49abd-9410-419d-8682-74930220cd3c"></reference>
+               <display value="EAST KENT HOSPITALS UNIVERSITY NHS FOUNDATION TRUST"/>
             </managingOrganization>
          </Patient>
       </resource>

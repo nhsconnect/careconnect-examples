@@ -210,7 +210,7 @@
                     <value value="A1234521" />
                 </identifier>
                 <name>
-                    <use value="usual" />
+                    <use value="official" />
                     <family value="Meakin" />
                     <given value="Micheal" />
                 </name>
@@ -431,7 +431,6 @@
                     <value value="con3"></value>
                 </identifier>
                 <clinicalStatus value="active"></clinicalStatus>
-                <verificationStatus value="confirmed" />
                 <category>
                     <coding>
                         <system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-ConditionCategory-1"></system>

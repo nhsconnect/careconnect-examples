@@ -32,6 +32,8 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
 
     private XhtmlParser xhtmlParser = new XhtmlParser();
 
+    private Patient patient = null;
+
     private ClassLoader getContextClassLoader() {
         return Thread.currentThread().getContextClassLoader();
     }
@@ -43,6 +45,7 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
 
     FhirContext ctxFHIR = FhirContext.forDstu3();
 
+    IGenericClient clientEDMS = null;
     IGenericClient client = null;
 
     DateFormat df = new SimpleDateFormat("HHmm_dd_MM_yyyy");
@@ -61,17 +64,21 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
 
         client.setEncoding(EncodingEnum.XML);
 
+        clientEDMS = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri/camel/ccri-document/STU3/");
+        //client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8080/careconnect-gateway/STU3/");
+
+        clientEDMS.setEncoding(EncodingEnum.XML);
 
         getSimple();
 
-        Boolean outputDocs = false;
+        Boolean outputDocs = true;
         if (outputDocs) {
-            outputDocument("1", 1);
-            ///   outputDocument("1",2);
-            outputDocument("1", 3);
-            outputDocument("1002", 4);
-            outputDocument("2", 5);
-            outputDocument("3", 6);
+        //    outputDocument("1", 1);
+            outputDocument("9658218873",2);
+            outputDocument("9658218873", 3);
+            outputDocument("9658218881", 4);
+            outputDocument("9658218997", 5);
+            outputDocument("9658220169", 6);
         }
     }
 
@@ -85,7 +92,15 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
 
         // Uncomment to send to purple
         //
-        // client.create().resource(unstructDocBundle).execute();
+        try {
+            MethodOutcome outcome = clientEDMS.create().resource(unstructDocBundle).execute();
+
+            if (outcome.getCreated() && patient != null) {
+                sendNRLS((Bundle) outcome.getResource(), patient.getIdentifierFirstRep().getValue());
+            }
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
 
     }
 
@@ -101,7 +116,7 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
 
         DocumentReference doc = new DocumentReference();
         doc.setId(UUID.randomUUID().toString());
-        doc.getMeta().addProfile("https://fhir.nhs.uk/STU3/StructureDefinition/GPConnect-DocumentReference-1");
+      //  doc.getMeta().addProfile("https://fhir.nhs.uk/STU3/StructureDefinition/GPConnect-DocumentReference-1");
         doc.setSubject(new Reference("https://demographics.spineservices.nhs.uk/STU3/Patient/9658220169"));
         doc.setStatus(Enumerations.DocumentReferenceStatus.CURRENT);
         doc.getType().addCoding()
@@ -109,6 +124,8 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
                 .setCode("734163000")
                 .setDisplay("Care plan");
         doc.setIndexed(new Date());
+        doc.setCreated(new Date());
+        doc.setDescription("A document");
         doc.getContext().getPracticeSetting().addCoding()
                 .setSystem("http://snomed.info/sct")
                 .setCode("408467006")
@@ -128,10 +145,11 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
         doc.addAuthor(new Reference("urn:uuid:" + organization.getId()).setDisplay(organization.getName()));
 
         Patient patient = null;
-        IGenericClient clientCCRI = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
+
+
 
         clientODS.setEncoding(EncodingEnum.XML);
-        Bundle patientSearchbundle =  clientCCRI
+        Bundle patientSearchbundle =  client
                 .search()
                 .forResource(Patient.class)
                 .where(Patient.IDENTIFIER.exactly().systemAndCode("https://fhir.nhs.uk/Id/nhs-number","9658220169"))
@@ -145,6 +163,8 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
         if (patient != null) {
             patient.setId(UUID.randomUUID().toString());
             doc.setSubject(new Reference("urn:uuid:" + patient.getId()));
+            patient.setManagingOrganization(null);
+            patient.setGeneralPractitioner(new ArrayList<>());
 
             bundle = new Bundle();
             bundle.addEntry().setResource(doc).setFullUrl("urn:uuid:" + doc.getId());
@@ -154,23 +174,29 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
             bundle.setType(Bundle.BundleType.COLLECTION);
             System.out.println(FhirContext.forDstu3().newJsonParser().setPrettyPrint(true).encodeResourceToString(bundle));
 
-            MethodOutcome outcome = clientCCRI.create().resource(bundle).execute();
-            if (outcome.getCreated()) {
-                sendNRLS((Bundle) outcome.getResource());
+            try {
+                MethodOutcome outcome = clientEDMS.create().resource(bundle).execute();
+
+                if (outcome.getCreated()) {
+                    sendNRLS((Bundle) outcome.getResource(), "9658220169");
+                }
+            } catch (Exception ex) {
+                System.out.println("Already exists?");
             }
         }
 
         return bundle;
     }
 
-    private void sendNRLS(Bundle bundle) {
+    private void sendNRLS(Bundle bundle, String nhsNumber) {
         for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
 
             if (entry.getResource() instanceof DocumentReference) {
                 DocumentReference documentReference = (DocumentReference) entry.getResource();
-
-                documentReference.setSubject(new Reference("https://demographics.spineservices.nhs.uk/STU3/Patient/9658220169"));
+                documentReference.setId("");
+                documentReference.setSubject(new Reference("https://demographics.spineservices.nhs.uk/STU3/Patient/"+nhsNumber));
                 documentReference.setAuthor(new ArrayList<>());
+                documentReference.setIndexed(new Date());
                 documentReference.addAuthor().setReference("https://directory.spineservices.nhs.uk/STU3/Organization/MHT01");
                 documentReference.setCustodian(new Reference("https://directory.spineservices.nhs.uk/STU3/Organization/MHT01"));
                 documentReference.setType(null);
@@ -178,6 +204,8 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
                         .setSystem("http://snomed.info/sct")
                         .setDisplay("Mental Health Crisis Plan")
                         .setCode("736253002");
+                documentReference.setContext(null);
+
                 System.out.println(FhirContext.forDstu3().newJsonParser().setPrettyPrint(true).encodeResourceToString(documentReference));
 
                 IGenericClient clientNRLS = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/nrls-ri/");
@@ -412,11 +440,14 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
         Bundle bundle = client
                 .search()
                 .forResource(Patient.class)
-                .where(Patient.RES_ID.exactly().code(patientId))
+                .where(Patient.IDENTIFIER.exactly().code(patientId))
                 .include(Patient.INCLUDE_GENERAL_PRACTITIONER)
                 .include(Patient.INCLUDE_ORGANIZATION)
                 .returnBundle(Bundle.class)
                 .execute();
+        if (bundle.getEntryFirstRep().getResource() instanceof Patient) {
+            patient = (Patient) bundle.getEntryFirstRep().getResource();
+        }
         return bundle;
     }
 

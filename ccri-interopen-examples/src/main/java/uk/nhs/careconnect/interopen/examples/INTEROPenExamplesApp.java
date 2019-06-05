@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.client.RestTemplate;
 
 import java.io.*;
 import java.math.BigDecimal;
@@ -89,7 +88,7 @@ public class INTEROPenExamplesApp implements CommandLineRunner {
     }
 
     IGenericClient client = null;
-    IGenericClient clientGPC = null;
+    IGenericClient clientCC = null;
     IGenericClient clientODS = null;
     IGenericClient clientNRLS = null;
 
@@ -107,15 +106,15 @@ public class INTEROPenExamplesApp implements CommandLineRunner {
             throw new Exception();
         }
 
-        //client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
-        client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8182/ccri-messaging/STU3/");
+        client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri/camel/ccri-messaging/STU3/");
+        //client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8182/ccri-messaging/STU3/");
        //client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
         client.setEncoding(EncodingEnum.XML);
 
-       // clientGPC = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri/camel/fhir/gpc/");
-        clientGPC = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
-       // clientGPC = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8187/ccri/camel/fhir/gpc/");
-       // clientGPC.setEncoding(EncodingEnum.XML);
+       // clientCC = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri/camel/fhir/gpc/");
+        clientCC = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
+       // clientCC = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8187/ccri/camel/fhir/gpc/");
+       // clientCC.setEncoding(EncodingEnum.XML);
 
         clientNRLS = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/nrls-ri/");
         SSPInterceptor sspInterceptor = new SSPInterceptor();
@@ -125,24 +124,18 @@ public class INTEROPenExamplesApp implements CommandLineRunner {
         clientODS = ctxFHIR.newRestfulGenericClient("https://directory.spineservices.nhs.uk/STU3/");
         clientODS.setEncoding(EncodingEnum.XML);
 
-        Boolean loadDocuments = false;
+        Boolean loadDocuments = true;
 
-
-        if (!loadDocuments) {
-            loadFolder("patient");
-        } else {
-            loadFolder("patientPlusDocs");
-        }
-
+        loadFolder("patient");
 
         idno = 661;
         locno = 730;
         conno = 12734;
         obsNo = 533;
-        postPatient(loadDocuments,"9658220142", "LS25 2HF", Encounter.EncounterLocationStatus.PLANNED, "Elbe", "LS26 8PU", 0, -15, "410429000", "Cardiac arrest", true);
+        // 5/June/2019 postPatient(loadDocuments,"9658220142", "LS25 2HF", Encounter.EncounterLocationStatus.PLANNED, "Elbe", "LS26 8PU", 0, -15, "410429000", "Cardiac arrest", true);
 
 
-        loadFolder("rad");
+        loadFolder("toc");
 
         if (loadDocuments) {
            // loadFolder("dch");
@@ -197,8 +190,8 @@ public class INTEROPenExamplesApp implements CommandLineRunner {
         try {
             MethodOutcome outcome = client.create().resource(bundle).execute();
         } catch (UnprocessableEntityException ex) {
-            System.out.println("ERROR - "+filename);
-            System.out.println(ctxFHIR.newXmlParser().encodeResourceToString(ex.getOperationOutcome()));
+           // System.out.println("ERROR - "+filename);
+           // System.out.println(ctxFHIR.newXmlParser().encodeResourceToString(ex.getOperationOutcome()));
             if (ex.getStatusCode()==422) {
                 System.out.println("Trying to update "+filename+ ": Bundle?identifier="+bundle.getIdentifier().getSystem()+"|"+bundle.getIdentifier().getValue());
                 MethodOutcome outcome = client.update().resource(bundle).conditionalByUrl("Bundle?identifier="+bundle.getIdentifier().getSystem()+"|"+bundle.getIdentifier().getValue()).execute();
@@ -229,7 +222,7 @@ public class INTEROPenExamplesApp implements CommandLineRunner {
 
 
     public void updateNRLS() {
-        Bundle bundle =  client
+        Bundle bundle =  clientCC
                 .search()
                 .forResource(DocumentReference.class)
                 .where(DocumentReference.TYPE.exactly().codes ("736253002", "736373009"))
@@ -245,7 +238,7 @@ public class INTEROPenExamplesApp implements CommandLineRunner {
                 System.out.println(documentReference.getSubject().getReference());
                // String patientID =
 
-                Patient patient = client.read().resource(Patient.class).withId(new IdType(documentReference.getSubject().getReference())).execute();
+                Patient patient = clientCC.read().resource(Patient.class).withId(new IdType(documentReference.getSubject().getReference())).execute();
 
                 if (patient != null) {
                     for (Identifier identifier : patient.getIdentifier()) {
@@ -752,7 +745,7 @@ public class INTEROPenExamplesApp implements CommandLineRunner {
 
     private Bundle getPatientBundle(String NHSNumber) {
 
-        IGenericClient callclient = clientGPC;
+        IGenericClient callclient = clientCC;
         Bundle bundle = callclient
                 .search()
                 .forResource(Patient.class)
@@ -1375,11 +1368,14 @@ public class INTEROPenExamplesApp implements CommandLineRunner {
         condition.setId(fhirBundle.getNewId(condition));
         condition.setSubject(new Reference(uuidtag + fhirBundle.getPatient().getId()));
         condition.setClinicalStatus(Condition.ConditionClinicalStatus.ACTIVE);
+        /*
         if (ambulanceStatus == null) {
             condition.setVerificationStatus(Condition.ConditionVerificationStatus.PROVISIONAL); }
         else {
             condition.setVerificationStatus(Condition.ConditionVerificationStatus.CONFIRMED);
         }
+
+         */
         condition.setAsserter(new Reference(uuidtag + fhirBundle.getPatient().getId()));
         condition.addIdentifier().setSystem(yasConditionIdentifier).setValue(conno.toString());
         condition.setAssertedDate(cal.getTime());

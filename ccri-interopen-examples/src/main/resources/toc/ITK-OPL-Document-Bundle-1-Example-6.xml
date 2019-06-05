@@ -1,0 +1,1344 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--This xml example is for illustrative purposes only and has not been clinically verified-->
+<Bundle xmlns="http://hl7.org/fhir">
+	<id value="fab7e268-99dc-4c04-ae7e-c1d6a784c098"/>
+	<meta>
+		<lastUpdated value="2017-05-16T19:42:00+00:00"/> 
+		<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/ITK-Document-Bundle-1"/>
+	</meta>
+	<identifier>
+		<system value="https://tools.ietf.org/html/rfc4122"/>
+		<value value="d929db2f-5781-4667-a4c2-098e2d986074"/>
+	</identifier>
+	<type value="document"/>
+	<!--Outpatient Letter Composition-->
+	<entry>
+		<fullUrl value="urn:uuid:5afa2be6-651e-48e9-9712-fc81bb4b8c12"/>
+		<resource>
+			<Composition>
+				<id value="5afa2be6-651e-48e9-9712-fc81bb4b8c12"/>
+				<meta>
+					<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-ITK-OPL-Composition-1"/>
+				</meta>
+				<!-- Extension to carry details of the Correspondence Care Setting Type. -->
+				<extension url="https://fhir.nhs.uk/STU3/StructureDefinition/Extension-CareSettingType-1">
+					<valueCodeableConcept>
+						<coding>
+							<system value="http://snomed.info/sct"/>
+							<code value="310164003"/>
+							<display value="Plastic surgery service"/>
+						</coding>
+					</valueCodeableConcept>
+				</extension>
+				<identifier>
+					<system value="https://tools.ietf.org/html/rfc4122"/>
+					<value value="22b6c1fb-e6f4-4f4d-a4a7-2c6b0188b580"/>
+				</identifier>
+				<status value="final"/>
+				<type>
+					<!--Outpatient letter -->
+					<coding>
+						<system value="http://snomed.info/sct"/>
+						<code value="823681000000100"/>
+						<display value="Outpatient letter"/>
+					</coding>
+				</type>
+				<subject>
+					<reference value="urn:uuid:862b638b-6f75-4f4b-870f-40d9c8f99e57"/>
+				</subject>
+				<encounter>
+					<reference value="urn:uuid:c6184a32-b332-440c-9ecc-21c17a6d3528"/>
+				</encounter>
+				<!--The composition editing time, when the composition was last logically changed by the author.-->
+				<date value="2017-05-16T16:42:00+00:00"/>
+				<!--Identifies who is responsible for the information in the composition, not necessarily who typed it in-->
+				<author>
+					<reference value="urn:uuid:5cfdc975-9f0e-48af-b4ac-8114987cb7e0"/>
+				</author>
+				<title value="Plastic Surgery Service Outpatient Letter"/>
+				<!--Identifies the organization responsible for ongoing maintenance of and access to the composition/document information.-->
+				<custodian>
+					<reference value="urn:uuid:77cef538-3c15-41c9-8a10-fbbb89fb396a"/>
+				</custodian>
+				<!--Allergies and adverse reactions-->
+				<section>
+					<title value="Allergies and adverse reactions"/>
+					<code>
+						<coding>
+							<system value="http://snomed.info/sct"/>
+							<code value="886921000000105"/>
+							<display value="Allergies and adverse reactions"/>
+						</coding>
+					</code>
+					<text>
+						<status value="additional"/>
+						<div xmlns="http://www.w3.org/1999/xhtml">
+							<table width="100%">
+								<tbody>
+									<tr>
+										<th>Causative agent</th>
+										<td>Penicillin</td>
+									</tr>
+									<tr>
+										<th>Reaction details</th>
+										<td>Description of reaction:<br/>Nausea and vomiting<p>Severity: Mild</p>
+											<p>Type of reaction: Intolerance</p>
+											<p>Probability of recurrence: Likely</p>
+											<p>Date first experienced: 4 years ago</p>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</text>
+					<entry>
+						<reference value="urn:uuid:f4302d9f-3776-4d51-aca1-d01020e9a9c1"/>
+					</entry>
+				</section>
+				<!--Attendance details section-->
+				<section>
+					<title value="Attendance details"/>
+					<code>
+						<coding>
+							<system value="http://snomed.info/sct"/>
+							<code value="1077881000000105"/>
+							<display value="Attendance details"/>
+						</coding>
+					</code>
+					<text>
+						<status value="additional"/>
+						<div xmlns="http://www.w3.org/1999/xhtml">
+							<table width="100%">
+								<tbody>
+									<tr>
+										<td colspan="2" style="width:100%">Dear Dr. C. O'Reilly, <br/>I had the pleasure of meeting Mrs. Beckett in my general plastic surgery clinic, referred by Dr. William Yates, Dermatology Consultant, St Crispin's Hospital, Donaldstown, DO1 4XP 01234 567890.<br/>
+										</td>
+									</tr>
+									<tr>
+										<th>Date and time of contact</th>
+										<td>16 May 2017</td>
+									</tr>
+									<tr>
+										<th>Contact type</th>
+										<td>First attendance face to face</td>
+									</tr>
+									<tr>
+										<th>Consultation method</th>
+										<td>Face-to-face</td>
+									</tr>
+									<tr>
+										<th>Responsible healthcare professional</th>
+										<td>Dr. Shauna O'Casey (Consultant Plastic and Reconstructive Surgeon)</td>
+									</tr>
+									<tr>
+										<th>Specialty</th>
+										<td>Plastic surgery</td>
+									</tr>
+									<tr>
+										<th>Service</th>
+										<td>Plastic surgery service</td>
+									</tr>
+									<tr>
+										<th>Seen by</th>
+										<td>
+											<p>Prefix: Dr</p>
+											<p>Given Name: Shauna</p>
+											<p>Family Name: O'Casey</p>
+											<p>Role: Consultant Plastic and Reconstructive Surgeon</p>
+											<p>Tel: 01234 567890 (Work) Email: cpc@nhs.uk (Work)</p>
+											<p>Address: General Plastic Surgery Clinic, St. Crispin's Hospital</p>
+											<p>City: Donaldstown</p>
+											<p>Postcode: DO1 4XP</p>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<p>Prefix: Mrs</p>
+											<p>Given Name: Patricia</p>
+											<p>Family Name: Kavanagh</p>
+											<p>Role: Skin Cancer Specialist Nurse</p>
+											<p>Tel: 01234 567890 (Work)</p>
+										</td>
+									</tr>
+									<tr>
+										<th>Care professionals present</th>
+										<td>
+											<p>Prefix: Mrs</p>
+											<p>Given Name: Jane</p>
+											<p>Family Name: Joyce</p>
+											<p>Role: Healthcare Assistant</p>
+											<p>Tel: 01234 567890 (Work)</p>
+										</td>
+									</tr>
+									<tr>
+										<th>Outcome of patient attendance</th>
+										<td>Appointment to be made at a later date</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</text>
+					<!--Reference to Encounter-->
+					<entry>
+						<reference value="urn:uuid:c6184a32-b332-440c-9ecc-21c17a6d3528"/>
+					</entry>
+				</section>
+				<section>
+					<title value="Clinical summary"/>
+					<code>
+						<coding>
+							<system value="http://snomed.info/sct"/>
+							<code value="887181000000106"/>
+							<display value="Clinical summary"/>
+						</coding>
+					</code>
+					<text>
+						<status value="additional"/>
+						<div xmlns="http://www.w3.org/1999/xhtml">
+							<table width="100%">
+								<tbody>
+									<tr>
+										<th>Clinical summary</th>
+									</tr>
+									<tr>
+										<td>This delightful lady has presented with a 10 month history of a left arm lesion that is rapidly growing and will require excisional biopsy to confirm the nature of the growth.</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</text>
+				</section>
+				<!--Diagnoses-->
+				<section>
+					<title value="Diagnoses"/>
+					<code>
+						<coding>
+							<system value="http://snomed.info/sct"/>
+							<code value="887161000000102"/>
+							<display value="Diagnoses"/>
+						</coding>
+					</code>
+					<text>
+						<status value="additional"/>
+						<div xmlns="http://www.w3.org/1999/xhtml">
+							<table>
+								<tbody>
+									<tr>
+										<th>Diagnosis name</th>
+										<td>Lesion</td>
+									</tr>
+									<tr>
+										<th>Diagnosis name</th>
+										<td>Hypertension</td>
+									</tr>
+									<tr>
+										<th>Comment</th>
+										<td>Lesion is situated on left forearm</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</text>
+					<!--Reference to Condition List-->
+					<entry>
+						<reference value="urn:uuid:fbfde333-b212-4b67-82c1-09d995819657"/>
+					</entry>
+				</section>
+				<!--Distribution list-->
+				<section>
+					<title value="Distribution list"/>
+					<code>
+						<coding>
+							<system value="http://snomed.info/sct"/>
+							<code value="887261000000109"/>
+							<display value="Distribution list"/>
+						</coding>
+					</code>
+					<text>
+						<status value="additional"/>
+						<div xmlns="http://www.w3.org/1999/xhtml">
+							<table width="100%">
+								<tbody>
+									<tr>
+										<th>Name</th>
+										<td>
+											<p>Prefix: Dr</p>
+											<p>Given Name: C</p>
+											<p>Family Name: O'Reilly</p>
+											<p>Identifier: 8122472</p>
+										</td>
+									</tr>
+									<tr>
+										<th>Role</th>
+										<td>General Medical Practitioner</td>
+									</tr>
+									<tr>
+										<th>Organisation</th>
+										<td>
+											<p>Name: Canvas Health Centre</p>
+											<p>Identifier: A111111</p>
+										</td>
+									</tr>
+									<tr>
+										<th>Relationship to subject</th>
+										<td>General Medical Practitioner</td>
+									</tr>
+								</tbody>
+							</table>
+							<table width="100%">
+								<tbody>
+									<tr>
+										<th>Name</th>
+										<td>
+											<p>Prefix: Mrs</p>
+											<p>Given Name: Sam</p>
+											<p>Family Name: Beckett</p>
+											<p>NHS No: 1269523190</p>
+										</td>
+									</tr>
+									<tr>
+										<th>Role</th>
+										<td>Patient</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</text>
+					<!--Reference to the practitioner entry as recipient of information-->
+					<entry>
+						<reference value="urn:uuid:8b2ef03f-6d11-40fe-b199-b3f5a09b5028"/>
+					</entry>
+					<!--Reference to the patient entry as recipient of information-->
+					<entry>
+						<reference value="urn:uuid:862b638b-6f75-4f4b-870f-40d9c8f99e57"/>
+					</entry>
+				</section>
+				<!--Examination findings-->
+				<section>
+					<title value="Examination finding"/>
+					<code>
+						<coding>
+							<system value="http://snomed.info/sct"/>
+							<code value="715851000000102"/>
+							<display value="Examination findings"/>
+						</coding>
+					</code>
+					<text>
+						<status value="additional"/>
+						<div xmlns="http://www.w3.org/1999/xhtml">
+							<table width="100%">
+								<tbody>
+									<tr>
+										<th>Examination findings</th>
+									</tr>
+									<tr>
+										<td>Mrs. Beckett is well. There are no skin lesions to the body other than left forearm. She has a 3x2cm scaly lesion which is centrally ulcerated. There was no evidence of left axillary or cervical node involvement.</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</text>
+				</section>
+				<!--Family history-->
+				<section>
+					<title value="Family history"/>
+					<code>
+						<coding>
+							<system value="http://snomed.info/sct"/>
+							<code value="887111000000104"/>
+							<display value="Family history"/>
+						</coding>
+					</code>
+					<text>
+						<status value="additional"/>
+						<div xmlns="http://www.w3.org/1999/xhtml">
+							<table width="100%">
+								<tbody>
+									<tr>
+										<th>Family history</th>
+									</tr>
+									<tr>
+										<td>Mrs. Beckett's father died of melanoma at 62 years old.</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</text>
+				</section>
+				<!-- GP Practice-->
+				<section>
+					<title value="GP practice"/>
+					<code>
+						<coding>
+							<system value="http://snomed.info/sct"/>
+							<code value="886711000000101"/>
+							<display value="GP practice"/>
+						</coding>
+					</code>
+					<text>
+						<status value="additional"/>
+						<div xmlns="http://www.w3.org/1999/xhtml">
+							<table width="100%">
+								<tbody>
+									<tr>
+										<th>GP practice identifier</th>
+										<td>A111111</td>
+									</tr>
+									<tr>
+										<th>GP name</th>
+										<td>
+											<p>Prefix: Dr</p>
+											<p>Given Name: C</p>
+											<p>Family Name: O'Reilly</p>
+											<p>Identifier:8122472</p>
+										</td>
+									</tr>
+									<tr>
+										<th>GP practice details</th>
+										<td>
+											<p>Name: Canvas Health Centre</p>
+											<p>Address:</p>
+											<p>Address Line: 27, Acacia Road</p>
+											<p>Post Code: BM9 6PM</p>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</text>
+					<!--Reference to the Organisation entry as the source of information for this section-->
+					<entry>
+						<reference value="urn:uuid:2db180bc-98fb-4b98-aab1-77a4e6ccd19f"/>
+					</entry>
+				</section>
+				<!--History-->
+				<section>
+					<title value="History"/>
+					<code>
+						<coding>
+							<system value="http://snomed.info/sct"/>
+							<code value="717121000000105"/>
+							<display value="History"/>
+						</coding>
+					</code>
+					<text>
+						<status value="additional"/>
+						<div xmlns="http://www.w3.org/1999/xhtml">
+							<table width="100%">
+								<tbody>
+									<tr>
+										<th>Presenting complaints or issue</th>
+										<td>Potential Squamous cell carcinoma to left forearm. Rapidly growing lesion to left forearm x 10 months. Has seen dermatologists who have assessed and referred on to Plastics for surgical excision and possible skin grafting after lesion is excised.</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</text>
+				</section>
+				<!--Individual requirements-->
+				<section>
+					<title value="Individual requirements"/>
+					<code>
+						<coding>
+							<system value="http://snomed.info/sct"/>
+							<code value="1052901000000109"/>
+							<display value="Individual requirement"/>
+						</coding>
+					</code>
+					<text>
+						<status value="additional"/>
+						<div xmlns="http://www.w3.org/1999/xhtml">
+							<table width="100%">
+								<tbody>
+									<tr>
+										<th>Individual requirements</th>
+										<td>Polish national with limited English - needs an interpreter.</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</text>
+				</section>
+				<!--Information and advice given-->
+				<section>
+					<title value="Information and advice given"/>
+					<code>
+						<coding>
+							<system value="http://snomed.info/sct"/>
+							<code value="1052951000000105"/>
+							<display value="Information and advice given"/>
+						</coding>
+					</code>
+					<text>
+						<status value="additional"/>
+						<div xmlns="http://www.w3.org/1999/xhtml">
+							<table width="100%">
+								<tbody>
+									<tr>
+										<th>Information and advice given</th>
+										<td>Patient seen by the skin cancer Specialist Nurse and has been reassured of her place. I have warned her of the risk of infection, bleeding, reoperation, scarring, wound dehiscence and the need for dressings.  She understands this and is happy to be added to the waiting list.
+</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</text>
+				</section>
+				<!-- Patient demographics-->
+				<section>
+					<title value="Patient demographics"/>
+					<code>
+						<coding>
+							<system value="http://snomed.info/sct"/>
+							<code value="886731000000109"/>
+							<display value="Patient demographics"/>
+						</coding>
+					</code>
+					<text>
+						<status value="additional"/>
+						<div xmlns="http://www.w3.org/1999/xhtml">
+							<table width="100%">
+								<tbody>
+									<tr>
+										<th>Patient name</th>
+										<td>
+											<p>Prefix: Mrs</p>
+											<p>Given Name: Sam</p>
+											<p>Family Name: Beckett</p>
+										</td>
+									</tr>
+									<tr>
+										<th>Date of birth</th>
+										<td>2 March 1973</td>
+									</tr>
+									<tr>
+										<th>Gender</th>
+										<td>Female</td>
+									</tr>
+									<tr>
+										<th>NHS number</th>
+										<td>1269523190</td>
+									</tr>
+									<tr>
+										<th>Other identifier</th>
+										<td>TL12945</td>
+									</tr>
+									<tr>
+										<th>Patient address</th>
+										<td>
+											<p>Address Line: 34, Acacia Road</p>
+											<p>Post Code: BM9 6PL</p>
+										</td>
+									</tr>
+									<tr>
+										<th>Patient email address</th>
+										<td>sam@beckett.net</td>
+									</tr>
+									<tr>
+										<th>Patient telephone number</th>
+										<td>Mobile: 077 1234 7982</td>
+									</tr>
+									<tr>
+										<th>Relevant contacts</th>
+										<td>Mr. Sam Beckett, 34, Acacia Road, BM9 6PL (husband)</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</text>
+					<!--reference to further information carried in the patient resource-->
+					<entry>
+						<reference value="urn:uuid:862b638b-6f75-4f4b-870f-40d9c8f99e57"/>
+					</entry>
+				</section>
+				<!--Person completing record-->
+				<section>
+					<title value="Person completing record"/>
+					<code>
+						<coding>
+							<system value="http://snomed.info/sct"/>
+							<code value="887231000000104"/>
+							<display value="Person completing record"/>
+						</coding>
+					</code>
+					<text>
+						<status value="additional"/>
+						<div xmlns="http://www.w3.org/1999/xhtml">
+							<table width="100%">
+								<tbody>
+									<tr>
+										<th>Name</th>
+										<td>
+											<p>Prefix: Dr</p>
+											<p>Given Name: Shauna</p>
+											<p>Family Name: O'Casey</p>
+										</td>
+									</tr>
+									<tr>
+										<th>Role</th>
+										<td>Consultant Plastic and Reconstructive Surgeon</td>
+									</tr>
+									<tr>
+										<th>Specialty</th>
+										<td>Plastic surgery - speciality</td>
+									</tr>
+									<tr>
+										<th>Professional identifier</th>
+										<td>6775580</td>
+									</tr>
+									<tr>
+										<th>Date and time completed</th>
+										<td>16 May 2017 16:42</td>
+									</tr>
+									<tr>
+										<th>Contact details</th>
+										<td>Tel: 01234 567890 (Work)</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</text>
+					<!--reference to further information carried in the practitioner resource-->
+					<entry>
+						<reference value="urn:uuid:5cfdc975-9f0e-48af-b4ac-8114987cb7e0"/>
+					</entry>
+				</section>
+				<!--Plan and requested actions-->
+				<section>
+					<title value="Plan and requested actions"/>
+					<code>
+						<coding>
+							<system value="http://snomed.info/sct"/>
+							<code value="887201000000105"/>
+							<display value="Plan and requested actions"/>
+						</coding>
+					</code>
+					<text>
+						<status value="additional"/>
+						<div xmlns="http://www.w3.org/1999/xhtml">
+							<table width="100%">
+								<tbody>
+									<tr>
+										<th>Plan and requested actions for healthcare professionals</th>
+									</tr>
+									<tr>
+										<td>Added to waiting list for excisional biopsy of lesion and direct closure on left forearm by	Dr. Shauna O'Casey, 16/05/17</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</text>
+				</section>
+				<!--Referrer details-->
+				<section>
+					<title value="Referrer details"/>
+					<code>
+						<coding>
+							<system value="http://snomed.info/sct"/>
+							<code value="1052891000000108"/>
+							<display value="Referrer details"/>
+						</coding>
+					</code>
+					<text>
+						<status value="additional"/>
+						<div xmlns="http://www.w3.org/1999/xhtml">
+							<table width="100%">
+								<tbody>
+									<tr>
+										<th>Referrer Name</th>
+										<td>
+											<p>Prefix: Dr</p>
+											<p>Given Name: William</p>
+											<p>Family Name: Yates</p>
+											<p>Role: Dermatology Consultant</p>
+											<p>Tel: 01234 567890</p>
+											<p>Organisation Name: St Crispin's Hospital</p>
+											<p>City: Donaldstown</p>
+											<p>Post Code: DO1 4XP</p>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</text>
+					<!--reference to further information carried in the practitioner resource-->
+					<entry>
+						<reference value="urn:uuid:c018d668-2fd8-47f4-86d8-5a3a8bfa67c0"/>
+					</entry>
+				</section>
+				<!--Social context-->
+				<section>
+					<title value="Social context"/>
+					<code>
+						<coding>
+							<system value="http://snomed.info/sct"/>
+							<code value="887051000000101"/>
+							<display value="Social context"/>
+						</coding>
+					</code>
+					<text>
+						<status value="additional"/>
+						<div xmlns="http://www.w3.org/1999/xhtml">
+							<table width="100%">
+								<tbody>
+									<tr>
+										<th>Household composition</th>
+										<td>Mrs. Beckett lives with her husband.</td>
+									</tr>
+									<tr>
+										<th>Occupational history</th>
+										<td>Mrs. Beckett is a factory worker.</td>
+									</tr>
+									<tr>
+										<th>Smoking</th>
+										<td>She does not smoke.</td>
+									</tr>
+									<tr>
+										<th>Alcohol intake</th>
+										<td>Her alcohol intake is rare.</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</text>
+				</section>
+			</Composition>
+		</resource>
+	</entry>
+	<!--Encounter Example 1-->
+	<entry>
+		<fullUrl value="urn:uuid:c6184a32-b332-440c-9ecc-21c17a6d3528"/>
+		<resource>
+			<Encounter>
+				<id value="c6184a32-b332-440c-9ecc-21c17a6d3528"/>
+				<meta>
+					<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-ITK-Encounter-1"/>
+				</meta>
+				<extension url="https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-OutcomeOfAttendance-1">
+					<valueCodeableConcept>
+						<coding>
+							<system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-OutcomeOfAttendance-1"/>
+							<code value="3"/>
+							<display value="Appointment to be made at a later date"/>
+						</coding>
+					</valueCodeableConcept>
+				</extension>
+				<identifier>
+					<system value="https://tools.ietf.org/html/rfc4122"/>
+					<value value="159372d5-de3b-42be-823d-8a7bdb172bde"/>
+				</identifier>
+				<status value="finished"/>
+    <class>
+     <system value="http://hl7.org/fhir/v3-ActEncounterCode"/>
+     <code value="AMB"/>
+     <display value="ambulatory"/>
+    </class>
+    <!--Specific type of encounter-->
+    <type>
+     <coding>
+      <system value="http://snomed.info/sct"/>
+      <code value="163381000000105"/>
+      <display value="Outpatient Clinic Attendance"/>
+     </coding>
+    </type>
+				<subject>
+					<reference value="urn:uuid:862b638b-6f75-4f4b-870f-40d9c8f99e57"/>
+				</subject>
+				<!--Reference to the participants present during the encounter-->
+				<participant>
+					<type>
+						<coding>
+							<system value="http://hl7.org/fhir/v3/ParticipationType"/>
+							<code value="ATND"/>
+							<display value="attender"/>
+						</coding>
+					</type>
+					<individual>
+						<reference value="urn:uuid:5cfdc975-9f0e-48af-b4ac-8114987cb7e0"/>
+					</individual>
+				</participant>
+				<participant>
+					<type>
+						<coding>
+							<system value="http://hl7.org/fhir/v3/ParticipationType"/>
+							<code value="PART"/>
+							<display value="Participation"/>
+						</coding>
+					</type>
+					<individual>
+						<reference value="urn:uuid:a4dec203-3364-4152-b61b-045be256bc93"/>
+					</individual>
+				</participant>
+				<participant>
+					<type>
+						<coding>
+							<system value="http://hl7.org/fhir/v3/ParticipationType"/>
+							<code value="PART"/>
+							<display value="Participation"/>
+						</coding>
+					</type>
+					<individual>
+						<reference value="urn:uuid:c6387b76-d27b-4fcf-9a91-93ca5c16b4fd"/>
+					</individual>
+				</participant>
+				<period>
+					<start value="2017-05-16"/>
+				</period>
+			</Encounter>
+		</resource>
+	</entry>
+	<!--Allergies List-->
+	<entry>
+		<fullUrl value="urn:uuid:f4302d9f-3776-4d51-aca1-d01020e9a9c1"/>
+		<resource>
+			<List>
+				<id value="f4302d9f-3776-4d51-aca1-d01020e9a9c1"/>
+				<meta>
+					<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-ITK-Allergy-List-1"/>
+				</meta>
+				<identifier>
+					<system value="https://tools.ietf.org/html/rfc4122"/>
+					<value value="93e491c0-18d7-449d-8616-45c8fdef80d3"/>
+				</identifier>
+				<status value="current"/>
+				<mode value="snapshot"/>
+				<code>
+					<coding>
+						<system value="http://snomed.info/sct"/>
+						<code value="886921000000105"/>
+						<display value="Allergies and adverse reactions"/>
+					</coding>
+				</code>
+				<subject>
+					<reference value="urn:uuid:862b638b-6f75-4f4b-870f-40d9c8f99e57"/>
+				</subject>
+				<encounter>
+					<reference value="urn:uuid:c6184a32-b332-440c-9ecc-21c17a6d3528"/>
+				</encounter>
+				<entry>
+					<flag>
+						<coding>
+							<system value="https://fhir.nhs.uk/STU3/CodeSystem/ITK-PatientAllergyChangeType-1"/>
+							<code value="1"/>
+							<display value="Unchanged"/>
+						</coding>
+					</flag>
+					<item>
+						<reference value="urn:uuid:89de84b7-f877-456a-9292-0d87a52c0da2"/>
+					</item>
+				</entry>
+			</List>
+		</resource>
+	</entry>
+	<!--Allergy Intolerance Example 1-->
+	<entry>
+		<fullUrl value="urn:uuid:89de84b7-f877-456a-9292-0d87a52c0da2"/>
+		<resource>
+			<AllergyIntolerance>
+				<id value="89de84b7-f877-456a-9292-0d87a52c0da2"/>
+				<meta>
+					<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-ITK-AllergyIntolerance-1"/>
+				</meta>
+				<identifier>
+					<system value="https://tools.ietf.org/html/rfc4122"/>
+					<value value="b0e5f445-3706-46cc-9cdb-49cfa4caa5ab"/>
+				</identifier>
+				<clinicalStatus value="active"/>
+				<verificationStatus value="confirmed"/>
+				<code>
+					<coding>
+						<system value="http://snomed.info/sct"/>
+						<code value="373270004"/>
+						<display value="Penicillin"/>
+					</coding>
+				</code>
+				<patient>
+					<reference value="urn:uuid:862b638b-6f75-4f4b-870f-40d9c8f99e57"/>
+				</patient>
+				<reaction>
+					<manifestation>
+						<coding>
+							<system value="http://snomed.info/sct"/>
+							<code value="16932000"/>
+							<display value="Nausea and vomiting"/>
+						</coding>
+					</manifestation>
+					<severity value="mild"/>
+				</reaction>
+			</AllergyIntolerance>
+		</resource>
+	</entry>
+	<!--Condition list-->
+	<entry>
+		<fullUrl value="urn:uuid:fbfde333-b212-4b67-82c1-09d995819657"/>
+		<resource>
+			<List>
+				<id value="fbfde333-b212-4b67-82c1-09d995819657"/>
+				<meta>
+					<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-ITK-Condition-List-1"/>
+				</meta>
+				<identifier>
+					<system value="https://tools.ietf.org/html/rfc4122"/>
+					<value value="956cd43e-3a0f-4420-a611-c7d40fa3bf8c"/>
+				</identifier>
+				<status value="current"/>
+				<mode value="snapshot"/>
+				<code>
+					<coding>
+						<system value="http://snomed.info/sct"/>
+						<code value="887161000000102"/>
+						<display value="Diagnoses"/>
+					</coding>
+				</code>
+				<subject>
+					<reference value="urn:uuid:862b638b-6f75-4f4b-870f-40d9c8f99e57"/>
+				</subject>
+				<entry>
+					<item>
+						<reference value="urn:uuid:811a3c7c-80a3-4811-a72d-620fc7732ab6"/>
+					</item>
+				</entry>
+				<entry>
+					<item>
+						<reference value="urn:uuid:c95e754f-0707-44fe-aafc-14414cffe8a7"/>
+					</item>
+				</entry>
+			</List>
+		</resource>
+	</entry>
+	<!--Condition 1-->
+	<entry>
+		<fullUrl value="urn:uuid:811a3c7c-80a3-4811-a72d-620fc7732ab6"/>
+		<resource>
+			<Condition>
+				<id value="811a3c7c-80a3-4811-a72d-620fc7732ab6"/>
+				<meta>
+					<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-ITK-Condition-1"/>
+				</meta>
+				<identifier>
+					<system value="https://tools.ietf.org/html/rfc4122"/>
+					<value value="e42fd96e-ce30-4c61-801a-85c5513a1532"/>
+				</identifier>
+				<clinicalStatus value="active"/>
+				<category>
+					<coding>
+						<system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-ConditionCategory-1"/>
+						<code value="encounter-diagnosis"/>
+						<display value="Encounter Diagnosis"/>
+					</coding>
+				</category>
+				<code>
+					<coding>
+						<system value="http://snomed.info/sct"/>
+						<code value="38341003"/>
+						<display value="Hypertension"/>
+					</coding>
+				</code>
+				<subject>
+					<reference value="urn:uuid:862b638b-6f75-4f4b-870f-40d9c8f99e57"/>
+				</subject>
+				<context>
+					<reference value="urn:uuid:c6184a32-b332-440c-9ecc-21c17a6d3528"/>
+				</context>
+			</Condition>
+		</resource>
+	</entry>
+	<!--Condition 2-->
+	<entry>
+		<fullUrl value="urn:uuid:c95e754f-0707-44fe-aafc-14414cffe8a7"/>
+		<resource>
+			<Condition>
+				<id value="c95e754f-0707-44fe-aafc-14414cffe8a7"/>
+				<meta>
+					<profile value="https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-ITK-Condition-1"/>
+				</meta>
+				<identifier>
+					<system value="https://tools.ietf.org/html/rfc4122"/>
+					<value value="37ff173c-262a-44d4-b30f-b34f1b5b1db9"/>
+				</identifier>
+				<clinicalStatus value="active"/>
+				<category>
+					<coding>
+						<system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-ConditionCategory-1"/>
+						<code value="encounter-diagnosis"/>
+						<display value="Encounter Diagnosis"/>
+					</coding>
+				</category>
+				<code>
+					<coding>
+						<system value="http://snomed.info/sct"/>
+						<code value="52988006"/>
+						<display value="Lesion"/>
+					</coding>
+				</code>
+				<bodySite>
+					<coding>
+						<system value="http://snomed.info/sct"/>
+						<code value="66480008"/>
+						<display value="Structure of left forearm"/>
+					</coding>
+				</bodySite>
+				<subject>
+					<reference value="urn:uuid:862b638b-6f75-4f4b-870f-40d9c8f99e57"/>
+				</subject>
+				<context>
+					<reference value="urn:uuid:c6184a32-b332-440c-9ecc-21c17a6d3528"/>
+				</context>
+			</Condition>
+		</resource>
+	</entry>
+	<!--Patient-Example-1-->
+	<entry>
+		<fullUrl value="urn:uuid:862b638b-6f75-4f4b-870f-40d9c8f99e57"/>
+		<resource>
+			<Patient>
+				<id value="862b638b-6f75-4f4b-870f-40d9c8f99e57"/>
+				<meta>
+					<profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Patient-1"/>
+				</meta>
+				<identifier>
+					<extension url="https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-NHSNumberVerificationStatus-1">
+						<valueCodeableConcept>
+							<coding>
+								<system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-NHSNumberVerificationStatus-1"/>
+								<code value="01"/>
+								<display value="Number present and verified"/>
+							</coding>
+						</valueCodeableConcept>
+					</extension>
+					<system value="https://fhir.nhs.uk/Id/nhs-number"/>
+					<value value="1269523190"/>
+				</identifier>
+				<identifier>
+					<system value="https://fhir.nhs.uk/Id/local-patient-identifier"/>
+					<value value="TL12945"/>
+				</identifier>
+				<name>
+					<use value="official"/>
+					<family value="Beckett"/>
+					<given value="Sam"/>
+					<prefix value="Mrs"/>
+				</name>
+				<telecom>
+					<system value="phone"/>
+					<value value="077 1234 7982"/>
+					<use value="mobile"/>
+				</telecom>
+				<telecom>
+					<system value="email"/>
+					<value value="sam@beckett.net"/>
+				</telecom>
+				<gender value="female"/>
+				<birthDate value="1973-03-02"/>
+				<address>
+					<line value="34 Acacia Road"/>
+					<postalCode value="BM9 6PL"/>
+				</address>
+			</Patient>
+		</resource>
+	</entry>
+	<!--Practitioner-Example-1-->
+	<entry>
+		<fullUrl value="urn:uuid:a4dec203-3364-4152-b61b-045be256bc93"/>
+		<resource>
+			<Practitioner>
+				<id value="a4dec203-3364-4152-b61b-045be256bc93"/>
+				<meta>
+					<profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Practitioner-1"/>
+				</meta>
+				<name>
+					<use value="usual"/>
+					<family value="Kavanagh"/>
+					<given value="Patricia"/>
+					<prefix value="Mrs"/>
+				</name>
+				<telecom>
+					<system value="phone"/>
+					<value value="01234 567890"/>
+					<use value="work"/>
+				</telecom>
+			</Practitioner>
+		</resource>
+	</entry>
+	<!--Practitioner-Example-2-->
+	<entry>
+		<fullUrl value="urn:uuid:8b2ef03f-6d11-40fe-b199-b3f5a09b5028"/>
+		<resource>
+			<Practitioner>
+				<id value="8b2ef03f-6d11-40fe-b199-b3f5a09b5028"/>
+				<meta>
+					<profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Practitioner-1"/>
+				</meta>
+				<identifier>
+					<system value="https://fhir.nhs.uk/Id/local-practitioner-identifier"/>
+					<value value="8122472"/>
+				</identifier>
+				<name>
+					<family value="O'Reilly"/>
+					<given value="C"/>
+					<prefix value="Dr"/>
+				</name>
+				<telecom>
+					<system value="phone"/>
+					<value value="01234 956412"/>
+					<use value="work"/>
+				</telecom>
+			</Practitioner>
+		</resource>
+	</entry>
+	<!--Practitioner-Example-3-->
+	<entry>
+		<fullUrl value="urn:uuid:5cfdc975-9f0e-48af-b4ac-8114987cb7e0"/>
+		<resource>
+			<Practitioner>
+				<id value="5cfdc975-9f0e-48af-b4ac-8114987cb7e0"/>
+				<meta>
+					<profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Practitioner-1"/>
+				</meta>
+				<identifier>
+					<system value="https://fhir.nhs.uk/Id/local-practitioner-identifier"/>
+					<value value="6775580"/>
+				</identifier>
+				<name>
+					<family value="O'Casey"/>
+					<given value="Shauna"/>
+					<prefix value="Dr"/>
+				</name>
+				<telecom>
+					<system value="phone"/>
+					<value value="01234 567890"/>
+					<use value="work"/>
+				</telecom>
+				<telecom>
+					<system value="email"/>
+					<value value="cpc@nhs.uk"/>
+					<use value="work"/>
+				</telecom>
+				<address>
+					<line value="General Plastic Surgery Clinic, St. Crispin's Hospital"/>
+					<city value="Donaldstown"/>
+					<postalCode value="DO1 4XP"/>
+				</address>
+			</Practitioner>
+		</resource>
+	</entry>
+	<!-- Practitioner example 4-->
+	<entry>
+		<fullUrl value="urn:uuid:c6387b76-d27b-4fcf-9a91-93ca5c16b4fd"/>
+		<resource>
+			<Practitioner>
+				<id value="c6387b76-d27b-4fcf-9a91-93ca5c16b4fd"/>
+				<meta>
+					<profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Practitioner-1"/>
+				</meta>
+				<name>
+					<family value="Joyce"/>
+					<given value="Jane"/>
+					<prefix value="Mrs"/>
+				</name>
+				<telecom>
+					<system value="phone"/>
+					<value value="01234 567890"/>
+					<use value="work"/>
+				</telecom>
+			</Practitioner>
+		</resource>
+	</entry>
+	<!--Practitioner-Example-5-->
+	<entry>
+		<fullUrl value="urn:uuid:c018d668-2fd8-47f4-86d8-5a3a8bfa67c0"/>
+		<resource>
+			<Practitioner>
+				<id value="c018d668-2fd8-47f4-86d8-5a3a8bfa67c0"/>
+				<meta>
+					<profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Practitioner-1"/>
+				</meta>
+				<name>
+					<family value="Yates"/>
+					<given value="William"/>
+					<prefix value="Dr"/>
+				</name>
+				<telecom>
+					<system value="phone"/>
+					<value value="01234 567890"/>
+					<use value="work"/>
+				</telecom>
+				<address>
+					<line value="St. Crispin's Hospital"/>
+					<city value="Donaldstown"/>
+					<postalCode value="DO1 4XP"/>
+				</address>
+			</Practitioner>
+		</resource>
+	</entry>
+	<!--Practitioner roles-->
+	<entry>
+		<fullUrl value="urn:uuid:2b103117-a783-4a66-a0de-f308cd6b63cf"/>
+		<resource>
+			<PractitionerRole>
+				<id value="2b103117-a783-4a66-a0de-f308cd6b63cf"/>
+				<meta>
+					<profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-PractitionerRole-1"/>
+				</meta>
+				<practitioner>
+					<reference value="urn:uuid:8b2ef03f-6d11-40fe-b199-b3f5a09b5028"/>
+				</practitioner>
+				<organization>
+					<reference value="urn:uuid:2db180bc-98fb-4b98-aab1-77a4e6ccd19f"/>
+				</organization>
+				<code>
+					<coding>
+						<system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-SDSJobRoleName-1"/>
+						<code value="R0260"/>
+						<display value="General Medical Practitioner"/>
+					</coding>
+				</code>
+			</PractitionerRole>
+		</resource>
+	</entry>
+	<entry>
+		<fullUrl value="urn:uuid:3fd6b44a-9f29-4322-93d4-680236d31393"/>
+		<resource>
+			<PractitionerRole>
+				<id value="3fd6b44a-9f29-4322-93d4-680236d31393"/>
+				<meta>
+					<profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-PractitionerRole-1"/>
+				</meta>
+				<practitioner>
+					<reference value="urn:uuid:c018d668-2fd8-47f4-86d8-5a3a8bfa67c0"/>
+				</practitioner>
+				<code>
+					<coding>
+						<system value="https://fhir.nhs.uk/STU3/CodeSystem/CareConnect-SDSJobRoleName-1"/>
+						<code value="R0050"/>
+						<display value="Consultant"/>
+					</coding>
+				</code>
+				<specialty>
+					<coding>
+						<system value="http://snomed.info/sct"/>
+						<code value="394582007"/>
+						<display value="Dermatology"/>
+					</coding>
+				</specialty>
+			</PractitionerRole>
+		</resource>
+	</entry>
+	<entry>
+		<fullUrl value="urn:uuid:6057a121-b711-49ef-91c3-1d4c7fa37e8f"/>
+		<resource>
+			<PractitionerRole>
+				<id value="6057a121-b711-49ef-91c3-1d4c7fa37e8f"/>
+				<meta>
+					<profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-PractitionerRole-1"/>
+				</meta>
+				<practitioner>
+					<reference value="urn:uuid:5cfdc975-9f0e-48af-b4ac-8114987cb7e0"/>
+				</practitioner>
+				<organization>
+					<reference value="urn:uuid:77cef538-3c15-41c9-8a10-fbbb89fb396a"/>
+				</organization>
+				<code>
+					<coding>
+						<system value="https://fhir.nhs.uk/STU3/CodeSystem/CareConnect-SDSJobRoleName-1"/>
+						<code value="R0050"/>
+						<display value="Consultant"/>
+					</coding>
+				</code>
+				<specialty>
+					<coding>
+						<system value="http://snomed.info/sct"/>
+						<code value="394611003"/>
+						<display value="Plastic surgery - speciality"/>
+					</coding>
+				</specialty>
+			</PractitionerRole>
+		</resource>
+	</entry>
+	<entry>
+		<fullUrl value="urn:uuid:e6077f3f-4b5c-4757-adec-eb5e26842d1d"/>
+		<resource>
+			<PractitionerRole>
+				<id value="e6077f3f-4b5c-4757-adec-eb5e26842d1d"/>
+				<meta>
+					<profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-PractitionerRole-1"/>
+				</meta>
+				<practitioner>
+					<reference value="urn:uuid:a4dec203-3364-4152-b61b-045be256bc93"/>
+				</practitioner>
+				<organization>
+					<reference value="urn:uuid:77cef538-3c15-41c9-8a10-fbbb89fb396a"/>
+				</organization>
+			</PractitionerRole>
+		</resource>
+	</entry>
+	<entry>
+		<fullUrl value="urn:uuid:c0dc78ca-72b7-4d57-b9bc-118a5cd09f39"/>
+		<resource>
+			<PractitionerRole>
+				<id value="c0dc78ca-72b7-4d57-b9bc-118a5cd09f39"/>
+				<meta>
+					<profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-PractitionerRole-1"/>
+				</meta>
+				<practitioner>
+					<reference value="urn:uuid:77cef538-3c15-41c9-8a10-fbbb89fb396a"/>
+				</practitioner>
+				<code>
+					<coding>
+						<system value="https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-SDSJobRoleName-1"/>
+						<code value="R1480"/>
+						<display value="Healthcare Assistant"/>
+					</coding>
+				</code>
+			</PractitionerRole>
+		</resource>
+	</entry>
+	<!--Organization-Example-1-->
+	<entry>
+		<fullUrl value="urn:uuid:2db180bc-98fb-4b98-aab1-77a4e6ccd19f"/>
+		<resource>
+			<Organization>
+				<id value="2db180bc-98fb-4b98-aab1-77a4e6ccd19f"/>
+				<meta>
+					<profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Organization-1"/>
+				</meta>
+				<identifier>
+					<system value="https://fhir.nhs.uk/Id/ods-organization-code"/>
+					<value value="A111111"/>
+				</identifier>
+				<name value="Canvas Health Centre"/>
+				<telecom>
+					<system value="phone"/>
+					<value value="01234 956412"/>
+					<use value="work"/>
+				</telecom>
+				<address>
+					<use value="work"/>
+					<line value="27 Acacia Road"/>
+					<postalCode value="BM9 6PM "/>
+				</address>
+			</Organization>
+		</resource>
+	</entry>
+	<!--Organization-Example-2-->
+	<entry>
+		<fullUrl value="urn:uuid:77cef538-3c15-41c9-8a10-fbbb89fb396a"/>
+		<resource>
+			<Organization>
+				<id value="77cef538-3c15-41c9-8a10-fbbb89fb396a"/>
+				<meta>
+					<profile value="https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Organization-1"/>
+				</meta>
+				<identifier>
+					<system value="https://fhir.nhs.uk/Id/ods-organization-code"/>
+					<value value="RX0000"/>
+				</identifier>
+				<name value="St Crispin's Hospital"/>
+				<address>
+					<city value="Donaldstown"/>
+					<postalCode value="DO1 4XP"/>
+				</address>
+			</Organization>
+		</resource>
+	</entry>
+</Bundle>
