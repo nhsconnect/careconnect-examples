@@ -64,7 +64,8 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
 
         client.setEncoding(EncodingEnum.XML);
 
-        clientEDMS = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri/camel/ccri-document/STU3/");
+        //clientEDMS = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri/camel/ccri-document/STU3/");
+        clientEDMS = ctxFHIR.newRestfulGenericClient("https://edms.35.176.40.215.xip.io/STU3");
         //client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8080/careconnect-gateway/STU3/");
 
         clientEDMS.setEncoding(EncodingEnum.XML);
