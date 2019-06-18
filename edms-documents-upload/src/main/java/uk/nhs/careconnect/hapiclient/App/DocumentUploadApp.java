@@ -20,6 +20,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import javax.print.Doc;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -55,6 +56,7 @@ public class DocumentUploadApp implements CommandLineRunner {
     IGenericClient clientEDMS = null;
     IGenericClient clientEPR = null;
 
+    IGenericClient clientNRLS = null;
     DateFormat df = new SimpleDateFormat("HHmm_dd_MM_yyyy");
 
 
@@ -76,6 +78,8 @@ public class DocumentUploadApp implements CommandLineRunner {
         clientEDMS = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8181/STU3/");
 
         clientEDMS.setEncoding(EncodingEnum.XML);
+
+        clientNRLS = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8184/STU3/");
 
         getSimple();
 
@@ -175,6 +179,9 @@ public class DocumentUploadApp implements CommandLineRunner {
         doc.setId(UUID.randomUUID().toString());
       //  doc.getMeta().addProfile("https://fhir.nhs.uk/STU3/StructureDefinition/GPConnect-DocumentReference-1");
         doc.setSubject(new Reference("https://demographics.spineservices.nhs.uk/STU3/Patient/9658220169"));
+        doc.addIdentifier(
+                new Identifier().setSystem("https://fhir.elmetccg.nhs.uk").setValue("sample")
+        );
         doc.setStatus(Enumerations.DocumentReferenceStatus.CURRENT);
         doc.getType().addCoding()
                 .setSystem("http://snomed.info/sct")
@@ -245,37 +252,77 @@ public class DocumentUploadApp implements CommandLineRunner {
 
     private void updateNRLS() {
 
-    }
-    /*
-    private void sendNRLS(Bundle bundle, String nhsNumber) {
+        Bundle bundle = clientEDMS.search()
+                .forResource(DocumentReference.class)
+                .where(DocumentReference.TYPE.exactly()
+                        .systemAndCode("http://snomed.info/sct","73625300"))
+                .returnBundle(Bundle.class)
+                .execute();
         for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
+            DocumentReference documentReference = (DocumentReference) entry.getResource();
+            sendNRLS(documentReference);
+        }
 
-            if (entry.getResource() instanceof DocumentReference) {
-                DocumentReference documentReference = (DocumentReference) entry.getResource();
-                documentReference.setId("");
-                documentReference.setSubject(new Reference("https://demographics.spineservices.nhs.uk/STU3/Patient/"+nhsNumber));
-                documentReference.setAuthor(new ArrayList<>());
-                documentReference.setIndexed(new Date());
-                documentReference.addAuthor().setReference("https://directory.spineservices.nhs.uk/STU3/Organization/MHT01");
-                documentReference.setCustodian(new Reference("https://directory.spineservices.nhs.uk/STU3/Organization/MHT01"));
-                documentReference.setType(null);
-                documentReference.getType().addCoding()
-                        .setSystem("http://snomed.info/sct")
-                        .setDisplay("Mental Health Crisis Plan")
-                        .setCode("736253002");
-                documentReference.setContext(null);
+        bundle = clientEDMS.search()
+                .forResource(DocumentReference.class)
+                .where(DocumentReference.TYPE.exactly()
+                        .systemAndCode("http://snomed.info/sct","373942005"))
+                .returnBundle(Bundle.class)
+                .execute();
+        for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
+            DocumentReference documentReference = (DocumentReference) entry.getResource();
+            if (documentReference.hasContext()
+                    && documentReference.getContext().hasPracticeSetting()
+            && documentReference.getContext().getPracticeSetting().hasCoding()
+                    ) {
+                switch (documentReference.getContext().getPracticeSetting().getCodingFirstRep().getCode()) {
 
-                System.out.println(FhirContext.forDstu3().newJsonParser().setPrettyPrint(true).encodeResourceToString(documentReference));
-
-                IGenericClient clientNRLS = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/nrls-ri/");
-                SSPInterceptor sspInterceptor = new SSPInterceptor();
-                clientNRLS.registerInterceptor(sspInterceptor);
-
-                clientNRLS.create().resource(documentReference).execute();
+                    case "892811000000109":
+                        sendNRLS(documentReference);
+                        break;
+                }
             }
         }
+
     }
-    */
+
+    private void sendNRLS(DocumentReference documentReference) {
+        System.out.println(documentReference.getId());
+
+        Boolean found = false;
+        if (documentReference.getSubject().hasIdentifier()) {
+            Bundle bundle = clientNRLS.search()
+                    .forResource(DocumentReference.class)
+                    .where(DocumentReference.PATIENT.hasId(documentReference.getSubject().getIdentifier().getValue()))
+                    .returnBundle(Bundle.class)
+                    .execute();
+            System.out.println(documentReference.getSubject().getIdentifier().getValue() + " - "+ bundle.getEntry().size());
+            for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
+                if (entry.getResource() instanceof DocumentReference) {
+                    DocumentReference nrlsDoc = (DocumentReference) entry.getResource();
+                    for (Identifier identifierNRLS : nrlsDoc.getIdentifier()) {
+                        for (Identifier identifier : documentReference.getIdentifier()) {
+                            if (identifier.getSystem().equals(identifierNRLS.getSystem())
+                            && identifier.getValue().equals(identifierNRLS.getValue())) {
+                                found = true;
+                                break;
+                            }
+                        }
+
+                    }
+                }
+            }
+        }
+        if (!found) {
+            System.out.println("Not found");
+            documentReference.getType().getCodingFirstRep().setCode("736253002");
+            documentReference.addAuthor().setReference("https://directory.spineservices.nhs.uk/STU3/Organization/MHT01");
+            documentReference.setCustodian(new Reference("https://directory.spineservices.nhs.uk/STU3/Organization/MHT01"));
+            clientNRLS.create().resource(documentReference).execute();
+        }
+
+    }
+
 
 
 

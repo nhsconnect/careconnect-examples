@@ -657,7 +657,7 @@ LUCs						0.2			x10*9/L			&lt; 0.4
 									</tr>
 									<tr>
 										<th>NHS number</th>
-										<td>1234567890</td>
+										<td>9658218881</td>
 									</tr>
 									<tr>
 										<th>Patient address</th>
@@ -1328,7 +1328,7 @@ The Community Consultant responsible for this action is Dr Gillingham working fo
 						</valueCodeableConcept>
 					</extension>
 					<system value="https://fhir.nhs.uk/Id/nhs-number"/>
-					<value value="1234567890"/>
+					<value value="9658218881"/>
 				</identifier>
 				<name>
 					<use value="official"/>
