@@ -5,6 +5,10 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.api.EncodingEnum;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
+import ca.uhn.fhir.rest.server.exceptions.ResourceVersionConflictException;
+import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.hl7.fhir.dstu3.model.*;
 
@@ -16,7 +20,10 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import java.io.BufferedReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.DateFormat;
@@ -24,9 +31,9 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 @SpringBootApplication
-public class FhirUnstructuredDocumentApp implements CommandLineRunner {
+public class DocumentUploadApp implements CommandLineRunner {
 
-    private static final Logger log = LoggerFactory.getLogger(FhirUnstructuredDocumentApp.class);
+    private static final Logger log = LoggerFactory.getLogger(DocumentUploadApp.class);
 
     final String uuidtag = "urn:uuid:";
 
@@ -40,13 +47,13 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
 
 	public static void main(String[] args) {
         System.getProperties().put( "server.port", 8084 );
-		SpringApplication.run(FhirUnstructuredDocumentApp.class, args).close();
+		SpringApplication.run(DocumentUploadApp.class, args).close();
 	}
 
     FhirContext ctxFHIR = FhirContext.forDstu3();
 
     IGenericClient clientEDMS = null;
-    IGenericClient client = null;
+    IGenericClient clientEPR = null;
 
     DateFormat df = new SimpleDateFormat("HHmm_dd_MM_yyyy");
 
@@ -59,29 +66,78 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
         }
 
 
-        client = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
+        clientEPR = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri-fhir/STU3/");
         //client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8080/careconnect-gateway/STU3/");
 
-        client.setEncoding(EncodingEnum.XML);
+        clientEPR.setEncoding(EncodingEnum.XML);
 
         //clientEDMS = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri/camel/ccri-document/STU3/");
-        clientEDMS = ctxFHIR.newRestfulGenericClient("https://edms.35.176.40.215.xip.io/STU3");
-        //client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8080/careconnect-gateway/STU3/");
+        // clientEDMS = ctxFHIR.newRestfulGenericClient("https://edms.35.176.40.215.xip.io/STU3");
+        clientEDMS = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8181/STU3/");
 
         clientEDMS.setEncoding(EncodingEnum.XML);
 
         getSimple();
 
-        Boolean outputDocs = true;
-        if (outputDocs) {
-        //    outputDocument("1", 1);
-            outputDocument("9658218873",2);
-            outputDocument("9658218873", 3);
-            outputDocument("9658218881", 4);
-            outputDocument("9658218997", 5);
-            outputDocument("9658220169", 6);
+
+        outputDocument("9658218873",2);
+        outputDocument("9658218873", 3);
+        outputDocument("9658218881", 4);
+        outputDocument("9658218997", 5);
+        outputDocument("9658220169", 6);
+
+        loadFolder("fhirdocuments");
+
+        updateNRLS();
+    }
+
+    public void loadFolder(String folder) throws Exception {
+        List<String> filenames = new ArrayList<>();
+
+        try (
+                InputStream in = getResourceAsStream(folder);
+                BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
+            String resource;
+
+            while ((resource = br.readLine()) != null) {
+                filenames.add(resource);
+                System.out.println(folder + "/"+ resource);
+                loadFile(folder,resource);
+            }
+        }
+
+        //return filenames;
+    }
+
+    private InputStream getResourceAsStream(String resource) {
+        final InputStream in
+                = getContextClassLoader().getResourceAsStream(resource);
+
+        return in == null ? getClass().getResourceAsStream(resource) : in;
+    }
+
+    public void loadFile(String folder, String filename) {
+        InputStream inputStream =
+                Thread.currentThread().getContextClassLoader().getResourceAsStream(folder + "/" +filename);
+        Reader reader = new InputStreamReader(inputStream);
+        Bundle bundle = null;
+        if (FilenameUtils.getExtension(filename).equals("json")) {
+            bundle = (Bundle) ctxFHIR.newJsonParser().parseResource(reader);
+        } else {
+            bundle = (Bundle) ctxFHIR.newXmlParser().parseResource(reader);
+        }
+        try {
+            MethodOutcome outcome = clientEDMS.create().resource(bundle).execute();
+        } catch (ResourceVersionConflictException ex) {
+            // System.out.println("ERROR - "+filename);
+            // System.out.println(ctxFHIR.newXmlParser().encodeResourceToString(ex.getOperationOutcome()));
+            if (ex.getStatusCode()==422) {
+                System.out.println("Trying to update "+filename+ ": Bundle?identifier="+bundle.getIdentifier().getSystem()+"|"+bundle.getIdentifier().getValue());
+                MethodOutcome outcome = clientEDMS.update().resource(bundle).conditionalByUrl("Bundle?identifier="+bundle.getIdentifier().getSystem()+"|"+bundle.getIdentifier().getValue()).execute();
+            }
         }
     }
+
 
     private void outputDocument(String patientId, Integer docExample) throws Exception {
         Date date = new Date();
@@ -96,14 +152,14 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
         try {
             MethodOutcome outcome = clientEDMS.create().resource(unstructDocBundle).execute();
 
-            if (outcome.getCreated() && patient != null) {
-                sendNRLS((Bundle) outcome.getResource(), patient.getIdentifierFirstRep().getValue());
-            }
+
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
         }
 
     }
+
+
 
     private Bundle getSimple() {
         Bundle bundle = null;
@@ -150,7 +206,7 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
 
 
         clientODS.setEncoding(EncodingEnum.XML);
-        Bundle patientSearchbundle =  client
+        Bundle patientSearchbundle =  clientEPR
                 .search()
                 .forResource(Patient.class)
                 .where(Patient.IDENTIFIER.exactly().systemAndCode("https://fhir.nhs.uk/Id/nhs-number","9658220169"))
@@ -173,14 +229,12 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
             bundle.addEntry().setResource(organization).setFullUrl("urn:uuid:" + organization.getId());
             bundle.addEntry().setResource(patient).setFullUrl("urn:uuid:" + patient.getId());
             bundle.setType(Bundle.BundleType.COLLECTION);
-            System.out.println(FhirContext.forDstu3().newJsonParser().setPrettyPrint(true).encodeResourceToString(bundle));
+           // System.out.println(FhirContext.forDstu3().newJsonParser().setPrettyPrint(true).encodeResourceToString(bundle));
 
             try {
                 MethodOutcome outcome = clientEDMS.create().resource(bundle).execute();
 
-                if (outcome.getCreated()) {
-                    sendNRLS((Bundle) outcome.getResource(), "9658220169");
-                }
+
             } catch (Exception ex) {
                 System.out.println("Already exists?");
             }
@@ -189,6 +243,10 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
         return bundle;
     }
 
+    private void updateNRLS() {
+
+    }
+    /*
     private void sendNRLS(Bundle bundle, String nhsNumber) {
         for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
 
@@ -217,13 +275,9 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
             }
         }
     }
+    */
 
-    /*
 
-    IGenericClient clientNRLS = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/nrls-ri/");
-                SSPInterceptor sspInterceptor = new SSPInterceptor();
-                clientNRLS.registerInterceptor(sspInterceptor);
-     */
 
     private Bundle getUnstructuredBundle(String patientId, Integer docExample) throws Exception {
         // Create Bundle of type Document
@@ -235,6 +289,10 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
         DocumentReference documentReference = new DocumentReference();
         documentReference.setId(fhirBundle.getNewId(documentReference));
         bundle.addEntry().setResource(documentReference);
+
+        documentReference.addIdentifier(
+                new Identifier().setSystem("https://fhir.elmetccg.nhs.uk").setValue(docExample.toString())
+        );
 
 
         documentReference.setCreated(new Date());
@@ -438,7 +496,7 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
     }
 
     private Bundle getPatientBundle(String patientId) {
-        Bundle bundle = client
+        Bundle bundle = clientEPR
                 .search()
                 .forResource(Patient.class)
                 .where(Patient.IDENTIFIER.exactly().code(patientId))
@@ -454,7 +512,7 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
 
     private Practitioner getPractitioner(String sdsCode) {
         Practitioner practitioner = null;
-        Bundle bundle =  client
+        Bundle bundle =  clientEPR
                 .search()
                 .forResource(Practitioner.class)
                 .where(Practitioner.IDENTIFIER.exactly().code(sdsCode))
@@ -470,7 +528,7 @@ public class FhirUnstructuredDocumentApp implements CommandLineRunner {
 
     private Organization getOrganization(String sdsCode) {
         Organization organization = null;
-        Bundle bundle =  client
+        Bundle bundle =  clientEPR
                 .search()
                 .forResource(Organization.class)
                 .where(Organization.IDENTIFIER.exactly().code(sdsCode))

@@ -40,7 +40,7 @@
         <module>hapi-patient-find-example-two</module>
         <module>hapi-patient-find-example-three</module>
         <module>ccri-nosql-fhirStarter</module>
-        <module>hapi-unstructuredDocument-create</module>
+        <module>edms-documents-upload</module>
         <module>yhcr-examples</module>
     </modules>
 

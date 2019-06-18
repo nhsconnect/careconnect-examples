@@ -135,11 +135,11 @@ public class INTEROPenExamplesApp implements CommandLineRunner {
         // 5/June/2019 postPatient(loadDocuments,"9658220142", "LS25 2HF", Encounter.EncounterLocationStatus.PLANNED, "Elbe", "LS26 8PU", 0, -15, "410429000", "Cardiac arrest", true);
 
 
-        loadFolder("toc");
+
 
         if (loadDocuments) {
            // loadFolder("dch");
-           // loadFolder("toc");
+
            // loadFolder("pharm");
             updateNRLS();
         }
