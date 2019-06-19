@@ -74,12 +74,12 @@ public class DocumentUploadApp implements CommandLineRunner {
         clientEPR.setEncoding(EncodingEnum.XML);
 
         //clientEDMS = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri/camel/ccri-document/STU3/");
-        // clientEDMS = ctxFHIR.newRestfulGenericClient("https://edms.35.176.40.215.xip.io/STU3");
-        clientEDMS = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8181/STU3/");
+        clientEDMS = ctxFHIR.newRestfulGenericClient("https://edms.35.176.40.215.xip.io/STU3");
+        //clientEDMS = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8181/STU3/");
 
         clientEDMS.setEncoding(EncodingEnum.XML);
 
-        clientNRLS = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8184/STU3/");
+        clientNRLS = ctxFHIR.newRestfulGenericClient("https://nrl.35.176.40.215.xip.io/STU3");
 
         getSimple();
 
@@ -149,7 +149,7 @@ public class DocumentUploadApp implements CommandLineRunner {
         Bundle unstructDocBundle = getUnstructuredBundle(patientId,docExample);
         String xmlResult = ctxFHIR.newXmlParser().setPrettyPrint(true).encodeResourceToString(unstructDocBundle);
 
-        Files.write(Paths.get("/Temp/"+df.format(date)+"+patient-"+patientId+"-doc-"+docExample+".xml"),xmlResult.getBytes());
+        //Files.write(Paths.get("/Temp/"+df.format(date)+"+patient-"+patientId+"-doc-"+docExample+".xml"),xmlResult.getBytes());
 
         // Uncomment to send to purple
         //
