@@ -52,10 +52,10 @@ public class YHCRExamplesApp implements CommandLineRunner {
             throw new Exception();
         }
 
-        client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
+        //client = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri-fhir/STU3/");
 
-        //client = ctxFHIR.newRestfulGenericClient("http://rievmappp02its.leedsth.nhs.uk:8080/fhircdr/STU3/");
-        //client = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8181/STU3/");
+        client = ctxFHIR.newRestfulGenericClient("https://cdr.dwp.hippodigital.cloud/STU3");
+        //client = ctxFHIR.newRestfulGenericClient("http://localhost:8189/STU3/");
         //client = ctxFHIR.newRestfulGenericClient("http://163.160.64.135:8181/STU3/");
         client.setEncoding(EncodingEnum.XML);
 

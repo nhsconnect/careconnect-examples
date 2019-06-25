@@ -73,13 +73,14 @@ public class DocumentUploadApp implements CommandLineRunner {
 
         clientEPR.setEncoding(EncodingEnum.XML);
 
-        //clientEDMS = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri/camel/ccri-document/STU3/");
+        clientEDMS = ctxFHIR.newRestfulGenericClient("https://data.developer.nhs.uk/ccri/camel/ccri-document/STU3/");
+       // clientEDMS = ctxFHIR.newRestfulGenericClient("https://data.developer-test.nhs.uk/ccri/camel/ccri-document/STU3/");
         // clientEDMS = ctxFHIR.newRestfulGenericClient("https://edms.35.176.40.215.xip.io/STU3");
-        clientEDMS = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8181/STU3/");
+        //clientEDMS = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8181/STU3/");
 
         clientEDMS.setEncoding(EncodingEnum.XML);
 
-        clientNRLS = ctxFHIR.newRestfulGenericClient("http://127.0.0.1:8184/STU3/");
+        clientNRLS = ctxFHIR.newRestfulGenericClient("https://nrl.dwp.hippodigital.cloud/STU3");
 
         getSimple();
 
