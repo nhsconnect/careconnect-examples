@@ -21,7 +21,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <spring-boot-version>1.5.10.RELEASE</spring-boot-version>
-        <hapi-fhir-version>3.3.0</hapi-fhir-version>
+        <hapi-fhir-version>4.0.3</hapi-fhir-version>
         <care-connect-version>3.5.1</care-connect-version>
         <dependency.alfresco-repository.version>6.41</dependency.alfresco-repository.version>
         <dependency.alfresco-core.version>7.1</dependency.alfresco-core.version>
